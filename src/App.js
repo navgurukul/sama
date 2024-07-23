@@ -1,23 +1,29 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Header/Navbar';
+import { ThemeProvider } from "@mui/material/styles";
+import theme from './theme/theme';
+import Footer from './components/Footer';
 import Home from './components/Home';
+import Navbar from './components/Header/Navbar';
 import About from './components/About';
-
 import './App.css';
 
 function App() {
   return (
-    <Router>
-      <Navbar />
+   
+    <ThemeProvider theme={theme}>
+     <Router>
+      <Navbar/>
+      
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         {/* <Route path="/projects" element={<Projects />} />
         <Route path="/contact" element={<Contact />} /> */}
       </Routes>
-      {/* <Footer /> */}
+      <Footer/>
     </Router>
+  </ThemeProvider>
   );
 }
 
