@@ -1,0 +1,72 @@
+.header {
+  position: relative; 
+}
+
+.header-logo {
+  height: 60px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-link {
+  text-decoration: none !important;
+  text-transform: uppercase !important;
+  color: #045B50 !important;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #549B79 !important; 
+}
+
+.mobile-nav {
+  display: none;
+}
+
+.mobile-menu {
+  display: none;
+}
+
+.mobile-menu.visible {
+  display: flex;
+  flex-direction: column; 
+  gap: 8px; 
+}
+
+.mobile-menu .MuiListItem-root {
+  padding: 0; 
+}
+
+.mobile-menu .MuiListItemText-root {
+  flex-grow: 1;
+}
+
+@media (max-width: 960px) {
+  .nav-links {
+    display: none; 
+    border-bottom:1px solid #549B79;
+  }
+  .nav-link {
+    border-bottom:1px solid #549B79;
+  }
+  .mobile-nav {
+    display: flex;
+  }
+}
+
+.MuiIconButton-root {
+  color: #045B50 !important;
+  position: relative;
+  border-radius: 50%; 
+  padding: 8px;
+}
+
+.MuiIconButton-root:hover,
+.MuiIconButton-root:focus {
+  color: #045B50;
+  border-color: #004F40 !important;
+  border: 2px dotted #004F40 !important;
+}
