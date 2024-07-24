@@ -12,17 +12,24 @@ function App() {
   return (
    
     <ThemeProvider theme={theme}>
-     <Router>
+      <div className="layout">
       <Navbar/>
-      
+          <div className="content">
+            {" "}
+            <Router>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         {/* <Route path="/projects" element={<Projects />} />
         <Route path="/contact" element={<Contact />} /> */}
       </Routes>
-      <Footer/>
-    </Router>
+            {" "}
+            </Router>
+          </div>
+          <Footer/>
+        </div>
+     
+    
   </ThemeProvider>
   );
 }

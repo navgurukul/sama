@@ -1,81 +1,50 @@
 import React from 'react';
 // import './Home.css';
+import { Container, Grid, Typography, Link, Box, Button, Card, CardContent } from '@mui/material';
 
 function Home() {
   return (
-    <div className="home">
-      <header className="hero">
-        <h1>Welcome to Bharat Agro Ecology Fund</h1>
-        <p>Supporting sustainable agriculture and ecology projects across India.</p>
-      </header>
-      <section className="intro">
-        <h2>Our Mission</h2>
-        <p>We aim to promote ecological agriculture and improve the livelihoods of farmers in India.</p>
-      </section>
-      <section className="featured-projects">
-        <h2>Featured Projects</h2>
-        <div className="projects">
-          <div className="project">
-            <img src="path/to/image1.jpg" alt="Project 1" />
-            <h3>Project 1</h3>
-            <p>Project 1 description...</p>
-          </div>
-          <div className="project">
-            <img src="path/to/image2.jpg" alt="Project 2" />
-            <h3>Project 2</h3>
-            <p>Project 2 description...</p>
-          </div>
-        </div>
-      </section>
-
-      <header className="hero">
-        <h1>Welcome to Bharat Agro Ecology Fund</h1>
-        <p>Supporting sustainable agriculture and ecology projects across India.</p>
-      </header>
-      <section className="intro">
-        <h2>Our Mission</h2>
-        <p>We aim to promote ecological agriculture and improve the livelihoods of farmers in India.</p>
-      </section>
-      <section className="featured-projects">
-        <h2>Featured Projects</h2>
-        <div className="projects">
-          <div className="project">
-            <img src="path/to/image1.jpg" alt="Project 1" />
-            <h3>Project 1</h3>
-            <p>Project 1 description...</p>
-          </div>
-          <div className="project">
-            <img src="path/to/image2.jpg" alt="Project 2" />
-            <h3>Project 2</h3>
-            <p>Project 2 description...</p>
-          </div>
-        </div>
-      </section>
-
-      <header className="hero">
-        <h1>Welcome to Bharat Agro Ecology Fund</h1>
-        <p>Supporting sustainable agriculture and ecology projects across India.</p>
-      </header>
-      <section className="intro">
-        <h2>Our Mission</h2>
-        <p>We aim to promote ecological agriculture and improve the livelihoods of farmers in India.</p>
-      </section>
-      <section className="featured-projects">
-        <h2>Featured Projects</h2>
-        <div className="projects">
-          <div className="project">
-            <img src="path/to/image1.jpg" alt="Project 1" />
-            <h3>Project 1</h3>
-            <p>Project 1 description...</p>
-          </div>
-          <div className="project">
-            <img src="path/to/image2.jpg" alt="Project 2" />
-            <h3>Project 2</h3>
-            <p>Project 2 description...</p>
-          </div>
-        </div>
-      </section>
-    </div>
+    <Container height = {"100%"}>
+    <Typography variant="h4" gutterBottom>
+      OLPC Learning happens everywhere
+    </Typography>
+    <Typography variant="body1" paragraph>
+      Let learning go where you decide to go.
+    </Typography>
+    <Button variant="contained" color="primary">Give Today</Button>
+    
+    <Grid container spacing={3} style={{ marginTop: 20 }}>
+      <Grid item xs={12} md={4}>
+        
+        <Card>
+          <CardContent>
+            <Typography variant="h5">Our Causes</Typography>
+            <Typography variant="body2">We enable social change through learning.</Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12} md={4}>
+        
+        <Card>
+          <CardContent>
+            <Typography variant="h5">Our Donors</Typography>
+            <Typography variant="body2">Support from generous individuals and organizations.</Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12} md={4}>
+        
+        <Card>
+          <CardContent>
+            <Typography variant="h5">Contact Info</Typography>
+            <Typography variant="body2">Miami: +1 305-371-3755</Typography>
+            <Typography variant="body2">info@laptop.org</Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
+    added 
+  </Container>
   );
 }
 
