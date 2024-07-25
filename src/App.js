@@ -7,30 +7,30 @@ import Home from './components/Home';
 import Navbar from './components/Header/Navbar';
 import About from './components/About';
 import './App.css';
-
+import Commingsoon from './Commingsoon'
 function App() {
   return (
-   
-    <ThemeProvider theme={theme}>
-      <div className="layout">
-      <Navbar/>
-          <div className="content">
-            {" "}
-            <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        {/* <Route path="/projects" element={<Projects />} />
-        <Route path="/contact" element={<Contact />} /> */}
-      </Routes>
-            {" "}
-            </Router>
-          </div>
-          <Footer/>
-        </div>
-     
-    
-  </ThemeProvider>
+   <div>
+    <Commingsoon />
+   </div>
+  //   <ThemeProvider theme={theme}>
+  //     <Router>
+  //     <div className="layout">
+  //     <Navbar/>
+  //         <div className="content">
+  //           {" "}
+            
+  //     <Routes>
+  //       <Route path="/" element={<Home />} />
+  //       <Route path="/about" element={<About />} />
+  //     </Routes>
+  //           {" "}
+            
+  //         </div>
+  //         <Footer/>
+  //       </div>
+  //       </Router>
+  // </ThemeProvider>
   );
 }
 

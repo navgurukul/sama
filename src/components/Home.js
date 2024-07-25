@@ -5,7 +5,26 @@ import { Container, Grid, Typography, Link, Box, Button, Card, CardContent } fro
 function Home() {
   return (
     <Container height = {"100%"}>
-    <Typography variant="h4" gutterBottom>
+      <Typography variant = "h1">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "h2">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "h3">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "h4">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "h5">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "h6">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "title1">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "title2">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "body1">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "body2">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "">Hello I am the Text, you can varify with theme.</Typography><br></br>
+      <Typography variant = "">Hello I am the Text, you can varify with theme.</Typography><br></br>
+    {/* <Typography variant="h4" gutterBottom>
       OLPC Learning happens everywhere
     </Typography>
     <Typography variant="body1" paragraph>
@@ -43,7 +62,7 @@ function Home() {
         </Card>
       </Grid>
     </Grid>
-    added 
+    added  */}
   </Container>
   );
 }
