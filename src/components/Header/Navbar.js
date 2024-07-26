@@ -13,11 +13,10 @@ const Navbar = () => {
   const menuItems = [
     { text: 'HOME', href: '/' },
     { text: 'ABOUT', href: '/about' },
-    { text: 'OUR ROOTS', href: '/our-roots' },
-    { text: 'WHY AGROECOLOGY', href: '/agroecology' },
-    { text: 'GRANTMAKING', href: '/grantmaking' },
-    { text: "BAF'S VALUE TO FUNDERS", href: '/funders' },
-    { text: 'JOIN HANDS', href: '/join' }
+    { text: 'Our Approach', href: '/our-approach' },
+    { text: 'Give Today', href: '/give-today' },
+    
+   
   ];
 
   const handleMenuToggle = () => {
