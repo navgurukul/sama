@@ -9,7 +9,7 @@ import About from './components/About';
 import GiveToday from './components/GiveToday';
 import OurApproach from './components/OurApproach';
 import './App.css';
-
+import Commingsoon from './Commingsoon'
 function App() {
   return (
    
