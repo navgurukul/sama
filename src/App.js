@@ -3,33 +3,35 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from "@mui/material/styles";
 import theme from './theme/theme';
 import Footer from './components/Footer';
-import Home from './components/Home';
+import Home from './components/Home/Home'
 import Navbar from './components/Header/Navbar';
 import About from './components/About';
+import GiveToday from './components/GiveToday';
+import OurApproach from './components/OurApproach';
 import './App.css';
 
 function App() {
   return (
    
     <ThemeProvider theme={theme}>
+      <Router>
       <div className="layout">
       <Navbar/>
           <div className="content">
             {" "}
-            <Router>
+            
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        {/* <Route path="/projects" element={<Projects />} />
-        <Route path="/contact" element={<Contact />} /> */}
+        <Route path="/give-today" element={<GiveToday />} />
+        <Route path="/our-approach" element={<OurApproach />} />
       </Routes>
             {" "}
-            </Router>
+            
           </div>
           <Footer/>
         </div>
-     
-    
+        </Router>
   </ThemeProvider>
   );
 }
