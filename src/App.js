@@ -7,7 +7,7 @@ import Home from './components/Home/Home'
 import Navbar from './components/Header/Navbar';
 import About from './components/About';
 import GiveToday from './components/GiveToday';
-import OurApproach from './components/OurApproach';
+import OurApproach from './components/OurApproach/OurApproach';
 import './App.css';
 import Commingsoon from './Commingsoon'
 function App() {
