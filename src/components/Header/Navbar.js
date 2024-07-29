@@ -4,6 +4,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
 import { Link, useLocation } from 'react-router-dom';
 import './Navbar.css';
+import logo from './Sama-1a.jpg'
 
 const Navbar = () => {
   const location = useLocation();
@@ -40,7 +41,9 @@ const Navbar = () => {
 
       <Container maxWidth="lg">
         <Toolbar disableGutters sx={{ justifyContent: 'space-between', position: 'relative' }}>
-          <Box component="img" src="https://st2.depositphotos.com/4035913/6124/i/450/depositphotos_61243733-stock-illustration-business-company-logo.jpg" alt="Logo" className="header-logo" />
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <Box component="img" src={logo} alt="Logo" className="header-logo" />
+          </Link>
           <Box className={`nav-links ${menuVisible ? 'visible' : ''}`}>
             {menuItems.map((item, index) => (
               <MuiLink
