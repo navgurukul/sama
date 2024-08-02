@@ -10,29 +10,31 @@ import GiveToday from './components/GiveToday';
 import OurApproach from './components/OurApproach/OurApproach';
 import './App.css';
 import Commingsoon from './Commingsoon'
+import EnvironmentalImpact from './EnvironmentalImpact'
 function App() {
   return (
+    <EnvironmentalImpact />
    
-    <ThemeProvider theme={theme}>
-      <Router>
-      <div className="layout">
-      <Navbar/>
-          <div className="content">
-            {" "}
+  //   <ThemeProvider theme={theme}>
+  //     <Router>
+  //     <div className="layout">
+  //     <Navbar/>
+  //         <div className="content">
+  //           {" "}
             
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/give-today" element={<GiveToday />} />
-        <Route path="/our-approach" element={<OurApproach />} />
-      </Routes>
-            {" "}
+  //     <Routes>
+  //       <Route path="/" element={<Home />} />
+  //       <Route path="/about" element={<About />} />
+  //       <Route path="/give-today" element={<GiveToday />} />
+  //       <Route path="/our-approach" element={<OurApproach />} />
+  //     </Routes>
+  //           {" "}
             
-          </div>
-          <Footer/>
-        </div>
-        </Router>
-  </ThemeProvider>
+  //         </div>
+  //         <Footer/>
+  //       </div>
+  //       </Router>
+  // </ThemeProvider>
   );
 }
 
