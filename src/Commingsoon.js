@@ -9,7 +9,7 @@ const ComingSoonPage = () => {
     const [email_data, setEmail_data] = useState("")
     const [error, setError] = useState("");
 
-  const launchDate = new Date('2024-07-31T14:59:00');
+  const launchDate = new Date('2024-08-20T14:59:00');
 
   const handleSubmit = async (e) => {
     
