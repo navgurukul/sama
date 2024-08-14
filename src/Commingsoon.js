@@ -10,7 +10,7 @@ const ComingSoonPage = () => {
     const [error, setError] = useState("");
     const [submitted, setSubmitted] = useState(false);
 
-  const launchDate = new Date('2024-08-09T14:59:00');
+  const launchDate = new Date('2024-08-20T14:59:00');
 
   const handleSubmit = async (e) => {
     
