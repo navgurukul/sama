@@ -8,6 +8,7 @@ const ComingSoonPage = () => {
 
     const [email_data, setEmail_data] = useState("")
     const [error, setError] = useState("");
+    const [submitted, setSubmitted] = useState(false);
 
   const launchDate = new Date('2024-08-20T14:59:00');
 
@@ -25,7 +26,7 @@ const ComingSoonPage = () => {
       return;
     }
 
-    setError(""); // Clear error message if an
+    setError(""); // Clear error message if any
 
     const formData = {
         email_data,
@@ -42,6 +43,7 @@ const ComingSoonPage = () => {
       });
       console.log("Response from Google Apps Script:", await response.text());
       setEmail_data("");
+      setSubmitted(true);
     } catch (error) {
       console.error("Error sending data to Google Apps Script:", error);
     } 
@@ -104,7 +106,7 @@ const ComingSoonPage = () => {
         <img
         src="/samalogo.png"
         alt="Logo"
-        style={{ width: '100px', marginBottom: '20px' }} // Adjust the size and margin as needed
+        style={{ width: '100px', marginBottom: '20px' }}
       />
           <Typography variant="h5" gutterBottom color= "gray" mb = {8}>
             Our website is under construction.
@@ -114,6 +116,9 @@ const ComingSoonPage = () => {
             component="form"
             sx={{ marginTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}
           >
+            {/* Conditional rendering based on submission status */}
+          {!submitted ? ( 
+              <>
             <Grid xs = {12} sm = {6} >
             <TextField
               label="Enter your email"
@@ -135,9 +140,15 @@ const ComingSoonPage = () => {
                 textTransform: 'none',
               }}
             >
-              Get Notified
+              Join the Movement
             </Button>
             </Grid>
+            </>
+            ) : (
+              <Typography variant="h6" color="success.main" mt={2}>
+                We appreciate your interest and support for Sama.<br></br> We will be in touch shortly.
+              </Typography>
+            )}
           </Box>
           {error && (
             <Typography variant="body2" color="error" mt={2}>
