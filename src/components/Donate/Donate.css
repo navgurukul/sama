@@ -1,0 +1,29 @@
+h6{
+    color: var(--black, #4A4A4A);
+    font-family: Montserrat;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 130%; /* 31.2px */
+}
+p{
+    color: var(--text, #4A4A4A);
+
+    /* subtitle1 */
+    font-family: Raleway;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 170%; /* 30.6px */
+}
+ .MuiTypography-subtitle1 {
+    color: var(--text, #4A4A4A);
+
+/* subtitle1 */
+font-family: Raleway;
+font-size: 18px;
+font-style: normal;
+font-weight: 700;
+line-height: 170%; /* 30.6px */
+
+}

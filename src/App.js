@@ -11,9 +11,11 @@ import OurApproach from './components/OurApproach/OurApproach';
 import './App.css';
 import Commingsoon from './Commingsoon'
 import EnvironmentalImpact from './EnvironmentalImpact'
+import Donate from './components/Donate';
 function App() {
   return (
-    <EnvironmentalImpact />
+   
+    <Donate />
    
   //   <ThemeProvider theme={theme}>
   //     <Router>
