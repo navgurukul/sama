@@ -12,10 +12,10 @@ const Navbar = () => {
   const [activeTab, setActiveTab] = useState(location.pathname);
 
   const menuItems = [
-    { text: 'HOME', href: '/' },
+    // { text: 'HOME', href: '/' },
     { text: 'ABOUT', href: '/about' },
     { text: 'Our Approach', href: '/our-approach' },
-    { text: 'Give Today', href: '/give-today' },
+    // { text: 'Give Today', href: '/give-today' },
     
    
   ];
