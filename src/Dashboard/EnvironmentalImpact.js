@@ -1,158 +1,128 @@
-import React from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Container,
-  Grid,
-  Card,
-  CardContent,
-  Box,
-  Avatar,
-  Tabs,
-  Tab,
-} from '@mui/material';
-import { styled } from '@mui/system';
+import React from "react";
+import { styled } from '@mui/material/styles';
+import WaterContaminationLogo from "./assets/WaterContaminationLogo.png";
+import lifecycleLogo from "./assets/lifecycleLogo.png";
+import { data } from "./data";
 
-const data = {
-  wasteReduction: 1956,
-  wasteBreakup: {
-    Plastic: 1222.5,
-    Aluminium: 489,
-    Copper: 244.5,
-    Gold: 0.0203,
-    Silver: 0.203,
-  },
-  toxicWasteReduction: 7009,
-  toxicWasteBreakup: {
-    Lead: 5705,
-    Mercury: 407.5,
-    Cadmium: 81.5,
-    Chromium: 815,
-  },
-  carbonFootprintReduction: 326,
-};
+import { TypographySubtitle1, TypographyTitle, TypographyBody2,TypographyAmountText, Typographyh5 } from "./style";
+import {
+    Typography,
+    Grid,
+    Card,
+    CardContent,
+} from '@mui/material';
 
 const StyledCard = styled(Card)({
-  height: '100%',
+    height: '100%',
+    borderRadius: '8px',
+    background: 'var(--white, #FFF)',
+    boxShadow: '0px 2px 10px 0px rgba(0, 0, 0, 0.10)',
 });
 
-const Dashboard = () => {
-  return (
-    <Container maxWidth="lg">
-      <AppBar position="static" color="default">
-        <Toolbar>
-          <Box flexGrow={1}>
-            <Typography variant="h6">Sama - Environmental Impact</Typography>
-          </Box>
-          <Avatar alt="User" src="/path-to-avatar.jpg" />
-        </Toolbar>
-      </AppBar>
+const EnvironmenttalImpact = () => {
+    return (
+        <>
+            <Grid container spacing={3} mt={1}>
+                <Grid item xs={12} md={4}>
+                    <StyledCard>
+                        <CardContent>
+                            <TypographySubtitle1>
+                                KEY INSIGHTS
+                            </TypographySubtitle1>
+                            <TypographyTitle sx={{ mt: 1 }}>
+                                <b> Highest Impact Area:</b> Plastic with 1956 kg of waster reduced and lead with 5705 grams of seepage reduced have the highest impact in their respective categories. It indicates a significant opportunity for cost savings and enhanced brand reputation
+                            </TypographyTitle>
+                        </CardContent>
+                        <CardContent >
+                            <TypographyTitle>
+                                <b>Resource Optimization:</b> Plastic waste reduction of 1222.5 kg (62.5%) and lead seepage reduction of 5705 grams (81.2%) have the highest percentage in their respective categories, suggesting a high impact on future environmental sustainability and optimization
+                            </TypographyTitle>
+                        </CardContent>
+                    </StyledCard>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <StyledCard>
+                        <CardContent>
+                            <TypographySubtitle1 >IMPACT GENERATED</TypographySubtitle1>
 
-      <Box mt={4}>
-        <Tabs value={0} indicatorColor="primary" textColor="primary">
-          <Tab label="Environmental Impact" />
-          <Tab label="Social Impact" />
-        </Tabs>
-      </Box>
+                            <TypographyTitle sx={{ mt: 1 }}><b>Cost Savings: </b>Estimated cost savings of ₹23 lakhs to ₹32 lakhs from resource waste, toxic waste seepage and carbon footprint reduction</TypographyTitle>
+                        </CardContent>
+                        <CardContent>
+                            <TypographyTitle> <b>Enhanced Brand Reputation:</b> These actions generate influence in public and can lead to 5% to 10% increase in brand value (approximate) and 3% to 5% increase in customer retention (approximate)</TypographyTitle>
+                        </CardContent>
+                    </StyledCard>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <StyledCard>
+                        <CardContent>
+                            <TypographySubtitle1>RESOURCE WASTE REDUCTION</TypographySubtitle1>
+                            <TypographyAmountText sx={{ mt: 1 }}>1956 Kg</TypographyAmountText>
+                            <TypographyTitle sx={{ mt: 1 }}><b>Material wise breakup (Kg)</b></TypographyTitle>
+                            {Object.entries(data.wasteBreakup).map(([material, amount]) => (
+                                <Typography key={material} variant="body2" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <TypographyBody2>{material}</TypographyBody2>
+                                    <TypographyBody2>{amount} kg</TypographyBody2>
+                                </Typography>
+                            ))}
+                        </CardContent>
+                    </StyledCard>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <StyledCard>
+                        <CardContent>
+                            <TypographySubtitle1>TOXIC WASTE SEEPAGE REDUCTION</TypographySubtitle1>
+                            <TypographyAmountText sx={{ mt: 1 }}>7009 g</TypographyAmountText>
+                            <TypographyTitle sx={{ mt: 1 }}><b>Waste wise breakup (grams)</b></TypographyTitle>
+                            {Object.entries(data.toxicWasteBreakup).map(([material, amount]) => (
+                                <Typography key={material} variant="body2" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <TypographyBody2>{material}</TypographyBody2>
+                                    <TypographyBody2>{amount} kg</TypographyBody2>
+                                </Typography>
+                            ))}
+                        </CardContent>
+                    </StyledCard>
+                </Grid>
 
-      <Grid container spacing={3} mt={3}>
-        <Grid item xs={12} md={4}>
-          <StyledCard>
-            <CardContent>
-              <Typography variant="h6">Key Insights</Typography>
-              <Typography variant="body2">
-                <strong>Highest Impact Area:</strong> Plastic with {data.wasteReduction} kg of waste reduced and lead with {data.toxicWasteReduction} grams of seepage reduced have the highest impact in their respective categories. It indicates a significant opportunity for cost savings and enhanced brand reputation.
-              </Typography>
-              <Typography variant="body2">
-                <strong>Resource Optimization:</strong> Plastic waste reduction of {data.wasteBreakup.Plastic} kg (62.5%) and lead seepage reduction of {data.toxicWasteBreakup.Lead} grams (81.2%) have the highest percentage in their respective categories, suggesting a high impact on future environmental sustainability and optimization.
-              </Typography>
-            </CardContent>
-          </StyledCard>
-        </Grid>
+                <Grid item xs={12} md={4}>
+                    <Card>
+                        <CardContent>
+                            <TypographySubtitle1>CARBON FOOTPRINT REDUCTION</TypographySubtitle1>
+                            <TypographyAmountText sx={{ mt: 1 }}>326 Tons</TypographyAmountText>
+                            <TypographyBody2>Approximate CO2 amount prevented from entering into the atmosphere</TypographyBody2>
+                        </CardContent>
+                    </Card>
+                </Grid>
 
-        <Grid item xs={12} md={4}>
-          <StyledCard>
-            <CardContent>
-              <Typography variant="h6">Impact Generated</Typography>
-              <Typography variant="body2">
-                <strong>Cost Savings:</strong> Estimated cost savings of ₹23 lakhs to ₹32 lakhs from resource waste, toxic waste seepage, and carbon footprint reduction.
-              </Typography>
-              <Typography variant="body2">
-                <strong>Enhanced Brand Reputation:</strong> These actions generate influence in the public and can lead to 5% to 10% increase in brand value (approximate) and 3% to 5% increase in customer retention (approximate).
-              </Typography>
-            </CardContent>
-          </StyledCard>
-        </Grid>
+                <Grid item xs={12} md={4}>
+                    <CardContent>
+                        <Grid item xs={12} md={12} sx={{ mt: 1 }}>
+                            <Grid container spacing={2}>
+                                <Typographyh5 sx={{ ml: 2 }}>Did you know?</Typographyh5>
+                                <Grid container spacing={2} sx={{ mt: 1 }}>
+                                    <Grid item xs={3} >
+                                        <img src={WaterContaminationLogo}></img>
+                                    </Grid>
+                                    <Grid item xs={8} sx={{ ml: 2 }}>
+                                        <Typographyh5>5 to 6 Years</Typographyh5>
+                                        <TypographyBody2>Average lifecycle extension of your donated hardware with Sama</TypographyBody2>
+                                    </Grid>
+                                </Grid>
+                                <Grid container spacing={2} sx={{ mt: 1 }}>
+                                    <Grid item xs={3}>
+                                        <img src={lifecycleLogo}></img>
+                                    </Grid>
+                                    <Grid item xs={8} sx={{ ml: 3 }}>
+                                        <Typographyh5>5 to 6 Years</Typographyh5>
+                                        <TypographyBody2>Average lifecycle extension of your donated hardware with Sama</TypographyBody2>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Grid>
 
-        <Grid item xs={12} md={4}>
-          <StyledCard>
-            <CardContent>
-              <Typography variant="h6">Resource Waste Reduction</Typography>
-              <Typography variant="h4" color="primary">
-                {data.wasteReduction} Kg
-              </Typography>
-              <Typography variant="body2">
-                <strong>Material wise breakup:</strong>
-              </Typography>
-              {Object.entries(data.wasteBreakup).map(([material, amount]) => (
-                <Typography key={material} variant="body2">
-                  {material}: {amount} kg
-                </Typography>
-              ))}
-            </CardContent>
-          </StyledCard>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <StyledCard>
-            <CardContent>
-              <Typography variant="h6">Toxic Waste Seepage Reduction</Typography>
-              <Typography variant="h4" color="secondary">
-                {data.toxicWasteReduction} g
-              </Typography>
-              <Typography variant="body2">
-                <strong>Waste wise breakup (grams):</strong>
-              </Typography>
-              {Object.entries(data.toxicWasteBreakup).map(([material, amount]) => (
-                <Typography key={material} variant="body2">
-                  {material}: {amount} g
-                </Typography>
-              ))}
-            </CardContent>
-          </StyledCard>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <StyledCard>
-            <CardContent>
-              <Typography variant="h6">Carbon Footprint Reduction</Typography>
-              <Typography variant="h4" color="success">
-                {data.carbonFootprintReduction} Tons
-              </Typography>
-              <Typography variant="body2">
-                Approximate CO2 amount prevented from entering into the atmosphere.
-              </Typography>
-            </CardContent>
-          </StyledCard>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <StyledCard>
-            <CardContent>
-              <Typography variant="h6">Did you know?</Typography>
-              <Typography variant="body2">
-                5 to 6 Years - Average lifecycle extension of your donated hardware with Sama.
-              </Typography>
-              <Typography variant="body2">
-                Up to 200,000 litres of water contamination prevented by diverting waste from landfills.
-              </Typography>
-            </CardContent>
-          </StyledCard>
-        </Grid>
-      </Grid>
-    </Container>
-  );
+            </Grid>
+        </>
+    );
 };
-
-export default Dashboard;
+export default EnvironmenttalImpact;
