@@ -1,20 +1,24 @@
 .header {
   position: relative; 
+  box-shadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)";
+  ;
 }
 
 .header-logo {
-  height: 60px;
+  height: 48px;
 }
 
 .nav-links {
   display: flex;
   gap: 16px;
+  margin-left: 40px;
 }
 
 .nav-link {
   text-decoration: none !important;
   text-transform: uppercase !important;
   color: #045B50 !important;
+
 }
 
 .nav-link:hover,
@@ -34,6 +38,7 @@
   display: flex;
   flex-direction: column; 
   gap: 8px; 
+  margin-top: 40px;
 }
 
 .mobile-menu .MuiListItem-root {

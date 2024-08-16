@@ -14,7 +14,7 @@ const Footer = () => {
         <Container maxWidth="lg">
           <Grid
             container
-            my={4}
+            my={2}
           >
             <Grid item xs={4} sm={9} md={8}>
               <img src={samalogo} alt="Logo" width={100} />
@@ -27,7 +27,7 @@ const Footer = () => {
                   textDecoration: "none",
                   color: "text.secondary",
                   "&:hover": {
-                    color: "black", // Optional: Change color on hover
+                    color: "black", 
                   },
                 }}
                 color="text.secondary"
@@ -52,8 +52,8 @@ const Footer = () => {
             </Grid>
           </Grid>
           <hr />
-          <Box mt={3} textAlign="center">
-            <Typography variant="body2" color="text.secondary">
+          <Box textAlign="center" mt = {4}>
+            <Typography variant="body1" color="text.secondary">
               Copyright © 2024 reserved
             </Typography>
           </Box>
