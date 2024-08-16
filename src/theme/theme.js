@@ -28,11 +28,9 @@ theme = createTheme(theme, {
       },
       background: {
         default: "#F8F3F0",
-        // paper: "#FFFFFF",
       },
       dark: {
         main: "#4A4A4A",
-        // contrastText: "#FFFFFF",
       },
       grey: {
         main: "#828282",
@@ -43,108 +41,82 @@ theme = createTheme(theme, {
     typography: {
         fontFamily: "Raleway",
         fontSize: 18,
-        // h1: {
-        //   // letterSpacing: "-1px",
-        //   // fontWeight: 600,
-        //   fontSize: "6rem",
-        //   lineHeight: "130%",
-        //   // fontFamily: "Josefin Sans",
-        //   // [theme.breakpoints.down("sm")]: {
-        //   //   fontSize: "4rem",
-        //   // },
-        // },
-        // h2: {
-        //   // letterSpacing: "-1px",
-        //   // fontWeight: 600,
-        //   fontSize: "6rem",
-        //   lineHeight: "130%",
-        //   // fontFamily: "Josefin Sans",
-        //   // [theme.breakpoints.down("sm")]: {
-        //   //   fontSize: "4rem",
-        //   // },
-        // },
-        // h3: {
-        //   // letterSpacing: "-1px",
-        //   // fontWeight: 600,
-        //   fontSize: "6rem",
-        //   lineHeight: "130%",
-        //   // fontFamily: "Josefin Sans",
-        //   // [theme.breakpoints.down("sm")]: {
-        //   //   fontSize: "4rem",
-        //   // },
-        // },
-
-
-        //----------------------------------------------------------------
-        // h4: {
-        //   // letterSpacing: "-1px",
-        //   // fontWeight: 600,
-        //   fontSize: "48%",
-        //   lineHeight: "130%",
-        //   fontFamily: "Montserrat",
-        //   // [theme.breakpoints.down("sm")]: {
-        //   //   fontSize: "4rem",
-        //   // },
-        // },
-        // h5: {
-        //   // letterSpacing: "-1px",
-        //   // fontWeight: 600,
-        //   fontSize: "32%",
-        //   lineHeight: "130%",
-        //   fontFamily: "Montserrat",
-        //   // fontFamily: "Josefin Sans",
-        //   // [theme.breakpoints.down("sm")]: {
-        //   //   fontSize: "4rem",
-        //   // },
-        // },
-        // h6: {
-        //   // letterSpacing: "-1px",
-        //   // fontWeight: 600,
-        //   fontSize: "24%",
-        //   lineHeight: "130%",
-        //   fontFamily: "Montserrat",
-        //   // fontFamily: "Josefin Sans",
-        //   // [theme.breakpoints.down("sm")]: {
-        //   //   fontSize: "4rem",
-        //   // },
-        // },
-        // captions: {
+        h1: {
           
-        //   fontSize: "12%",
-        //   lineHeight: "130%",
+          fontSize: "6rem",
+          lineHeight: "130%",
          
-        // },
-        // subtitle1: {
-          
-        //   fontSize: "12%",
-        //   lineHeight: "170%",
+        },
+        h2: {
          
-        // },
-        // subtitle2: {
-          
-        //   fontSize: "12%",
-        //   lineHeight: "170%",
+          fontSize: "6rem",
+          lineHeight: "130%",
          
-        // },
-        // body1: {
-          
-        //   fontSize: "12%",
-        //   lineHeight: "170%",
-         
-        // },
-        // body2: {
-          
-        //   fontSize: "12%",
-        //   lineHeight: "170%",
-         
-        // },
+        },
+        h3: {
         
-        // button: {
-        //     fontSize: "1.125rem",
-        //     fontSize: "18%",
-        //     lineHeight: "170%",
-        //     textTransform: "none",
-        //   },
+          fontSize: "6rem",
+          lineHeight: "130%",
+          
+        },
+        h4: {
+       
+          fontSize: "48%",
+          lineHeight: "130%",
+          fontFamily: "Montserrat",
+        
+        },
+        h5: {
+      
+          fontSize: "32%",
+          lineHeight: "130%",
+          fontFamily: "Montserrat",
+
+        },
+        h6: {
+          
+          fontSize: "24%",
+          lineHeight: "130%",
+          fontFamily: "Montserrat",
+       
+        },
+        captions: {
+          
+          fontSize: "12%",
+          lineHeight: "130%",
+         
+        },
+        subtitle1: {
+          
+          fontSize: "12%",
+          lineHeight: "170%",
+         
+        },
+        subtitle2: {
+          
+          fontSize: "12%",
+          lineHeight: "170%",
+         
+        },
+        body1: {
+          
+          fontSize: "12%",
+          lineHeight: "170%",
+         
+        },
+        body2: {
+          
+          fontSize: "12%",
+          lineHeight: "170%",
+         
+        },
+        
+        button: {
+            fontSize: "1.125rem",
+            fontSize: "18%",
+            lineHeight: "170%",
+            textTransform: "none",
+          },
           
         },
     });
