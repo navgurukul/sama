@@ -39,7 +39,7 @@ const TimeLine = () => {
                     <Grid container spacing={2} sx={{ display: { xs: 'none', lg: 'flex' }, height: "1200px" }}>
                         <Box sx={boxStyle}>
                             <Grid container spacing={3}>
-                                <Grid item xs={12} lg={8} sm={12} style={{ position: "relative", right: "45px" }}>
+                                <Grid item xs={12} lg={8} sm={12} style={{ position: "relative", right: "180px" }}>
                                     <Typography style={styles.h5} variant="">Our 3D Model:</Typography>
                                     <Typography >Our 3D Model forms the backbone of our approach. Through this comprehensive approach, we transform e-waste into educational tools , thereby providing impact reports to our donors.</Typography>
                                 </Grid>
