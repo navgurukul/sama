@@ -1,0 +1,33 @@
+.carousel-container {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+
+.carousel-content {
+  display: flex;
+  flex-direction: row;
+  width: 100%; /* Double the width to fit the duplicated images */
+  animation: scroll-left 30s linear infinite;
+}
+h5{
+  color: #4A4A4A;
+}
+.hero-text{
+  color: var(--white, #FFF);
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 64px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 130%; 
+}
+
+@keyframes scroll-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%); /* Move left by half the container's width */
+  }
+}

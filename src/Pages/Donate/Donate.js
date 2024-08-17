@@ -215,9 +215,8 @@ function Donation() {
                                 <InputLabel sx={{ marginBottom: '5px' }}>Phone Number</InputLabel>
                                 <TextField 
                                     fullWidth 
-                                    required 
-                                    type="tel" 
-                                    variant="outlined" 
+                                    // required 
+                                    // variant="outlined" 
                                     label="Phone Number"
                                     name="phone"
                                     value={formData.phone}

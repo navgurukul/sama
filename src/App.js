@@ -4,7 +4,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from './theme/theme';
 import Navbar from './components/Header/Navbar';
 import Footer from './components/Footer/Footer';
-import Home from './Pages/Home/Home';
+import Home from './Pages/Home';
 import About from './Pages/About/About';
 import GiveToday from './Pages/GiveToday';
 import OurApproach from './Pages/OurApproach/OurApproach';

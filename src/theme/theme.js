@@ -43,37 +43,38 @@ theme = createTheme(theme, {
 
     h4: {
       fontSize: "48px",
-      lineHeight: "130px",
-      fontFamily: "Montserrat",
+      lineHeight: "130%",
+      fontFamily: "Montserrat, sans-serif",
       fontStyle: "normal",
       fontWeight: 700,
     },
     h5: {
       fontSize: "32px",
-      lineHeight: "130px",
-      fontFamily: "Montserrat",
+      lineHeight: "130%",
+      fontFamily: "Montserrat, sans-serif",
       fontStyle: "normal",
       fontWeight: 700,
     },
     h6: {
       fontSize: "24px",
-      lineHeight: "130px",
-      fontFamily: "Montserrat",
+      lineHeight: "130%",
+      fontFamily: "'Montserrat', sans-serif",
+      fontWeight: 700,
     },
     captions: {
       fontSize: "12px",
-      lineHeight: "130px",
+      lineHeight: "130%",
     },
     subtitle1: {
-      fontSize: "18px",
+      fontSize: "24px",
       lineHeight: "170%",
       fontStyle: "normal",
-      fontWeight: 700,
+      fontWeight: 400,
       fontFamily: "Raleway",
     },
     subtitle2: {
       fontSize: "14px",
-      lineHeight: "170px",
+      lineHeight: "170%",
     },
     body1: {
       fontSize: "18px",
@@ -84,18 +85,27 @@ theme = createTheme(theme, {
     },
     body2: {
       fontSize: "12px",
-      lineHeight: "170px",
+      lineHeight: "170%",
     },
 
     button: {
-      fontSize: "1.125rem",
       fontSize: "18px",
-      lineHeight: "170px",
+      lineHeight: "170%",
       textTransform: "none",
+      fontFamily: "Raleway",
+      fontWeight: 700,
     },
   },
 });
 theme.components = {
+  MuiInputBase: {
+    styleOverrides: {
+      root: {
+        backgroundColor: "#FFFFFF",  
+        fontFamily: "Montserrat, sans-serif"
+      },
+    },
+  },
   MuiCardMedia: {
     defaultProps: {
       disableRipple: true,
@@ -109,6 +119,7 @@ theme.components = {
       root: {
         borderRadius: "8px",
         height: "48px",
+
       },
     },
   },
