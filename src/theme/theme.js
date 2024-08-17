@@ -59,7 +59,10 @@ theme = createTheme(theme, {
       fontSize: "24px",
       lineHeight: "130px",
       fontFamily: "Montserrat",
+      fontStyle: "normal",
+      fontWeight: 700,
     },
+    
     captions: {
       fontSize: "12px",
       lineHeight: "130px",
