@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles';
 import { Typography, Box } from '@mui/material';
+import { border } from '@mui/system';
 export const StepCard = styled(Box)({
     padding: 16,
     backgroundColor: '#ffffff',
