@@ -10,7 +10,8 @@ import { skills, JobData } from './data.js';
 const StyledCard = styled(Card)({
     height: '100%',
     borderRadius: '8px',
-    background: 'var(--white, #FFF)',
+    background: '#FFF',
+    boxShadow: '0px 2px 10px 0px rgba(0, 0, 0, 0.10)',
 });
 
 const SocialImpactPage = () => {
@@ -20,11 +21,11 @@ const SocialImpactPage = () => {
             <Grid container spacing={3} sx={{ mt: 1 }}>
                 {JobData.map((item, index) => (
                     <Grid item xs={12} md={2.4} key={index}>
-                        <StyledCard>
+                        <StyledCard >
                             <CardContent>
                                 <Typography variant="subtitle1" style={styles.subtitle1}>{item.title}</Typography>
                                 <Typography style={styles.h5} variant="h5" color="primary" sx={{ mt: 1 }}>{item.number}</Typography>
-                                <Typography style={styles.body2}>{item.description}</Typography>
+                                <Typography style={styles.body2} sx={{ width: { lg: "200px" }, mt: 2 }}>{item.description}</Typography>
                             </CardContent>
                         </StyledCard>
                     </Grid>
@@ -32,13 +33,13 @@ const SocialImpactPage = () => {
             </Grid>
 
             <Grid container spacing={1} mt={3}>
-                <Grid item xs={12} md={5}>
-                    <Card>
+                <Grid item xs={12} md={6}>
+                    <StyledCard>
                         <CardContent>
                             <Grid container spacing={3} mt={1}>
                                 <Grid item xs={12} md={6} style={{ position: "relative", bottom: "14px" }}>
                                     <Typography variant="" style={styles.subtitle1}>STATES IMPACTED</Typography>
-                                    <Typography sx={{ mt: 2 }} variant="h4" style={styles.h5} color="primary">17</Typography>
+                                    <Typography sx={{ mt: 4 }} variant="h4" style={styles.h5} color="primary">17</Typography>
                                     <Typography sx={{ mt: 1 }} variant="body2" style={styles.body2}>
                                         Delhi, MP, UP, Maharashtra, Uttarakhand, Bihar, Rajasthan, Telangana, Andhra Pradesh, Assam, Sikkim, Karnataka, Odisha, Jharkhand, Punjab, Jammu & Kashmir, Haryana.
                                     </Typography>
@@ -53,10 +54,9 @@ const SocialImpactPage = () => {
                                 </Grid>
                             </Grid>
                         </CardContent>
-                    </Card>
+                    </StyledCard>
                 </Grid>
-
-                <Grid item xs={12} md={7}>
+                <Grid item xs={12} md={6}>
                     <Typography variant="" sx={{ mt: 2, ml: 2 }} style={styles.subtitle1}>SKILLS IMPARTED</Typography>
                     <Grid container spacing={3} style={{ padding: "16px" }}>
                         {skills.map((skill, index) => (

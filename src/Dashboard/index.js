@@ -85,58 +85,56 @@ function DashboardPage() {
     };
 
     return (
-        <Box style={{ background: "#FFFAF8" }}>
-            <Container maxWidth="xxl" style={{ background: "white"}}>
-                <Container maxWidth="xl">
-                    <Grid container spacing={2} sx={{ mt: 1 }} style={{ marginLeft: "1px" }}>
-                        <Grid item xs={12} md={6} sm={12}>
-                            <DigitalHardwareText>Digital Hardware Tracker</DigitalHardwareText>
-                            <Typography className="body1" style={styles.body2}>
-                                Monitor your e-waste management efforts with ease
-                            </Typography>
-                        </Grid>
+        <Container maxWidth="xxl">
+            <Container maxWidth="xl">
+                <Grid container spacing={2} sx={{ mt: 1 }} style={{ marginLeft: "1px" }}>
+                    <Grid item xs={12} md={6} sm={12}>
+                        <DigitalHardwareText>Digital Hardware Tracker</DigitalHardwareText>
+                        <Typography className="body1" style={styles.body1} sx={{ mt: 1 }}>
+                            Monitor your e-waste management efforts with ease
+                        </Typography>
                     </Grid>
-                    <Grid container spacing={2} sx={{ mt: 1 }} style={{ marginLeft: "1px" }}>
-                        <Grid item xs={12}>
-                            <Tabs value={activeTab} onChange={handleTabChange} indicatorColor="none">
-                                <Tab
-                                    label={activeTab === 0 ? (
-                                        <StyledButton>
-                                            <TypographyButton>Environmental Impact</TypographyButton>
-                                        </StyledButton>
-                                    ) : (
-                                        <Typography className="body1">Environmental Impact</Typography>
-                                    )}
-                                />
-                                <Tab
-                                    label={activeTab === 1 ? (
-                                        <StyledButton>
-                                            <TypographyButton>Social Impact</TypographyButton>
-                                        </StyledButton>
-                                    ) : (
-                                        <Typography className="body1">Social Impact</Typography>
-                                    )}
-                                />
-                            </Tabs>
-                        </Grid>
+                </Grid>
+                <Grid container spacing={2} sx={{ mt: 1 }} style={{ marginLeft: "1px" }}>
+                    <Grid item xs={12}>
+                        <Tabs value={activeTab} onChange={handleTabChange} indicatorColor="none">
+                            <Tab
+                                label={activeTab === 0 ? (
+                                    <StyledButton>
+                                        <TypographyButton>Environmental Impact</TypographyButton>
+                                    </StyledButton>
+                                ) : (
+                                    <Typography className="body1">Environmental Impact</Typography>
+                                )}
+                            />
+                            <Tab
+                                label={activeTab === 1 ? (
+                                    <StyledButton>
+                                        <TypographyButton>Social Impact</TypographyButton>
+                                    </StyledButton>
+                                ) : (
+                                    <Typography className="body1">Social Impact</Typography>
+                                )}
+                            />
+                        </Tabs>
                     </Grid>
+                </Grid>
 
-                    <Grid
-                        container
-                        spacing={2}
-                        sx={{
-                            mt: 2,
-                            maxWidth: 'xl', // maxWidth set to 'xl' for both tabs to ensure consistency
-                            margin: '0 auto'
-                        }}
-                    >
-                        <Grid item xs={12}>
-                            {activeTab === 0 ? <EnvironmentalImpact /> : <SocialImpactPage />}
-                        </Grid>
+                <Grid
+                    container
+                    spacing={2}
+                    sx={{
+                        mt: 2,
+                        maxWidth: 'xl',
+                        margin: '0 auto'
+                    }}
+                >
+                    <Grid item xs={12}>
+                        {activeTab === 0 ? <EnvironmentalImpact /> : <SocialImpactPage />}
                     </Grid>
-                </Container>
+                </Grid>
             </Container>
-        </Box>
+        </Container>
     );
 }
 
