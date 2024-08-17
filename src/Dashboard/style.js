@@ -3,6 +3,7 @@ import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { Card } from '@mui/material';
+import { fontFamily, fontSize, fontWeight, lineHeight } from '@mui/system';
 export const TypographySubtitle1 = styled(Typography)({
     color: '#4A4A4A',
     fontFamily: 'Montserrat',
@@ -131,7 +132,8 @@ export const styles = {
         fontSize: "14px",
         fontFamily: "Raleway",
         fontWeight: 400,
-        lineHeight: "30.6px"
+        lineHeight: "25.6px",
+        color: "var(--gray, #828282)",
 
     },
     body1: {
@@ -140,9 +142,16 @@ export const styles = {
         fontSize: "18px",
         lineHeight: "30.6px",
         color: "var(--text, #4A4A4A)"
-    },doublequotation:{
+    }, doublequotation: {
         color: "var(--gray-light, #E0E0E0)",
-        fontFamily:" Montserrat",
-        fontSize:"64px"
+        fontFamily: " Montserrat",
+        fontSize: "64px"
+    },
+    DigitalTitle: {
+        fontSize: "32px",
+        fontWeight: 700,
+        lineHeight: "41.6px",
+        fontFamily:"Montserrat",
+        color: "var(--text, #4A4A4A)"
     }
 };
