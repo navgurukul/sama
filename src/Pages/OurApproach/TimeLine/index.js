@@ -1,14 +1,18 @@
 import React from 'react';
 import { Grid, Box, Container, Typography } from '@mui/material';
-import { StepNumber, StepTitle, StepDescription, container, lgContainer, h6, styles } from './style'; // Import styles from style.js
+import { StepNumber, StepTitle, StepDescription, container, lgContainer, h6, styles } from './style';
 import { boxStyle, gridItemStyle, innerBoxStyle } from './style';
-import {steps } from "../data"
+import { steps } from "../data"
 const TimeLine = () => {
     return (
         <>
-            <Container maxWidth="xxl" style={container} >
+            <Container maxWidth="xxl" style={container}>
                 <Container maxWidth="lg" style={lgContainer}>
                     <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }} sx={{ display: { xs: 'flex', lg: 'none' } }}>
+                        <Grid item xs={12} lg={8} md={10} sm={10} >
+                            <Typography style={styles.h5} variant="">Our 3D Model:</Typography>
+                            <Typography >Our 3D Model forms the backbone of our approach. Through this comprehensive approach, we transform e-waste into educational tools , thereby providing impact reports to our donors.</Typography>
+                        </Grid>
                         {steps.map((step) => (
                             <Grid item xs={12} sm={12} md={4} key={step.number}>
                                 <StepNumber sx={{ ml: 4 }}>{step.number}</StepNumber>
@@ -129,3 +133,4 @@ const TimeLine = () => {
 };
 
 export default TimeLine;
+
