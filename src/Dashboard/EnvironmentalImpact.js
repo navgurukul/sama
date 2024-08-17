@@ -16,12 +16,18 @@ const StyledCard = styled(Card)({
     borderRadius: '8px',
     background: '#FFF',
     boxShadow: '0px 2px 10px 0px rgba(0, 0, 0, 0.10)',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
 });
 
 const EnvironmenttalImpact = () => {
     return (
         <>
-            <Grid container spacing={3} mt={1}>
+            <Grid container spacing={3} mt={1} 
+            // display="flex" justifyContent="space-between"
+            >
                 <Grid item xs={12} md={4}>
                     <StyledCard>
                         <CardContent>
@@ -31,9 +37,9 @@ const EnvironmenttalImpact = () => {
                             <TypographyTitle sx={{ mt: 1 }}>
                                 <b>Highest Impact Area:</b> Plastic with 1956 kg of waste reduced and lead with 5705 grams of seepage reduced have the highest impact in their respective categories. It indicates a significant opportunity for cost savings and enhanced brand reputation.
                             </TypographyTitle>
-                        </CardContent>
-                        <CardContent>
-                            <TypographyTitle>
+                        {/* </CardContent>
+                        <CardContent> */}
+                            <TypographyTitle mt= {2}>
                                 <b>Resource Optimization:</b> Plastic waste reduction of 1222.5 kg (62.5%) and lead seepage reduction of 5705 grams (81.2%) have the highest percentage in their respective categories, suggesting a high impact on future environmental sustainability and optimization.
                             </TypographyTitle>
                         </CardContent>
@@ -46,12 +52,11 @@ const EnvironmenttalImpact = () => {
                             <TypographyTitle sx={{ mt: 1 }}>
                                 <b>Cost Savings:</b> Estimated cost savings of ₹23 lakhs to ₹32 lakhs from resource waste, toxic waste seepage, and carbon footprint reduction.
                             </TypographyTitle>
-                        </CardContent>
-                        <CardContent>
-                            <TypographyTitle>
+                        
+                            <TypographyTitle mt = {2}>
                                 <b>Enhanced Brand Reputation:</b> These actions generate influence in public and can lead to a 5% to 10% increase in brand value (approximate) and a 3% to 5% increase in customer retention (approximate).
                             </TypographyTitle>
-                        </CardContent>
+                            </CardContent>
                     </StyledCard>
                 </Grid>
                 <Grid item xs={12} md={4}>
