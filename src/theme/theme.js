@@ -41,6 +41,8 @@ theme = createTheme(theme, {
     fontFamily: "Raleway",
     fontSize: 18,
 
+
+
     h4: {
       fontSize: "48px",
       lineHeight: "130%",
@@ -119,6 +121,11 @@ theme.components = {
       root: {
         borderRadius: "8px",
         height: "48px",
+        
+        "&:hover": {
+      backgroundColor: "#5C785A",
+      color: '#FFFFFF',
+    },
 
       },
     },

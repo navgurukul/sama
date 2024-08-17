@@ -13,6 +13,7 @@ function Home() {
   return (
     <>
       {/* Header Section */}
+      
       <Box
       sx={{
         height: "75vh", // Adjusted height
@@ -34,14 +35,16 @@ function Home() {
         textAlign: "center",
       }}
     >
+      <Container maxWidth="lg">
       
         <Typography 
+        align="center"
         style={{fontWeight:700,
            fontSize: "64px", 
            lineHeight: "130%", 
-           fontFamily: "Montserrat, sans-serif", 
+           fontFamily: "Montserrat,sans-serif", 
            color:"#FFF",
-           width:"50%"
+          //  width:"60%"
           }}
         >
           Where yesterday's devices power tomorrow's innovators
@@ -53,6 +56,8 @@ function Home() {
          sx={{ mt: 5,borderRadius:"100px", padding:"16px",}}>
           Donate Now
         </Button>
+
+        </Container>
         
       </Box>
 
@@ -372,8 +377,8 @@ function Home() {
           Social Impact</Button>
         </Box>
         {impact === "environmental" ? 
-        <img src={require("./assets/Sama - Environmental Impact.png")} height="auto" width="100%"/>:
-        <img src={require("./assets/Sama - Social Impact.png")} height="auto" width="100%"/>
+        <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%"/>:
+        <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%"/>
         
       }
       </Container>
