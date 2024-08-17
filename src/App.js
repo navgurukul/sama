@@ -4,6 +4,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from './theme/theme';
 import Navbar from './components/Header/Navbar';
 import Footer from './components/Footer/Footer';
+import Home from './Pages/Home';
 import About from './Pages/About/About';
 import GiveToday from './Pages/GiveToday';
 import OurApproach from './Pages/OurApproach/OurApproach';
@@ -19,11 +20,12 @@ function App() {
           <div className="content">
             {" "}
             <Routes>
-              <Route path="/" element={<DashboardPage />} />
+              <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/give-today" element={<GiveToday />} />
               <Route path="/our-approach" element={<OurApproach />} />
               <Route path="/donate" element={<Donate />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
             </Routes>
             {" "}
           </div>
