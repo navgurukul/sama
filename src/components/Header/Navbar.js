@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Box, Link as MuiLink, Container } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import CloseIcon from '@mui/icons-material/Close';
-import { Link, useLocation } from 'react-router-dom';
-import './Navbar.css';
-import logo from './samalogo.png'
+import React, { useState } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Box,
+  Link as MuiLink,
+  Container,
+  Button
+} from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import CloseIcon from "@mui/icons-material/Close";
+import { Link, useLocation } from "react-router-dom";
+import "./Navbar.css";
+import logo from "./samalogo.png";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import { breakpoints } from '../../theme/constant';
+import { breakpoints } from "../../theme/constant";
 
 const Navbar = () => {
   const location = useLocation();
@@ -17,11 +26,9 @@ const Navbar = () => {
 
   const menuItems = [
     // { text: 'HOME', href: '/' },
-    { text: 'ABOUT', href: '/about' },
-    { text: 'Our Approach', href: '/our-approach' },
+    { text: "ABOUT", href: "/about" },
+    { text: "Our Approach", href: "/our-approach" },
     // { text: 'Give Today', href: '/give-today' },
-    
-   
   ];
 
   const handleMenuToggle = () => {
@@ -30,36 +37,54 @@ const Navbar = () => {
 
   const handleTabClick = (href) => {
     setActiveTab(href);
-    setMenuVisible(false); 
+    setMenuVisible(false);
   };
 
   return (
-    <AppBar position="static"
+    <AppBar
+      position="sticky"
+      // maxWidth="lg"
       sx={{
-         backgroundColor: '#ffffff',
-         height: {
-          md: '91.4531px', 
-          lg: '91.4531px', 
+        // backgroundColor: "",
+        backgroundColor: "#ffffff",
+        // boxShadow: 0,
+        height: {
+          md: "91.4531px",
+          lg: "91.4531px",
         },
-        justifyContent:"center",
-      }}  className="header">
-
-      <Container maxWidth="lg">
-        <Toolbar disableGutters 
-        sx={{ justifyContent: isActive && 'space-between', 
-          position: 'relative' }}
+        justifyContent: "center",
+        padding: 0, margin: 0
+      }}
+      className="header"
+    >
+      <Container 
+      sx = {{padding: 0, margin: 0}}
+      maxWidth="lg"
+      >
+        <Toolbar
+          // disableGutters
+          sx={{
+            justifyContent: isActive && "space-between",
+            position: "relative",
+            padding: 0, margin: 0
+          }}
         >
-          <Link to="/" style={{ textDecoration: 'none' }}>
-            <Box component="img" src={logo} alt="Logo" 
-            className="header-logo" 
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              className="header-logo"
             />
           </Link>
-          <Box className={`nav-links ${menuVisible ? 'visible' : ''}`}>
+          <Box className={`nav-links ${menuVisible ? "visible" : ""}`}>
             {menuItems.map((item, index) => (
               <MuiLink
                 component={Link}
                 to={item.href}
-                className={`nav-link ${activeTab === item.href ? 'active' : ''}`}
+                className={`nav-link ${
+                  activeTab === item.href ? "active" : ""
+                }`}
                 key={index}
                 onClick={() => handleTabClick(item.href)}
               >
@@ -75,16 +100,16 @@ const Navbar = () => {
               onClick={handleMenuToggle}
               className="MuiIconButton-root"
             >
-              {menuVisible ? <CloseIcon  /> : <MoreVertIcon />}
+              {menuVisible ? <CloseIcon /> : <MoreVertIcon />}
             </IconButton>
           </Box>
         </Toolbar>
-        <Box className={`mobile-menu ${menuVisible ? 'visible' : ''}`}>
+        <Box className={`mobile-menu ${menuVisible ? "visible" : ""}`}>
           {menuItems.map((item, index) => (
             <MuiLink
               component={Link}
               to={item.href}
-              className={`nav-link ${activeTab === item.href ? 'active' : ''}`}
+              className={`nav-link ${activeTab === item.href ? "active" : ""}`}
               key={index}
               onClick={() => handleTabClick(item.href)}
             >
@@ -93,9 +118,9 @@ const Navbar = () => {
           ))}
         </Box>
       </Container>
-
     </AppBar>
   );
 };
 
 export default Navbar;
+
