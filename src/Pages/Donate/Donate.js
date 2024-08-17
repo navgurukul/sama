@@ -21,11 +21,12 @@ function Donation() {
     lastName: "",
     email: "",
     phone: "",
-    contributionType: "company",
+    contributionType: "",
     companyName: "",
-    donationType: "both",
+    donationType: "",
     numberOfLaptops: "",
-    hearAbout: "other",
+    donateAmount: "",
+    hearAbout: "",
     other: "",
     updates: false,
   });
@@ -59,11 +60,25 @@ function Donation() {
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone Number is required";
     }
-    if (!formData.companyName.trim()) {
+    if (
+      formData.contributionType === "company" &&
+      !formData.companyName.trim()
+    ) {
       newErrors.companyName = "Company Name is required";
     }
-    if (!formData.numberOfLaptops.trim()) {
+    if (
+      (formData.donationType === "donate-laptops" ||
+        formData.donationType === "both") &&
+      !formData.numberOfLaptops.trim()
+    ) {
       newErrors.numberOfLaptops = "Estimated Number of Laptops is required";
+    }
+    if (
+      (formData.donationType === "financial-contribution" ||
+        formData.donationType === "both") &&
+      !formData.donateAmount.trim()
+    ) {
+      newErrors.donateAmount = "Donate Amount is required";
     }
 
     return newErrors;
@@ -71,6 +86,23 @@ function Donation() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const submissionData = {
+      ...formData,
+      companyName:
+        formData.contributionType === "company" ? formData.companyName : "N/A",
+      numberOfLaptops:
+        formData.donationType === "donate-laptops" ||
+        formData.donationType === "both"
+          ? formData.numberOfLaptops
+          : "N/A",
+      donateAmount:
+        formData.donationType === "financial-contribution" ||
+        formData.donationType === "both"
+          ? formData.donateAmount
+          : "N/A",
+      hearAbout:
+        formData.hearAbout === "Other" ? formData.other : formData.hearAbout,
+    };
     const validationErrors = validate();
 
     if (Object.keys(validationErrors).length > 0) {
@@ -78,15 +110,13 @@ function Donation() {
     } else {
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbybVw_eIITs7LBl1qCKWfykaHIpIYt5qmeSwPTNXr01zzyEgCv4ED4tmUs4-fRgmEm7hw/exec",
-          
+          "https://script.google.com/macros/s/AKfycby2ynYkqyUbt2L97MHWVxLXZLf0U1B4gPBpoNawDJjOdsNhW1s4NDJv1Pyi5l270tzZkQ/exec",
           {
-            
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(formData),
+            body: JSON.stringify(submissionData),
             mode: "no-cors",
           }
         );
@@ -98,11 +128,12 @@ function Donation() {
           lastName: "",
           email: "",
           phone: "",
-          contributionType: "company",
+          contributionType: "",
           companyName: "",
-          donationType: "both",
+          donationType: "",
           numberOfLaptops: "",
-          hearAbout: "other",
+          donateAmount: "",
+          hearAbout: "",
           other: "",
           updates: false,
         });
@@ -116,8 +147,11 @@ function Donation() {
     <Box sx={{ backgroundColor: "#fef5f2", minHeight: "100vh" }}>
       {/* Section 1: Support Sama's Mission */}
       <Box sx={{ padding: "0", backgroundColor: "#f5f5f5", height: "430px" }}>
-        <Container maxWidth="lg" >
-          <Typography variant="h6" sx={{ marginBottom: "10px",color:"#4A4A4A", fontSize:"24px" }}>
+        <Container maxWidth="lg">
+          <Typography
+            variant="h6"
+            sx={{ marginBottom: "10px", color: "#4A4A4A", fontSize: "24px" }}
+          >
             Support Sama's Mission
           </Typography>
           <Grid container spacing={4}>
@@ -171,11 +205,9 @@ function Donation() {
       </Box>
 
       {/* Section 2: Your Details */}
-      <Box sx={{ marginTop:"10px" }}>
+      <Box sx={{ marginTop: "10px" }}>
         <Container maxWidth="lg">
-          <Typography variant="h5" >
-            Your Details
-          </Typography>
+          <Typography variant="h5">Your Details</Typography>
 
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
@@ -187,8 +219,7 @@ function Donation() {
                   variant="outlined"
                   name="firstName"
                   value={formData.firstName}
-                   placeholder="First Name"
-                //   label="First Name"
+                  placeholder="First Name"
                   onChange={handleChange}
                   sx={{ backgroundColor: "white" }}
                   error={!!errors.firstName}
@@ -245,7 +276,6 @@ function Donation() {
                   error={!!errors.phone}
                   helperText={errors.phone}
                 />
-                
               </Grid>
 
               <Grid item xs={12}>
@@ -263,14 +293,14 @@ function Donation() {
                     onChange={handleChange}
                   >
                     <FormControlLabel
-                      value="individual"
-                      control={<Radio />}
-                      label="An individual"
-                    />
-                    <FormControlLabel
                       value="company"
                       control={<Radio />}
                       label="On behalf of a company"
+                    />
+                    <FormControlLabel
+                      value="individual"
+                      control={<Radio />}
+                      label="An individual"
                     />
                   </RadioGroup>
                   {errors.contributionType && (
@@ -280,7 +310,7 @@ function Donation() {
               </Grid>
 
               {formData.contributionType === "company" && (
-                <Grid item xs={12}>
+                <Grid item xs={12} md={6}>
                   <InputLabel sx={{ marginBottom: "5px" }}>
                     Company Name
                   </InputLabel>
@@ -332,7 +362,7 @@ function Donation() {
               </Grid>
 
               {formData.donationType === "donate-laptops" && (
-                <Grid item xs={12}>
+                <Grid item xs={12} md={6}>
                   <InputLabel sx={{ marginBottom: "5px" }}>
                     Estimated number of laptops
                   </InputLabel>
@@ -348,6 +378,62 @@ function Donation() {
                     helperText={errors.numberOfLaptops}
                   />
                 </Grid>
+              )}
+
+              {formData.donationType === "financial-contribution" && (
+                <Grid item xs={12} md={6}>
+                  <InputLabel sx={{ marginBottom: "5px" }}>
+                    Donate Amount
+                  </InputLabel>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    name="donateAmount"
+                    placeholder="Donate Amount"
+                    value={formData.donateAmount}
+                    onChange={handleChange}
+                    sx={{ backgroundColor: "white" }}
+                    error={!!errors.donateAmount}
+                    helperText={errors.donateAmount}
+                  />
+                </Grid>
+              )}
+
+              {formData.donationType === "both" && (
+                <>
+                  <Grid item xs={12} md={6}>
+                    <InputLabel sx={{ marginBottom: "5px" }}>
+                      Estimated number of laptops
+                    </InputLabel>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      name="numberOfLaptops"
+                      placeholder="Estimated number of laptops"
+                      value={formData.numberOfLaptops}
+                      onChange={handleChange}
+                      sx={{ backgroundColor: "white" }}
+                      error={!!errors.numberOfLaptops}
+                      helperText={errors.numberOfLaptops}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <InputLabel sx={{ marginBottom: "5px" }}>
+                      Donate Amount
+                    </InputLabel>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      name="donateAmount"
+                      placeholder="Donate Amount"
+                      value={formData.donateAmount}
+                      onChange={handleChange}
+                      sx={{ backgroundColor: "white" }}
+                      error={!!errors.donateAmount}
+                      helperText={errors.donateAmount}
+                    />
+                  </Grid>
+                </>
               )}
 
               <Grid item xs={12}>
@@ -394,7 +480,7 @@ function Donation() {
               </Grid>
 
               {formData.hearAbout === "other" && (
-                <Grid item xs={12}>
+                <Grid item xs={12} md={6}>
                   <InputLabel sx={{ marginBottom: "5px" }}>Other</InputLabel>
                   <TextField
                     fullWidth
@@ -431,6 +517,315 @@ function Donation() {
               </Grid>
             </Grid>
           </form>
+
+          {/* <form onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <InputLabel sx={{ marginBottom: "5px" }}>First Name</InputLabel>
+                <TextField
+                  fullWidth
+                  required
+                  variant="outlined"
+                  name="firstName"
+                  value={formData.firstName}
+                  placeholder="First Name"
+                  onChange={handleChange}
+                  sx={{ backgroundColor: "white" }}
+                  error={!!errors.firstName}
+                  helperText={errors.firstName}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <InputLabel sx={{ marginBottom: "5px" }}>Last Name</InputLabel>
+                <TextField
+                  fullWidth
+                  required
+                  placeholder="Last Name"
+                  variant="outlined"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  sx={{ backgroundColor: "white" }}
+                  error={!!errors.lastName}
+                  helperText={errors.lastName}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <InputLabel sx={{ marginBottom: "5px" }}>
+                  Email Address
+                </InputLabel>
+                <TextField
+                  fullWidth
+                  required
+                  type="email"
+                  placeholder="Email Address"
+                  variant="outlined"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  sx={{ backgroundColor: "white" }}
+                  error={!!errors.email}
+                  helperText={errors.email}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <InputLabel sx={{ marginBottom: "5px" }}>
+                  Phone Number
+                </InputLabel>
+                <TextField
+                  fullWidth
+                  required
+                  type="tel"
+                  variant="outlined"
+                  placeholder="Phone Number"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  sx={{ backgroundColor: "white" }}
+                  error={!!errors.phone}
+                  helperText={errors.phone}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <FormControl
+                  component="fieldset"
+                  error={!!errors.contributionType}
+                >
+                  <Typography sx={{ marginBottom: "10px" }}>
+                    I am contributing as:
+                  </Typography>
+                  <RadioGroup
+                    row
+                    name="contributionType"
+                    value={formData.contributionType}
+                    onChange={handleChange}
+                  >
+                    <FormControlLabel
+                      value="company"
+                      control={<Radio />}
+                      label="On behalf of a company"
+                    />
+                    <FormControlLabel
+                      value="individual"
+                      control={<Radio />}
+                      label="An individual"
+                    />
+                  </RadioGroup>
+                  {errors.contributionType && (
+                    <FormHelperText>{errors.contributionType}</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+
+              {formData.contributionType === "company" && (
+                <Grid item xs={12} md={6}>
+                  <InputLabel sx={{ marginBottom: "5px" }}>
+                    Company Name
+                  </InputLabel>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    name="companyName"
+                    placeholder="Company Name"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    sx={{ backgroundColor: "white" }}
+                    error={!!errors.companyName}
+                    helperText={errors.companyName}
+                  />
+                </Grid>
+              )}
+
+              <Grid item xs={12}>
+                <FormControl component="fieldset" error={!!errors.donationType}>
+                  <Typography sx={{ marginBottom: "10px" }}>
+                    I would like to:
+                  </Typography>
+                  <RadioGroup
+                    row
+                    name="donationType"
+                    value={formData.donationType}
+                    onChange={handleChange}
+                  >
+                    <FormControlLabel
+                      value="donate-laptops"
+                      control={<Radio />}
+                      label="Donate laptops"
+                    />
+                    <FormControlLabel
+                      value="financial-contribution"
+                      control={<Radio />}
+                      label="Make a financial contribution"
+                    />
+                    <FormControlLabel
+                      value="both"
+                      control={<Radio />}
+                      label="Both donate laptops and contribute financially"
+                    />
+                  </RadioGroup>
+                  {errors.donationType && (
+                    <FormHelperText>{errors.donationType}</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+
+              {formData.donationType === "donate-laptops" && (
+                <Grid item xs={12} md={6}>
+                  <InputLabel sx={{ marginBottom: "5px" }}>
+                    Estimated number of laptops
+                  </InputLabel>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    name="numberOfLaptops"
+                    placeholder="Estimated number of laptops"
+                    value={formData.numberOfLaptops}
+                    onChange={handleChange}
+                    sx={{ backgroundColor: "white" }}
+                    error={!!errors.numberOfLaptops}
+                    helperText={errors.numberOfLaptops}
+                  />
+                </Grid>
+              )}
+
+              {formData.donationType === "financial-contribution" && (
+                <Grid item xs={12} md={6}>
+                  <InputLabel sx={{ marginBottom: "5px" }}>
+                    Donation Amount
+                  </InputLabel>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    name="donateAmount"
+                    placeholder="Donation Amount"
+                    value={formData.donateAmount}
+                    onChange={handleChange}
+                    sx={{ backgroundColor: "white" }}
+                    error={!!errors.donateAmount}
+                    helperText={errors.donateAmount}
+                  />
+                </Grid>
+              )}
+
+              {formData.donationType === "both" && (
+                <>
+                  <Grid item xs={12} md={6}>
+                    <InputLabel sx={{ marginBottom: "5px" }}>
+                      Estimated number of laptops
+                    </InputLabel>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      name="numberOfLaptops"
+                      placeholder="Estimated number of laptops"
+                      value={formData.numberOfLaptops}
+                      onChange={handleChange}
+                      sx={{ backgroundColor: "white" }}
+                      error={!!errors.numberOfLaptops}
+                      helperText={errors.numberOfLaptops}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <InputLabel sx={{ marginBottom: "5px" }}>
+                      Donation Amount
+                    </InputLabel>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      name="donateAmount"
+                      placeholder="Donation Amount"
+                      value={formData.donateAmount}
+                      onChange={handleChange}
+                      sx={{ backgroundColor: "white" }}
+                      error={!!errors.donateAmount}
+                      helperText={errors.donateAmount}
+                    />
+                  </Grid>
+                </>
+              )}
+
+              <Grid item xs={12}>
+                <FormControl component="fieldset" error={!!errors.hearAbout}>
+                  <Typography sx={{ marginBottom: "10px" }}>
+                    How did you hear about Sama?
+                  </Typography>
+                  <RadioGroup
+                    row
+                    name="hearAbout"
+                    value={formData.hearAbout}
+                    onChange={handleChange}
+                  >
+                    <FormControlLabel
+                      value="social-media"
+                      control={<Radio />}
+                      label="Social Media"
+                    />
+                    <FormControlLabel
+                      value="website"
+                      control={<Radio />}
+                      label="Website"
+                    />
+                    <FormControlLabel
+                      value="friend"
+                      control={<Radio />}
+                      label="Friend/Colleague"
+                    />
+                    <FormControlLabel
+                      value="event"
+                      control={<Radio />}
+                      label="Event"
+                    />
+                    <FormControlLabel
+                      value="other"
+                      control={<Radio />}
+                      label="Other"
+                    />
+                  </RadioGroup>
+                  {errors.hearAbout && (
+                    <FormHelperText>{errors.hearAbout}</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+
+              {formData.hearAbout === "other" && (
+                <Grid item xs={12} md={6}>
+                  <InputLabel sx={{ marginBottom: "5px" }}>Other</InputLabel>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    name="other"
+                    value={formData.other}
+                    onChange={handleChange}
+                    sx={{ backgroundColor: "white" }}
+                  />
+                </Grid>
+              )}
+
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="updates"
+                      checked={formData.updates}
+                      onChange={handleChange}
+                    />
+                  }
+                  label="I would like to receive updates from Sama"
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ backgroundColor: "#F38872", color: "#fff" }}
+                >
+                  Submit
+                </Button>
+              </Grid>
+            </Grid>
+          </form> */}
         </Container>
       </Box>
     </Box>
