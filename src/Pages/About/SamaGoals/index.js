@@ -22,7 +22,9 @@ const SamaGoals = () => {
                 <Typography variant="h5" sx={samaGoalsStyles.titleText}>
                     <b>This is how Sama was born,</b> with two simple but audacious <b>goals:</b>
                 </Typography>
-                <Grid container spacing={4} sx={samaGoalsStyles.gridContainer}>
+                <Grid container 
+                spacing={2} 
+                sx={samaGoalsStyles.gridContainer}>
                     {goals.map((goal, index) => (
                         <Grid item xs={12} sm={6} md={6} key={index}>
                             <Box

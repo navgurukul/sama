@@ -1,23 +1,20 @@
 import React from "react";
 import { Container, Grid, Typography, Link, Box } from "@mui/material";
-import Divider from "@mui/material/Divider";
 import samalogo from "../../assets/samalogo.png";
 
 const Footer = () => {
   return (
     <footer>
-      <Box
-        maxWidth="false"
-        bgcolor="primary.light"
-        p={[2, 4, 2, 4]}
-      >
-        <Container maxWidth="lg">
-          <Grid
-            container
-            my={2}
-          >
+      <Box maxWidth="false" bgcolor="primary.light"
+       py={5}
+       
+       >
+        <Container maxWidth="lg" >
+          <Grid container spacing={2} my={2}>
             <Grid item xs={4} sm={9} md={8}>
+              <Link href="/">
               <img src={samalogo} alt="Logo" width={100} />
+              </Link>
             </Grid>
             <Grid item xs={4} sm={2} md={2} align="right">
               <Link
@@ -27,17 +24,16 @@ const Footer = () => {
                   textDecoration: "none",
                   color: "text.secondary",
                   "&:hover": {
-                    color: "black", 
+                    color: "black",
                   },
                 }}
-                color="text.secondary"
               >
                 About Us
               </Link>
             </Grid>
             <Grid item xs={4} sm={2} md={2} align="right">
               <Link
-                href = "/our-approach"
+                href="/our-approach"
                 variant="body1"
                 sx={{
                   textDecoration: "none",
@@ -52,7 +48,7 @@ const Footer = () => {
             </Grid>
           </Grid>
           <hr />
-          <Box textAlign="center" mt = {4}>
+          <Box textAlign="center" mt={4}>
             <Typography variant="body1" color="text.secondary">
               Copyright © 2024 reserved
             </Typography>

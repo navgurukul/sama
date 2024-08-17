@@ -28,14 +28,14 @@ const OurApproach = () => {
                                 </Typography>
                                 <Grid container  sx={{ mt: 4 }}>
                                     {section.statistics.map((stat, statIndex) => (
-                                        <Grid item xs={12} md={4} key={statIndex} style={statItem}>
+                                        <Grid item xs={12} md={4} lg={4} key={statIndex} style={statItem}>
                                             <Box display="flex" alignItems="center" >
                                                 <img src={stat.moneyLogo} alt="money logo" style={statLogo} />
                                                 <Typography style={styles.h4} component="span" >
                                                     {stat.value}
                                                 </Typography>
                                             </Box>
-                                            <Typography variant="body1" style={subtitle1} sx={{ mt: 2 }}>
+                                            <Typography variant="body1" style={subtitle1} sx={{ mt: 2,width:{md:"305px"} }}>
                                                 {stat.description}
                                             </Typography>
                                         </Grid>
