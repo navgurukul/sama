@@ -6,11 +6,10 @@ import TimeLine from "./TimeLine/index.js";
 const OurApproach = () => {
     return (
         <>
-            <Container maxWidth="xxl" style={container} >
-                <Container maxWidth="lg" style={lgContainer}
-                >
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={6} lg={6} >
+            <Box style={container}>
+                <Container maxWidth="lg" style={lgContainer} >
+                    <Grid container my={8} >
+                        <Grid item xs={12} md={7}  >
                             <Typography sx={styleh5} variant="h5">Our Rationale</Typography>
                             <Typography style={Modelbody1} variant="body1" sx={{ mt: 2 }}>
                                 We strongly believe that investing in women's digital education can reap
@@ -21,13 +20,13 @@ const OurApproach = () => {
                         </Grid>
                     </Grid>
 
-                    <Grid container spacing={2} alignItems="flex-start"  sx={{ p: 4 }}>
+                    <Grid container color="#fff" >
                         {data.map((section, sectionIndex) => (
                             <>
-                                <Typography variant="h6" style={h6} sx={{ mt: 4, }}>
+                                <Typography variant="h6"  >
                                     {section.title}
                                 </Typography>
-                                <Grid container spacing={2} rowSpacing={3.75} sx={{ mt: 3 }}>
+                                <Grid container  sx={{ mt: 4 }}>
                                     {section.statistics.map((stat, statIndex) => (
                                         <Grid item xs={12} md={4} key={statIndex} style={statItem}>
                                             <Box display="flex" alignItems="center" >
@@ -47,8 +46,8 @@ const OurApproach = () => {
                         ))}
                     </Grid>
                 </Container>
-            </Container>
-            <TimeLine></TimeLine>
+            </Box>
+            <TimeLine/>
         </>
     );
 };

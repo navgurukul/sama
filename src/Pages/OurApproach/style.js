@@ -1,16 +1,13 @@
 
 export const container = {
     background: "var(--primary, #5C785A)",
-    padding: '16px',
+    
 };
 
 export const lgContainer = {
-    padding: '16px',
+    padding: '16px 0px',
 };
-export const sectionTitle = {
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
-    marginBottom: '16px',
+export const sectionTitle ={
     color: "white"
 };
 

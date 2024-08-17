@@ -3,14 +3,15 @@ import { Grid, Box, Container, Typography } from '@mui/material';
 import { StepNumber, StepTitle, StepDescription, container, lgContainer, h6, styles } from './style';
 import { boxStyle, gridItemStyle, innerBoxStyle } from './style';
 import { steps } from "../data"
+import bgImage from "./assets/Group.svg"
 const TimeLine = () => {
     return (
         <>
-            <Container maxWidth="xxl" style={container}>
+            <Box style={container} paddingBottom="80px">
                 <Container maxWidth="lg" style={lgContainer}>
                     <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }} sx={{ display: { xs: 'flex', lg: 'none' } }}>
                         <Grid item xs={12} lg={8} md={10} sm={10} >
-                            <Typography style={styles.h5} variant="">Our 3D Model:</Typography>
+                            <Typography  variant="h5">Our 3D Model:</Typography>
                             <Typography >Our 3D Model forms the backbone of our approach. Through this comprehensive approach, we transform e-waste into educational tools , thereby providing impact reports to our donors.</Typography>
                         </Grid>
                         {steps.map((step) => (
@@ -25,7 +26,7 @@ const TimeLine = () => {
                                                 <StepDescription>
                                                     <Typography component="span" sx={{ fontWeight: 'bold', fontWeight: 700 }}>
                                                         {boldText}:
-                                                    </Typography>
+                                                      </Typography>
                                                     {normalText}
                                                 </StepDescription>
                                             </li>
@@ -36,17 +37,34 @@ const TimeLine = () => {
                         ))}
                     </Grid>
 
-                    <Grid container spacing={2} sx={{ display: { xs: 'none', lg: 'flex' }, height: "1200px" }}>
-                        <Box sx={boxStyle}>
-                            <Grid container spacing={3}>
-                                <Grid item xs={12} lg={8} sm={12} style={{ position: "relative", right: "45px" }}>
-                                    <Typography style={styles.h5} variant="">Our 3D Model:</Typography>
-                                    <Typography >Our 3D Model forms the backbone of our approach. Through this comprehensive approach, we transform e-waste into educational tools , thereby providing impact reports to our donors.</Typography>
+                    <Grid container spacing={2} sx={{ display: { xs: 'none', lg: 'flex' }, height: "auto" }}>
+                        <Box sx={{
+                            backgroundImage: `url(${bgImage})`,
+                            backgroundSize: 'contain',
+                            backgroundPosition: 'right',
+                            backgroundRepeat: 'no-repeat',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'left',
+
+                        }}>
+                            <Grid Container marginTop="48px">
+                                <Grid item xs={12} md={6} sm={12}>
+                                <Typography style={styles.h5} variant="">Our 3D Model:</Typography>
+                                <Typography >Our 3D Model forms the backbone of our approach. Through this comprehensive approach, 
+                                we transform e-waste into educational tools , thereby providing impact reports to our donors.</Typography>
+
                                 </Grid>
-                                <Grid item xs={12} lg={7} sm={12} sx={{ position: "relative", left: "100px", bottom: "80px" }}>
+                            </Grid>
+                             
+                             
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} md={3} sm={12} >
+                                </Grid>
+                                <Grid item xs={12} md={5} sm={12} >
                                     <Box sx={gridItemStyle}>
                                         <Box sx={innerBoxStyle}>
-                                            <StepTitle style={h6} variant="h6" sx={{ mt: 3 }}>
+                                            <StepTitle style={h6} variant="h6" sx={{ mt: 2 }}>
                                                 {steps[0].title}
                                             </StepTitle>
                                             <ul>
@@ -71,8 +89,8 @@ const TimeLine = () => {
                             </Grid>
 
                             <Grid container spacing={3}>
-                                <Grid item md={3} sm={2}></Grid>
-                                <Grid item xs={12} lg={11} sm={10} sx={{ position: "relative", bottom: "150px", left: "210px" }}>
+                                <Grid item md={4} sm={2}></Grid>
+                                <Grid item xs={12} md={6} sm={10}  sx={{ position: "relative", top: "70px",  }}>
                                     <Box sx={gridItemStyle}>
                                         <Box sx={innerBoxStyle}>
                                             <StepTitle>
@@ -98,7 +116,8 @@ const TimeLine = () => {
                                 </Grid>
                             </Grid>
                             <Grid container spacing={3}>
-                                <Grid item xs={12} md={7} sm={7} style={{ position: "relative", bottom: "200px", right: "30px" }}>
+                                <Grid item md={2} sm={2}></Grid>
+                                <Grid item xs={12} md={5} sm={7} style={{ position: "relative", top: "70px" }}>
                                     <Box sx={gridItemStyle} >
                                         <Box sx={innerBoxStyle}>
                                             <StepTitle variant='h6'>
@@ -127,7 +146,7 @@ const TimeLine = () => {
                         </Box>
                     </Grid>
                 </Container>
-            </Container>
+            </Box>
         </>
     );
 };

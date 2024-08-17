@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles';
 import { Typography, Box } from '@mui/material';
+// import bgImage from "./assets/Group 26.svg";
 import { border } from '@mui/system';
 export const StepCard = styled(Box)({
     padding: 16,
@@ -63,15 +64,16 @@ export const containerStyle = {
 }
 export const boxStyle = {
     position: 'relative',
-    width: { md: '90%' },
-    height: { xs: 'auto', sm: '900px', md: '900px', lg: '1000px' },
-    backgroundImage: `url(${require("./assets/timeLine.png")})`,
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
+    width: { md: '900%', lg: '100%' },
+    height: { xs: 'auto', sm: '900px', md: '1000px', lg: '1000px' },
+    // backgroundImage: `url(${bgImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'right',
     backgroundRepeat: 'no-repeat',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    justifyContent: 'left',
+    alignItems: 'left',
     padding: { xs: '10px', sm: '20px', md: '30px' },
     boxSizing: 'border-box',
 };
