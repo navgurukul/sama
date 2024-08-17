@@ -9,36 +9,33 @@ import About from './Pages/About/About';
 import GiveToday from './Pages/GiveToday';
 import OurApproach from './Pages/OurApproach/OurApproach';
 import Donate from './Pages/Donate/Donate';
-
+import DashboardPage from './Dashboard';
 import './App.css';
-// import Commingsoon from './Commingsoon'
-// import EnvironmentalImpact from './Dashboard/EnvironmentalImpact'
-
 function App() {
   return (
-      
     <ThemeProvider theme={theme}>
       <Router>
-      <div className="layout">
-      <Navbar/>
+        <div className="layout">
+          <Navbar />
           <div className="content">
             {" "}
-            
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/give-today" element={<GiveToday />} />
-        <Route path="/our-approach" element={<OurApproach />} />
-        <Route path="/donate" element={<Donate />} />
-      </Routes>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/give-today" element={<GiveToday />} />
+              <Route path="/our-approach" element={<OurApproach />} />
+              <Route path="/donate" element={<Donate />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+            </Routes>
             {" "}
-            
           </div>
-          <Footer/>
+          <Footer />
         </div>
-        </Router>
-  </ThemeProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
-
 export default App;
+
+
+

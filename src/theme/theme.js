@@ -31,6 +31,9 @@ theme = createTheme(theme, {
     dark: {
       main: "#4A4A4A",
     },
+    white: {
+      main: "#FFF",
+    },
     grey: {
       main: "#E0E1E0",
       med: "#BDBDBD",
@@ -61,9 +64,10 @@ theme = createTheme(theme, {
       fontSize: "24px",
       lineHeight: "130px",
       fontFamily: "Montserrat",
+      fontStyle: "normal",
       fontWeight: 700,
-      
     },
+    
     captions: {
       fontSize: "12px",
       lineHeight: "130%",
@@ -120,7 +124,7 @@ theme.components = {
   MuiButton: {
     styleOverrides: {
       root: {
-        borderRadius: "8px",
+        borderRadius: "100px",
         height: "48px",
         
         "&:hover": {
