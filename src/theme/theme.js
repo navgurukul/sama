@@ -59,9 +59,10 @@ theme = createTheme(theme, {
     },
     h6: {
       fontSize: "24px",
-      lineHeight: "130%",
-      fontFamily: "'Montserrat', sans-serif",
+      lineHeight: "130px",
+      fontFamily: "Montserrat",
       fontWeight: 700,
+      
     },
     captions: {
       fontSize: "12px",
@@ -130,5 +131,7 @@ theme.components = {
       },
     },
   },
+
+  
 };
 export default theme;
