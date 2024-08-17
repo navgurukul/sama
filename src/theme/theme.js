@@ -59,6 +59,8 @@ theme = createTheme(theme, {
       fontSize: "24px",
       lineHeight: "130px",
       fontFamily: "Montserrat",
+      fontWeight: 700,
+      
     },
     captions: {
       fontSize: "12px",
@@ -112,5 +114,7 @@ theme.components = {
       },
     },
   },
+
+  
 };
 export default theme;
