@@ -111,9 +111,6 @@ export const Typographyh5 = styled(Typography)({
 });
 export const StyledCard = styled(Card)({
     height: '100%',
-    borderRadius: '8px',
-    background: 'var(--white, #FFF)',
-    boxShadow: '0px 2px 10px 0px rgba(0, 0, 0, 0.10)',
 });
 
 export const styles = {

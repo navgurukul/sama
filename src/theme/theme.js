@@ -31,6 +31,9 @@ theme = createTheme(theme, {
     dark: {
       main: "#4A4A4A",
     },
+    white: {
+      main: "#FFF",
+    },
     grey: {
       main: "#E0E1E0",
       med: "#BDBDBD",
@@ -110,8 +113,12 @@ theme.components = {
   MuiButton: {
     styleOverrides: {
       root: {
-        borderRadius: "8px",
+        borderRadius: "100px",
         height: "48px",
+        '&:hover': {
+          backgroundColor: '#5C785A', // Highlight: Red color on hover
+          boxShadow: 'none',
+        },
       },
     },
   },

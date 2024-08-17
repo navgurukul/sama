@@ -7,7 +7,7 @@ import {
   Box,
   Link as MuiLink,
   Container,
-  Button
+  Button,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
@@ -25,10 +25,8 @@ const Navbar = () => {
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
   const menuItems = [
-    // { text: 'HOME', href: '/' },
     { text: "ABOUT", href: "/about" },
     { text: "Our Approach", href: "/our-approach" },
-    // { text: 'Give Today', href: '/give-today' },
   ];
 
   const handleMenuToggle = () => {
@@ -43,43 +41,32 @@ const Navbar = () => {
   return (
     <AppBar
       position="sticky"
-      // maxWidth="lg"
       sx={{
-        // backgroundColor: "",
-        backgroundColor: "#ffffff",
-        // boxShadow: 0,
-        height: {
-          md: "91.4531px",
-          lg: "91.4531px",
-        },
+        backgroundColor: "white.main",
+        boxShadow: "0px -1px 0px 0px",
         justifyContent: "center",
-        padding: 0, margin: 0
+        padding: 0,
+        margin: 0,
       }}
       className="header"
     >
-      <Container 
-      sx = {{padding: 0, margin: 0}}
-      maxWidth="lg"
-      >
+      <Container sx={{ padding: 0, margin: 0 }}>
         <Toolbar
-          // disableGutters
+          disableGutters
           sx={{
             justifyContent: isActive && "space-between",
             position: "relative",
-            padding: 0, margin: 0
+            padding: 0,
+            margin: [2, 1, 2, 1],
           }}
         >
           <Link to="/" style={{ textDecoration: "none" }}>
-            <Box
-              component="img"
-              src={logo}
-              alt="Logo"
-              className="header-logo"
-            />
+            <Box component="img" src={logo} alt="Loo" className="header-logo" />
           </Link>
           <Box className={`nav-links ${menuVisible ? "visible" : ""}`}>
             {menuItems.map((item, index) => (
               <MuiLink
+                sx={{ margin: 1, color: "#4A4A4A" }}
                 component={Link}
                 to={item.href}
                 className={`nav-link ${
@@ -95,7 +82,7 @@ const Navbar = () => {
           <Box className="mobile-nav">
             <IconButton
               edge="start"
-              color="#045B50"
+              // color="#045B50"
               aria-label="menu"
               onClick={handleMenuToggle}
               className="MuiIconButton-root"
@@ -123,4 +110,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
