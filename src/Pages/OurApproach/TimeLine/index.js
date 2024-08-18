@@ -11,8 +11,8 @@ const TimeLine = () => {
                 <Container maxWidth="lg" style={lgContainer}>
                     <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }} sx={{ display: { xs: 'flex', lg: 'none' } }}>
                         <Grid item xs={12} lg={8} md={10} sm={10} >
-                            <Typography  variant="h5">Our 3D Model:</Typography>
-                            <Typography >Our 3D Model forms the backbone of our approach. Through this comprehensive approach, we transform e-waste into educational tools , thereby providing impact reports to our donors.</Typography>
+                            <Typography style={styles.h5} variant="h5">Our 3D Model:</Typography>
+                            <Typography variant='body1' sx={{ mt: 2 }}>Our 3D Model forms the backbone of our approach. Through this comprehensive approach, we transform e-waste into educational tools , thereby providing impact reports to our donors.</Typography>
                         </Grid>
                         {steps.map((step) => (
                             <Grid item xs={12} sm={12} md={4} key={step.number}>
@@ -26,7 +26,7 @@ const TimeLine = () => {
                                                 <StepDescription>
                                                     <Typography component="span" sx={{ fontWeight: 'bold', fontWeight: 700 }}>
                                                         {boldText}:
-                                                      </Typography>
+                                                    </Typography>
                                                     {normalText}
                                                 </StepDescription>
                                             </li>
@@ -50,14 +50,14 @@ const TimeLine = () => {
                         }}>
                             <Grid Container marginTop="48px">
                                 <Grid item xs={12} md={6} sm={12}>
-                                <Typography style={styles.h5} variant="">Our 3D Model:</Typography>
-                                <Typography >Our 3D Model forms the backbone of our approach. Through this comprehensive approach, 
-                                we transform e-waste into educational tools , thereby providing impact reports to our donors.</Typography>
+                                    <Typography style={styles.h5} variant="">Our 3D Model:</Typography>
+                                    <Typography variant='body1' sx={{ mt: 2 }}>Our 3D Model forms the backbone of our approach. Through this comprehensive approach,
+                                        we transform e-waste into educational tools , thereby providing impact reports to our donors.</Typography>
 
                                 </Grid>
                             </Grid>
-                             
-                             
+
+
                             <Grid container spacing={3}>
                                 <Grid item xs={12} md={3} sm={12} >
                                 </Grid>
@@ -90,7 +90,7 @@ const TimeLine = () => {
 
                             <Grid container spacing={3}>
                                 <Grid item md={4} sm={2}></Grid>
-                                <Grid item xs={12} md={6} sm={10}  sx={{ position: "relative", top: "70px",  }}>
+                                <Grid item xs={12} md={6} sm={10} sx={{ position: "relative", top: "70px", }}>
                                     <Box sx={gridItemStyle}>
                                         <Box sx={innerBoxStyle}>
                                             <StepTitle>
@@ -142,7 +142,7 @@ const TimeLine = () => {
                                     </Box>
                                 </Grid>
                                 <Grid item md={5} sm={4}></Grid>
-                                
+
                             </Grid>
                         </Box>
                     </Grid>

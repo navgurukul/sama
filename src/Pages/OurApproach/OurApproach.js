@@ -6,12 +6,12 @@ import TimeLine from "./TimeLine/index.js";
 const OurApproach = () => {
     return (
         <>
-            <Box style={container}>
+            <Box style={container} >
                 <Container maxWidth="lg" style={lgContainer} >
                     <Grid container my={8} >
-                        <Grid item xs={12} md={7}  >
+                        <Grid item xs={12} md={7} sx={{p:{sm:"20px",xs:"20px",md:"20px",lg:"1px"}}} >
                             <Typography sx={styleh5} variant="h5">Our Rationale</Typography>
-                            <Typography style={Modelbody1} variant="body1" sx={{ mt: 2 }}>
+                            <Typography style={Modelbody1} variant="body1" sx={{ mt: 1 }}>
                                 We strongly believe that investing in women's digital education can reap
                                 multifold benefits for society as a whole. As we rapidly advance in technology,
                                 it's crucial to ensure that underserved women aren't left behind. Sama addresses
@@ -19,16 +19,15 @@ const OurApproach = () => {
                             </Typography>
                         </Grid>
                     </Grid>
-
-                    <Grid container color="#fff" >
+                    <Grid container color="#fff"  sx={{p:{sm:"20px",xs:"20px",md:"20px",lg:"1px" ,position:"relative",bottom:"30px"}}}>
                         {data.map((section, sectionIndex) => (
                             <>
                                 <Typography variant="h6"  >
                                     {section.title}
                                 </Typography>
-                                <Grid container  sx={{ mt: 4 }}>
+                                <Grid container  sx={{ mt: 1}}>
                                     {section.statistics.map((stat, statIndex) => (
-                                        <Grid item xs={12} md={4} lg={4} key={statIndex} style={statItem}>
+                                        <Grid item xs={12} md={4} lg={4} key={statIndex} style={statItem} sx={{mt:2}}>
                                             <Box display="flex" alignItems="center" >
                                                 <img src={stat.moneyLogo} alt="money logo" style={statLogo} />
                                                 <Typography style={styles.h4} component="span" >
