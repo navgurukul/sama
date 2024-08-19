@@ -13,7 +13,10 @@ import {
   FormHelperText,
   FormControl,
   Container,
+  Snackbar, // Import Snackbar
+  Alert,
 } from "@mui/material";
+import "./Donate.css";
 
 function Donation() {
   const [formData, setFormData] = useState({
@@ -33,6 +36,7 @@ function Donation() {
 
   const [errors, setErrors] = useState({});
   const [otherText, setOtherText] = useState("");
+  const [successMessage, setSuccessMessage] = useState(false);
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -106,7 +110,7 @@ function Donation() {
           ? formData.donateAmount
           : "N/A",
       hearAbout:
-        formData.hearAbout === "other" ? otherText : formData.hearAbout, // Use 'otherText' if 'Other' is selected
+        formData.hearAbout === "other" ? otherText : formData.hearAbout,
     };
     const validationErrors = validate();
 
@@ -125,10 +129,10 @@ function Donation() {
             mode: "no-cors",
           }
         );
-        console.log("Response--------", response);
+        // console.log("Response--------", response);
 
         console.log("Form Data Submitted:", formData);
-        // Optionally show a success message or reset the form
+
         setFormData({
           firstName: "",
           lastName: "",
@@ -144,6 +148,10 @@ function Donation() {
           message: "",
         });
         setOtherText("");
+        setSuccessMessage(true);
+        setTimeout(() => {
+          setSuccessMessage(false);
+        }, 5000);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -151,75 +159,88 @@ function Donation() {
   };
 
   return (
-    <Box sx={{ backgroundColor: "#fef5f2", minHeight: "100vh" }}>
-      {/* Section 1: Support Sama's Mission */}
-      <Box sx={{ padding: "0", backgroundColor: "#f5f5f5", height: "430px" }}>
-        <Container maxWidth="lg">
-          <Typography
-            variant="h6"
-            sx={{ marginBottom: "10px", color: "#4A4A4A", fontSize: "24px" }}
-          >
-            Support Sama's Mission
-          </Typography>
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={4}>
-              <Box>
-                <img
-                  src={require("./assets/Group 22 (1).svg").default}
-                  alt="Corporate Laptop Donation"
-                />
-                <Typography variant="subtitle1" sx={{ margin: "16px 0px" }}>
-                  Corporate Laptop Donation
-                </Typography>
-                <Typography variant="body1">
-                  Transform your end-of-life laptops into powerful tools for
-                  education and empowerment.
-                </Typography>
-              </Box>
+    <>
+      <Container maxWidth="xl" style={{ backgroundColor: "#E0E0E0" }}>
+        <Box sx={{ padding: "10", backgroundColor: "#E0E0E0" }}>
+          <Container maxWidth="lg" sx={{ paddingBottom: "4%" }}>
+            <Typography
+              variant="h6"
+              sx={{ marginBottom: "10px", color: "#4A4A4A", fontSize: "24px" }}
+            >
+              Support Sama's Mission
+            </Typography>
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={4}>
+                <Box>
+                  <img
+                    src={require("./assets/Group 22 (1).svg").default}
+                    alt="Corporate Laptop Donation"
+                  />
+                  <Typography
+                    className="customSubtitle1"
+                    variant="subtitle1"
+                    sx={{ margin: "14px 0px" }}
+                  >
+                    Corporate Laptop Donation
+                  </Typography>
+                  <Typography variant="body1">
+                    Transform your end-of-life laptops into powerful tools for
+                    education and empowerment.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Box>
+                  <img
+                    src={require("./assets/Group 22.svg").default}
+                    alt="Corporate Impact Funding"
+                  />
+                  <Typography
+                    className="customSubtitle1"
+                    variant="subtitle1"
+                    sx={{ margin: "14px 0px" }}
+                  >
+                    Corporate Impact Funding
+                  </Typography>
+                  <Typography variant="body1">
+                    Partner with us to scale our impact and bridge the digital
+                    divide for underserved girls and women.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Box>
+                  <img
+                    src={require("./assets/Group 23.svg").default}
+                    alt="Individual Contribution"
+                  />
+                  <Typography
+                    className="customSubtitle1"
+                    variant="subtitle1"
+                    sx={{ margin: "14px 0px" }}
+                  >
+                    Individual Contribution
+                  </Typography>
+                  <Typography variant="body1">
+                    Join our mission to empower girls and women through digital
+                    access and education.
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={4}>
-              <Box>
-                <img
-                  src={require("./assets/Group 22.svg").default}
-                  alt="Corporate Impact Funding"
-                />
-                <Typography variant="subtitle1" sx={{ margin: "16px 0px" }}>
-                  Corporate Impact Funding
-                </Typography>
-                <Typography variant="body1">
-                  Partner with us to scale our impact and bridge the digital
-                  divide for underserved girls and women.
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Box>
-                <img
-                  src={require("./assets/Group 23.svg").default}
-                  alt="Individual Contribution"
-                />
-                <Typography variant="subtitle1" sx={{ margin: "16px 0px" }}>
-                  Individual Contribution
-                </Typography>
-                <Typography variant="body1">
-                  Join our mission to empower girls and women through digital
-                  access and education.
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
+          </Container>
+        </Box>
+      </Container>
 
-      {/* Section 2: Your Details */}
-      <Box sx={{ marginTop: "10px" }}>
-        <Container maxWidth="lg">
-          <Typography variant="h5">Your Details</Typography>
-
+      <Container maxWidth="lg" sx={{ pt: "70px" }}>
+        <Typography variant="h5">Your Details</Typography>
+        <Box sx={{ pt: "32px" }}>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
-                <InputLabel sx={{ marginBottom: "5px",color:"black" }}>First Name</InputLabel>
+                <InputLabel sx={{ marginBottom: "5px", color: "black" }}>
+                  First Name
+                </InputLabel>
                 <TextField
                   fullWidth
                   required
@@ -234,7 +255,9 @@ function Donation() {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <InputLabel sx={{ marginBottom: "5px",color:"black" }}>Last Name</InputLabel>
+                <InputLabel sx={{ marginBottom: "5px", color: "black" }}>
+                  Last Name
+                </InputLabel>
                 <TextField
                   fullWidth
                   required
@@ -249,7 +272,7 @@ function Donation() {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <InputLabel sx={{ marginBottom: "5px",color:"black" }}>
+                <InputLabel sx={{ marginBottom: "5px", color: "black" }}>
                   Email Address
                 </InputLabel>
                 <TextField
@@ -267,7 +290,7 @@ function Donation() {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <InputLabel sx={{ marginBottom: "5px",color:"black" }}>
+                <InputLabel sx={{ marginBottom: "5px", color: "black" }}>
                   Phone Number
                 </InputLabel>
                 <TextField
@@ -290,7 +313,11 @@ function Donation() {
                   component="fieldset"
                   error={!!errors.contributionType}
                 >
-                  <Typography variant="subtitle1" sx={{ marginBottom: "10px" }}>
+                  <Typography
+                    className="customSubtitle1"
+                    variant="subtitle1"
+                    sx={{ marginBottom: "10px" }}
+                  >
                     I am contributing as:
                   </Typography>
                   <RadioGroup
@@ -337,7 +364,11 @@ function Donation() {
 
               <Grid item xs={12}>
                 <FormControl component="fieldset" error={!!errors.donationType}>
-                  <Typography variant="subtitle1" sx={{ marginBottom: "10px" }}>
+                  <Typography
+                    className="customSubtitle1"
+                    variant="subtitle1"
+                    sx={{ marginBottom: "10px" }}
+                  >
                     I would like to:
                   </Typography>
                   <RadioGroup
@@ -445,7 +476,11 @@ function Donation() {
 
               <Grid item xs={12}>
                 <FormControl component="fieldset" error={!!errors.hearAbout}>
-                  <Typography variant="subtitle1"  sx={{ marginBottom: "10px" }}>
+                  <Typography
+                    className="customSubtitle1"
+                    variant="subtitle1"
+                    sx={{ marginBottom: "10px" }}
+                  >
                     How did you hear about Sama?
                   </Typography>
                   <RadioGroup
@@ -534,21 +569,30 @@ function Donation() {
                 />
               </Grid>
 
-              <Grid item xs={12}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  // sx={{ backgroundColor: "#F38872", color: "#fff" }}
-                >
+            
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  paddingBottom: "4%",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <Button type="submit" variant="contained" color="primary">
                   Submit
                 </Button>
+                {successMessage && (
+                  <Typography variant="h6" sx={{ marginLeft: "22px", color: "green" }}>
+                    Your donation details have been successfully submitted.
+                  </Typography>
+                )}
               </Grid>
             </Grid>
           </form>
-        </Container>
-      </Box>
-    </Box>
+        </Box>
+      </Container>
+    </>
   );
 }
 

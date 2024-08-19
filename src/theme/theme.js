@@ -73,7 +73,7 @@ theme = createTheme(theme, {
       lineHeight: "130%",
     },
     subtitle1: {
-      fontSize: "24px",
+      fontSize: "18px ",
       lineHeight: "170%",
       fontStyle: "normal",
       fontWeight: 400,
@@ -140,6 +140,9 @@ theme.components = {
       },
     },
   },
+
+  
+
 
   
 };
