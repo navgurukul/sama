@@ -18,8 +18,8 @@ function DashboardPage() {
         <Container maxWidth="xl">
           <Grid container spacing={2} sx={{ mt: 1 }} style={{ marginLeft: "1px" }}>
             <Grid item xs={12} md={6} sm={12}>
-              <Typography style={styles.DigitalTitle} sx={{ width: { sm: "100%" } }}>Digital Hardware Tracker</Typography>
-              <Typography className="body1" style={styles.body1} sx={{ mt: 1 }}>
+              <Typography variant='h5' sx={{ width: { sm: "100%" } }}>Digital Hardware Tracker</Typography>
+              <Typography  variant='body1' sx={{ mt: 1 }}>
                 Monitor your e-waste management efforts with ease
               </Typography>
             </Grid>
@@ -68,7 +68,6 @@ function DashboardPage() {
                     sx={{
                       width: { xs: '100%', sm: '100%', lg: "60%" },
                       position: "relative",
-
                       right: { lg: "70px" },
                       padding: '8px, 24px, 8px, 24px',
                       backgroundColor: activeTab === 1 ? 'rgba(92, 120, 90, 1)' : 'transparent',

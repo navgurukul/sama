@@ -1,6 +1,5 @@
-
 import { Container, Grid, Box, Typography } from "@mui/material";
-import { container, lgContainer, h6, statItem, h4, statLogo, subtitle1, styleh5, Modelbody1, styles } from "./style.js";
+import { container, lgContainer } from "./style.js";
 import { data } from "./data.js";
 import TimeLine from "./TimeLine/index.js";
 const OurApproach = () => {
@@ -9,9 +8,9 @@ const OurApproach = () => {
             <Box style={container} >
                 <Container maxWidth="lg" style={lgContainer} >
                     <Grid container my={8} >
-                        <Grid item xs={12} md={7} sx={{p:{sm:"20px",xs:"20px",md:"20px",lg:"1px"}}} >
-                            <Typography sx={styleh5} variant="h5">Our Rationale</Typography>
-                            <Typography style={Modelbody1} variant="body1" sx={{ mt: 1 }}>
+                        <Grid item xs={12} md={7} sx={{ p: { sm: "20px", xs: "20px", md: "20px", lg: "1px" } }} >
+                            <Typography style={{ color: "white" }} variant="h5">Our Rationale</Typography>
+                            <Typography variant="body1" sx={{ mt: 1 }} style={{ color: "white" }}>
                                 We strongly believe that investing in women's digital education can reap
                                 multifold benefits for society as a whole. As we rapidly advance in technology,
                                 it's crucial to ensure that underserved women aren't left behind. Sama addresses
@@ -19,26 +18,25 @@ const OurApproach = () => {
                             </Typography>
                         </Grid>
                     </Grid>
-                    <Grid container color="#fff"  sx={{p:{sm:"20px",xs:"20px",md:"20px",lg:"1px" ,position:"relative",bottom:"30px"}}}>
+                    <Grid container color="#fff" sx={{ p: { sm: "20px", xs: "20px", md: "20px", lg: "1px", position: "relative", bottom: "30px" } }}>
                         {data.map((section, sectionIndex) => (
                             <>
                                 <Typography variant="h6"  >
                                     {section.title}
                                 </Typography>
-                                <Grid container  sx={{ mt: 1}}>
+                                <Grid container >
                                     {section.statistics.map((stat, statIndex) => (
-                                        <Grid item xs={12} md={4} lg={4} key={statIndex} style={statItem} sx={{mt:2}}>
+                                        <Grid item xs={12} md={4} lg={4} key={statIndex} sx={{ mt: 2 }}>
                                             <Box display="flex" alignItems="center" >
-                                                <img src={stat.moneyLogo} alt="money logo" style={statLogo} />
-                                                <Typography style={styles.h4} component="span" >
+                                                <img src={stat.moneyLogo} alt="money logo" />
+                                                <Typography variant="h4" sx={{ ml: 3 }} component="span" >
                                                     {stat.value}
                                                 </Typography>
                                             </Box>
-                                            <Typography variant="body1" style={subtitle1} sx={{ mt: 2,width:{md:"305px"} }}>
+                                            <Typography variant="subtitle1" sx={{ mt: 2, width: { md: "305px" } }}>
                                                 {stat.description}
                                             </Typography>
                                         </Grid>
-
                                     ))}
                                 </Grid>
                             </>
@@ -46,7 +44,7 @@ const OurApproach = () => {
                     </Grid>
                 </Container>
             </Box>
-            <TimeLine/>
+            <TimeLine />
         </>
     );
 };
