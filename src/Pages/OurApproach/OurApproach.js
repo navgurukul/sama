@@ -8,9 +8,9 @@ const OurApproach = () => {
             <Box style={container} >
                 <Container maxWidth="xl" style={lgContainer} >
                     <Grid container my={8} >
-                        <Grid item xs={12} md={7} sx={{ p: { sm: "20px", xs: "20px", md: "20px", lg: "1px" } }} >
+                        <Grid item xs={12} md={7} sx={{ p: { sm: "20px", xs: "20px", md: "20px", lg: "10px" } }} >
                             <Typography style={{ color: "white" }} variant="h5">Our Rationale</Typography>
-                            <Typography variant="body1" sx={{ mt: 1 }} style={{ color: "white" }}>
+                            <Typography variant="body1" sx={{ mt: 1,width:{lg:"636px"} }} style={{ color: "white" }}>
                                 We strongly believe that investing in women's digital education can reap
                                 multifold benefits for society as a whole. As we rapidly advance in technology,
                                 it's crucial to ensure that underserved women aren't left behind. Sama addresses
@@ -18,7 +18,7 @@ const OurApproach = () => {
                             </Typography>
                         </Grid>
                     </Grid>
-                    <Grid container color="#fff" sx={{ p: { sm: "20px", xs: "20px", md: "20px", lg: "1px", position: "relative", bottom: "30px" } }}>
+                    <Grid container color="#fff" sx={{ p: { sm: "20px", xs: "20px", md: "20px", lg: "20px", position: "relative", bottom: "30px" } }}>
                         {data.map((section, sectionIndex) => (
                             <>
                                 <Typography variant="h6"  >

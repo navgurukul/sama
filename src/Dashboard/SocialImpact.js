@@ -124,7 +124,7 @@ const SocialImpactPage = () => {
                         <StyledCard >
                             <CardContent>
                                 <Typography variant="subtitle1" >{item.title}</Typography>
-                                <Typography variant="h5" color="primary" sx={{ mt: 1 }}>{item.number}</Typography>
+                                <Typography variant="h5"  sx={{ mt: 1 ,color:"rgba(69, 55, 34, 1)"}}>{item.number}</Typography>
                                 <Typography variant='body2' sx={{ width: { lg: "200px" }, mt: 2 }}>{item.description}</Typography>
                             </CardContent>
                         </StyledCard>
