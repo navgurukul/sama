@@ -31,6 +31,9 @@ theme = createTheme(theme, {
     dark: {
       main: "#4A4A4A",
     },
+    white: {
+      main: "#FFF",
+    },
     grey: {
       main: "#E0E1E0",
       med: "#BDBDBD",
@@ -41,17 +44,19 @@ theme = createTheme(theme, {
     fontFamily: "Raleway",
     fontSize: 18,
 
+
+
     h4: {
       fontSize: "48px",
-      lineHeight: "130px",
-      fontFamily: "Montserrat",
+      lineHeight: "130%",
+      fontFamily: "Montserrat, sans-serif",
       fontStyle: "normal",
       fontWeight: 700,
     },
     h5: {
       fontSize: "32px",
-      lineHeight: "130px",
-      fontFamily: "Montserrat",
+      lineHeight: "130%",
+      fontFamily: "Montserrat, sans-serif",
       fontStyle: "normal",
       fontWeight: 700,
     },
@@ -59,18 +64,19 @@ theme = createTheme(theme, {
       fontSize: "24px",
       lineHeight: "130px",
       fontFamily: "Montserrat",
-      fontWeight: 700,
-      
-    },
-    captions: {
-      fontSize: "12px",
-      lineHeight: "130px",
-    },
-    subtitle1: {
-      fontSize: "18px",
-      lineHeight: "170%",
       fontStyle: "normal",
       fontWeight: 700,
+    },
+    
+    captions: {
+      fontSize: "12px",
+      lineHeight: "130%",
+    },
+    subtitle1: {
+      fontSize: "24px",
+      lineHeight: "170%",
+      fontStyle: "normal",
+      fontWeight: 400,
       fontFamily: "Raleway",
     },
     subtitle2: {
@@ -95,14 +101,23 @@ theme = createTheme(theme, {
     },
 
     button: {
-      fontSize: "1.125rem",
       fontSize: "18px",
-      lineHeight: "170px",
+      lineHeight: "170%",
       textTransform: "none",
+      fontFamily: "Raleway",
+      fontWeight: 700,
     },
   },
 });
 theme.components = {
+  MuiInputBase: {
+    styleOverrides: {
+      root: {
+        backgroundColor: "#FFFFFF",  
+        fontFamily: "Montserrat, sans-serif"
+      },
+    },
+  },
   MuiCardMedia: {
     defaultProps: {
       disableRipple: true,
@@ -114,8 +129,14 @@ theme.components = {
   MuiButton: {
     styleOverrides: {
       root: {
-        borderRadius: "8px",
+        borderRadius: "100px",
         height: "48px",
+        
+        "&:hover": {
+      backgroundColor: "#5C785A",
+      color: '#FFFFFF',
+    },
+
       },
     },
   },
