@@ -82,6 +82,10 @@ theme = createTheme(theme, {
     subtitle2: {
       fontSize: "14px",
       lineHeight: "170%",
+      fontStyle: "normal",
+      fontWeight: 700,
+      fontFamily: "Raleway",
+
     },
     body1: {
       fontSize: "18px",
@@ -92,7 +96,8 @@ theme = createTheme(theme, {
     },
     body2: {
       fontSize: "12px",
-      lineHeight: "170%",
+      lineHeight: "170px",
+
     },
 
     button: {
