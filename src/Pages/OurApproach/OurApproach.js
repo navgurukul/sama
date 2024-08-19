@@ -6,7 +6,7 @@ const OurApproach = () => {
     return (
         <>
             <Box style={container} >
-                <Container maxWidth="lg" style={lgContainer} >
+                <Container maxWidth="xl" style={lgContainer} >
                     <Grid container my={8} >
                         <Grid item xs={12} md={7} sx={{ p: { sm: "20px", xs: "20px", md: "20px", lg: "1px" } }} >
                             <Typography style={{ color: "white" }} variant="h5">Our Rationale</Typography>
@@ -24,16 +24,16 @@ const OurApproach = () => {
                                 <Typography variant="h6"  >
                                     {section.title}
                                 </Typography>
-                                <Grid container >
+                                <Grid container spacing={3}>
                                     {section.statistics.map((stat, statIndex) => (
-                                        <Grid item xs={12} md={4} lg={4} key={statIndex} sx={{ mt: 2 }}>
+                                        <Grid item xs={12} md={4} lg={4} key={statIndex} sx={{ mt: 2}}>
                                             <Box display="flex" alignItems="center" >
                                                 <img src={stat.moneyLogo} alt="money logo" />
                                                 <Typography variant="h4" sx={{ ml: 3 }} component="span" >
                                                     {stat.value}
                                                 </Typography>
                                             </Box>
-                                            <Typography variant="subtitle1" sx={{ mt: 2, width: { md: "305px" } }}>
+                                            <Typography variant="subtitle1" sx={{ mt: 2, width: { lg: "400px" } }}>
                                                 {stat.description}
                                             </Typography>
                                         </Grid>

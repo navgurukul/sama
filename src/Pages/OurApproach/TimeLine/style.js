@@ -1,15 +1,6 @@
 import { styled } from '@mui/material/styles';
-import { Typography, Box } from '@mui/material';
-// import bgImage from "./assets/Group 26.svg";
-import { border } from '@mui/system';
-export const StepCard = styled(Box)({
-    padding: 16,
-    backgroundColor: '#ffffff',
-    border: '1px solid #ddd',
-    borderRadius: 8,
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-});
-
+import { Typography} from '@mui/material';
+import bgImage from "./assets/Group.svg"
 export const StepNumber = styled(Typography)({
     fontSize: "40px",
     fontWeight: 'bold',
@@ -21,24 +12,6 @@ export const StepNumber = styled(Typography)({
     height: "60px",
     textAlign: "center",
     background: "rgba(92, 120, 90, 1)",
-});
-
-export const StepTitle = styled(Typography)({
-    fontSize: "24px",
-    fontWeight: 'bold',
-    fontFamily: "Montserrat",
-    lineHeight: "31.6px",
-    color: "var(--primary, #5C785A)",
-});
-
-export const StepDescription = styled(Typography)({
-    marginBottom: 8,
-    color: "var(--text, #4A4A4A)",
-    fontSize: "18px",
-    fontStyle: "normal",
-    fontWeight: 400,
-    fontFamily: "Raleway",
-    lineHeight: "20.6px",
 });
 
 export const Item = {
@@ -66,7 +39,6 @@ export const boxStyle = {
     position: 'relative',
     width: { md: '900%', lg: '100%' },
     height: { xs: 'auto', sm: '900px', md: '1000px', lg: '1000px' },
-    // backgroundImage: `url(${bgImage})`,
     backgroundSize: 'cover',
     backgroundPosition: 'right',
     backgroundRepeat: 'no-repeat',
@@ -97,22 +69,6 @@ export const innerBoxStyle = {
     right: "30px"
 };
 
-export const typographyTitleStyle = {
-    fontFamily: 'Montserrat',
-    fontSize: { xs: '20px', sm: '22px', md: '24px' },
-    fontWeight: 700,
-    lineHeight: '1.3',
-    color: "#5C785A",
-    mb: 2,
-
-};
-export const h6 = {
-    fontFamily: "Montserrat",
-    fontWeight: 700,
-    fontSize: "24px",
-    lineHeight: "31.6px"
-}
-
 export const styles = {
     h5: {
         fontFamily: "Montserrat",
@@ -120,6 +76,7 @@ export const styles = {
         fontWeight: 700,
         lineHeight: "41.6px",
         color: "rgba(92, 120, 90, 1)",
+        marginTop: "40px"
 
     },
     body1: {
@@ -128,6 +85,33 @@ export const styles = {
         fontWeight: 400,
         color: "rgba(74, 74, 74, 1)",
         lineHeight: "30.6px",
+    },
+    h6: {
+        color: 'var(--primary, #5C785A)',
+        fontFamily: 'Montserrat',
+        fontSize: '24px',
+        fontStyle: 'normal',
+        fontWeight: 700,
+        lineHeight: '130%'
+    },
+    gridContainer: {
+        position: "relative",
+        top: "30px",
+        left: "20px"
+
+    },
+    gridContainerSecond: {
+        position: "relative",
+        top: "70px"
+    },
+    BgImg: {
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'contain',
+        backgroundPosition: 'right',
+        backgroundRepeat: 'no-repeat',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'left',
     }
 
 }
