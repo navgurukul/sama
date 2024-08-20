@@ -62,7 +62,7 @@ theme = createTheme(theme, {
     },
     h6: {
       fontSize: "24px",
-      lineHeight: "130px",
+      lineHeight: "130%",
       fontFamily: "Montserrat",
       fontStyle: "normal",
       fontWeight: 700,
@@ -96,7 +96,7 @@ theme = createTheme(theme, {
     },
     body2: {
       fontSize: "12px",
-      lineHeight: "170px",
+      lineHeight: "170%",
 
     },
 

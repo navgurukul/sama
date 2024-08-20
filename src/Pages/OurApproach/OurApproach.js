@@ -6,9 +6,9 @@ import TimeLine from "./TimeLine/index.js";
 const OurApproach = () => {
     return (
         <>
-            <Box style={container}>
+            <Box style={container} py={5}>
                 <Container maxWidth="lg" style={lgContainer} >
-                    <Grid container my={8} >
+                    <Grid container my={5} >
                         <Grid item xs={12} md={7}  >
                             <Typography sx={styleh5} variant="h5">Our Rationale</Typography>
                             <Typography style={Modelbody1} variant="body1" sx={{ mt: 2 }}>
@@ -23,7 +23,7 @@ const OurApproach = () => {
                     <Grid container color="#fff" >
                         {data.map((section, sectionIndex) => (
                             <>
-                                <Typography variant="h6"  >
+                                <Typography variant="h6" sx={{ mt: 4 }} >
                                     {section.title}
                                 </Typography>
                                 <Grid container  sx={{ mt: 4 }}>

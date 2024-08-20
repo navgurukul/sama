@@ -1,3 +1,18 @@
+.hero-text{
+  font-size: 64px !important;
+  font-weight: 700 !important;
+  line-height: 130% !important;
+  color: var(--white, #FFF);
+  font-family: Montserrat;
+
+}
+.hero-text-large{
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  line-height: 130% !important;
+  color: var(--white, #FFF);
+  font-family: Montserrat;
+}
 .carousel-container {
   overflow: hidden;
   width: 100%;
