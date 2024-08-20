@@ -6,8 +6,13 @@ import TestimonialSlider from "./TestimonialSlider";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LaptopDonor from "./LaptopDonor";
 import ContactForm from "./ContactForm";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { breakpoints } from "../../theme/constant";
+
 function Home() {
   const [impact, setImpact] = useState("environmental");
+  const isActive = useMediaQuery("(max-width:600px)");
+  const isActiveIpad = useMediaQuery("(max-width:1300px)");
   
 
   return (
@@ -16,7 +21,6 @@ function Home() {
       
       <Box
       sx={{
-        height: "75vh", // Adjusted height
         backgroundImage: `
           linear-gradient(
             to bottom right, 
@@ -34,26 +38,22 @@ function Home() {
         alignItems: "center",
         textAlign: "center",
       }}
+      paddingY={isActive ? 5 : 28}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" >
       
         <Typography 
         align="center"
-        style={{fontWeight:700,
-           fontSize: "64px", 
-           lineHeight: "130%", 
-           fontFamily: "Montserrat,sans-serif", 
-           color:"#FFF",
-          //  width:"60%"
-          }}
+        variant="h3"
+      className={!isActive?"hero-text":"hero-text-large"}
         >
           Where yesterday's devices power tomorrow's innovators
         </Typography>
-        <Typography variant="body1" margin="0 8px">
+        <Typography variant="body1" margin="0 8px" style={{color:"#FFF"}}>
         Bridging Generations Through Repurposed Devices
         </Typography>
         <Button variant="contained" color="primary" href="/donate"
-         sx={{ mt: 5,borderRadius:"100px", padding:"16px",}}>
+         sx={{ mt: 6,borderRadius:"100px", padding:"16px",}}>
           Donate Now
         </Button>
 
@@ -82,7 +82,7 @@ function Home() {
             the transition towards a greener and inclusive future.
 
             </Typography>
-            <Button variant="text" href="" color="primary">
+            <Button variant="text" href="/about" color="primary">
               <Typography variant="subtitle1">
               Know more 
               </Typography>

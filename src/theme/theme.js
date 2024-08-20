@@ -96,7 +96,7 @@ theme = createTheme(theme, {
     },
     body2: {
       fontSize: "12px",
-      lineHeight: "170px",
+      lineHeight: "170%",
 
     },
 
