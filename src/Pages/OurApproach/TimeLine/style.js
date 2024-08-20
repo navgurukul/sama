@@ -10,17 +10,33 @@ export const StepCard = styled(Box)({
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
 });
 
+// export const StepNumber = styled(Typography)({
+//     fontSize: "40px",
+//     fontWeight: 'bold',
+//     marginBottom: 8,
+//     color: "white",
+//     border: "7px solid white",
+//     borderRadius: "100px",
+//     width: "60px",
+//     height: "60px",
+//     background: "rgba(92, 120, 90, 1)",
+// });
+
+
 export const StepNumber = styled(Typography)({
     fontSize: "40px",
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 5,
     color: "white",
+    marginTop:"20px",
     border: "7px solid white",
     borderRadius: "100px",
     width: "60px",
     height: "60px",
-    textAlign: "center",
     background: "rgba(92, 120, 90, 1)",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
 });
 
 export const StepTitle = styled(Typography)({
