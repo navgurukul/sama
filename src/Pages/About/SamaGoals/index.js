@@ -18,7 +18,7 @@ const goals = [
 const SamaGoals = () => {
     return (
         <Box sx={samaGoalsStyles.boxContainer}>
-            <Container maxWidth="lg" sx={samaGoalsStyles.container}>
+            <Container maxWidth="lg" sx={samaGoalsStyles.container} >
                 <Typography variant="h5" sx={samaGoalsStyles.titleText}>
                     <b>This is how Sama was born,</b> with two simple but audacious <b>goals:</b>
                 </Typography>
@@ -28,7 +28,7 @@ const SamaGoals = () => {
                     {goals.map((goal, index) => (
                         <Grid item xs={12} sm={6} md={6} key={index}>
                             <Box
-                                sx={{ padding: { xs: '0 10px', sm: '0 20px', md:"10px"} }}
+                                sx={{ padding: { xs: '0 10px', sm: '0 20px', md:"10px 10px 0px 10px"} }}
                             >
                                 <img
                                     src={goal.icon}

@@ -1,4 +1,4 @@
-import { border, borderBottom, padding, positions } from "@mui/system";
+import { border, borderBottom, margin, padding, positions } from "@mui/system";
 
 const samaGoalsStyles = {
     boxContainer: {
@@ -35,7 +35,7 @@ const samaGoalsStyles = {
             fontStyle: 'normal',
             fontWeight: 700,
             lineHeight: '170%',
-            padding: { xs: "10px" },
+            padding: { xs: "0px 10px 0px 10px" },
         },
     },
 };

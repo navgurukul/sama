@@ -25,7 +25,7 @@ const Navbar = () => {
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
   const menuItems = [
-    { text: "ABOUT", href: "/about" },
+    { text: "About Us", href: "/about" },
     { text: "Our Approach", href: "/our-approach" },
   ];
 
@@ -75,7 +75,7 @@ const Navbar = () => {
                 key={index}
                 onClick={() => handleTabClick(item.href)}
               >
-                <Typography variant="body1">{item.text}</Typography>
+                <Typography variant="body1" sx={{ textTransform: "none" }}>{item.text}</Typography>
               </MuiLink>
             ))}
           </Box>

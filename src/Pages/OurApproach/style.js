@@ -5,7 +5,7 @@ export const container = {
 };
 
 export const lgContainer = {
-    padding: '16px 0px',
+    padding: '32px 0px 64px 0px',
 };
 export const sectionTitle ={
     color: "white"
