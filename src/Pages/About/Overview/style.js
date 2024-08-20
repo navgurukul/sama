@@ -1,11 +1,11 @@
 import { styled } from '@mui/material/styles';
 export const ContainerStyle = {
-    marginTop: { md: '80px', xs: "14px" },
+    marginTop: { md: '80px', xs: "14px",lg:"80px" },
     width: "100%",
 };
 
 export const PaperStyle = {
-    padding: { xs: "23px", md: "24px", sm: "20px",lg:"30px" },
+    padding: { xs: "23px", md: "24px", sm: "20px" },
     borderRadius: '16px',
     margin: { xs: '10 auto', md: '0 0 0 0px', lg: '0 0 0 92px' },
     zIndex: 8,

@@ -17,7 +17,13 @@ const goals = [
 
 const SamaGoals = () => {
     return (
-        <Box sx={{ mt: 20, background: "red", paddingBottom: "80px", paddingTop: "80px", background: "var(--gray-light, #E0E0E0)" }}>
+        <Box sx={{
+            mt:15,
+            paddingBottom: "80px",
+            paddingTop: "80px",
+            background: "var(--gray-light, #E0E0E0)"
+        }}
+        >
             <Container maxWidth="lg" sx={{ mt: 3 }}>
                 <Typography variant="h5" >
                     <b>This is how Sama was born,</b> <span style={{ fontWeight: 500 }}>with two simple but audacious</span> <b>goals:</b>
@@ -29,7 +35,13 @@ const SamaGoals = () => {
                     {goals.map((goal, index) => (
                         <Grid item xs={12} sm={6} md={6} key={index}>
                             <Box
-                                sx={{ padding: { xs: '0 10px', sm: '0 20px', md: "10px" } }}
+                                sx={{
+                                    padding: {
+                                        xs: '0 10px',
+                                        sm: '0 20px',
+                                        md: "10px"
+                                    }
+                                }}
                             >
                                 <img
                                     src={goal.icon}
@@ -37,16 +49,8 @@ const SamaGoals = () => {
                                     alt="Woman"
                                 />
                                 <Typography
-                                    sx={{
-                                        mt: 3,
-                                        color: 'var(--text, #4A4A4A)',
-                                        fontFamily: 'Raleway, sans-serif',
-                                        fontSize: '18px',
-                                        fontStyle: 'normal',
-                                        fontWeight: 800,
-                                        lineHeight: '170%',
-
-                                    }}
+                                    sx={{ mt: 4 }}
+                                    style={samaGoalsStyles.subtitle}
                                 >
                                     {goal.title}
                                 </Typography>
