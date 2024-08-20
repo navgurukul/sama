@@ -584,8 +584,8 @@ function Donation() {
                   Submit
                 </Button>
                 {successMessage && (
-                  <Typography variant="h6" sx={{ marginLeft: "22px", color: "green" }}>
-                    Your donation details have been successfully submitted.
+                  <Typography className="customSubtitle1" sx={{ marginLeft: "22px", color: "#5C785A" }}>
+                  Your donation details have been successfully submitted,will rech out to you soon.
                   </Typography>
                 )}
               </Grid>
