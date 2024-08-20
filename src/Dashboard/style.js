@@ -2,7 +2,6 @@
 import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-
 export const StyledButton = styled(Button)(({ theme }) => ({
     right: '15px',
     height: '48px',
@@ -42,5 +41,13 @@ export const styles = {
         color: "var(--text, #4A4A4A)",
         fontStyle: "normal",
         fontWeight: 700
+    },
+    socialImpactCard: {
+        position: "relative",
+        bottom: "14px"
+    },
+    subtitle1:{
+        fontSize:"18px",
+        fontWeight:700
     }
 };
