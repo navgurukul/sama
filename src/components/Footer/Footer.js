@@ -2,6 +2,8 @@ import React from "react";
 import { Container, Grid, Typography, Link, Box } from "@mui/material";
 import samalogo from "../../assets/samalogo.png";
 
+
+
 const Footer = () => {
   return (
     <footer>
