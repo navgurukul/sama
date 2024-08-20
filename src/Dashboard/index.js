@@ -1,100 +1,119 @@
-import React, { useState } from "react";
-import { Grid, Tabs, Tab, Typography, Box } from "@mui/material";
+import React, { useState } from 'react';
+import { Grid, Typography, Button, Container } from '@mui/material';
 import SocialImpactPage from "./SocialImpact";
-import EnvironmentalImpact from "./EnvironmentalImpact";
-import {
-  DigitalHardwareText,
-  StyledButton,
-  TypographyButton,
-  styles,
-} from "./style";
-import { Container } from "@mui/system";
+import EnvironmentalImpact from './EnvironmentalImpact';
+import { TypographyButton, styles } from './style';
 
 function DashboardPage() {
   const [activeTab, setActiveTab] = useState(0);
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
+  const handleButtonClick = (tabIndex) => {
+    setActiveTab(tabIndex);
   };
-  return (
-    <Box sx={{ background: "#FFFAF8", pb: 6 ,  }}>
-      <Container maxWidth="xxl">
-        <Container maxWidth="xl">
-          <Grid
-            container
-            spacing={2}
-            sx={{ mt: 1 }}
-            style={{ marginLeft: "1px" }}
-          >
-            <Grid item xs={12} md={6} sm={12}>
-              <DigitalHardwareText mt={4}>
-                Digital Hardware Tracker
-              </DigitalHardwareText>
-              <Typography
-                variant="body1"
-                // style={styles.body2}
-              >
-                Monitor your e-waste management efforts with ease
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid
-            container
-            spacing={2}
-            sx={{ mt: 1 }}
-            style={{ marginLeft: "1px" }}
-          >
-            <Grid item xs={12}>
-              <Tabs
-                value={activeTab}
-                onChange={handleTabChange}
-                indicatorColor="none"
-              >
-                <Tab
-                  label={
-                    activeTab === 0 ? (
-                      <StyledButton>
-                        <TypographyButton>
-                          Environmental Impact
-                        </TypographyButton>
-                      </StyledButton>
-                    ) : (
-                      <Typography className="body1">
-                        Environmental Impact
-                      </Typography>
-                    )
-                  }
-                />
-                <Tab
-                  label={
-                    activeTab === 1 ? (
-                      <StyledButton>
-                        <TypographyButton>Social Impact</TypographyButton>
-                      </StyledButton>
-                    ) : (
-                      <Typography className="body1">Social Impact</Typography>
-                    )
-                  }
-                />
-              </Tabs>
-            </Grid>
-          </Grid>
 
-          <Grid
-            container
-            spacing={2}
-            sx={{
-              mt: 2,
-              maxWidth: "xl", 
-              margin: "0 auto",
-            }}
-          >
-            <Grid item xs={12}>
-              {activeTab === 0 ? <EnvironmentalImpact /> : <SocialImpactPage />}
+  return (
+    <>
+
+      <Container maxWidth="xxl">
+        <Grid container spacing={2} sx={{ mt: 1 }} style={{ marginLeft: "1px" }}>
+          <Grid item xs={12} md={6} sm={12}>
+            <Typography variant='h5' sx={{ width: { sm: "100%" } }}>Digital Hardware Tracker</Typography>
+            <Typography className="body1" sx={{ mt: 2 }}>
+              Monitor your e-waste management efforts with ease
+            </Typography>
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={2} sx={{ ml: 1, mt: 2 }} >
+          <Grid item xs={12} lg={7} md={7} >
+            <Grid container sx={{ mt: 1, width: { lg: "524px" } }} >
+              <Grid item xs={12} lg={6} md={6} sm={12} >
+                <Button
+                  variant="contained" color="primary"
+                  onClick={() => handleButtonClick(0)}
+                  sx={{
+                    width: { xs: '90%', sm: '50%', lg: '100%', md: "100%" },
+                    padding: "8px, 24px, 8px, 24px",
+                    marginRight: { xs: '8px', lg: '4px' },
+                    backgroundColor: activeTab === 0 ? 'rgba(92, 120, 90, 1)' : 'transparent',
+                    color: activeTab === 0 ? 'white' : 'rgba(74, 74, 74, 1)',
+                    border: 'none',
+                    borderRadius: '50px',
+                    textTransform: 'none',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    border: "1px solid rgba(92, 120, 90, 0.8)",
+                    '&:hover': {
+                      backgroundColor: 'rgba(92, 120, 90, 0.8)',
+                      color: 'white',
+                      '&::after': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: '100%',
+                        background: 'linear-gradient(45deg, rgba(92, 120, 90, 0.4), rgba(92, 120, 90, 0.8))',
+                        opacity: 0.4,
+                        transition: 'opacity 0.3s ease-in-out',
+                      },
+                    },
+                  }}
+                >
+                  <TypographyButton style={{ color: activeTab === 0 ? 'white' : 'rgba(74, 74, 74, 1)' }}>Environmental Impact</TypographyButton>
+                </Button>
+              </Grid>
+              <Grid item xs={12} lg={6} md={6} sm={12}>
+                <Button
+                  variant="contained" color="primary"
+                  onClick={() => handleButtonClick(1)}
+                  sx={{
+                    marginTop: { sm: "30px", xs: "10px", lg: "0", md: "0" },
+                    width: { xs: '90%', sm: '50%', lg: "80%", md: "100%" },
+                    ml: { lg: 5 },
+                    position: "relative",
+                    backgroundColor: activeTab === 1 ? 'rgba(92, 120, 90, 1)' : 'transparent',
+                    color: activeTab === 1 ? 'white' : 'black',
+                    border: 'none',
+                    borderRadius: '50px',
+                    textTransform: 'none',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    border: "1px solid rgba(92, 120, 90, 0.8)",
+                    '&:hover': {
+                      backgroundColor: 'rgba(92, 120, 90, 0.8)',
+                      color: 'white',
+                      '&::after': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        background: 'linear-gradient(45deg, rgba(92, 120, 90, 0.4), rgba(92, 120, 90, 0.8))',
+                        opacity: 0.4,
+                        transition: 'opacity 0.3s ease-in-out',
+                      },
+                    },
+                  }}
+                >
+                  <TypographyButton style={{ color: activeTab === 1 ? 'white' : 'rgba(74, 74, 74, 1)' }}>Social Impact</TypographyButton>
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
-        </Container>
-      </Container>
-    </Box>
+        </Grid>
+
+
+        {activeTab === 0 && (
+          <EnvironmentalImpact />
+        )}
+        {activeTab === 1 && (
+          <SocialImpactPage />
+        )}
+      </Container >
+
+    </>
+
   );
 }
 
