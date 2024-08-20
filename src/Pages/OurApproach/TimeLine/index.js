@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { Grid, Box, Container, Typography } from '@mui/material';
 import { StepNumber, StepTitle, StepDescription, container, lgContainer, h6, styles } from './style';
-import { boxStyle, gridItemStyle, innerBoxStyle } from './style';
+import { gridItemStyle, innerBoxStyle } from './style';
 import { steps } from "../data"
 import bgImage from "./assets/Group.svg"
 const TimeLine = () => {
@@ -20,7 +21,7 @@ const TimeLine = () => {
                                     sx={{
                                         display: 'flex',
                                         justifyContent: { xs: 'center', sm: 'center', md: 'flex-start' },
-                                        alignItems: 'center', 
+                                        alignItems: 'center',
                                     }}
                                 >
                                     <StepNumber>

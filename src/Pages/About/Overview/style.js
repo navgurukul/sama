@@ -5,7 +5,7 @@ export const ContainerStyle = {
 };
 
 export const PaperStyle = {
-    padding: { xs: "23px", md: "24px", sm: "20px" },
+    padding: { xs: "23px", md: "24px", sm: "20px",lg:"30px" },
     borderRadius: '16px',
     margin: { xs: '10 auto', md: '0 0 0 0px', lg: '0 0 0 92px' },
     zIndex: 8,

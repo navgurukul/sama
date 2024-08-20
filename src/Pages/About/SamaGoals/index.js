@@ -2,7 +2,7 @@
 import React from 'react';
 import { Container, Typography, Grid, Box } from '@mui/material';
 import women from "./assets/woman.png";
-import renewable from "./assets/renewable.png"
+import renewable from "./assets/renewable.png";
 import samaGoalsStyles from './style';
 const goals = [
     {
@@ -17,18 +17,19 @@ const goals = [
 
 const SamaGoals = () => {
     return (
-        <Box sx={samaGoalsStyles.boxContainer}>
-            <Container maxWidth="lg" sx={samaGoalsStyles.container}>
-                <Typography variant="h5" sx={samaGoalsStyles.titleText}>
-                    <b>This is how Sama was born,</b> with two simple but audacious <b>goals:</b>
+        <Box sx={{ mt: 20, background: "red", paddingBottom: "80px", paddingTop: "80px", background: "var(--gray-light, #E0E0E0)" }}>
+            <Container maxWidth="lg" sx={{ mt: 3 }}>
+                <Typography variant="h5" >
+                    <b>This is how Sama was born,</b> <span style={{ fontWeight: 500 }}>with two simple but audacious</span> <b>goals:</b>
                 </Typography>
-                <Grid container 
-                spacing={2} 
-                sx={samaGoalsStyles.gridContainer}>
+                <Grid container
+                    spacing={2}
+                    sx={{ mt: 4 }}
+                >
                     {goals.map((goal, index) => (
                         <Grid item xs={12} sm={6} md={6} key={index}>
                             <Box
-                                sx={{ padding: { xs: '0 10px', sm: '0 20px', md:"10px"} }}
+                                sx={{ padding: { xs: '0 10px', sm: '0 20px', md: "10px" } }}
                             >
                                 <img
                                     src={goal.icon}
@@ -36,7 +37,16 @@ const SamaGoals = () => {
                                     alt="Woman"
                                 />
                                 <Typography
-                                    sx={samaGoalsStyles.gridItem.text}
+                                    sx={{
+                                        mt: 3,
+                                        color: 'var(--text, #4A4A4A)',
+                                        fontFamily: 'Raleway, sans-serif',
+                                        fontSize: '18px',
+                                        fontStyle: 'normal',
+                                        fontWeight: 800,
+                                        lineHeight: '170%',
+
+                                    }}
                                 >
                                     {goal.title}
                                 </Typography>
