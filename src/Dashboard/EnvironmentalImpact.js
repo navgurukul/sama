@@ -113,9 +113,9 @@ const EnvironmenttalImpact = () => {
                                     <img src={WaterContaminationLogo} alt="Water Contamination Logo" />
                                 </Grid>
                                 <Grid item xs={8} sx={{ ml: 2 }}>
-                                    <Typographyh5>5 to 6 Years</Typographyh5>
+                                    <Typographyh5>Upto 2,00,000 litres</Typographyh5>
                                     <TypographyBody2>
-                                        Average lifecycle extension of your donated hardware with Sama.
+                                    of water contamination prevented by diverting waste from landfills.
                                     </TypographyBody2>
                                 </Grid>
                             </Grid>

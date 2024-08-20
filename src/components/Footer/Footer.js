@@ -16,7 +16,7 @@ const Footer = () => {
               <img src={samalogo} alt="Logo" width={100} />
               </Link>
             </Grid>
-            <Grid item xs={4} sm={2} md={2} align="right">
+            <Grid item xs={3} sm={2} md={2} align="right">
               <Link
                 href="/about"
                 variant="body1"
@@ -31,7 +31,7 @@ const Footer = () => {
                 About Us
               </Link>
             </Grid>
-            <Grid item xs={4} sm={2} md={2} align="right">
+            <Grid item xs={5} sm={2} md={2} align="right">
               <Link
                 href="/our-approach"
                 variant="body1"
