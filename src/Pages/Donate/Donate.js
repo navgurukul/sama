@@ -98,17 +98,17 @@ function Donation() {
     const submissionData = {
       ...formData,
       companyName:
-        formData.contributionType === "company" ? formData.companyName : "N/A",
+        formData.contributionType === "company" ? formData.companyName : "",
       numberOfLaptops:
         formData.donationType === "donate-laptops" ||
         formData.donationType === "both"
           ? formData.numberOfLaptops
-          : "N/A",
+          : "",
       donateAmount:
         formData.donationType === "financial-contribution" ||
         formData.donationType === "both"
           ? formData.donateAmount
-          : "N/A",
+          : "",
       hearAbout:
         formData.hearAbout === "other" ? otherText : formData.hearAbout,
     };
@@ -178,7 +178,7 @@ function Donation() {
                   />
                   <Typography
                     className="customSubtitle1"
-                    variant="subtitle1"
+                    // variant="subtitle1"
                     sx={{ margin: "14px 0px" }}
                   >
                     Corporate Laptop Donation
@@ -197,7 +197,7 @@ function Donation() {
                   />
                   <Typography
                     className="customSubtitle1"
-                    variant="subtitle1"
+                    // variant="subtitle1"
                     sx={{ margin: "14px 0px" }}
                   >
                     Corporate Impact Funding
@@ -216,7 +216,7 @@ function Donation() {
                   />
                   <Typography
                     className="customSubtitle1"
-                    variant="subtitle1"
+                    // variant="subtitle1"
                     sx={{ margin: "14px 0px" }}
                   >
                     Individual Contribution
@@ -235,6 +235,7 @@ function Donation() {
       <Container maxWidth="lg" sx={{ pt: "70px" }}>
         <Typography variant="h5">Your Details</Typography>
         <Box sx={{ pt: "32px" }}>
+
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
@@ -315,10 +316,10 @@ function Donation() {
                 >
                   <Typography
                     className="customSubtitle1"
-                    variant="subtitle1"
+                    // variant="subtitle1"
                     sx={{ marginBottom: "10px" }}
                   >
-                    I am contributing as:
+                    I am contributing:
                   </Typography>
                   <RadioGroup
                     row
@@ -334,7 +335,7 @@ function Donation() {
                     <FormControlLabel
                       value="individual"
                       control={<Radio />}
-                      label="An individual"
+                      label=" As an individual"
                     />
                   </RadioGroup>
                   {errors.contributionType && (
@@ -366,7 +367,7 @@ function Donation() {
                 <FormControl component="fieldset" error={!!errors.donationType}>
                   <Typography
                     className="customSubtitle1"
-                    variant="subtitle1"
+                    // variant="subtitle1"
                     sx={{ marginBottom: "10px" }}
                   >
                     I would like to:
@@ -478,7 +479,7 @@ function Donation() {
                 <FormControl component="fieldset" error={!!errors.hearAbout}>
                   <Typography
                     className="customSubtitle1"
-                    variant="subtitle1"
+                    // variant="subtitle1"
                     sx={{ marginBottom: "10px" }}
                   >
                     How did you hear about Sama?
@@ -538,7 +539,7 @@ function Donation() {
               <Grid item xs={12}>
                 <Grid item xs={12}>
                   <Typography variant="subtitle2" sx={{ marginBottom: "10px" }}>
-                    Any additional information or questions
+                    Any additional information or questions <span style={{color:"#4A4A4A"}}>(Optional)</span> 
                   </Typography>
                   <TextField
                     fullWidth
@@ -590,6 +591,7 @@ function Donation() {
               </Grid>
             </Grid>
           </form>
+          
         </Box>
       </Container>
     </>
