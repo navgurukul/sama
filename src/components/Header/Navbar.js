@@ -91,7 +91,7 @@ const Navbar = () => {
             </IconButton>
           </Box>
         </Toolbar>
-        <Box className={`mobile-menu ${menuVisible ? "visible" : ""}`}>
+        <Box className={`mobile-menu ${(isActive && menuVisible) ? "visible" : ""}`}>
           {menuItems.map((item, index) => (
             <MuiLink
               component={Link}

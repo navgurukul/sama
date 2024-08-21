@@ -165,7 +165,7 @@ function Donation() {
           <Container maxWidth="lg" sx={{ paddingBottom: "4%" }}>
             <Typography
               variant="h6"
-              sx={{ marginBottom: "10px", color: "#4A4A4A", fontSize: "24px" }}
+              sx={{ marginBottom: "25px", color: "#4A4A4A", fontSize: "24px" }}
             >
               Support Sama's Mission
             </Typography>
