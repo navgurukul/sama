@@ -4,6 +4,7 @@ import SocialImpactPage from "./SocialImpact";
 import EnvironmentalImpact from './EnvironmentalImpact';
 
 function DashboardPage() {
+
   const [activeTab, setActiveTab] = useState(0);
   const handleButtonClick = (tabIndex) => {
     setActiveTab(tabIndex);
@@ -23,7 +24,7 @@ function DashboardPage() {
           </Grid>
         </Grid>
 
-        <Grid container spacing={2} sx={{ ml: 1, mt: 2 }} >
+        <Grid container spacing={2} sx={{ ml: 1, mt: 2 }}>
           <Grid item xs={12} lg={7} md={7} >
             <Grid container sx={{ mt: 1, width: { lg: "524px" } }} >
               <Grid item xs={12} lg={6} md={6} sm={12}>

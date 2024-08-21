@@ -86,6 +86,7 @@ const OurApproach = () => {
                             </Box>
                         </Grid>
                     </Grid>
+
                     <Typography variant="h6" sx={{ color: "var(--white, #FFF)" }}>
                         The Digital Gender Divide
                     </Typography>
