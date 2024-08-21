@@ -157,12 +157,11 @@ const EnvironmentalImpact = () => {
                                     ml: 2,
                                     color: 'var(--text, #4A4A4A)',
                                     fontFamily: 'Montserrat',
-                                    fontSize: '24px',
+                                    fontSize: '32px',
                                     fontStyle: 'normal',
                                     fontWeight: 700,
                                     lineHeight: '130%',
                                 }}
-                                style={styles.subtitle1}
 
                             >Did you know?</Typography>
                             <Grid container spacing={2} sx={{ mt: 1 }}>
