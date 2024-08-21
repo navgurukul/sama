@@ -1,6 +1,9 @@
+import { border } from '@mui/system';
+
 export const ContainerStyle = {
     marginTop: '30px',
-    maxWidth: 'lg',
+    maxWidth: 'xxl',
+    border:"1px solid red"
 };
 export const BoxStyle = (showVideo) => ({
     position: 'relative',

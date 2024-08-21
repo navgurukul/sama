@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Grid, Typography, Button, Container } from '@mui/material';
 import SocialImpactPage from "./SocialImpact";
 import EnvironmentalImpact from './EnvironmentalImpact';
-import { TypographyButton, styles } from './style';
 
 function DashboardPage() {
   const [activeTab, setActiveTab] = useState(0);
@@ -14,8 +13,9 @@ function DashboardPage() {
     <>
 
       <Container maxWidth="xxl">
-        <Grid container spacing={2} sx={{ mt: 1 }} style={{ marginLeft: "1px" }}>
-          <Grid item xs={12} md={6} sm={12}>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6} sm={12} sx={{ ml: 4 }}>
             <Typography variant='h5' sx={{ width: { sm: "100%" } }}>Digital Hardware Tracker</Typography>
             <Typography className="body1" sx={{ mt: 2 }}>
               Monitor your e-waste management efforts with ease
@@ -26,7 +26,7 @@ function DashboardPage() {
         <Grid container spacing={2} sx={{ ml: 1, mt: 2 }} >
           <Grid item xs={12} lg={7} md={7} >
             <Grid container sx={{ mt: 1, width: { lg: "524px" } }} >
-              <Grid item xs={12} lg={6} md={6} sm={12} >
+              <Grid item xs={12} lg={6} md={6} sm={12}>
                 <Button
                   variant="contained" color="primary"
                   onClick={() => handleButtonClick(0)}
@@ -59,17 +59,17 @@ function DashboardPage() {
                     },
                   }}
                 >
-                  <TypographyButton style={{ color: activeTab === 0 ? 'white' : 'rgba(74, 74, 74, 1)' }}>Environmental Impact</TypographyButton>
+                  <Typography variant='subtitle1' style={{ color: activeTab === 0 ? 'white' : 'rgba(74, 74, 74, 1)' }}>Environmental Impact</Typography>
                 </Button>
               </Grid>
-              <Grid item xs={12} lg={6} md={6} sm={12}>
+              <Grid item xs={12} lg={6} md={6} sm={12} >
                 <Button
                   variant="contained" color="primary"
                   onClick={() => handleButtonClick(1)}
                   sx={{
                     marginTop: { sm: "30px", xs: "10px", lg: "0", md: "0" },
                     width: { xs: '90%', sm: '50%', lg: "80%", md: "100%" },
-                    ml: { lg: 5 },
+                    ml: { lg: 5, md: 5 },
                     position: "relative",
                     backgroundColor: activeTab === 1 ? 'rgba(92, 120, 90, 1)' : 'transparent',
                     color: activeTab === 1 ? 'white' : 'black',
@@ -96,7 +96,7 @@ function DashboardPage() {
                     },
                   }}
                 >
-                  <TypographyButton style={{ color: activeTab === 1 ? 'white' : 'rgba(74, 74, 74, 1)' }}>Social Impact</TypographyButton>
+                  <Typography variant='subtitle1' style={{ color: activeTab === 1 ? 'white' : 'rgba(74, 74, 74, 1)' }}>Social Impact</Typography>
                 </Button>
               </Grid>
             </Grid>

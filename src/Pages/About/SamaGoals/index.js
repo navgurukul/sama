@@ -19,12 +19,10 @@ const SamaGoals = () => {
     return (
         <Box sx={{
             mt:15,
-            paddingBottom: "80px",
-            paddingTop: "80px",
             background: "var(--gray-light, #E0E0E0)"
         }}
         >
-            <Container maxWidth="lg" sx={{ mt: 3 }}>
+            <Container maxWidth="xl" sx={{ mt: 3,p:10}}>
                 <Typography variant="h5" >
                     <b>This is how Sama was born,</b> <span style={{ fontWeight: 500 }}>with two simple but audacious</span> <b>goals:</b>
                 </Typography>
