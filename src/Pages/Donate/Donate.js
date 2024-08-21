@@ -161,7 +161,7 @@ function Donation() {
   return (
     <>
       <Container maxWidth="xl" style={{ backgroundColor: "#E0E0E0" }}>
-        <Box sx={{ padding: "10", backgroundColor: "#E0E0E0" }}>
+        <Box sx={{ padding: "10", backgroundColor: "#E0E0E0",py:10 }}>
           <Container maxWidth="lg" sx={{ paddingBottom: "4%" }}>
             <Typography
               variant="h6"

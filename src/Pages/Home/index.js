@@ -8,6 +8,7 @@ import LaptopDonor from "./LaptopDonor";
 import ContactForm from "./ContactForm";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
+import diamond from "./assets/dimanod.png"
 
 function Home() {
   const [impact, setImpact] = useState("environmental");
@@ -17,16 +18,12 @@ function Home() {
 
   return (
     <>
-      {/* Header Section */}
+     
       
       <Box
       sx={{
         backgroundImage: `
-          linear-gradient(
-            to bottom right, 
-            rgba(46, 46, 46, 0.7) 25%, 
-            rgba(107, 126, 105, 0.7) 50%
-          ),
+          url(${diamond}),
           url(${HomeImg})
         `,
         backgroundSize: "cover, cover", // This ensures both images cover the area
@@ -61,7 +58,7 @@ function Home() {
         
       </Box>
 
-      {/* Laptop Donors Section */}
+     
       <LaptopDonor/>
       <Box sx={{ my: 10 }}>
         <Container maxWidth="lg">
@@ -109,7 +106,7 @@ function Home() {
         </Grid>
         </Container>
       </Box>
-      {/* Sustainability Development Goals Section */}
+
       <Box sx={{ my: 10 }}>
         <Container maxWidth="lg">
         <Typography variant="h5" >
@@ -140,12 +137,12 @@ function Home() {
                 src={require("./assets/E_PRINT_04 1.svg").default}
                 style={{
                   position: 'absolute',
-                  width: '167px', // Adjust the width of the small image
+                  width: '167px', 
                   height: 'auto',
-                  bottom: '10px', // Position 10px from the bottom
-                  right: '10px', // Position 10px from the right
-                  borderRadius: '8px', // Optional: adds rounded corners
-                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Optional: adds a shadow to the small image
+                  bottom: '10px', 
+                  right: '10px', 
+                  borderRadius: '8px', 
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', 
                 }}
               />
               </Box>
@@ -154,9 +151,9 @@ function Home() {
           <Box
             sx={{
               position: 'relative',
-              width: '100%',  // Set the container width as needed
-              maxWidth: '600px', // Example max width, adjust as needed
-              margin: '0 auto', // Center the container horizontally
+              width: '100%',  
+              maxWidth: '600px', 
+              margin: '0 auto', 
               
             }}
           >
@@ -170,12 +167,12 @@ function Home() {
                 src={require("./assets/E_GIF_05 1.svg").default}
                 style={{
                   position: 'absolute',
-                  width: '167px', // Adjust the width of the small image
+                  width: '167px', 
                   height: 'auto',
-                  bottom: '10px', // Position 10px from the bottom
-                  right: '10px', // Position 10px from the right
-                  borderRadius: '8px', // Optional: adds rounded corners
-                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Optional: adds a shadow to the small image
+                  bottom: '10px',
+                  right: '10px', 
+                  borderRadius: '8px', 
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', 
                 }}
               />
               </Box>
@@ -184,9 +181,9 @@ function Home() {
           <Box
             sx={{
               position: 'relative',
-              width: '100%',  // Set the container width as needed
-              maxWidth: '600px', // Example max width, adjust as needed
-              margin: '0 auto', // Center the container horizontally
+              width: '100%', 
+              maxWidth: '600px', 
+              margin: '0 auto', 
               
             }}
           >
@@ -200,12 +197,12 @@ function Home() {
                 src={require("./assets/E_WEB_08 2.svg").default}
                 style={{
                   position: 'absolute',
-                  width: '167px', // Adjust the width of the small image
+                  width: '167px',
                   height: 'auto',
-                  bottom: '10px', // Position 10px from the bottom
-                  right: '10px', // Position 10px from the right
-                  borderRadius: '8px', // Optional: adds rounded corners
-                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Optional: adds a shadow to the small image
+                  bottom: '10px', 
+                  right: '10px', 
+                  borderRadius: '8px', 
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', 
                 }}
               />
               </Box>
@@ -214,9 +211,9 @@ function Home() {
           <Box
             sx={{
               position: 'relative',
-              width: '100%',  // Set the container width as needed
-              maxWidth: '600px', // Example max width, adjust as needed
-              margin: '0 auto', // Center the container horizontally
+              width: '100%', 
+              maxWidth: '600px', 
+              margin: '0 auto', 
               
             }}
           >
@@ -230,12 +227,12 @@ function Home() {
                 src={require("./assets/E_GIF_12 1.svg").default}
                 style={{
                   position: 'absolute',
-                  width: '167px', // Adjust the width of the small image
+                  width: '167px', 
                   height: 'auto',
-                  bottom: '10px', // Position 10px from the bottom
-                  right: '10px', // Position 10px from the right
-                  borderRadius: '8px', // Optional: adds rounded corners
-                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Optional: adds a shadow to the small image
+                  bottom: '10px', 
+                  right: '10px', 
+                  borderRadius: '8px', 
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', 
                 }}
               />
               </Box>
@@ -244,9 +241,9 @@ function Home() {
           <Box
             sx={{
               position: 'relative',
-              width: '100%',  // Set the container width as needed
-              maxWidth: '600px', // Example max width, adjust as needed
-              margin: '0 auto', // Center the container horizontally
+              width: '100%',  
+              maxWidth: '600px', 
+              margin: '0 auto', 
               
             }}
           >
@@ -261,12 +258,12 @@ function Home() {
                 src={require("./assets/E_GIF_13 1.svg").default}
                 style={{
                   position: 'absolute',
-                  width: '167px', // Adjust the width of the small image
+                  width: '167px', 
                   height: 'auto',
-                  bottom: '10px', // Position 10px from the bottom
-                  right: '10px', // Position 10px from the right
-                  borderRadius: '8px', // Optional: adds rounded corners
-                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Optional: adds a shadow to the small image
+                  bottom: '10px', 
+                  right: '10px', 
+                  borderRadius: '8px', 
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', 
                 }}
               />
               </Box>
@@ -274,8 +271,6 @@ function Home() {
         </Grid>
         </Container>
       </Box>
-
-      {/* Our Goals for 2030 Section */}
 
       <Box sx={{ backgroundColor:"#F0F4EF" ,py:6}} >
         <Container maxWidth="lg" >
@@ -385,7 +380,6 @@ function Home() {
 
       <TestimonialSlider/>
 
-      {/* Contact Us Section */}
       <ContactForm/>
     </>
   );

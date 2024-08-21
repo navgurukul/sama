@@ -17,13 +17,7 @@ const BgVideoPage = () => {
                         sx={BoxStyle(showVideo)}
                         onClick={handlePlayButtonClick}
                     >
-                        {!showVideo ? (
-                            <img
-                                src={PlayBtn}
-                                alt="Play Icon"
-                                style={PlayButtonStyle}
-                            />
-                        ) : (
+                        
                           
                             <iframe
                                 src="https://www.youtube.com/embed/5_G_Q4rSiUU?autoplay=1"
@@ -32,7 +26,7 @@ const BgVideoPage = () => {
                                 allowFullScreen
                                 title="Embedded Video"
                             ></iframe>
-                        )}
+                      
                     </Box>
                 </Grid>
             </Grid>

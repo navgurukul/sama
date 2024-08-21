@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Grid, Typography, TextField, Button } from '@mui/material';
+import { display } from '@mui/system';
 
 function ContactForm() {
   const [formData, setFormData] = useState({
@@ -157,6 +158,7 @@ function ContactForm() {
                 error={!!errors.message}
                 helperText={errors.message}
               />
+              <Box style={{display:"flex"}}>
               <Button 
                 type="submit" 
                 variant="contained" 
@@ -165,11 +167,15 @@ function ContactForm() {
               >
                 Send Message
               </Button>
+              
               {success && (
-              <Typography variant="subtitle2" color="green" mt={2}>
+                <Typography variant="body1" color="green" mt={4} ml={3}>
                 Message sent successfully!
               </Typography>
             )}
+
+              </Box>
+             
             </form>
           </Grid>
           <Grid item xs={12} sm={12} md={4}>
