@@ -15,6 +15,7 @@ import { data } from "./data.js";
 import TimeLine from "./TimeLine/index.js";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
+import we from "./we.svg"
 
 const OurApproach = () => {
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
@@ -58,10 +59,7 @@ const OurApproach = () => {
                 >
                   {section.title}
                 </Typography>
-                <Grid
-                  container
-                  sx={{ mt: 4 }}
-                >
+                <Grid container sx={{ mt: 4 }}>
                   {section.statistics.map((stat, statIndex) => (
                     <Grid
                       item
@@ -100,7 +98,25 @@ const OurApproach = () => {
           </Grid>
         </Container>
       </Box>
-      <TimeLine />
+      {/* <TimeLine /> */}
+      <Container>
+      <Typography variant="h5" my={6} sx = {{align : "left"}} >
+               This is how we transform your donated laptops into tools of impact!
+              </Typography>
+        <Box
+            component="img"
+            src={we}
+            alt="Logo"
+            sx={{
+                width: '100%', 
+                height: 'auto', 
+                display: 'block', 
+                maxWidth: '100%', 
+                marginBottom: '60px',
+            }}
+        />
+    </Container>
+
     </>
   );
 };

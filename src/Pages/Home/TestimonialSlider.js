@@ -117,7 +117,7 @@ const TestimonialSlider = () => {
                        borderRadius: "50%",
                         objectFit:"cover" }} />
                     <Typography variant="subtitle1">{testimonial.name}</Typography>
-                    <Typography variant="body2">({testimonial.place})</Typography>
+                    {/* <Typography variant="body2">({testimonial.place})</Typography> */}
                   </Box>
                 ))}
               </Box>

@@ -28,8 +28,8 @@ const TimeLine = () => {
             sx={{ display: { xs: "flex", lg: "none" } }}
           >
             <Grid item xs={12} lg={8} md={10} sm={10}>
-              <Typography variant="h5" mt={2}>
-                Our 3D Model:
+              <Typography variant="h5" my={2}>
+               This is how we transform your donated laptops into tools of impact!
               </Typography>
               <Typography>
                 Our 3D Model forms the backbone of our approach. Through this
@@ -81,8 +81,8 @@ const TimeLine = () => {
             >
               <Grid Container marginTop="48px">
                 <Grid item xs={12} md={6} sm={12}>
-                  <Typography style={styles.h5} variant="h5">
-                    Our 3D Model:
+                  <Typography style={styles.h5} variant="h5" mb = {2}>
+                  This is how we transform your donated laptops into tools of impact!
                   </Typography>
                   <Typography>
                     Our 3D Model forms the backbone of our approach. Through
