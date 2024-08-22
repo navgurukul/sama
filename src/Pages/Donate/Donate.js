@@ -56,7 +56,7 @@ function Donation() {
 
   const validate = () => {
     let newErrors = {};
-
+  
     if (!formData.firstName.trim()) {
       newErrors.firstName = "First Name is required";
     }
@@ -65,9 +65,13 @@ function Donation() {
     }
     if (!formData.email.trim()) {
       newErrors.email = "Email Address is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Email must be a valid email address";
     }
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone Number is required";
+    } else if (!/^\d{10}$/.test(formData.phone)) {
+      newErrors.phone = "Phone number must be a 10-digit number";
     }
     if (
       formData.contributionType === "company" &&
@@ -89,7 +93,7 @@ function Donation() {
     ) {
       newErrors.donateAmount = "Donate Amount is required";
     }
-
+  
     return newErrors;
   };
 
@@ -585,7 +589,7 @@ function Donation() {
                 </Button>
                 {successMessage && (
                   <Typography className="customSubtitle1" sx={{ marginLeft: "22px", color: "#5C785A" }}>
-                  Your donation details have been successfully submitted,will rech out to you soon.
+                  Your donation details have been successfully submitted. We will reach out to you soon.
                   </Typography>
                 )}
               </Grid>

@@ -5,51 +5,58 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Container } from '@mui/system';
 import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const TestimonialSlider = () => {
   const testimonials = [
     {
-      src: require('./assets/Ellipse 7.svg').default,
+      src: require('./assets/shahnaaz.jpg'),
       alt: 'Student 1',
       name: "Shahnaaz",
       place: "Bangalore",
       text: "From a rural student without resources to a skilled coder at Natwest, the laptop I received from Navgurukul was the key that unlocked my potential and transformed my future."
     },
     {
-      src: require('./assets/Ellipse 7.svg').default,
+      src: require('./assets/anjali.jpg'),
       alt: 'Student 2',
-      name: "Komal",
+      name: "Anjali Singh",
       place: "Pune",
-      text: "From a rural student without resources to a skilled coder at Natwest, the laptop I received from Navgurukul was the key that unlocked my potential and transformed my future."
+      text:  "With a laptop as my tool, I've transitioned from a NavGurukul " +
+      "student to an academic intern, connecting with diverse learners across India and fostering personal growth."
     },
     {
-      src: require('./assets/Ellipse 7.svg').default,
+      src: require('./assets/riya.png'),
       alt: 'Student 3',
-      name: "Pooja",
+      name: "Riya Kumari",
       place: "Maharashtra",
-      text: "From a rural student without resources to a skilled coder at Natwest, the laptop I received from Navgurukul was the key that unlocked my potential and transformed my future."
+      text: "From not knowing how to use a laptop to S&P Global employee: NavGurukul's tech-enabled training launched my career in just one year."
+
     },
     {
-      src: require('./assets/Ellipse 7.svg').default,
+      src: require('./assets/ziya.png'),
       alt: 'Student 4',
-      name: "Rupa",
+      name: "Ziya Afreen",
       place: "Delhi",
-      text: "From a rural student without resources to a skilled coder at Natwest, the laptop I received from Navgurukul was the key that unlocked my potential and transformed my future."
+      text: "This laptop isn't just a tool; it's my bridge from a novice to a future software developer."
     },
     {
-      src: require('./assets/Ellipse 7.svg').default,
+      src: require('./assets/komal.png'),
       alt: 'Student 5',
-      name: "Rani",
+      name: "Komal Chaudhary",
       place: "Bangalore",
-      text: "From a rural student without resources to a skilled coder at Natwest, the laptop I received from Navgurukul was the key that unlocked my potential and transformed my future."
+      text: "Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it"
     },
   ];
 
-  const slides = [
-    testimonials.slice(0, 2),
-    testimonials.slice(2, 4),
-    testimonials.slice(4, 5),
-  ];
+  const isMobile = useMediaQuery('(max-width:600px)');
+
+  const groupedTestimonials = isMobile
+    ? testimonials.map((testimonial) => [testimonial])
+    : [
+        [testimonials[0], testimonials[1]],
+        [testimonials[2], testimonials[3]],
+        [testimonials[4]],
+      ];
 
   const [sliderRef, slider] = useKeenSlider({
     loop: true,
@@ -83,11 +90,11 @@ const TestimonialSlider = () => {
 
   return (
     <Box style={{ backgroundColor: "#5C785A" }}>
-      <Container sx={{ py: 7 }}>
+      <Container sx={isMobile?{py:4}:{ py: 10 }}>
         <Typography variant="h5" style={{ color: "#FFF" }}>
           Student Speaks
         </Typography>
-        <Box display="flex" alignItems="center" position="relative">
+        <Box display="flex" alignItems="center" position="relative" mt={3}>
           <IconButton onClick={handlePrevClick} style={{ position: "absolute", left: "-100px" }}>
             <ChevronLeftIcon style={{ color: "#FFFFFF" }} />
           </IconButton>
@@ -97,12 +104,18 @@ const TestimonialSlider = () => {
            color:"#FFF",
            marginTop: "16px",
             }}>
-            {slides.map((slide, index) => (
+            {groupedTestimonials.map((group, index) => (
               <Box key={index} className="keen-slider__slide" display="flex" sx={{ width: '100%' }} color="white">
-                {slide.map((testimonial, idx) => (
-                  <Box key={idx} sx={{ width: '50%', paddingRight: index === slides.length - 1 && idx === slide.length - 1 ? 0 : '16px' }}>
-                    <Typography variant="body1">{testimonial.text}</Typography>
-                    <img src={testimonial.src} alt={testimonial.alt} style={{ padding: "0px", width: "64px", height: "64px" }} />
+                {group.map((testimonial, idx) => (
+                  <Box key={idx} sx={isMobile?{ width: '100%' }:{ width: '50%', paddingRight: '16px' }}>
+
+                    <Typography variant="body1" sx={!isMobile && { height:"100px"}}>{testimonial.text}</Typography>
+                    <img src={testimonial.src} alt={testimonial.alt} 
+                    style={{ padding: " 8px 0px",
+                     width: "64px",
+                      height: "64px",
+                       borderRadius: "50%",
+                        objectFit:"cover" }} />
                     <Typography variant="subtitle1">{testimonial.name}</Typography>
                     <Typography variant="body2">({testimonial.place})</Typography>
                   </Box>
@@ -120,4 +133,3 @@ const TestimonialSlider = () => {
 };
 
 export default TestimonialSlider;
-
