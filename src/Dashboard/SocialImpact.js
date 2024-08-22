@@ -75,7 +75,7 @@ const SocialImpactPage = () => {
                                 <img src={ZiyaImg} style={{ marginRight: '8px' }} />
                                 <Box sx={{ ml: 3 }}>
                                     <Typography variant="subtitle1" style={styles.subtitle1}>“ Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it ”</Typography>
-                                    <Typography variant='body2' style={styles.body2} sx={{ mt: 2 }}>Ziya Afreen (NavGurukul Student)</Typography>
+                                    <Typography variant='body2' style={styles.body2} sx={{ mt: 2 }}>Ziya Afreen</Typography>
                                 </Box>
                             </Box>
                         </Grid>
@@ -84,7 +84,7 @@ const SocialImpactPage = () => {
                                 <img src={Komal} style={{ marginRight: '8px' }} />
                                 <Box sx={{ ml: 3 }}>
                                     <Typography variant="subtitle1" style={styles.subtitle1}> “ This laptop isn't just a tool. It is my bridge from being a novice to a full-fledged future software developer “</Typography>
-                                    <Typography variant='body2' style={styles.body2} sx={{ mt: 2 }}>Komal Chaudhary (NavGurukul Student)</Typography>
+                                    <Typography variant='body2' style={styles.body2} sx={{ mt: 2 }}>Komal Chaudhary</Typography>
                                 </Box>
                             </Box>
                         </Grid>
