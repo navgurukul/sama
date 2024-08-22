@@ -585,7 +585,7 @@ function Donation() {
                 </Button>
                 {successMessage && (
                   <Typography className="customSubtitle1" sx={{ marginLeft: "22px", color: "#5C785A" }}>
-                  Your donation details have been successfully submitted,will rech out to you soon.
+                  Your donation details have been successfully submitted. We will reach out to you soon
                   </Typography>
                 )}
               </Grid>
