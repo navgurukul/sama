@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles';
-import { Typography} from '@mui/material';
-
+import { Typography } from '@mui/material';
+import bgImage from "./assets/Group.svg";
 export const StepTitle = styled(Typography)({
     fontSize: "24px",
     fontWeight: 'bold',
@@ -99,3 +99,56 @@ export const styles = {
     }
 
 }
+
+
+
+
+const classes = {
+    container: {
+        paddingBottom: "80px"
+    },
+    lgContainer: {
+        padding: '16px',
+    },
+    gridItem: {
+        // Styles for grid item
+    },
+    innerBox: {
+        // Styles for inner box
+    },
+    h6: {
+        // Styles for h6
+    },
+    bgImageBox: {
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'contain',
+        backgroundPosition: 'right',
+        backgroundRepeat: 'no-repeat',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'left',
+    },
+    stepNumberBox: {
+        display: 'flex',
+        marginLeft: { md: 5 },
+        justifyContent: {
+            xs: 'center',
+            sm: 'center',
+            md: 'flex-start'
+        },
+        alignItems: 'center',
+    },
+    typographyBold: {
+        fontWeight: 700,
+        color: "var(--text, #4A4A4A)"
+    },
+    listItem: {
+        marginTop: "40px"
+    },
+    stepContainer: {
+        position: "relative",
+        top: "70px"
+    }
+};
+
+export default classes;

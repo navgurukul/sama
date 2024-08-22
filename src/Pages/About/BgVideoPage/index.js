@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Container, Grid } from '@mui/material';
 import PlayBtn from './assets/PlayBtn.png';
-import { BoxStyle, PlayButtonStyle, IframeStyle } from './style';
+import { classes,BoxStyle} from './style';
 
 const BgVideoPage = () => {
 
@@ -11,12 +11,11 @@ const BgVideoPage = () => {
     };
 
     return (
-        
         <Container maxWidth="xl">
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <Box
-                        style={{ borderRadius: "16px", }}
+                       style={classes.VIdeoCard}
                         sx={BoxStyle(showVideo)}
                         onClick={handlePlayButtonClick}
                     >
@@ -24,13 +23,13 @@ const BgVideoPage = () => {
                             <img
                                 src={PlayBtn}
                                 alt="Play Icon"
-                                style={PlayButtonStyle}
+                                style={classes.PlayButtonStyle}
                             />
                         ) : (
 
                             <iframe
                                 src="https://www.youtube.com/embed/5_G_Q4rSiUU?autoplay=1"
-                                style={IframeStyle}
+                                style={classes.IframeStyle}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
                                 title="Embedded Video"
@@ -42,5 +41,4 @@ const BgVideoPage = () => {
         </Container>
     );
 };
-
 export default BgVideoPage;

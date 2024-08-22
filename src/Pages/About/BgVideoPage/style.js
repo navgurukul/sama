@@ -1,10 +1,3 @@
-import { border } from '@mui/system';
-
-export const ContainerStyle = {
-    marginTop: '30px',
-    maxWidth: 'xxl',
-    border:"1px solid red"
-};
 export const BoxStyle = (showVideo) => ({
     position: 'relative',
     width: '100%',
@@ -18,20 +11,28 @@ export const BoxStyle = (showVideo) => ({
     overflow: 'hidden',
 });
 
-export const PlayButtonStyle = {
-    position: 'absolute',
-    top: '40%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    height: 'auto',
-    zIndex: 1,
-};
-
-export const IframeStyle = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    border: 'none',
-};
+export const classes = {
+    VIdeoCard: {
+        borderRadius: "16px"
+    },
+    PlayButtonStyle: {
+        position: 'absolute',
+        top: '40%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        height: 'auto',
+        zIndex: 1,
+    },
+    IframeStyle: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        border: 'none',
+    },
+    ContainerStyle: {
+        marginTop: '30px',
+        maxWidth: 'xxl',
+    }
+}

@@ -1,22 +1,15 @@
-const samaGoalsStyles = {
-
-    gridItem: {
-        img: {
-            background: '#5C785A',
-            borderRadius: '60px',
-            padding: '10px',
-            marginLeft: "8px",
-        },
-        subtitle: {
-            marginTop:"30px",
-            color: 'var(--text, #4A4A4A)',
-            fontFamily: 'Raleway, sans-serif',
-            fontSize: '18px',
-            fontStyle: 'normal',
-            fontWeight: 800,
-            lineHeight: '170%',
-        }
+const classes = {
+    BackgroundStyle: {
+        py: 10,
+        mt: 14,
+    },
+    img: {
+        width: '50px',
+        height: 'auto',
+        border: "7px solid var(--primary, #5C785A)",
+        borderRadius: "100px",
+        background: "var(--primary, #5C785A)"
     },
 };
 
-export default samaGoalsStyles;
+export default classes;
