@@ -52,7 +52,7 @@ function Home() {
             Where yesterday's devices power tomorrow's innovators
           </Typography>
           <Typography variant="body1" margin="0 8px" style={{ color: "#FFF" }}>
-            Bridging Generations Through Repurposed Devices
+            Bridging Digital Divide Through Repurposed Devices
           </Typography>
           <Button variant="contained" color="primary" href="/donate" sx={{ mt: 6, borderRadius: "100px", padding: "16px" }}>
             Donate Now
@@ -65,7 +65,7 @@ function Home() {
       <Box sx={{ my: 10 }}>
         <Container maxWidth="lg">
           <Typography variant="h5" align="left" mb={4}>
-            Stepping Up Progress in this Defining Decade
+            {/* Stepping Up Progress in this Defining Decade */}
           </Typography>
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
