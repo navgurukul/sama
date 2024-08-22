@@ -76,7 +76,7 @@ function Home() {
                 Sama, a non-profit organisation, and a subsidiary of NavGurukul, helps modern businesses responsibly repurpose their e-waste for educational usage by underserved women. Our aim is to embed Net Zero Through Giving into the culture of a client organisation so that every member understands the role they can play in supporting the transition towards a greener and inclusive future.
               </Typography>
               <Button variant="text" href="/about" color="primary">
-                <Typography variant="subtitle1">Know more</Typography>
+                <Typography variant="subtitle1" sx={{fontWeight: 700}}>Know more</Typography>
                 <ChevronRightIcon />
               </Button>
             </Grid>
@@ -88,38 +88,13 @@ function Home() {
                 Sama is not just a laptop donation project; it's a comprehensive education initiative aimed at empowering 1 million girls and women by 2030 with cutting-edge devices and skills, leveraging the existing infrastructure of our corporate partners.
               </Typography>
               <Button variant="text" href="/our-approach" color="primary">
-                <Typography variant="subtitle1">Know more</Typography>
+                <Typography variant="subtitle1" sx={{fontWeight: 700}}>Know more</Typography>
                 <ChevronRightIcon />
               </Button>
             </Grid>
           </Grid>
         </Container>
       </Box>
-
-      {/* <Box sx={{ my: 10 }}>
-        <Container maxWidth="lg">
-          <Typography variant="h5">Sustainability Development Goals</Typography>
-          <Typography variant="body1" style={{ width: "65%", margin: "32px 0px" }}>
-            Sama's mission of repurposing e-waste for educational use by underserved women aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
-          </Typography>
-          <Grid container spacing={3}>
-            {[
-              { src: "./assets/sub_1.jpg", overlaySrc: require("./assets/E_PRINT_04 1.svg").default, alt: "Gender Equality" },
-              { src: "./assets/sub_2.jpg", overlaySrc: require("./assets/E_GIF_05 1.svg").default, alt: "Gender Equality" },
-              { src: "./assets/sub_4.jpg", overlaySrc: require("./assets/E_WEB_08 2.svg").default, alt: "quality education" },
-              { src: "./assets/laptop_1.jpg", overlaySrc: require("./assets/E_GIF_12 1.svg").default, alt: "growth" },
-              { src: "./assets/ngStudent.jpg", overlaySrc: require("./assets/E_GIF_13 1.svg").default, alt: "climate action" },
-            ].map((item, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Box sx={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-                  <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
-                  <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box> */}
 
       <Box sx={{ backgroundColor: "#F0F4EF", py: 6 }}>
         <Container maxWidth="lg">
