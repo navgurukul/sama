@@ -56,7 +56,7 @@ function Donation() {
 
   const validate = () => {
     let newErrors = {};
-  
+
     if (!formData.firstName.trim()) {
       newErrors.firstName = "First Name is required";
     }
@@ -93,7 +93,7 @@ function Donation() {
     ) {
       newErrors.donateAmount = "Donate Amount is required";
     }
-  
+
     return newErrors;
   };
 
@@ -165,7 +165,7 @@ function Donation() {
   return (
     <>
       <Container maxWidth="xl" style={{ backgroundColor: "#E0E0E0" }}>
-        <Box sx={{ padding: "10", backgroundColor: "#E0E0E0",py:10 }}>
+        <Box sx={{ padding: "10", backgroundColor: "#E0E0E0", py: 10 }}>
           <Container maxWidth="lg" sx={{ paddingBottom: "4%" }}>
             <Typography
               variant="h6"
@@ -188,8 +188,7 @@ function Donation() {
                     Corporate Laptop Donation
                   </Typography>
                   <Typography variant="body1">
-                    Transform your end-of-life laptops into powerful tools for
-                    education and empowerment.
+                  Transform your end-of-life laptops into powerful tools for education and empowerment.
                   </Typography>
                 </Box>
               </Grid>
@@ -227,7 +226,7 @@ function Donation() {
                   </Typography>
                   <Typography variant="body1">
                     Join our mission to empower girls and women through digital
-                    access and education.
+                    access and volunteering.
                   </Typography>
                 </Box>
               </Grid>
@@ -239,7 +238,6 @@ function Donation() {
       <Container maxWidth="lg" sx={{ pt: "70px" }}>
         <Typography variant="h5">Your Details</Typography>
         <Box sx={{ pt: "32px" }}>
-
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
@@ -314,6 +312,48 @@ function Donation() {
               </Grid>
 
               <Grid item xs={12}>
+                <FormControl component="fieldset" error={!!errors.donationType}>
+                  <Typography
+                    className="customSubtitle1"
+                    // variant="subtitle1"
+                    sx={{ marginBottom: "10px" }}
+                  >
+                    I would like to:
+                  </Typography>
+                  <RadioGroup
+                    row
+                    name="donationType"
+                    value={formData.donationType}
+                    onChange={handleChange}
+                  >
+                    <FormControlLabel
+                      value="donate-laptops"
+                      control={<Radio />}
+                      label="Donate laptops"
+                    />
+                    <FormControlLabel
+                      value="financial-contribution"
+                      control={<Radio />}
+                      label="Make a financial contribution"
+                    />
+                    <FormControlLabel
+                      value="both"
+                      control={<Radio />}
+                      label="Both donate laptops and contribute financially"
+                    />
+                    <FormControlLabel
+                      value="volunteer"
+                      control={<Radio />}
+                      label="Volunteer"
+                    />
+                  </RadioGroup>
+                  {errors.donationType && (
+                    <FormHelperText>{errors.donationType}</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+
+              {/* <Grid item xs={12}>
                 <FormControl
                   component="fieldset"
                   error={!!errors.contributionType}
@@ -397,12 +437,13 @@ function Donation() {
                       control={<Radio />}
                       label="Both donate laptops and contribute financially"
                     />
+                    
                   </RadioGroup>
                   {errors.donationType && (
                     <FormHelperText>{errors.donationType}</FormHelperText>
                   )}
                 </FormControl>
-              </Grid>
+              </Grid> */}
 
               {formData.donationType === "donate-laptops" && (
                 <Grid item xs={12} md={6}>
@@ -543,7 +584,8 @@ function Donation() {
               <Grid item xs={12}>
                 <Grid item xs={12}>
                   <Typography variant="subtitle2" sx={{ marginBottom: "10px" }}>
-                    Any additional information or questions <span style={{color:"#4A4A4A"}}>(Optional)</span> 
+                    Any additional information or questions{" "}
+                    <span style={{ color: "#4A4A4A" }}>(Optional)</span>
                   </Typography>
                   <TextField
                     fullWidth
@@ -574,7 +616,6 @@ function Donation() {
                 />
               </Grid>
 
-            
               <Grid
                 item
                 xs={12}
@@ -588,14 +629,17 @@ function Donation() {
                   Submit
                 </Button>
                 {successMessage && (
-                  <Typography className="customSubtitle1" sx={{ marginLeft: "22px", color: "#5C785A" }}>
-                  Your donation details have been successfully submitted. We will reach out to you soon.
+                  <Typography
+                    className="customSubtitle1"
+                    sx={{ marginLeft: "22px", color: "#5C785A" }}
+                  >
+                    Your donation details have been successfully submitted. We
+                    will reach out to you soon.
                   </Typography>
                 )}
               </Grid>
             </Grid>
           </form>
-          
         </Box>
       </Container>
     </>

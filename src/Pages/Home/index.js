@@ -8,6 +8,7 @@ import LaptopDonor from "./LaptopDonor";
 import ContactForm from "./ContactForm";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import diamond from "./assets/dimanod.png";
+import SamaGroupImage from './assets/Group365.png';
 
 function Home() {
   const [impact, setImpact] = useState("environmental");
@@ -95,7 +96,7 @@ function Home() {
         </Container>
       </Box>
 
-      <Box sx={{ my: 10 }}>
+      {/* <Box sx={{ my: 10 }}>
         <Container maxWidth="lg">
           <Typography variant="h5">Sustainability Development Goals</Typography>
           <Typography variant="body1" style={{ width: "65%", margin: "32px 0px" }}>
@@ -118,7 +119,7 @@ function Home() {
             ))}
           </Grid>
         </Container>
-      </Box>
+      </Box> */}
 
       <Box sx={{ backgroundColor: "#F0F4EF", py: 6 }}>
         <Container maxWidth="lg">
@@ -146,6 +147,15 @@ function Home() {
         </Container>
       </Box>
 
+
+     <Container maxWidth="xl" >
+      <Box>
+      <img src={SamaGroupImage} alt="Sama Group"  height="auto" width="100%" />
+      </Box>
+      
+       </Container>
+
+
       <Container sx={{ my: 10 }}>
         <Typography variant="h5">Metrics that Matter</Typography>
         <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
@@ -167,6 +177,31 @@ function Home() {
           <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" />
         )}
       </Container>
+
+      <Box sx={{ my: 10 }}>
+        <Container maxWidth="lg">
+          <Typography variant="h5">Sustainability Development Goals</Typography>
+          <Typography variant="body1" style={{ width: "65%", margin: "32px 0px" }}>
+            Sama's mission of repurposing e-waste for educational use by underserved women aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
+          </Typography>
+          <Grid container spacing={3}>
+            {[
+              { src: "./assets/sub_1.jpg", overlaySrc: require("./assets/E_PRINT_04 1.svg").default, alt: "Gender Equality" },
+              { src: "./assets/sub_2.jpg", overlaySrc: require("./assets/E_GIF_05 1.svg").default, alt: "Gender Equality" },
+              { src: "./assets/sub_4.jpg", overlaySrc: require("./assets/E_WEB_08 2.svg").default, alt: "quality education" },
+              { src: "./assets/laptop_1.jpg", overlaySrc: require("./assets/E_GIF_12 1.svg").default, alt: "growth" },
+              { src: "./assets/ngStudent.jpg", overlaySrc: require("./assets/E_GIF_13 1.svg").default, alt: "climate action" },
+            ].map((item, index) => (
+              <Grid item xs={12} md={4} key={index}>
+                <Box sx={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
+                  <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
+                  <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
 
       <TestimonialSlider />
       <ContactForm />
