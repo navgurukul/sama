@@ -18,7 +18,7 @@ const Footer = () => {
               <img src={samalogo} alt="Logo" width={100} />
               </Link>
             </Grid>
-            <Grid item xs={3} sm={2} md={2} align="right">
+            {/* <Grid item xs={3} sm={2} md={2} align="right">
               <Link
                 href="/about"
                 variant="body1"
@@ -47,7 +47,7 @@ const Footer = () => {
               >
                 Our Approach
               </Link>
-            </Grid>
+            </Grid> */}
           </Grid>
           <hr />
           <Box textAlign="center" mt={4}>
