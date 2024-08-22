@@ -27,6 +27,8 @@ const Navbar = () => {
   const menuItems = [
     { text: "About Us", href: "/about" },
     { text: "Our Approach", href: "/our-approach" },
+    { text: "Donate", href: "/donate" },
+
   ];
 
   const handleMenuToggle = () => {
