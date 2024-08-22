@@ -7,7 +7,8 @@ function ContactForm() {
     firstName: '',
     lastName: '',
     email: '',
-    message: ''
+    message: '',
+    contact: ''
   });
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
@@ -37,7 +38,10 @@ function ContactForm() {
         return value.length < 3 ? `${name} must be at least 3 characters long` : '';
       case 'email':
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return !emailRegex.test(value) ? 'Invalid email address' : '';
+        return !emailRegex.test(value) ? 'Invalid Gmail address' : '';
+      case 'contact':
+        const contactRegex = /^[0-9]{10}$/;
+        return !contactRegex.test(value) ? 'Contact must be 10 digits' : '';
       default:
         return '';
     }
@@ -55,11 +59,16 @@ function ContactForm() {
     });
     setErrors(newErrors);
 
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
     const capitalizedData = {
       "First Name": capitalizeFirstLetter(formData.firstName),
       "Last Name": capitalizeFirstLetter(formData.lastName),
       "Email": formData.email.toLowerCase(),
-      "Message": capitalizeFirstLetter(formData.message)
+      "Message": capitalizeFirstLetter(formData.message),
+      "Contact": formData.contact
     };
 
     try {
@@ -77,7 +86,8 @@ function ContactForm() {
         firstName: '',
         lastName: '',
         email: '',
-        message: ''
+        message: '',
+        contact: ''
       });
 
       // Hide the success message after 10 seconds
@@ -146,6 +156,19 @@ function ContactForm() {
               />
               <TextField 
                 fullWidth 
+                label="Contact" 
+                margin="normal" 
+                variant="outlined" 
+                name="contact"
+                sx={{ backgroundColor: 'white' }}
+                value={formData.contact}
+                onChange={handleChange}
+                error={!!errors.contact}
+                helperText={errors.contact}
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+              />
+              <TextField 
+                fullWidth 
                 label="Message" 
                 margin="normal" 
                 multiline 
@@ -164,12 +187,13 @@ function ContactForm() {
                 variant="contained" 
                 color="primary"
                 sx={{ borderRadius: "100px", padding: "16px", mt: 2 }}
+                disabled={Object.keys(errors).some(key => errors[key])}
               >
                 Send Message
               </Button>
               
               {success && (
-                <Typography variant="body1" color="green" mt={4} ml={3}>
+                <Typography variant="body1" color="green" sx={{ mt: 4, ml: 3 }}>
                 Message sent successfully!
               </Typography>
             )}
