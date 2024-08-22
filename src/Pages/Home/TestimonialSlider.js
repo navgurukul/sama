@@ -90,7 +90,7 @@ const TestimonialSlider = () => {
 
   return (
     <Box style={{ backgroundColor: "#5C785A" }}>
-      <Container sx={{ py: 7 }}>
+      <Container sx={isMobile?{py:4}:{ py: 7 }}>
         <Typography variant="h5" style={{ color: "#FFF" }}>
           Student Speaks
         </Typography>
@@ -109,8 +109,13 @@ const TestimonialSlider = () => {
                 {group.map((testimonial, idx) => (
                   <Box key={idx} sx={isMobile?{ width: '100%' }:{ width: '50%', paddingRight: '16px' }}>
 
-                    <Typography variant="body1" style={{ height:"100px"}}>{testimonial.text}</Typography>
-                    <img src={testimonial.src} alt={testimonial.alt} style={{ padding: " 8px 0px", width: "64px", height: "64px", borderRadius: "50%", objectFit:"cover" }} />
+                    <Typography variant="body1" sx={!isMobile && { height:"100px"}}>{testimonial.text}</Typography>
+                    <img src={testimonial.src} alt={testimonial.alt} 
+                    style={{ padding: " 8px 0px",
+                     width: "64px",
+                      height: "64px",
+                       borderRadius: "50%",
+                        objectFit:"cover" }} />
                     <Typography variant="subtitle1">{testimonial.name}</Typography>
                     <Typography variant="body2">({testimonial.place})</Typography>
                   </Box>

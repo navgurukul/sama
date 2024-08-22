@@ -149,11 +149,15 @@ function Home() {
       <Container sx={{ my: 10 }}>
         <Typography variant="h5">Metrics that Matter</Typography>
         <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
-        <Box sx={{ display: 'flex', my: 4 }} spacing={3}>
-          <Button variant={impact === "environmental" ? "contained" : "outlined"} style={{ borderRadius: "100px" }} onClick={() => setImpact("environmental")}>
+        <Box sx={!isActive &&{ display: 'flex', my: 4 }} spacing={3}>
+          <Button variant={impact === "environmental" ? "contained" : "outlined"} 
+          style={isActive?{marginTop:"16px"}:{ borderRadius: "100px", padding:"16px" }} 
+          onClick={() => setImpact("environmental")}>
             Environmental Impact
           </Button>
-          <Button variant={impact === "social" ? "contained" : "outlined"} style={{ borderRadius: "100px", marginLeft: "32px" }} onClick={() => setImpact("social")}>
+          <Button variant={impact === "social" ? "contained" : "outlined"} 
+          style={isActive?{margin:"16px 0px"}:{ borderRadius: "100px", marginLeft: "32px" }}
+           onClick={() => setImpact("social")}>
             Social Impact
           </Button>
         </Box>
