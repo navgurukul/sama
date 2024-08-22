@@ -70,7 +70,7 @@ const EnvironmenttalImpact = () => {
                             {Object.entries(data.wasteBreakup).map(([material, amount]) => (
                                 <Typography key={material} variant="body2" style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <TypographyBody2>{material}</TypographyBody2>
-                                    <TypographyBody2>{amount} kg</TypographyBody2>
+                                    <TypographyBody2>{amount} </TypographyBody2>
                                 </Typography>
                             ))}
                         </CardContent>

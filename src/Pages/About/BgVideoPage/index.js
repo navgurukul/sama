@@ -17,15 +17,13 @@ const BgVideoPage = () => {
                         sx={BoxStyle(showVideo)}
                         onClick={handlePlayButtonClick}
                     >
-                        
-                          
-                            <iframe
-                                src="https://www.youtube.com/embed/5_G_Q4rSiUU?autoplay=1"
-                                style={IframeStyle}
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                                title="Embedded Video"
-                            ></iframe>
+                        <iframe
+                            src="https://www.youtube.com/embed/5_G_Q4rSiUU?"
+                            style={IframeStyle}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            title="Embedded Video"
+                        ></iframe>
                       
                     </Box>
                 </Grid>

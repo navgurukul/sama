@@ -34,9 +34,9 @@ export const data = [
                 description: "girl students were affected by the COVID-19 lockdown, jeopardizing their education and future prospects."
             },
             {
-                value: "44%",
+                value: "17%",
                 moneyLogo:moneyLogo,
-                description: "of urban students have internet access, but only 17% in rural areas do, and a mere 2% of the poorest income groups have access to a computer with internet."
+                description: "of rural students have internet access in rural areas, whereas 44% in urban areas do and a mere 2% of the poorest income groups have access to a computer with internet."
             }
         ]
     }
