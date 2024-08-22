@@ -90,11 +90,11 @@ const TestimonialSlider = () => {
 
   return (
     <Box style={{ backgroundColor: "#5C785A" }}>
-      <Container sx={isMobile?{py:4}:{ py: 7 }}>
+      <Container sx={isMobile?{py:4}:{ py: 10 }}>
         <Typography variant="h5" style={{ color: "#FFF" }}>
           Student Speaks
         </Typography>
-        <Box display="flex" alignItems="center" position="relative">
+        <Box display="flex" alignItems="center" position="relative" mt={3}>
           <IconButton onClick={handlePrevClick} style={{ position: "absolute", left: "-100px" }}>
             <ChevronLeftIcon style={{ color: "#FFFFFF" }} />
           </IconButton>
