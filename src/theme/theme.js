@@ -2,86 +2,148 @@ import { createTheme } from "@mui/material/styles";
 import { breakpoints } from "./constant";
 let theme = createTheme();
 
+const shadows = theme.shadows;
+shadows[2] =
+  "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)";
+
 theme = createTheme(theme, {
-    breakpoints,
-    palette: {
-      mode: "light",
-      default: {
-        light: "#0066FF",
-        main: "#fff",
-        contrastText: "#FFCC00",
-      },
-      primary: {
-        main: "#48A145",
-        light: "#E9F5E9",
-        dark: "#3A8137",
-        lighter: "#FAFAFA",
-      },
-      secondary: {
-        main: "#FFCC00",
-        light: "#FFF5CC",
-        dark: "#CCA300",
-        contrastText: "#2E2E2E",
-      },
-      background: {
-        default: "#FFFFFF",
-        paper: "#FFFFFF",
-      },
-      dark: {
-        main: "#2E2E2E",
-        contrastText: "#FFFFFF",
+  breakpoints,
+  palette: {
+    mode: "light",
+    default: {
+      contrastText: "#4A4A4A",
+    },
+    primary: {
+      main: "#5C785A",
+      light: "#F0F4EF",
+      medium: "#CED7CE",
+    },
+    secondary: {
+      main: "#453722",
+    },
+    tertiary: {
+      main: "#B25F65",
+    },
+
+    background: {
+      default: "#F8F3F0",
+    },
+    dark: {
+      main: "#4A4A4A",
+    },
+    white: {
+      main: "#FFF",
+    },
+    grey: {
+      main: "#E0E1E0",
+      med: "#BDBDBD",
+      light: "#E0E0E0",
+    },
+  },
+  typography: {
+    fontFamily: "Raleway",
+    fontSize: 18,
+
+
+
+    h4: {
+      fontSize: "48px",
+      lineHeight: "130%",
+      fontFamily: "Montserrat, sans-serif",
+      fontStyle: "normal",
+      fontWeight: 700,
+    },
+    h5: {
+      fontSize: "32px",
+      lineHeight: "130%",
+      fontFamily: "Montserrat, sans-serif",
+      fontStyle: "normal",
+      fontWeight: 700,
+    },
+    h6: {
+      fontSize: "24px",
+      lineHeight: "130%",
+      fontFamily: "Montserrat",
+      fontStyle: "normal",
+      fontWeight: 700,
+    },
+    
+    captions: {
+      fontSize: "12px",
+      lineHeight: "130%",
+    },
+    subtitle1: {
+      fontSize: "18px ",
+      lineHeight: "170%",
+      fontStyle: "normal",
+      fontWeight: 400,
+      fontFamily: "Raleway",
+    },
+    subtitle2: {
+      fontSize: "14px",
+      lineHeight: "170%",
+      fontStyle: "normal",
+      fontWeight: 700,
+      fontFamily: "Raleway",
+
+    },
+    body1: {
+      fontSize: "18px",
+      lineHeight: "170%",
+      fontStyle: "normal",
+      fontWeight: 400,
+      fontFamily: "Raleway",
+    },
+    body2: {
+      fontSize: "12px",
+      lineHeight: "170%",
+
+    },
+
+    button: {
+      fontSize: "18px",
+      lineHeight: "170%",
+      textTransform: "none",
+      fontFamily: "Raleway",
+      fontWeight: 700,
+    },
+  },
+});
+theme.components = {
+  MuiInputBase: {
+    styleOverrides: {
+      root: {
+        backgroundColor: "#FFFFFF",  
+        fontFamily: "Montserrat, sans-serif"
       },
     },
-    typography: {
-        fontFamily: "Josefin Sans",
-        fontSize: 18,
-        h1: {
-          letterSpacing: "-1px",
-          fontWeight: 600,
-          fontSize: "6rem",
-          lineHeight: "130%",
-          fontFamily: "Josefin Sans",
-          [theme.breakpoints.down("sm")]: {
-            fontSize: "4rem",
-          },
-        },
-        button: {
-            fontSize: "1.125rem",
-            fontFamily: "Noto Sans",
-            [theme.breakpoints.down("sm")]: {
-              fontSize: "1rem",
-            },
-            lineHeight: "170%",
-            fontWeight: 700,
-            textTransform: "none",
-          },
-          code: {
-            fontFamily: "IBM Plex Mono",
-            fontSize: "1.125rem",
-            lineHeight: "170%",
-            fontWeight: 400,
-            [theme.breakpoints.down("sm")]: {
-              fontSize: "1rem",
-            },
-          },
-        },
-    });
-    theme.components = {
-        MuiCardMedia: {
-          defaultProps: {
-            disableRipple: true,
-          },
-          styleOverrides: {
-            root: { width: 64 },
-          },
-        },
-        MuiButton: {
-            styleOverrides: {
-              root: {
-                borderRadius: "8px",
-                height: "48px",
-              },
-            },
-          },
-        }
-    export default theme;
+  },
+  MuiCardMedia: {
+    defaultProps: {
+      disableRipple: true,
+    },
+    styleOverrides: {
+      root: { width: 64 },
+    },
+  },
+  MuiButton: {
+    styleOverrides: {
+      root: {
+        borderRadius: "100px",
+        height: "48px",
+        
+        "&:hover": {
+      backgroundColor: "#5C785A",
+      color: '#FFFFFF',
+    },
+
+      },
+    },
+  },
+
+  
+
+
+  
+};
+export default theme;
