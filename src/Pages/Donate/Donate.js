@@ -123,7 +123,7 @@ function Donation() {
     } else {
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbzpJM1YwhElNojDizOb1ksc56XxwfWuZzpz-T3A9Tw9vh90XIAP5E__FQZT-idBRY4DBw/exec",
+        "https://script.google.com/macros/s/AKfycbxvHdTYd1lfVq_Y3r4w873GXwCFXP5MowPke5q8eWayEto81IxgtSQ37efu2s9I8zd5bg/exec",
           {
             method: "POST",
             headers: {
