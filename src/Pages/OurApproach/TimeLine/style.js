@@ -1,44 +1,13 @@
+
 import { styled } from '@mui/material/styles';
-import { Typography, Box } from '@mui/material';
-// import bgImage from "./assets/Group 26.svg";
-import { border } from '@mui/system';
-export const StepCard = styled(Box)({
-    padding: 16,
-    backgroundColor: '#ffffff',
-    border: '1px solid #ddd',
-    borderRadius: 8,
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-});
-
-export const StepNumber = styled(Typography)({
-    fontSize: "40px",
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: "white",
-    border: "7px solid white",
-    borderRadius: "100px",
-    width: "60px",
-    height: "60px",
-    textAlign: "center",
-    background: "rgba(92, 120, 90, 1)",
-});
-
+import { Typography } from '@mui/material';
+import bgImage from "./assets/Group.svg";
 export const StepTitle = styled(Typography)({
     fontSize: "24px",
     fontWeight: 'bold',
     fontFamily: "Montserrat",
     lineHeight: "31.6px",
     color: "var(--primary, #5C785A)",
-});
-
-export const StepDescription = styled(Typography)({
-    marginBottom: 8,
-    color: "var(--text, #4A4A4A)",
-    fontSize: "18px",
-    fontStyle: "normal",
-    fontWeight: 400,
-    fontFamily: "Raleway",
-    lineHeight: "20.6px",
 });
 
 export const Item = {
@@ -66,7 +35,6 @@ export const boxStyle = {
     position: 'relative',
     width: { md: '900%', lg: '100%' },
     height: { xs: 'auto', sm: '900px', md: '1000px', lg: '1000px' },
-    // backgroundImage: `url(${bgImage})`,
     backgroundSize: 'cover',
     backgroundPosition: 'right',
     backgroundRepeat: 'no-repeat',
@@ -106,6 +74,7 @@ export const typographyTitleStyle = {
     mb: 2,
 
 };
+
 export const h6 = {
     fontFamily: "Montserrat",
     fontWeight: 700,
@@ -131,3 +100,253 @@ export const styles = {
     }
 
 }
+
+
+
+
+const classes = {
+    container: {
+        paddingBottom: "80px"
+    },
+    lgContainer: {
+        padding: '16px',
+    },
+    gridItem: {
+        // Styles for grid item
+    },
+    innerBox: {
+        // Styles for inner box
+    },
+    h6: {
+        // Styles for h6
+    },
+    bgImageBox: {
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'contain',
+        backgroundPosition: 'right',
+        backgroundRepeat: 'no-repeat',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'left',
+    },
+    stepNumberBox: {
+        display: 'flex',
+        marginLeft: { md: 5 },
+        justifyContent: {
+            xs: 'center',
+            sm: 'center',
+            md: 'flex-start'
+        },
+        alignItems: 'center',
+    },
+    typographyBold: {
+        fontWeight: 700,
+        color: "var(--text, #4A4A4A)"
+    },
+    listItem: {
+        marginTop: "40px"
+    },
+    stepContainer: {
+        position: "relative",
+        top: "70px"
+    },
+    boxStyle: {
+        width: { lg: "531px", sm: "431px", xs: "280px" },
+        height: { lg: "60px", sm: "50px", xs: "40px" },
+        borderRadius: "32px",
+        background: "rgba(206, 215, 206, 1)",
+        position: "relative",
+        bottom: { lg: "30px", sm: "25px", xs: "20px" },
+        padding: { lg: "12px", sm: "9px", xs: "6px" },
+    },
+    typographyStyle: {
+        position: "relative",
+        top: "50px",
+        left: { lg: "35px", sm: "20px", xs: "15px" },
+        fontSize: { lg: "1.25rem", sm: "1rem", xs: "0.875rem" },
+    },
+    boxStyle: {
+        width: { lg: "531px", sm: "329px", xs: "280px" },
+        height: { lg: "60px", sm: "50px", xs: "40px" },
+        borderRadius: "32px",
+        background: "rgba(206, 215, 206, 1)",
+        position: "relative",
+        bottom: { lg: "30px", sm: "25px", xs: "20px" },
+        padding: { lg: "12px", sm: "9px", xs: "6px" },
+    },
+    typographyStyle: {
+        position: "relative",
+        top: "7px",
+        left: { lg: "35px", sm: "20px", xs: "15px" },
+        fontSize: { lg: "1.25rem", sm: "1rem", xs: "0.875rem" },
+    },
+    responsiveTypographyStyle: {
+        fontSize: {
+            lg: "1.25rem",
+            md: "1rem",
+            sm: "0.875rem",
+            xs: "0.75rem",
+        },
+        textAlign: {
+            xs: "center",
+            sm: "left",
+        },
+    },
+    typographystyle: {
+        fontSize: {
+            lg: "1.25rem",
+            md: "1rem",
+            sm: "0.875rem",
+            xs: "0.75rem",
+        },
+        textAlign: {
+            xs: "center",
+            sm: "left",
+        },
+    },
+    titleBox: {
+        position: 'relative',
+        left: { lg: '240px', md: "200px" },
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '60px',
+        textAlign: 'center',
+        background: "rgba(206, 215, 206, 1)",
+        bottom: "20px",
+        padding: "16px, 32px, 16px, 32px",
+        borderRadius: "32px",
+        width: "431px",
+    },
+    containerBox: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '16px',
+        position: "relative",
+        bottom: "30px",
+    },
+    imageStyle: {
+        width: '200px',
+        marginBottom: '8px',
+    },
+    textStyle: {
+        fontSize: {
+            lg: "1.25rem",
+            md: "1rem",
+            sm: "0.875rem",
+            xs: "0.75rem",
+        },
+        textAlign: {
+            xs: "center",
+            sm: "left",
+        },
+    },
+    educational: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '16px',
+        position: "relative",
+        height: "150px",
+    },
+    InclusionPipelineBox: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '16px',
+        height: "160px",
+        position: "relative",
+        top: "150px",
+        right: { lg: "250px", md: "215px" },
+    },
+    interventions: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '16px',
+        position: "relative",
+        height: "150px",
+        top: "90px",
+    },
+    ecosystem: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '16px',
+        position: "relative",
+        height: "90px",
+        bottom: "160px",
+    },
+    communities: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '16px',
+        position: "relative",
+        height: "150px",
+    },
+    Digital: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '16px',
+        position: "relative",
+        height: "150px",
+        top: "150px",
+        right: { lg: "250px", md: "215px" }
+    },
+    lifecycle: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '16px',
+        position: "relative",
+        height: "150px",
+        top: "50px"
+    },
+    analytics: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '16px',
+        position: "relative",
+        height: "150px",
+        position: "relative",
+        bottom: "180px"
+
+    },
+    impact: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '16px',
+        position: "relative",
+        height: "160px",
+        bottom: "50px"
+    },
+    protection: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '16px',
+        position: "relative",
+        height: "50px",
+        position: "relative",
+        bottom: "170px"
+    }
+
+};
+
+export default classes;

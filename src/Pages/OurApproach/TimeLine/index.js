@@ -1,204 +1,423 @@
-import React from "react";
-import { Grid, Box, Container, Typography } from "@mui/material";
-import {
-  StepNumber,
-  StepTitle,
-  StepDescription,
-  container,
-  lgContainer,
-  h6,
-  styles,
-} from "./style";
-import { boxStyle, gridItemStyle, innerBoxStyle } from "./style";
-import { steps } from "../data";
-import bgImage from "./assets/Group.svg";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { breakpoints } from "../../../theme/constant";
-
+import React from 'react';
+import Img1 from "./assets/Frame (1).png";
+import Img2 from "./assets/Frame (2).png";
+import Img3 from "./assets/Frame (3).png";
+import Img4 from "./assets/Frame (4).png";
+import Img5 from "./assets/Frame (5).png";
+import Img6 from "./assets/Frame (6).png";
+import Group from "./assets/Group (2).png";
+import Frame from "./assets/Frame.png";
+import designers from "./assets/group-designers-working-with-various-tools 1.png"
+import { Grid, Box, Container, Typography } from '@mui/material';
+import "../OurApproach.css";
+import "./style.css";
+import classes from "./style.js";
 const TimeLine = () => {
-  const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
   return (
     <>
-      <Box style={container} paddingBottom="80px">
-        <Container maxWidth="lg" style={lgContainer}>
-          <Grid
-            container
-            rowSpacing={1}
-            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-            sx={{ display: { xs: "flex", lg: "none" } }}
-          >
-            <Grid item xs={12} lg={8} md={10} sm={10}>
-              <Typography variant="h5" my={2}>
-               This is how we transform your donated laptops into tools of impact!
-              </Typography>
-              <Typography>
-                Our 3D Model forms the backbone of our approach. Through this
-                comprehensive approach, we transform e-waste into educational
-                tools , thereby providing impact reports to our donors.
+      <Box paddingBottom="80px" sx={{ background: "rgba(248, 243, 240, 1)" }}>
+        <Container maxWidth="xl">
+          <Grid container spacing={2}>
+            <Grid item xs={12} lg={5} md={7} sx={{ mt: "80px" }}>
+              <Typography variant='h5' color="primary.main">Our 3D model:</Typography>
+              <Typography variant='body1' sx={{ mt: 3 }}>Our 3D Model forms the backbone of our approach.
+                Through this comprehensive approach, we transform e-waste
+                into educational tools , thereby providing impact reports
+                to our donors.
               </Typography>
             </Grid>
-            {steps.map((step) => (
-              <Grid item xs={12} sm={12} md={4} key={step.number}>
-                <StepNumber sx={{ ml: 4 }}>{step.number}</StepNumber>
-                <ul style={{ marginTop: "30px" }}>
-                  <StepTitle>{step.title}</StepTitle>
-                  {step.description.map((desc, index) => {
-                    const [boldText, normalText] = desc.split(":");
-                    return (
-                      <li key={index}>
-                        <StepDescription>
-                          <Typography
-                            component="span"
-                            sx={{ fontWeight: "bold", fontWeight: 700 }}
-                          >
-                            {boldText}:
-                          </Typography>
-                          {normalText}
-                        </StepDescription>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </Grid>
-            ))}
+          </Grid>
+          <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2 }}
+            sx={{ mt: 5, display: { xs: 'flex', lg: 'none', md: "none" } }}>
+            <main className="container-main" >
+              <Box className="container-timeline">
+                <Box className="content-timeline active-content-timeline">
+                  <Box className="header-timeline">
+                    <Box sx={classes.boxStyle}>
+                      <Typography
+
+                        color="primary.main"
+                        variant="h6"
+
+                        sx={classes.typographyStyle}
+                      >
+                        Digital Resource Recovery
+                      </Typography>
+                    </Box>
+                    <span className="marker-timeline"></span>
+                    <img style={{ width: "170px" }} src={Group}></img>
+                  </Box>
+                  <Box className="body-timeline">
+                    <Typography
+                      variant='body1'
+                      sx={classes.typographystyle}
+                    >
+                      We collect end-of-life laptops from corporate partners like you
+                    </Typography>
+                  </Box>
+
+                </Box>
+                <Box className="content-timeline">
+                  <Box className="header-timeline">
+                    <span className="marker-timeline"></span>
+                    <img style={{ width: "170px" }} src={Frame}></img>
+                  </Box>
+                  <Box className="body-timeline">
+                    <Typography
+                      variant='body1'
+                      sx={classes.typographystyle}
+                    >
+                      We ensure complete data erasure and privacy protection
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box className="content-timeline">
+                  <Box className="header-timeline">
+                    <span className="marker-timeline"></span>
+                    <img style={{ width: "170px" }} src={Img1}></img>
+                  </Box>
+                  <Box className="body-timeline">
+                    <Typography
+                      variant='body1'
+                      sx={classes.typographystyle}
+
+                    >
+                      We restore and upgrade these laptops for educational use
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box className="content-timeline">
+                  <Box className="header-timeline">
+
+                    <Box sx={classes.boxStyle} style={{ marginTop: "40px" }}>
+                      <Typography
+                        color="primary.main"
+                        variant="h6"
+                        sx={classes.typographyStyle}
+                      >
+                        Digital Inclusion Pipeline
+                      </Typography>
+                    </Box>
+                    <span className="marker-timeline"></span>
+                    <img style={{ width: "170px" }} src={Img2}></img>
+                  </Box>
+                  <Box className="body-timeline">
+                    <Typography
+                      variant='body1'
+                      sx={classes.typographystyle}
+                    >
+                      We create livelihood opportunities through our interventions
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box className="content-timeline">
+                  <Box className="header-timeline">
+                    <span className="marker-timeline"></span>
+                    <img style={{ width: "170px" }} src={designers}></img>
+                  </Box>
+                  <Box className="body-timeline">
+                    <Typography
+                      variant='body1'
+                      sx={classes.typographystyle}
+                    >
+                      We provide an ecosystem of pre-installed online and offline learning resources
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box className="content-timeline">
+                  <Box className="header-timeline">
+                    <span className="marker-timeline"></span>
+                    <img style={{ width: "170px" }} src={Img5}></img>
+                  </Box>
+                  <Box className="body-timeline">
+                    <Typography
+                      variant='body1'
+                      sx={classes.typographystyle}
+                    >
+                      We connect with underserved communities through 200+ verified NGOs/Government Institutions
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box className="content-timeline">
+                  <Box className="header-timeline">
+                    <span className="marker-timeline"></span>
+                    <Box sx={classes.boxStyle} style={{ marginTop: "30px" }}>
+                      <Typography
+                        color="primary.main"
+                        variant="h6"
+                        sx={classes.typographyStyle}
+                      >
+                        Digital Tracking and Reporting
+                      </Typography>
+                    </Box>
+                    <img src={Img2} style={{ width: "170px" }}></img>
+                  </Box>
+                  <Box className="body-timeline">
+                    <Typography
+                      variant='body1'
+                      sx={classes.typographystyle}
+                    >
+                      We capture data on laptop’s lifecycle and community impact
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box className="content-timeline">
+                  <Box className="header-timeline">
+                    <span className="marker-timeline"></span>
+                    <img style={{ width: "170px" }} src={Img5}></img>
+                  </Box>
+                  <Box className="body-timeline">
+                    <Typography
+                      variant='body1'
+                      sx={classes.typographystyle}
+                    >
+                      We generate transparent, real-time analytics on ESG outcomes
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box className="content-timeline">
+                  <Box className="header-timeline">
+                    <span className="marker-timeline"></span>
+                    <img src={Img6}></img>
+                  </Box>
+                  <Box className="body-timeline">
+                    <Typography
+                      variant='body1'
+                      sx={classes.typographystyle}
+                    >
+                      We utilize insights to improve processes and maximize impact
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </main>
           </Grid>
 
-          <Grid
-            container
-            spacing={2}
-            sx={{ display: { xs: "none", lg: "flex" }, height: "auto" }}
-          >
-            <Box
-              sx={{
-                backgroundImage: `url(${bgImage})`,
-                backgroundSize: "contain",
-                backgroundPosition: "right",
-                backgroundRepeat: "no-repeat",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "left",
-              }}
-            >
-              <Grid Container marginTop="48px">
-                <Grid item xs={12} md={6} sm={12}>
-                  <Typography style={styles.h5} variant="h5" mb = {2}>
-                  This is how we transform your donated laptops into tools of impact!
-                  </Typography>
-                  <Typography>
-                    Our 3D Model forms the backbone of our approach. Through
-                    this comprehensive approach, we transform e-waste into
-                    educational tools , thereby providing impact reports to our
-                    donors.
-                  </Typography>
-                </Grid>
-              </Grid>
+          <Grid container spacing={2} sx={{ display: { xs: 'none', lg: 'flex', md: 'flex' }, height: "auto" }}>
+            <div className="timeline" sx={{ border: "1px solid red" }}>
+              <ul>
+                <li>
+                  <Box
+                    sx={classes.titleBox}
+                  >
+                    <Typography variant='h6' color="primary.main">
+                      Digital Tracking and Reporting
+                    </Typography>
+                  </Box>
 
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={3} sm={12}></Grid>
-                <Grid item xs={12} md={5} sm={12}>
-                  <Box sx={gridItemStyle}>
-                    <Box sx={innerBoxStyle}>
-                      <StepTitle style={h6} variant="h6" sx={{ mt: 2 }}>
-                        {steps[0].title}
-                      </StepTitle>
-                      <ul>
-                        {steps[0].description.map((desc, idx) => {
-                          const [boldText, normalText] = desc.split(":");
-                          return (
-                            <li>
-                              <StepDescription>
-                                <Typography
-                                  component="span"
-                                  sx={{ fontWeight: "bold", fontWeight: 700 }}
-                                >
-                                  {boldText}:
-                                </Typography>
-                                {normalText}
-                              </StepDescription>
-                            </li>
-                          );
-                        })}
-                      </ul>
+                  <Box sx={classes.containerBox}>
+                    <img
+                      style={classes.imageStyle}
+                      src={Group}
+                      alt="Digital Tracking and Reporting"
+                    />
+                    <Typography variant='body1' sx={classes.textStyle}>
+                      We collect end-of-life laptops from corporate partners like you
+                    </Typography>
+                  </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={classes.protection}
+                  >
+                    <img
+                      style={{ width: '200px', marginBottom: '8px' }}
+                      src={Frame}
+                      alt="Digital Tracking and Reporting"
+                    />
+                    <Typography variant='body1'>
+                      We ensure complete data erasure and privacy protection
+                    </Typography>
+                  </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={classes.educational}
+                  >
+                    <img
+                      style={{ width: '200px', marginBottom: '8px' }}
+                      src={Img1}
+                      alt="Digital Tracking and Reporting"
+                    />
+                    <Typography variant='body1'>
+                      We restore and upgrade these laptops for educational use
+                    </Typography>
+                  </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={classes.InclusionPipelineBox}
+                  >
+                    <Box sx={{ background: "rgba(206, 215, 206, 1)", width: "431px", height: "60px", borderRadius: "32px" }}>
+                      <Typography color="primary.main" variant='h6' sx={{ position: "relative", top: "12px" }}>Digital Inclusion Pipeline</Typography>
                     </Box>
                   </Box>
-                </Grid>
-                <Grid item md={4} sm={3}></Grid>
-              </Grid>
+                </li>
+                <li>
+                  <Box
+                    sx={classes.interventions}
+                  >
+                    <img
+                      style={{ width: '200px', marginBottom: '8px' }}
+                      src={designers}
+                      alt="Digital Tracking and Reporting"
+                    />
+                    <Typography variant='body1'>
+                      We create livelihood opportunities through our interventions
+                    </Typography>
+                  </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      padding: '16px',
+                      position: "relative",
+                      height: "15px",
 
-              <Grid container spacing={3}>
-                <Grid item md={4} sm={2}></Grid>
-                <Grid
-                  item
-                  xs={12}
-                  md={6}
-                  sm={10}
-                  sx={{ position: "relative", top: "70px" }}
-                >
-                  <Box sx={gridItemStyle}>
-                    <Box sx={innerBoxStyle}>
-                      <StepTitle>{steps[1].title}</StepTitle>
-                      <ul>
-                        {steps[1].description.map((desc, idx) => {
-                          const [boldText, normalText] = desc.split(":");
-                          return (
-                            <li>
-                              <StepDescription>
-                                <Typography
-                                  variant="subtitle1"
-                                  component="span"
-                                  sx={{ fontWeight: "bold", fontWeight: 700 }}
-                                >
-                                  {boldText}:
-                                </Typography>
-                                {normalText}
-                              </StepDescription>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </Box>
+                    }}
+                  >
+
                   </Box>
-                </Grid>
-              </Grid>
-              <Grid container spacing={3}>
-                <Grid item md={2} sm={2}></Grid>
-                <Grid
-                  item
-                  xs={12}
-                  md={5}
-                  sm={7}
-                  style={{ position: "relative", top: "70px" }}
-                >
-                  <Box sx={gridItemStyle}>
-                    <Box sx={innerBoxStyle}>
-                      <StepTitle variant="h6">{steps[2].title}</StepTitle>
-                      <ul>
-                        {steps[2].description.map((desc, idx) => {
-                          const [boldText, normalText] = desc.split(":");
-                          return (
-                            <li>
-                              <StepDescription>
-                                <Typography
-                                  component="span"
-                                  sx={{ fontWeight: "bold", fontWeight: 700 }}
-                                >
-                                  {boldText}:
-                                </Typography>
-                                {normalText}
-                              </StepDescription>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      padding: '16px',
+                      position: "relative",
+                      height: "135px",
+                    }}
+                  >
+
                   </Box>
-                </Grid>
-                <Grid item md={5} sm={4}></Grid>
-              </Grid>
-            </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={classes.ecosystem}
+                  >
+                    <img
+                      style={{ width: '200px', marginBottom: '8px' }}
+                      src={Img2}
+                      alt="Digital Tracking and Reporting"
+                    />
+                    <Typography variant='body1'>
+                      We provide an ecosystem of pre-installed online and offline learning resources
+                    </Typography>
+                  </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={classes.communities}
+                  >
+                    <img
+                      style={{ width: '200px', marginBottom: '8px' }}
+                      src={Img3}
+                      alt="Digital Tracking and Reporting"
+                    />
+                    <Typography variant='body1'>
+                      We connect with underserved communities through 200+ verified NGOs/Government Institutions
+                    </Typography>
+                  </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={classes.Digital}
+                  >
+                    <Box sx={{ width: "431px", height: "60px", background: "rgba(206, 215, 206, 1)", borderRadius: "32px" }}>
+                      <Typography color="primary.main" variant='h6' sx={{ position: "relative", top: "12px" }}>Digital Tracking and Reporting</Typography>
+                    </Box>
+
+                  </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={classes.lifecycle}
+                  >
+                    <img
+                      style={{ width: '200px', marginBottom: '8px' }}
+                      src={Img4}
+                      alt="Digital Tracking and Reporting"
+                    />
+                    <Typography variant='body1'>
+                      We capture data on laptop’s lifecycle and community impact
+                    </Typography>
+                  </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      padding: '16px',
+                      position: "relative",
+                      height: "10px",
+                    }}
+                  >
+
+                  </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      padding: '16px',
+                      position: "relative",
+                      height: "150px",
+                      top: "30px"
+                    }}
+                  >
+
+                  </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={classes.analytics}
+                  >
+                    <img
+                      style={{ width: '200px', marginBottom: '8px' }}
+                      src={Img5}
+                      alt="Digital Tracking and Reporting"
+                    />
+                    <Typography variant='body1'>
+                      We generate transparent, real-time analytics on ESG outcomes
+                    </Typography>
+                  </Box>
+                </li>
+                <li>
+                  <Box
+                    sx={classes.impact}
+                  >
+                    <img
+                      style={{ width: '200px', marginBottom: '8px' }}
+                      src={Img6}
+                      alt="Digital Tracking and Reporting"
+                    />
+                    <Typography variant='body1'>
+                      We utilize insights to improve processes and maximize impact
+                    </Typography>
+                  </Box>
+                </li>
+
+              </ul>
+              <Box style={{ clear: "both" }}></Box>
+            </div>
           </Grid>
         </Container>
-      </Box>
+      </Box >
     </>
   );
 };
