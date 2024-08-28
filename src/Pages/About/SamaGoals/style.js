@@ -1,4 +1,4 @@
-import { border, borderBottom, margin, padding, positions } from "@mui/system";
+import { border, borderBottom, margin, padding, positions, width } from "@mui/system";
 
 const samaGoalsStyles = {
     boxContainer: {
@@ -26,6 +26,8 @@ const samaGoalsStyles = {
             borderRadius: '60px',
             padding: '10px',
             marginLeft: "8px",
+            // width:"20px",
+            // border:"1px solid red"
         },
         text: {
             mt: 2,
