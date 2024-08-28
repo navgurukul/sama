@@ -5,7 +5,7 @@ import { classes } from './style';
 
 function Overview() {
   return (
-    <Container maxWidth="xl" >
+    <Container maxWidth="xl">
       <Grid container sx={classes.ContainerStyle}>
         <Grid item xs={12} md={12} lg={8}>
           <Paper elevation={3} sx={classes.PaperStyle}>

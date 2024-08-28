@@ -1,0 +1,257 @@
+  .timeline {
+    position: relative;
+    margin: 50px auto;
+    padding: 40px 0;
+    width: 1000px;
+    box-sizing: border-box;
+  }
+
+  .timeline:before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 16px;
+    height: 100%;
+    background: rgba(224, 224, 224, 1);
+  }
+
+  .timeline ul {
+    padding: 0;
+    margin: 0;
+  }
+
+  .timeline ul li {
+    list-style: none;
+    position: relative;
+    width: 50%;
+    padding: 20px 40px;
+    box-sizing: border-box;
+  }
+
+  .timeline ul li:nth-child(odd) {
+    float: left;
+    text-align: right;
+    clear: both;
+  }
+
+  .timeline ul li:nth-child(even) {
+    float: right;
+    text-align: left;
+    clear: both;
+  }
+
+  .content1 {
+    padding-bottom: 20px;
+    position: relative;
+    top: 140px
+  }
+
+  .timeline ul li:nth-child(odd):before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 24px;
+    right: -16px;
+    background: rgba(92, 120, 90, 1);
+    border-radius: 50%;
+    box-shadow: 0 0 0 10px rgba(224, 224, 224, 1);
+    top: 210px;
+  }
+
+  .timeline ul li:nth-child(even):before {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    top: 24px;
+    left: -7px;
+    background: rgba(92, 120, 90, 1);
+    border-radius: 50%;
+    box-shadow: 0 0 0 10px rgba(224, 224, 224, 1);
+  }
+
+  .timeline ul li h3 {
+    padding: 0;
+    margin: 0;
+    color: rgba(92, 120, 90, 1);
+    font-weight: 600;
+
+  }
+
+  .timeline ul li p {
+    margin: 10px 0 0;
+    padding: 0;
+  }
+
+  .timeline ul li .time h4 {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+  }
+
+  .timeline ul li:nth-child(odd) .time {
+    height: 40px;
+    background: rgba(224, 224, 224, 1);
+    color: #fff;
+    border-radius: 18px;
+    box-shadow: 0 0 0 3px rgba(224, 224, 224, 1);
+  }
+
+  .timeline ul li:nth-child(even) .time {
+    position: relative;
+    width: 331px;
+    height: 40px;
+    left: -165px;
+    margin: 0;
+    background: rgba(224, 224, 224, 1);
+    color: #fff;
+    border-radius: 18px;
+    box-shadow: 0 0 0 3px rgba(224, 224, 224, 1);
+  }
+
+  @media(max-width:1000px) {
+    .timeline {
+      width: 100%;
+    }
+  }
+
+  @media(max-width:767px) {
+    .timeline {
+      width: 100%;
+      padding-bottom: 0;
+    }
+
+    h1 {
+      font-size: 40px;
+      text-align: center;
+    }
+
+    .timeline:before {
+      left: 20px;
+      height: 100%;
+    }
+
+    .timeline ul li:nth-child(odd),
+    .timeline ul li:nth-child(even) {
+      width: 100%;
+      text-align: left;
+      padding-left: 50px;
+      padding-bottom: 50px;
+    }
+
+    .timeline ul li:nth-child(odd):before,
+    .timeline ul li:nth-child(even):before {
+      top: -18px;
+      left: 16px;
+    }
+
+    .timeline ul li:nth-child(odd) .time,
+    .timeline ul li:nth-child(even) .time {
+      top: -30px;
+      left: 50px;
+      right: inherit;
+    }
+  }
+
+
+  .timeline ul li .time {
+    position: relative;
+    margin-bottom: 0px;
+  }
+
+  .timeline ul li .content img {
+    max-width: 100%;
+    height: auto;
+  }
+
+
+
+  *,
+  *::after,
+  *::before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  p {
+    line-height: 1.8;
+  }
+
+  time {
+    line-height: 1.6;
+  }
+
+  .container-main {
+    min-height: 40vh;
+    display: grid;
+    place-content: center;
+    padding: 1rem;
+  }
+
+  .container-timeline {
+    max-width: 760px;
+    border-radius: 12px;
+     background: "rgba(248, 243, 240, 1)"
+  }
+
+  .content-timeline .header-timeline,
+  .content-timeline .body-timeline {
+    padding-left: 25.6px;
+    border-left: 16px solid rgba(224, 224, 224, 1);
+  }
+
+  .body-timeline {
+    padding-bottom: 1rem;
+  }
+
+  .content-timeline:last-child .body-timeline {
+    border-left: 3px solid transparent;
+  }
+
+  .header-timeline {
+    position: relative;
+    display: grid;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .title-timeline {
+    font-weight: 600;
+    font-size: 1em;
+    border-bottom: 1px solid gainsboro;
+  }
+
+  .time-timeline {
+    font-size: 0.7em;
+  }
+
+  .marker-timeline {
+    display: block;
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    border-radius: 50% / 50%;
+    background: rgba(92, 120, 90, 1);
+    left: -2.70rem;
+    top: 50%;
+    transform: translate(50%, -50%);
+    border: 9px solid rgba(224, 224, 224, 1);
+  }
+
+  active-content-timeline .marker-timeline {
+    padding: 1.6px;
+    left: -1.25rem;
+    width: 18px;
+    height: 18px;
+    border: 2px solid limegreen;
+    background-color: limegreen;
+    background-clip: content-box;
+    box-shadow: 0 0 15px -2px limegreen;
+  }
+
+  active-content-timeline .title-timeline {
+    font-weight: 700;
+    color: green;
+  }

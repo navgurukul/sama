@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import WaterContaminationLogo from "./assets/WaterContaminationLogo.png";
 import lifecycleLogo from "./assets/lifecycleLogo.png";
@@ -13,8 +15,8 @@ import {
 
 const EnvironmentalImpact = () => {
     return (
-        <Grid container spacing={3} sx={{ p: 3 }}>
-            <Grid item xs={12} md={6} lg={4}>
+        <Grid container spacing={3} sx={{ p: 2 }}>
+            <Grid item xs={12} md={6} lg={4} >
                 <Box sx={clases.card}>
                     <CardContent sx={clases.CardContent}>
                         <Typography variant="subtitle1" color="secondary">
@@ -66,7 +68,7 @@ const EnvironmentalImpact = () => {
                 </Box>
             </Grid>
 
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} md={6} lg={4} sx={{mt:2}}>
                 <Box sx={clases.card}>
                     <CardContent sx={clases.CardContent}>
                         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
@@ -86,7 +88,7 @@ const EnvironmentalImpact = () => {
                 </Box>
             </Grid>
 
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} md={6} lg={4} sx={{mt:2}}>
                 <Box sx={clases.card}>
                     <CardContent sx={clases.CardContent}>
                         <Typography variant="subtitle1">CARBON FOOTPRINT REDUCTION</Typography>
@@ -98,7 +100,7 @@ const EnvironmentalImpact = () => {
                 </Box>
             </Grid>
 
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} md={6} lg={4} sx={{mt:2}}>
                 <CardContent sx={clases.CardContent}>
                     <Grid container spacing={2} sx={{ mt: 1 }}>
                         <Typography variant="h5">Did you know?</Typography>

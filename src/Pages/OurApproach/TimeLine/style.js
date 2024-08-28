@@ -148,7 +148,49 @@ const classes = {
     stepContainer: {
         position: "relative",
         top: "70px"
-    }
+    },
+    boxStyle: {
+        width: { lg: "531px", sm: "431px", xs: "280px" },
+        height: { lg: "60px", sm: "50px", xs: "40px" },
+        borderRadius: "32px",
+        background: "rgba(206, 215, 206, 1)",
+        position: "relative",
+        bottom: { lg: "30px", sm: "25px", xs: "20px" },
+        padding: { lg: "12px", sm: "9px", xs: "6px" },
+    },
+    typographyStyle: {
+        position: "relative",
+        bottom: "45px",
+        left: { lg: "35px", sm: "20px", xs: "15px" },
+        fontSize: { lg: "1.25rem", sm: "1rem", xs: "0.875rem" },
+    },
+    boxStyle: {
+        width: { lg: "531px", sm: "431px", xs: "280px" },
+        height: { lg: "60px", sm: "50px", xs: "40px" },
+        borderRadius: "32px",
+        background: "rgba(206, 215, 206, 1)",
+        position: "relative",
+        bottom: { lg: "30px", sm: "25px", xs: "20px" },
+        padding: { lg: "12px", sm: "9px", xs: "6px" },
+    },
+    typographyStyle: {
+        position: "relative",
+        bottom: "45px",
+        left: { lg: "35px", sm: "20px", xs: "15px" },
+        fontSize: { lg: "1.25rem", sm: "1rem", xs: "0.875rem" },
+    },
+    responsiveTypographyStyle: {
+        fontSize: {
+            lg: "1.25rem",
+            md: "1rem",
+            sm: "0.875rem",
+            xs: "0.75rem",
+        },
+        textAlign: {
+            xs: "center",
+            sm: "left",
+        },
+    },
 };
 
 export default classes;

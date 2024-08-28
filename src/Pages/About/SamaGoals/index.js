@@ -18,6 +18,7 @@ const goals = [
 const SamaGoals = () => {
     return (
         <Box
+            
             sx={classes.BackgroundStyle} 
         >
             <Container maxWidth="xl">

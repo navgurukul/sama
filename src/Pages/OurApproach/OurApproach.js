@@ -1,6 +1,10 @@
 import { Container, Grid, Typography, Box } from "@mui/material";
 import TimeLine from "./TimeLine";
 import moneylogo from "./assets/Sama Internal Edits (1) 1 (2).png";
+import Icon2 from "./assets/Frame 31800 (2).png";
+import Icon3 from "./assets/Frame 31800 (3).png";
+import Icon4 from "./assets/Frame 31800 (4).png";
+import Icon5 from "./assets/Frame 31800.png";
 import clases from "./style";
 
 const OurApproach = () => {
@@ -13,7 +17,7 @@ const OurApproach = () => {
                             <Typography variant="h5" color="white.main">
                                 Our Rationale
                             </Typography>
-                            <Typography variant="body1" color="white.main" sx={{mt:2}}>
+                            <Typography variant="body1" color="white.main" sx={{ mt: 2 }}>
                                 We strongly believe that investing in women's digital education can reap
                                 multifold benefits for society as a whole. As we rapidly advance in technology,
                                 it's crucial to ensure that underserved women aren't left behind. Sama addresses
@@ -44,7 +48,7 @@ const OurApproach = () => {
                         <Grid item xs={12} md={4}>
                             <Box sx={clases.CardContent}>
                                 <Box sx={clases.boxStyle}>
-                                    <img src={moneylogo} alt="money logo" />
+                                    <img src={Icon5} alt="money logo" />
                                     <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
                                         80%
                                     </Typography>
@@ -54,11 +58,10 @@ const OurApproach = () => {
                                 </Typography>
                             </Box>
                         </Grid>
-
                         <Grid item xs={12} md={4}>
                             <Box sx={clases.CardContent}>
                                 <Box sx={clases.boxStyle}>
-                                    <img src={moneylogo} alt="money logo" />
+                                    <img src={Icon2} alt="money logo" />
                                     <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
                                         70%
                                     </Typography>
@@ -78,7 +81,7 @@ const OurApproach = () => {
                         <Grid item xs={12} md={4}>
                             <Box sx={clases.CardContent}>
                                 <Box sx={clases.boxStyle}>
-                                    <img src={moneylogo} alt="money logo" />
+                                    <img src={Icon3} alt="money logo" />
                                     <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
                                         33%
                                     </Typography>
@@ -92,7 +95,7 @@ const OurApproach = () => {
                         <Grid item xs={12} md={4}>
                             <Box sx={clases.CardContent}>
                                 <Box sx={clases.boxStyle}>
-                                    <img src={moneylogo} alt="money logo" />
+                                    <img src={Icon4} alt="money logo" />
                                     <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
                                         158M
                                     </Typography>
@@ -106,7 +109,7 @@ const OurApproach = () => {
                         <Grid item xs={12} md={4}>
                             <Box sx={clases.CardContent}>
                                 <Box sx={clases.boxStyle}>
-                                    <img src={moneylogo} alt="money logo" />
+                                    <img src={Icon5} alt="money logo" />
                                     <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
                                         44%
                                     </Typography>

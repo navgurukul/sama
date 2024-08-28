@@ -46,7 +46,8 @@ export const clases = {
         display: 'flex',
         alignItems: 'center',
     },
-    materialbox: {
+    materialbox:
+    {
         display: 'flex',
         justifyContent: 'space-between',
     },
@@ -58,7 +59,11 @@ export const clases = {
         },
     },
     container: {
-        width: '336px',
+        width: '200px',
+    },
+    Container: {
+        width: '300px',
+        marginLeft: "20px"
     },
     active: {
         backgroundColor: 'primary',

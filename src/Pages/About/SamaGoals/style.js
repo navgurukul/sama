@@ -2,6 +2,7 @@ const classes = {
     BackgroundStyle: {
         py: 10,
         mt: 14,
+        background: "var(--background, #F8F3F0)"
     },
     img: {
         width: '50px',

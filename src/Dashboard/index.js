@@ -4,10 +4,12 @@ import SocialImpactPage from "./SocialImpact";
 import EnvironmentalImpact from './EnvironmentalImpact';
 import { clases } from './style';
 function DashboardPage() {
+
   const [activeTab, setActiveTab] = useState(0);
   const handleButtonClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+
   return (
     <Container maxWidth="xxl">
       <Grid container spacing={2}>
@@ -23,7 +25,7 @@ function DashboardPage() {
         <Grid item xs={12} lg={7} md={7} sx={{ ml: 2, mt: 3 }}>
           <Grid container sx={clases.GridStyle}
           >
-            <Grid item xs={12} lg={6} md={6} sm={12}
+            <Grid item xs={12} lg={6} md={6} sm={6}
 
             >
               <Button
@@ -31,7 +33,7 @@ function DashboardPage() {
                 color="primary"
                 onClick={() => handleButtonClick(0)}
                 sx={{
-                  ...clases.container,
+                  ...clases.ontainer,
                   ...(activeTab === 0 ? clases.active : clases.inactive),
                 }}
               >
@@ -41,14 +43,13 @@ function DashboardPage() {
                 </Typography>
               </Button>
             </Grid>
-            <Grid item xs={12} lg={6} md={6} sm={12}
+            <Grid item xs={6} lg={6} md={6} sm={6}
             >
               <Button
                 variant="contained"
                 color="primary"
                 onClick={() => handleButtonClick(1)}
                 sx={{
-                  marginLeft: { md: 10 },
                   ...clases.container,
                   ...(activeTab === 1 ? clases.active : clases.inactive)
                 }}
