@@ -26,8 +26,6 @@ const samaGoalsStyles = {
             borderRadius: '60px',
             padding: '10px',
             marginLeft: "8px",
-            // width:"20px",
-            // border:"1px solid red"
         },
         text: {
             mt: 2,

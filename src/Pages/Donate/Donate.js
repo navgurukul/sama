@@ -13,7 +13,7 @@ import {
   FormHelperText,
   FormControl,
   Container,
-  Snackbar, // Import Snackbar
+  Snackbar,
   Alert,
 } from "@mui/material";
 import "./Donate.css";
@@ -105,12 +105,12 @@ function Donation() {
         formData.contributionType === "company" ? formData.companyName : "",
       numberOfLaptops:
         formData.donationType === "donate-laptops" ||
-        formData.donationType === "both"
+          formData.donationType === "both"
           ? formData.numberOfLaptops
           : "",
       donateAmount:
         formData.donationType === "financial-contribution" ||
-        formData.donationType === "both"
+          formData.donationType === "both"
           ? formData.donateAmount
           : "",
       hearAbout:
@@ -188,7 +188,7 @@ function Donation() {
                     Corporate Laptop Donation
                   </Typography>
                   <Typography variant="body1">
-                  Transform your end-of-life laptops into powerful tools for education and empowerment.
+                    Transform your end-of-life laptops into powerful tools for education and empowerment.
                   </Typography>
                 </Box>
               </Grid>
@@ -250,7 +250,7 @@ function Donation() {
                   variant="outlined"
                   name="firstName"
                   value={formData.firstName}
-                  placeholder="First Name"
+                  placeholder="Ex : Khushboo"
                   onChange={handleChange}
                   sx={{ backgroundColor: "white" }}
                   error={!!errors.firstName}
@@ -264,7 +264,7 @@ function Donation() {
                 <TextField
                   fullWidth
                   required
-                  placeholder="Last Name"
+                  placeholder="Ex : kumari"
                   variant="outlined"
                   name="lastName"
                   value={formData.lastName}
@@ -282,7 +282,7 @@ function Donation() {
                   fullWidth
                   required
                   type="email"
-                  placeholder="Email Address"
+                  placeholder="Ex : khushboo@navgurukul.org"
                   variant="outlined"
                   name="email"
                   value={formData.email}
@@ -301,7 +301,7 @@ function Donation() {
                   required
                   type="tel"
                   variant="outlined"
-                  placeholder="Phone Number"
+                  placeholder="Ex : 9140832342"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
@@ -625,7 +625,7 @@ function Donation() {
                   alignItems: "center",
                 }}
               >
-                <Button type="submit" variant="contained" color="primary">
+                <Button type="submit" variant="contained" color="primary" style={{ padding: "8px, 32px, 8px, 32px" ,width:"126px",height:"48px"}}>
                   Submit
                 </Button>
                 {successMessage && (

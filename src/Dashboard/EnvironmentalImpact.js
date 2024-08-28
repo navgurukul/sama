@@ -26,7 +26,6 @@ const EnvironmenttalImpact = () => {
     return (
         <>
             <Grid container spacing={3} mt={1} 
-            // display="flex" justifyContent="space-between"
             >
                 <Grid item xs={12} md={4}>
                     <StyledCard>
