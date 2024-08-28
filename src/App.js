@@ -11,28 +11,30 @@ import OurApproach from './Pages/OurApproach/OurApproach';
 import Donate from './Pages/Donate/Donate';
 import DashboardPage from './Dashboard';
 import './App.css';
+import FormComponent from './Userdetails';
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <Router>
-        <div className="layout">
-          <Navbar />
-          <div className="content">
-            {" "}
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/give-today" element={<GiveToday />} />
-              <Route path="/our-approach" element={<OurApproach />} />
-              <Route path="/donate" element={<Donate />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-            </Routes>
-            {" "}
-          </div>
-          <Footer />
-        </div>
-      </Router>
-    </ThemeProvider>
+    <FormComponent />
+    // <ThemeProvider theme={theme}>
+    //   <Router>
+    //     <div className="layout">
+    //       <Navbar />
+    //       <div className="content">
+    //         {" "}
+    //         <Routes>
+    //           <Route path="/" element={<Home />} />
+    //           <Route path="/about" element={<About />} />
+    //           <Route path="/give-today" element={<GiveToday />} />
+    //           <Route path="/our-approach" element={<OurApproach />} />
+    //           <Route path="/donate" element={<Donate />} />
+    //           <Route path="/dashboard" element={<DashboardPage />} />
+    //         </Routes>
+    //         {" "}
+    //       </div>
+    //       <Footer />
+    //     </div>
+    //   </Router>
+    // </ThemeProvider>
   );
 }
 export default App;
