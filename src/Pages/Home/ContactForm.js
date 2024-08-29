@@ -108,15 +108,15 @@ function ContactForm() {
             <Typography variant="body1" mt={2}>
               Fill out the form, and we’ll get back to you as soon as possible.
             </Typography>
-            
+
             <form onSubmit={handleSubmit}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} md={6}>
-                  <TextField 
+                  <TextField
                     label="First Name"
-                    margin="normal" 
-                    fullWidth 
-                    variant="outlined" 
+                    margin="normal"
+                    fullWidth
+                    variant="outlined"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
@@ -126,11 +126,11 @@ function ContactForm() {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField 
+                  <TextField
                     label="Last Name"
-                    margin="normal" 
-                    fullWidth 
-                    variant="outlined" 
+                    margin="normal"
+                    fullWidth
+                    variant="outlined"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
@@ -140,12 +140,12 @@ function ContactForm() {
                   />
                 </Grid>
               </Grid>
-              
-              <TextField 
-                fullWidth 
-                label="Email" 
-                margin="normal" 
-                variant="outlined" 
+
+              <TextField
+                fullWidth
+                label="Email"
+                margin="normal"
+                variant="outlined"
                 name="email"
                 sx={{ backgroundColor: 'white' }}
                 value={formData.email}
@@ -153,11 +153,11 @@ function ContactForm() {
                 error={!!errors.email}
                 helperText={errors.email}
               />
-              <TextField 
-                fullWidth 
-                label="Contact" 
-                margin="normal" 
-                variant="outlined" 
+              <TextField
+                fullWidth
+                label="Contact"
+                margin="normal"
+                variant="outlined"
                 name="contact"
                 sx={{ backgroundColor: 'white' }}
                 value={formData.contact}
@@ -166,12 +166,12 @@ function ContactForm() {
                 helperText={errors.contact}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               />
-              <TextField 
-                fullWidth 
-                label="Message" 
-                margin="normal" 
-                multiline 
-                rows={4} 
+              <TextField
+                fullWidth
+                label="Message"
+                margin="normal"
+                multiline
+                rows={4}
                 variant="outlined"
                 name="message"
                 sx={{ backgroundColor: 'white' }}
@@ -181,15 +181,15 @@ function ContactForm() {
                 helperText={errors.message}
               />
               <Box style={{ display: "flex" }}>
-                <Button 
-                  type="submit" 
-                  variant="contained" 
+                <Button
+                  type="submit"
+                  variant="contained"
                   color="primary"
-                  sx={{ borderRadius: "100px", padding: "16px", mt: 2 }}
+                  sx={{ borderRadius: "100px", padding: " 0px 32px 0px 32px", mt: 2 }}
                 >
                   Send Message
                 </Button>
-                
+
                 {success && (
                   <Typography variant="body1" color="green" sx={{ mt: 4, ml: 3 }}>
                     Message sent successfully!

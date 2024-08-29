@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { Container, Typography, Grid, Box } from '@mui/material';
-import women from "./assets/woman.png";
-import renewable from "./assets/renewable.png"
-import samaGoalsStyles from './style';
+import women from "./assets/woman 1.svg";
+import renewable from "./assets/renewable 1.svg";
+import samaGoalsStyles from './style'
 const goals = [
     {
         icon: renewable,
@@ -33,20 +33,20 @@ const SamaGoals = () => {
                                 <Box
                                     sx={{
                                         padding: "10px",
-                                        width: "64px",
-                                        height: "64px",
+                                        width: "55px",
+                                        height: "55px",
                                         background: "rgba(92, 120, 90, 1)",
                                         borderRadius: "100px",
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        overflow: 'hidden' 
+                                        overflow: 'hidden'
                                     }}
                                 >
                                     <img
                                         src={goal.icon}
-                                        alt="Woman"
-                                        style={{ width: "50px", height: "50px" }} 
+                                        alt="Individual Contribution"
+                                        style={{ width: "50px", height: "50px" }}
                                     />
                                 </Box>
 

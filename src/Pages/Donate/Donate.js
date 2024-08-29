@@ -17,7 +17,7 @@ import {
   Alert,
 } from "@mui/material";
 import "./Donate.css";
-
+import icon1 from "./assets/Group 22 (1).svg"
 function Donation() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -177,18 +177,17 @@ function Donation() {
               <Grid item xs={12} md={4}>
                 <Box>
                   <img
-                    src={require("./assets/Group 22 (1).svg").default}
-                    alt="Corporate Laptop Donation"
+                    src={icon1}
                   />
                   <Typography
                     className="customSubtitle1"
-                    // variant="subtitle1"
                     sx={{ margin: "14px 0px" }}
                   >
                     Corporate Laptop Donation
                   </Typography>
                   <Typography variant="body1">
-                    Transform your end-of-life laptops into powerful tools for education and empowerment.
+                    Transform your end-of-life laptops into powerful tools 
+                    for education and empowerment.
                   </Typography>
                 </Box>
               </Grid>
@@ -219,7 +218,6 @@ function Donation() {
                   />
                   <Typography
                     className="customSubtitle1"
-                    // variant="subtitle1"
                     sx={{ margin: "14px 0px" }}
                   >
                     Individual Contribution
@@ -625,7 +623,7 @@ function Donation() {
                   alignItems: "center",
                 }}
               >
-                <Button type="submit" variant="contained" color="primary" style={{ padding: "8px, 32px, 8px, 32px" ,width:"126px",height:"48px"}}>
+                <Button type="submit" variant="contained" color="primary" style={{ padding: "8px, 32px, 8px, 32px", width: "126px", height: "48px" }}>
                   Submit
                 </Button>
                 {successMessage && (

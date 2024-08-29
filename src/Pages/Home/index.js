@@ -19,6 +19,8 @@ function Home() {
     width: "100%",
     height: "324px",
     objectFit: "cover",
+    boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)"
+
   };
 
   const commonOverlayImageStyle = {
@@ -27,8 +29,7 @@ function Home() {
     height: 'auto',
     bottom: '10px',
     right: '10px',
-    borderRadius: '8px',
-    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+    boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)"
   };
 
   return (
@@ -54,7 +55,7 @@ function Home() {
           <Typography variant="body1" margin="0 8px" style={{ color: "#FFF" }}>
             Bridging Digital Divide Through Repurposed Devices
           </Typography>
-          <Button variant="contained" color="primary" href="/donate" sx={{ mt: 6, borderRadius: "100px", padding: "16px" }}>
+          <Button variant="contained" color="primary" href="/donate" sx={{ mt: 6, borderRadius: "100px", padding: "0px 32px 0px 32px" }}>
             Donate Now
           </Button>
         </Container>
@@ -141,41 +142,43 @@ function Home() {
               </Grid>
             ))}
           </Grid>
-          <Typography variant="body2" color="primary" sx={{ my: 4 }} gutterBottom>
+          <Typography variant="body2" sx={{ my: 4 }} gutterBottom>
             *All calculations based on relevant people benefiting from 1 M laptops by 2030
           </Typography>
         </Container>
       </Box>
+      <Container maxWidth="xxl" style={{ padding: 0 }}>
+        <img
+          src={SamaGroupImage}
+          alt="Sama Group"
+          style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
+        />
+      </Container>
 
-
-     <Container maxWidth="xl" >
-      <Box>
-      <img src={SamaGroupImage} alt="Sama Group"  height="auto" width="100%" />
-      </Box>
-      
-       </Container>
 
 
       <Container sx={{ my: 10 }}>
         <Typography variant="h5">Metrics that Matter</Typography>
         <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
-        <Box sx={!isActive &&{ display: 'flex', my: 4 }} spacing={3}>
-          <Button variant={impact === "environmental" ? "contained" : "outlined"} 
-          style={isActive?{marginTop:"16px"}:{ borderRadius: "100px", padding:"16px" }} 
-          onClick={() => setImpact("environmental")}>
+        <Box sx={!isActive && { display: 'flex', my: 4 }} spacing={3}>
+          <Button sx={{ width: "280px", p: 2 }} variant={impact === "environmental" ? "contained" : "outlined"}
+            style={isActive ? { marginTop: "16px" } : { borderRadius: "100px" }}
+            onClick={() => setImpact("environmental")}>
             Environmental Impact
           </Button>
-          <Button variant={impact === "social" ? "contained" : "outlined"} 
-          style={isActive?{margin:"16px 0px"}:{ borderRadius: "100px", marginLeft: "32px" }}
-           onClick={() => setImpact("social")}>
+          <Button sx={{ width: "280px", p: 2 }} variant={impact === "social" ? "contained" : "outlined"}
+            style={isActive ? { margin: "16px 0px" } : { borderRadius: "100px", marginLeft: "32px" }}
+            onClick={() => setImpact("social")}>
             Social Impact
           </Button>
         </Box>
-        {impact === "environmental" ? (
-          <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" />
-        ) : (
-          <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" />
-        )}
+        <Box sx={{ boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)", borderRadius: "16px" }}>
+          {impact === "environmental" ? (
+            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" />
+          ) : (
+            <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" />
+          )}
+        </Box>
       </Container>
 
       <Box sx={{ my: 10 }}>
