@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Grid, Card, CardContent, Typography, Box } from '@mui/material';
 import { styles } from "./style";
 import { styled } from '@mui/system';
 import IndiaImg from './assets/india.png';
+import Komal from "./assets/Komal.png";
+import ZiyaImg from "./assets/ZiyaImg .png";
 import { skills, JobData } from './data.js';
 
 const StyledCard = styled(Card)({
@@ -13,59 +15,6 @@ const StyledCard = styled(Card)({
 });
 
 const SocialImpactPage = () => {
-
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const students = [
-        {
-            src: require('./assets/shahnaaz.jpg'),
-            alt: 'Student 1',
-            name: "Shahnaaz",
-            place: "Bangalore",
-            text: "From a rural student without resources to a skilled coder at Natwest, the laptop I received from Navgurukul was the key that unlocked my potential and transformed my future."
-        },
-        {
-            src: require('./assets/anjali.png'),
-            alt: 'Student 2',
-            name: "Anjali Singh",
-            place: "Pune",
-            text: "With a laptop as my tool, I've transitioned from a NavGurukul " +
-                "student to an academic intern, connecting with diverse learners across India and fostering personal growth."
-        },
-        {
-            src: require('./assets/riya.png'),
-            alt: 'Student 3',
-            name: "Riya Kumari",
-            place: "Maharashtra",
-            text: "From not knowing how to use a laptop to S&P Global employee: NavGurukul's tech-enabled training launched my career in just one year."
-
-        },
-        {
-            src: require('./assets/ziya.png'),
-            alt: 'Student 4',
-            name: "Ziya Afreen",
-            place: "Delhi",
-            text: "This laptop isn't just a tool; it's my bridge from a novice to a future software developer."
-        },
-        {
-            src: require('./assets/Komal.png'),
-            alt: 'Student 5',
-            name: "Komal Chaudhary",
-            place: "Bangalore",
-            text: "Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it"
-        },
-    ];
-
-
-    const visibleStudents = students.slice(currentIndex, currentIndex + 2);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentIndex((prevIndex) => (prevIndex + 2) % students.length);
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, []);
-
 
     return (
         <>
@@ -107,10 +56,9 @@ const SocialImpactPage = () => {
                         </CardContent>
                     </StyledCard>
                 </Grid>
-
                 <Grid item xs={12} md={6}>
-                    <Typography sx={{ mt: 2, ml: 2 }} style={styles.subtitle1}>SKILLS IMPARTED</Typography>
-                    <Grid container spacing={3} style={{ padding: "16px", height: "200px" }}>
+                    <Typography variant="" sx={{ mt: 2, ml: 2 }} style={styles.subtitle1}>SKILLS IMPARTED</Typography>
+                    <Grid container spacing={3} style={{ padding: "16px" }}>
                         {skills.map((skill, index) => (
                             <Grid item xs={12} md={4} key={index}>
                                 <Box display="flex" alignItems="center">
@@ -120,35 +68,27 @@ const SocialImpactPage = () => {
                             </Grid>
                         ))}
                     </Grid>
-
-                    <Grid container style={{ padding: '16px' }}>
-                        <Typography variant="h6" style={styles.subtitle1}>
-                            STUDENT SPEAKS
-                        </Typography>
-
-                        {visibleStudents.map((student, index) => (
-                            <Grid item xs={12} md={12} sx={{ mt: 4 }} key={index}>
-                                <Box display="flex" alignItems="center">
-                                    <img
-                                        src={student.src}
-                                        alt={student.alt}
-                                        style={{ marginRight: '8px', width: '60px', height: '60px', borderRadius: "50%", objectFit: 'cover' }}
-                                    />
-
-                                    <Box sx={{ ml: 3 }}>
-                                        <Typography variant="subtitle1" style={styles.subtitle1}>
-                                            {student.text}
-                                        </Typography>
-                                        <Typography variant="body2" style={styles.body2} sx={{ ml: 2 }}>
-                                            {student.name}
-                                        </Typography>
-                                    </Box>
-
+                    <Grid container style={{ padding: "16px" }}>
+                        <Typography variant="" style={styles.subtitle1}>STUDENT SPEAKS</Typography>
+                        <Grid item xs={12} md={12} sx={{ mt: 4 }}>
+                            <Box display="flex" alignItems="center">
+                                <img src={ZiyaImg} style={{ marginRight: '8px' }} />
+                                <Box sx={{ ml: 3 }}>
+                                    <Typography variant="subtitle1" style={styles.subtitle1}>“ Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it ”</Typography>
+                                    <Typography variant='body2' style={styles.body2} sx={{ mt: 2 }}>Ziya Afreen</Typography>
                                 </Box>
-                            </Grid>
-                        ))}
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} md={12} style={{ marginTop: "32px" }}>
+                            <Box display="flex" alignItems="center">
+                                <img src={Komal} style={{ marginRight: '8px' }} />
+                                <Box sx={{ ml: 3 }}>
+                                    <Typography variant="subtitle1" style={styles.subtitle1}> “ This laptop isn't just a tool. It is my bridge from being a novice to a full-fledged future software developer “</Typography>
+                                    <Typography variant='body2' style={styles.body2} sx={{ mt: 2 }}>Komal Chaudhary</Typography>
+                                </Box>
+                            </Box>
+                        </Grid>
                     </Grid>
-
                 </Grid>
             </Grid>
         </>

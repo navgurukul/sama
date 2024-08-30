@@ -76,7 +76,7 @@ function Home() {
                 Sama, a non-profit organisation, and a subsidiary of NavGurukul, helps modern businesses responsibly repurpose their e-waste for educational usage by underserved women. Our aim is to embed Net Zero Through Giving into the culture of a client organisation so that every member understands the role they can play in supporting the transition towards a greener and inclusive future.
               </Typography>
               <Button variant="text" href="/about" color="primary">
-                <Typography variant="subtitle1" sx={{fontWeight: 700}}>Know more</Typography>
+                <Typography variant="subtitle1">Know more</Typography>
                 <ChevronRightIcon />
               </Button>
             </Grid>
@@ -88,14 +88,13 @@ function Home() {
                 Sama is not just a laptop donation project; it's a comprehensive education initiative aimed at empowering 1 million girls and women by 2030 with cutting-edge devices and skills, leveraging the existing infrastructure of our corporate partners.
               </Typography>
               <Button variant="text" href="/our-approach" color="primary">
-                <Typography variant="subtitle1" sx={{fontWeight: 700}}>Know more</Typography>
+                <Typography variant="subtitle1">Know more</Typography>
                 <ChevronRightIcon />
               </Button>
             </Grid>
           </Grid>
         </Container>
       </Box>
-
       <Box sx={{ backgroundColor: "#F0F4EF", py: 6 }}>
         <Container maxWidth="lg">
           <Typography variant="h5" margin="32px 0px">Our Goals for 2030</Typography>

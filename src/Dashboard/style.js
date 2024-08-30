@@ -113,7 +113,6 @@ export const StyledCard = styled(Card)({
 
 export const styles = {
     subtitle1: {
-        padding:"16px",
         fontFamily: "Raleway",
         fontSize: "18px",
         fontWeight: 700,
