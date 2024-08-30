@@ -8,7 +8,6 @@ import 'keen-slider/keen-slider.min.css';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 const TestimonialSlider = () => {
-  
   const testimonials = [
     {
       src: require('./assets/shahnaaz.jpg'),
