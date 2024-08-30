@@ -16,7 +16,7 @@ function DashboardPage() {
     setActiveTab(newValue);
   };
   return (
-    <Box sx={{ background: "#FFFAF8", pb: 6 ,  }}>
+    <Box sx={{ background: "#FFFAF8", pb: 6, }}>
       <Container maxWidth="xxl">
         <Container maxWidth="xl">
           <Grid
@@ -31,7 +31,7 @@ function DashboardPage() {
               </DigitalHardwareText>
               <Typography
                 variant="body1"
-                // style={styles.body2}
+              // style={styles.body2}
               >
                 Monitor your e-waste management efforts with ease
               </Typography>
@@ -53,7 +53,7 @@ function DashboardPage() {
                   label={
                     activeTab === 0 ? (
                       <StyledButton>
-                        <TypographyButton>
+                        <TypographyButton variant="contained">
                           Environmental Impact
                         </TypographyButton>
                       </StyledButton>
@@ -68,7 +68,7 @@ function DashboardPage() {
                   label={
                     activeTab === 1 ? (
                       <StyledButton>
-                        <TypographyButton>Social Impact</TypographyButton>
+                        <TypographyButton variant="contained">Social Impact</TypographyButton>
                       </StyledButton>
                     ) : (
                       <Typography className="body1">Social Impact</Typography>
@@ -84,7 +84,7 @@ function DashboardPage() {
             spacing={2}
             sx={{
               mt: 2,
-              maxWidth: "xl", 
+              maxWidth: "xl",
               margin: "0 auto",
             }}
           >
