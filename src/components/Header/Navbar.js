@@ -7,7 +7,6 @@ import {
   Box,
   Link as MuiLink,
   Container,
-  Button,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
@@ -28,7 +27,6 @@ const Navbar = () => {
     { text: "About Us", href: "/about" },
     { text: "Our Approach", href: "/our-approach" },
     { text: "Donate", href: "/donate" },
-
   ];
 
   const handleMenuToggle = () => {
@@ -77,14 +75,21 @@ const Navbar = () => {
                 key={index}
                 onClick={() => handleTabClick(item.href)}
               >
-                <Typography variant="body1" sx={{ textTransform: "none" }}>{item.text}</Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    textTransform: "none",
+                    fontWeight: activeTab === item.href ? "bold" : "normal",
+                  }}
+                >
+                  {item.text}
+                </Typography>
               </MuiLink>
             ))}
           </Box>
           <Box className="mobile-nav">
             <IconButton
               edge="start"
-              // color="#045B50"
               aria-label="menu"
               onClick={handleMenuToggle}
               className="MuiIconButton-root"
@@ -102,7 +107,14 @@ const Navbar = () => {
               key={index}
               onClick={() => handleTabClick(item.href)}
             >
-              <Typography variant="body1">{item.text}</Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: activeTab === item.href ? "bold" : "normal",
+                }}
+              >
+                {item.text}
+              </Typography>
             </MuiLink>
           ))}
         </Box>

@@ -1,17 +1,20 @@
-import { styled } from '@mui/material/styles';
+
 export const ContainerStyle = {
     marginTop: { md: '80px', xs: "14px" },
-    width: "100%",
+    width: "100%"
 };
 
 export const PaperStyle = {
-    padding: { xs: "23px", md: "24px", sm: "20px" },
+    padding: { xs: "23px", md: "24px", sm: "20px" ,lg:"20px"},
     borderRadius: '16px',
     margin: { xs: '10 auto', md: '0 0 0 0px', lg: '0 0 0 92px' },
     zIndex: 8,
     width: { xs: "auto", md: "100%", lg: "70%" },
     position: 'relative',
-    marginTop: { xs: '40px', md: '45px', lg: '40px' },
+    marginTop: { xs: '60px', md: '60px', lg: '80px'},
+    position:"relative",
+    bottom:"40px"
+
 };
 
 export const TypographyH4Style = {
@@ -25,7 +28,7 @@ export const TypographyH4Style = {
 };
 
 export const TypographyBodyStyle = {
-    marginBottom: '30px',
+    marginBottom: '50px',
     color: 'var(--text, #4A4A4A)',
     fontFamily: 'Raleway',
     fontSize: '18px',
