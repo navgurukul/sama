@@ -185,7 +185,7 @@ function ContactForm() {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  sx={{ borderRadius: "100px", padding: " 0px 32px 0px 32px", mt: 2 }}
+                  sx={{ borderRadius: "100px", mt: 2 }}
                 >
                   Send Message
                 </Button>

@@ -27,8 +27,9 @@ function Home() {
     position: 'absolute',
     width: '167px',
     height: 'auto',
-    bottom: '10px',
-    right: '10px',
+    bottom: '15px',
+    right: '15px',
+    height:"167px",
     boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)"
   };
 
@@ -65,9 +66,7 @@ function Home() {
 
       <Box sx={{ my: 10 }}>
         <Container maxWidth="lg">
-          <Typography variant="h5" align="left" mb={4}>
-            {/* Stepping Up Progress in this Defining Decade */}
-          </Typography>
+          <Typography variant="h5" align="left" mb={4}></Typography>
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
               <Typography variant="h6" gutterBottom style={{ color: "#5C785A" }}>
@@ -96,32 +95,6 @@ function Home() {
           </Grid>
         </Container>
       </Box>
-
-      {/* <Box sx={{ my: 10 }}>
-        <Container maxWidth="lg">
-          <Typography variant="h5">Sustainability Development Goals</Typography>
-          <Typography variant="body1" style={{ width: "65%", margin: "32px 0px" }}>
-            Sama's mission of repurposing e-waste for educational use by underserved women aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
-          </Typography>
-          <Grid container spacing={3}>
-            {[
-              { src: "./assets/sub_1.jpg", overlaySrc: require("./assets/E_PRINT_04 1.svg").default, alt: "Gender Equality" },
-              { src: "./assets/sub_2.jpg", overlaySrc: require("./assets/E_GIF_05 1.svg").default, alt: "Gender Equality" },
-              { src: "./assets/sub_4.jpg", overlaySrc: require("./assets/E_WEB_08 2.svg").default, alt: "quality education" },
-              { src: "./assets/laptop_1.jpg", overlaySrc: require("./assets/E_GIF_12 1.svg").default, alt: "growth" },
-              { src: "./assets/ngStudent.jpg", overlaySrc: require("./assets/E_GIF_13 1.svg").default, alt: "climate action" },
-            ].map((item, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Box sx={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-                  <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
-                  <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box> */}
-
       <Box sx={{ backgroundColor: "#F0F4EF", py: 6 }}>
         <Container maxWidth="lg">
           <Typography variant="h5" margin="32px 0px">Our Goals for 2030</Typography>
@@ -142,7 +115,7 @@ function Home() {
               </Grid>
             ))}
           </Grid>
-          <Typography variant="body2" sx={{ my: 4 }} gutterBottom>
+          <Typography variant="body2"  color="#4A4A4A" sx={{ my: 4 ,fontSize:"14px"}} gutterBottom>
             *All calculations based on relevant people benefiting from 1 M laptops by 2030
           </Typography>
         </Container>
@@ -151,28 +124,25 @@ function Home() {
         <img
           src={SamaGroupImage}
           alt="Sama Group"
-          style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
+          style={{ display: "block", width:"100%", margin: 0, padding: 0 }}
         />
       </Container>
-
-
-
-      <Container sx={{ my: 10 }}>
+      <Container maxWidth="xl" sx={{ my: 10 }}>
         <Typography variant="h5">Metrics that Matter</Typography>
         <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
         <Box sx={!isActive && { display: 'flex', my: 4 }} spacing={3}>
-          <Button sx={{ width: "280px", p: 2 }} variant={impact === "environmental" ? "contained" : "outlined"}
+          <Button color="primary" variant={impact === "environmental" ? "contained" : "outlined"}
             style={isActive ? { marginTop: "16px" } : { borderRadius: "100px" }}
             onClick={() => setImpact("environmental")}>
             Environmental Impact
           </Button>
-          <Button sx={{ width: "280px", p: 2 }} variant={impact === "social" ? "contained" : "outlined"}
+          <Button  color="primary" variant={impact === "social" ? "contained" : "outlined"}
             style={isActive ? { margin: "16px 0px" } : { borderRadius: "100px", marginLeft: "32px" }}
             onClick={() => setImpact("social")}>
             Social Impact
           </Button>
         </Box>
-        <Box sx={{ boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)", borderRadius: "16px" }}>
+        <Box className="dashboardBox">
           {impact === "environmental" ? (
             <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" />
           ) : (
@@ -182,18 +152,18 @@ function Home() {
       </Container>
 
       <Box sx={{ my: 10 }}>
-        <Container maxWidth="lg">
+        <Container maxWidth="xl">
           <Typography variant="h5">Sustainability Development Goals</Typography>
           <Typography variant="body1" style={{ width: "65%", margin: "32px 0px" }}>
             Sama's mission of repurposing e-waste for educational use by underserved women aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
           </Typography>
           <Grid container spacing={3}>
             {[
-              { src: "./assets/sub_1.jpg", overlaySrc: require("./assets/E_PRINT_04 1.svg").default, alt: "Gender Equality" },
-              { src: "./assets/sub_2.jpg", overlaySrc: require("./assets/E_GIF_05 1.svg").default, alt: "Gender Equality" },
-              { src: "./assets/sub_4.jpg", overlaySrc: require("./assets/E_WEB_08 2.svg").default, alt: "quality education" },
-              { src: "./assets/laptop_1.jpg", overlaySrc: require("./assets/E_GIF_12 1.svg").default, alt: "growth" },
-              { src: "./assets/ngStudent.jpg", overlaySrc: require("./assets/E_GIF_13 1.svg").default, alt: "climate action" },
+              { src: "./assets/sub_1.jpg", overlaySrc: require("./assets/E_GIF_04.gif"), alt: "Gender Equality" },
+              { src: "./assets/sub_2.jpg", overlaySrc: require("./assets/E_GIF_05.gif"), alt: "Gender Equality" },
+              { src: "./assets/sub_4.jpg", overlaySrc: require("./assets/E_GIF_08.gif"), alt: "quality education" },
+              { src: "./assets/laptop_1.jpg", overlaySrc: require("./assets/E_GIF_12.gif"), alt: "growth" },
+              { src: "./assets/ngStudent.jpg", overlaySrc: require("./assets/E_GIF_13.gif"), alt: "climate action" },
             ].map((item, index) => (
               <Grid item xs={12} md={4} key={index}>
                 <Box sx={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
@@ -205,7 +175,6 @@ function Home() {
           </Grid>
         </Container>
       </Box>
-
       <TestimonialSlider />
       <ContactForm />
     </>

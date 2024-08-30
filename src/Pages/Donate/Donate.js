@@ -623,7 +623,7 @@ function Donation() {
                   alignItems: "center",
                 }}
               >
-                <Button type="submit" variant="contained" color="primary" style={{ padding: "8px, 32px, 8px, 32px", width: "126px", height: "48px" }}>
+                <Button type="submit" variant="contained" color="primary" style={{width: "126px", height: "48px" }}>
                   Submit
                 </Button>
                 {successMessage && (

@@ -110,16 +110,12 @@ const TestimonialSlider = () => {
                   <Box key={idx} sx={isMobile?{ width: '100%' }:{ width: '50%', paddingRight: '16px' }}>
 
                     <Typography variant="body1" sx={!isMobile && { height:"100px"}}>{testimonial.text}</Typography>
-                    <Box sx={{border:" 7.704px solid var(--tertiary, #B25F65)",width:"64px",height:"64px",borderRadius:"64px"}}>
                     <img src={testimonial.src} alt={testimonial.alt} 
-                    style={{ 
-
+                    style={{ padding: " 8px 0px",
                      width: "64px",
                       height: "64px",
                        borderRadius: "50%",
-                        objectFit:"cover" }}
-                    />
-                    </Box>
+                        objectFit:"cover" }} />
                     <Typography variant="subtitle1">{testimonial.name}</Typography>
                     {/* <Typography variant="body2">({testimonial.place})</Typography> */}
                   </Box>

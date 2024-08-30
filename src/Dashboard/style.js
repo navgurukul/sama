@@ -3,7 +3,6 @@ import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { Card } from '@mui/material';
-import { fontFamily, fontSize, fontWeight, lineHeight } from '@mui/system';
 export const TypographySubtitle1 = styled(Typography)({
     color: '#4A4A4A',
     fontFamily: 'Montserrat',
@@ -45,8 +44,6 @@ export const TypographyAmountText = styled(Typography)({
     fontWeight: 700,
     lineHeight: '46.8px',
 });
-
-
 export const StyledButton = styled(Button)(({ theme }) => ({
     right: '15px',
     height: '48px',
@@ -151,7 +148,7 @@ export const styles = {
         fontSize: "32px",
         fontWeight: 700,
         lineHeight: "41.6px",
-        fontFamily:"Montserrat",
+        fontFamily: "Montserrat",
         color: "var(--text, #4A4A4A)"
     }
 };

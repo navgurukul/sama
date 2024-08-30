@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Container, Typography, Grid, Box } from '@mui/material';
 import women from "./assets/woman 1.svg";
@@ -33,20 +32,20 @@ const SamaGoals = () => {
                                 <Box
                                     sx={{
                                         padding: "10px",
-                                        width: "55px",
-                                        height: "55px",
+                                        width: "64px",
+                                        height: "66px",
+                                        border:"10px solid rgba(92, 120, 90, 1)",
                                         background: "rgba(92, 120, 90, 1)",
                                         borderRadius: "100px",
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        overflow: 'hidden'
                                     }}
                                 >
                                     <img
                                         src={goal.icon}
                                         alt="Individual Contribution"
-                                        style={{ width: "50px", height: "50px" }}
+                                        style={{ width: "40px", height: "40px" }}
                                     />
                                 </Box>
 

@@ -1,77 +1,99 @@
-import React, { useState } from 'react';
-import { Grid, Typography, Button, Container,Box } from '@mui/material';
+import React, { useState } from "react";
+import { Grid, Tabs, Tab, Typography, Box } from "@mui/material";
 import SocialImpactPage from "./SocialImpact";
-import EnvironmentalImpact from './EnvironmentalImpact';
-import { clases } from './style';
+import EnvironmentalImpact from "./EnvironmentalImpact";
+import {
+  DigitalHardwareText,
+  StyledButton,
+  TypographyButton,
+  styles,
+} from "./style";
+import { Container } from "@mui/system";
+
 function DashboardPage() {
-
   const [activeTab, setActiveTab] = useState(0);
-  const handleButtonClick = (tabIndex) => {
-    setActiveTab(tabIndex);
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
   };
-
   return (
-    <Box sx={{ background: "#FFFAF8" }}>
-      <Container maxWidth="xl">
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6} >
-            <Typography variant='h5'>Digital Hardware Tracker</Typography>
-            <Typography className="body1" sx={{ mt: 2 }}>
-              Monitor your e-waste management efforts with ease
-            </Typography>
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={2}>
-          <Grid item xs={12} lg={7} md={7} sx={{ mt: 3 }}>
-            <Grid container sx={clases.GridStyle}
-            >
-              <Grid item xs={12} lg={6} md={6} sm={6}
-
+    <Box sx={{ background: "#FFFAF8", pb: 6, }}>
+      <Container maxWidth="xxl">
+        <Container maxWidth="xl">
+          <Grid
+            container
+            spacing={2}
+            sx={{ mt: 1 }}
+            style={{ marginLeft: "1px" }}
+          >
+            <Grid item xs={12} md={6} sm={12}>
+              <DigitalHardwareText mt={4}>
+                Digital Hardware Tracker
+              </DigitalHardwareText>
+              <Typography
+                variant="body1"
+              // style={styles.body2}
               >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handleButtonClick(0)}
-
-                  sx={{
-                    ...clases.ontainer,
-                    ...(activeTab === 0 ? clases.active : clases.inactive),
-                    width: "260px"
-
-                  }}
-                >
-                  <Typography variant='subtitle1' style={activeTab === 0 ? clases.activeTabText : clases.inactiveTabText}
-                  >
-                    Environmental Impact
-                  </Typography>
-                </Button>
-              </Grid>
-              <Grid item xs={6} lg={6} md={6} sm={6}
-              >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handleButtonClick(1)}
-                  sx={{
-                    ...clases.container,
-                    ...(activeTab === 1 ? clases.active : clases.inactive),
-                    width: "230px"
-                  }}
-                >
-                  <Typography variant='subtitle1' style={activeTab === 1 ? clases.activeText : clases.inactiveText}
-                  >
-                    Social Impact
-                  </Typography>
-                </Button>
-              </Grid>
+                Monitor your e-waste management efforts with ease
+              </Typography>
             </Grid>
           </Grid>
-        </Grid>
+          <Grid
+            container
+            spacing={2}
+            sx={{ mt: 1 }}
+            style={{ marginLeft: "1px" }}
+          >
+            <Grid item xs={12}>
+              <Tabs
+                value={activeTab}
+                onChange={handleTabChange}
+                indicatorColor="none"
+              >
+                <Tab
+                  label={
+                    activeTab === 0 ? (
+                      <StyledButton>
+                        <TypographyButton variant="contained">
+                          Environmental Impact
+                        </TypographyButton>
+                      </StyledButton>
+                    ) : (
+                      <Typography className="body1">
+                        Environmental Impact
+                      </Typography>
+                    )
+                  }
+                />
+                <Tab
+                  label={
+                    activeTab === 1 ? (
+                      <StyledButton>
+                        <TypographyButton variant="contained">Social Impact</TypographyButton>
+                      </StyledButton>
+                    ) : (
+                      <Typography className="body1">Social Impact</Typography>
+                    )
+                  }
+                />
+              </Tabs>
+            </Grid>
+          </Grid>
 
-        {activeTab === 0 && <EnvironmentalImpact />}
-        {activeTab === 1 && <SocialImpactPage />}
-      </Container >
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              mt: 2,
+              maxWidth: "xl",
+              margin: "0 auto",
+            }}
+          >
+            <Grid item xs={12}>
+              {activeTab === 0 ? <EnvironmentalImpact /> : <SocialImpactPage />}
+            </Grid>
+          </Grid>
+        </Container>
+      </Container>
     </Box>
   );
 }
