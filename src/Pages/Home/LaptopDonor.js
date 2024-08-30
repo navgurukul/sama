@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import "./Styles.css"; 
+import "./Styles.css";
 
 const LaptopDonorsCarousel = () => {
   const images = [
@@ -25,7 +25,7 @@ const LaptopDonorsCarousel = () => {
               sx={{
                 display: "inline-block",
                 flexShrink: 0,
-                width: "20%", 
+                width: "20%",
                 textAlign: "center",
               }}
             >
