@@ -310,48 +310,6 @@ function Donation() {
               </Grid>
 
               <Grid item xs={12}>
-                <FormControl component="fieldset" error={!!errors.donationType}>
-                  <Typography
-                    className="customSubtitle1"
-                    // variant="subtitle1"
-                    sx={{ marginBottom: "10px" }}
-                  >
-                    I would like to:
-                  </Typography>
-                  <RadioGroup
-                    row
-                    name="donationType"
-                    value={formData.donationType}
-                    onChange={handleChange}
-                  >
-                    <FormControlLabel
-                      value="donate-laptops"
-                      control={<Radio />}
-                      label="Donate laptops"
-                    />
-                    <FormControlLabel
-                      value="financial-contribution"
-                      control={<Radio />}
-                      label="Make a financial contribution"
-                    />
-                    <FormControlLabel
-                      value="both"
-                      control={<Radio />}
-                      label="Both donate laptops and contribute financially"
-                    />
-                    <FormControlLabel
-                      value="volunteer"
-                      control={<Radio />}
-                      label="Volunteer"
-                    />
-                  </RadioGroup>
-                  {errors.donationType && (
-                    <FormHelperText>{errors.donationType}</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-
-              {/* <Grid item xs={12}>
                 <FormControl
                   component="fieldset"
                   error={!!errors.contributionType}
@@ -435,13 +393,26 @@ function Donation() {
                       control={<Radio />}
                       label="Both donate laptops and contribute financially"
                     />
-                    
+                    <FormControlLabel
+                      value="volunteer"
+                      control={<Radio />}
+                      label="Volunteer"
+                    />
                   </RadioGroup>
                   {errors.donationType && (
                     <FormHelperText>{errors.donationType}</FormHelperText>
                   )}
                 </FormControl>
-              </Grid> */}
+              </Grid>
+
+           
+
+              
+
+              
+
+
+
 
               {formData.donationType === "donate-laptops" && (
                 <Grid item xs={12} md={6}>
