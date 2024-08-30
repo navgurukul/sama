@@ -49,6 +49,7 @@ const Navbar = () => {
         justifyContent: "center",
         padding: 0,
         margin: 0,
+        boxShadow:"0px -1px 0px 0px #F0F0F0"
       }}
       className="header"
     >

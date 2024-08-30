@@ -6,7 +6,6 @@ import { Container } from '@mui/system';
 import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
 const TestimonialSlider = () => {
   const testimonials = [
     {
@@ -117,7 +116,6 @@ const TestimonialSlider = () => {
                        borderRadius: "50%",
                         objectFit:"cover" }} />
                     <Typography variant="subtitle1">{testimonial.name}</Typography>
-                    {/* <Typography variant="body2">({testimonial.place})</Typography> */}
                   </Box>
                 ))}
               </Box>

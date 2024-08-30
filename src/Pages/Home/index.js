@@ -136,38 +136,46 @@ function Home() {
                 <Box>
                   <img src={item.src} alt={item.description} />
                   <Typography variant="h5" color="primary" marginTop="8px">{item.value}</Typography>
-                  <Typography variant="body1" color="primary">{item.description}</Typography>
+                  <Typography variant="body1" sx={{ color: "rgba(74, 74, 74, 1)" }}>{item.description}</Typography>
                 </Box>
               </Grid>
             ))}
           </Grid>
-          <Typography variant="body2" color="primary" sx={{ my: 4 }} gutterBottom>
+          <Typography variant="body2" color="primary"
+            sx={{
+              fontFamily: 'Raleway',
+              fontSize: '14px',
+              fontWeight: 400,
+              lineHeight: '23.8px',
+              textAlign: 'left',
+              my: 4,
+              color: "rgba(74, 74, 74, 1)"
+            }}
+            gutterBottom>
             *All calculations based on relevant people benefiting from 1 M laptops by 2030
           </Typography>
         </Container>
       </Box>
 
 
-     <Container maxWidth="xl" >
-      <Box>
-      <img src={SamaGroupImage} alt="Sama Group"  height="auto" width="100%" />
-      </Box>
-      
-       </Container>
+      <Container maxWidth="xl" >
+        <Box>
+          <img src={SamaGroupImage} alt="Sama Group" height="auto" width="100%" />
+        </Box>
 
-
+      </Container>
       <Container sx={{ my: 10 }}>
         <Typography variant="h5">Metrics that Matter</Typography>
         <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
-        <Box sx={!isActive &&{ display: 'flex', my: 4 }} spacing={3}>
-          <Button variant={impact === "environmental" ? "contained" : "outlined"} 
-          style={isActive?{marginTop:"16px"}:{ borderRadius: "100px", padding:"16px" }} 
-          onClick={() => setImpact("environmental")}>
+        <Box sx={!isActive && { display: 'flex', my: 4 }} spacing={3}>
+          <Button variant={impact === "environmental" ? "contained" : "outlined"}
+            style={isActive ? { marginTop: "16px" } : { borderRadius: "100px", padding: "16px" }}
+            onClick={() => setImpact("environmental")}>
             Environmental Impact
           </Button>
-          <Button variant={impact === "social" ? "contained" : "outlined"} 
-          style={isActive?{margin:"16px 0px"}:{ borderRadius: "100px", marginLeft: "32px" }}
-           onClick={() => setImpact("social")}>
+          <Button variant={impact === "social" ? "contained" : "outlined"}
+            style={isActive ? { margin: "16px 0px" } : { borderRadius: "100px", marginLeft: "32px" }}
+            onClick={() => setImpact("social")}>
             Social Impact
           </Button>
         </Box>
