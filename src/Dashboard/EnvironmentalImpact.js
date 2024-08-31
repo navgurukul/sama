@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from '@mui/material/styles';
 import WaterContaminationLogo from "./assets/WaterContaminationLogo.png";
 import lifecycleLogo from "./assets/lifecycleLogo.png";
-import { data } from "./data";
+
 
 import { TypographySubtitle1, TypographyTitle, TypographyBody2, TypographyAmountText, Typographyh5 } from "./style";
 import {
@@ -11,6 +11,7 @@ import {
     Card,
     CardContent,
 } from '@mui/material';
+import { Box } from "@mui/system";
 
 const StyledCard = styled(Card)({
     borderRadius: '8px',
@@ -22,11 +23,12 @@ const StyledCard = styled(Card)({
     justifyContent: 'space-between',
 });
 
-const EnvironmenttalImpact = () => {
+const EnvironmenttalImpact = ({data}) => {
+    
+    console.log(data);
     return (
         <>
-            <Grid container spacing={3} mt={1} 
-            >
+            <Grid container spacing={3} mt={1}>
                 <Grid item xs={12} md={4}>
                     <StyledCard>
                         <CardContent>
@@ -60,16 +62,46 @@ const EnvironmenttalImpact = () => {
                     <StyledCard>
                         <CardContent>
                             <TypographySubtitle1>RESOURCE WASTE REDUCTION</TypographySubtitle1>
-                            <TypographyAmountText sx={{ mt: 1 }}>1956 Kg</TypographyAmountText>
+                            <TypographyAmountText sx={{ mt: 1 }}>{data && data["Resource Waste Reduction"]} Kg</TypographyAmountText>
                             <TypographyTitle sx={{ mt: 1 }}>
                                 <b>Material wise breakup (Kg)</b>
                             </TypographyTitle>
-                            {Object.entries(data.wasteBreakup).map(([material, amount]) => (
-                                <Typography key={material} variant="body2" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <TypographyBody2>{material}</TypographyBody2>
-                                    <TypographyBody2>{amount} </TypographyBody2>
-                                </Typography>
-                            ))}
+                            <Typography component='div'
+                                style={{ display: 'flex', justifyContent: 'space-between', }}
+                            >
+                                <TypographyBody2>Plastic</TypographyBody2>
+                                <TypographyBody2>{data?.Plastic} kg</TypographyBody2>
+
+                            </Typography>
+                            <Typography component='div'
+                                style={{ display: 'flex', justifyContent: 'space-between' }}
+                            >
+                                <TypographyBody2>Aluminium</TypographyBody2>
+                                <TypographyBody2>{data?.Aluminium} kg</TypographyBody2>
+
+                            </Typography>
+                            <Typography component='div'
+                                style={{ display: 'flex', justifyContent: 'space-between' }}
+                            >
+                                <TypographyBody2>Copper</TypographyBody2>
+                                <TypographyBody2>{data?.Copper} kg</TypographyBody2>
+
+                            </Typography>
+                            <Typography component='div'
+                                style={{ display: 'flex', justifyContent: 'space-between' }}
+                            >
+                                <TypographyBody2>Gold</TypographyBody2>
+                                <TypographyBody2>{data?.Gold} kg</TypographyBody2>
+
+                            </Typography>
+                            <Typography component='div'
+                                style={{ display: 'flex', justifyContent: 'space-between' }}
+                            >
+                                <TypographyBody2>Silver</TypographyBody2>
+                                <TypographyBody2>{data?.Silver} kg</TypographyBody2>
+
+                            </Typography>
+                            
                         </CardContent>
                     </StyledCard>
                 </Grid>
@@ -77,16 +109,27 @@ const EnvironmenttalImpact = () => {
                     <StyledCard>
                         <CardContent>
                             <TypographySubtitle1>TOXIC WASTE SEEPAGE REDUCTION</TypographySubtitle1>
-                            <TypographyAmountText sx={{ mt: 1 }}>7009 g</TypographyAmountText>
+                            <TypographyAmountText sx={{ mt: 1 }}>{data && data["Toxic Waste Seepage Reduction"]} g</TypographyAmountText>
                             <TypographyTitle sx={{ mt: 1 }}>
-                                <b>Waste wise breakup (grams)</b>
+                            
+                                <b> Waste wise breakup (grams)</b>
                             </TypographyTitle>
-                            {Object.entries(data.toxicWasteBreakup).map(([material, amount]) => (
-                                <Typography key={material} variant="body2" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <TypographyBody2>{material}</TypographyBody2>
-                                    <TypographyBody2>{amount} kg</TypographyBody2>
-                                </Typography>
-                            ))}
+                            <Typography component='div' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <TypographyBody2>Lead</TypographyBody2>
+                                <TypographyBody2>{data?.Lead} g</TypographyBody2>
+                            </Typography>
+                            <Typography component='div' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <TypographyBody2>Mercury</TypographyBody2>
+                                <TypographyBody2>{data?.Mercury} g</TypographyBody2>
+                            </Typography>
+                            <Typography component='div' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <TypographyBody2>Cadmium</TypographyBody2>
+                                <TypographyBody2>{data?.Cadmium} g</TypographyBody2>
+                            </Typography>
+                            <Typography component='div' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <TypographyBody2>Chromium</TypographyBody2>
+                                <TypographyBody2>{data?.Chromium} g</TypographyBody2>
+                            </Typography>
                         </CardContent>
                     </StyledCard>
                 </Grid>
@@ -94,7 +137,7 @@ const EnvironmenttalImpact = () => {
                     <StyledCard>
                         <CardContent>
                             <TypographySubtitle1>CARBON FOOTPRINT REDUCTION</TypographySubtitle1>
-                            <TypographyAmountText sx={{ mt: 1 }}>326 Tons</TypographyAmountText>
+                            <TypographyAmountText sx={{ mt: 1 }}>{data && data["Carbon Footprint Reduction"]} Tons</TypographyAmountText>
                             <TypographyBody2>
                                 Approximate CO2 amount prevented from entering into the atmosphere.
                             </TypographyBody2>

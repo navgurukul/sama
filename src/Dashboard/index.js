@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Grid, Tabs, Tab, Typography, Box } from "@mui/material";
 import SocialImpactPage from "./SocialImpact";
 import EnvironmentalImpact from "./EnvironmentalImpact";
@@ -15,6 +15,23 @@ function DashboardPage() {
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
+
+  const [data, setData] = useState();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await 
+                fetch('https://script.google.com/macros/s/AKfycbzWkc8lDkTquwsjj_--B4Qj2GHA_gc_L4ev8uxBsmlWha2vE62hTLNMRaHFbsw7bKzYlg/exec');
+                const result = await response.json();
+                setData(result);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
   return (
     <Box sx={{ background: "#FFFAF8", pb: 6, }}>
       <Container maxWidth="xxl">
@@ -89,7 +106,9 @@ function DashboardPage() {
             }}
           >
             <Grid item xs={12}>
-              {activeTab === 0 ? <EnvironmentalImpact /> : <SocialImpactPage />}
+              {activeTab === 0 ? 
+              <EnvironmentalImpact data={data} /> : 
+              <SocialImpactPage data={data}/>}
             </Grid>
           </Grid>
         </Container>
