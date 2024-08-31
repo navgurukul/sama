@@ -10,9 +10,8 @@ import GiveToday from './Pages/GiveToday';
 import OurApproach from './Pages/OurApproach/OurApproach';
 import Donate from './Pages/Donate/Donate';
 import DashboardPage from './Dashboard';
-import  LaptopData from './Pages/LaptopData';
-// import  LaptopData from '';
-// import Upload from './Pages/LaptopData/Upload';
+import LaptopInventory from './Pages/LaptopData/index';
+
 import './App.css';
 function App() {
   return (
@@ -29,8 +28,7 @@ function App() {
               <Route path="/our-approach" element={<OurApproach />} />
               <Route path="/donate" element={<Donate />} />
               <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/laptopdata" element={<LaptopData />} />
-              {/* <Route path="/upload" element={<Upload />} /> */}
+              <Route path="/laptopinventory" element={<LaptopInventory />} />
             </Routes>
             {" "}
           </div>
