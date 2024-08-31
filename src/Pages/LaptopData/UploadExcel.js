@@ -51,7 +51,7 @@ const Upload = () => {
       // Post data to Google Apps Script
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbwOH5ap6YFRJf6YyXkZ0PUtA6-VykojW1bUnknCnVaxObTDx8NRNeYjy7JCw6XNcQ3hwQ/exec",
+          "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
           {
             method: "POST",
             body: JSON.stringify(dataToSend),

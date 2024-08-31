@@ -13,7 +13,6 @@ import {
   ListItemText,
 } from "@mui/material";
 
-
 function LaptopForm() {
   const [formData, setFormData] = useState({
     type: "laptopLabeling",
@@ -29,7 +28,7 @@ function LaptopForm() {
     inventoryLocation: "",
     laptopWeight: "",
     others: "",
-    MacAddress: "",
+    macAddress: "",
   });
   console.log(formData);
   const handleChange = (e) => {
@@ -50,7 +49,7 @@ function LaptopForm() {
     e.preventDefault();
     try {
       const response = await fetch(
-       "https://script.google.com/macros/s/AKfycbwOH5ap6YFRJf6YyXkZ0PUtA6-VykojW1bUnknCnVaxObTDx8NRNeYjy7JCw6XNcQ3hwQ/exec",
+        "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
         {
           method: "POST",
           body: JSON.stringify(formData),
@@ -75,7 +74,7 @@ function LaptopForm() {
         inventoryLocation: "",
         laptopWeight: "",
         others: "",
-        MacAddress: "",
+        macAddress: "",
       });
     } catch (error) {
       console.error("Error:", error);
@@ -110,7 +109,6 @@ function LaptopForm() {
   ];
   return (
     <>
-     
       <Container sx={{ mt: 5 }} maxWidth="sm">
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
@@ -230,8 +228,8 @@ function LaptopForm() {
               <TextField
                 fullWidth
                 label="Other Laptop Issues optional"
-                name="other"
-                value={formData.other}
+                name="others"
+                value={formData.others}
                 onChange={handleChange}
                 variant="outlined"
                 sx={{ mt: 2 }}
@@ -261,13 +259,13 @@ function LaptopForm() {
               <TextField
                 fullWidth
                 label="Mac address"
-                name="MacAddress"
-                value={formData.MacAddress}
+                name="macAddress"
+                value={formData.macAddress}
                 onChange={handleChange}
                 variant="outlined"
               />
             </Grid>
-            <Grid item xs={12} >
+            <Grid item xs={12}>
               <Button
                 type="submit"
                 variant="contained"
@@ -277,7 +275,6 @@ function LaptopForm() {
                 Submit
               </Button>
             </Grid>
-         
           </Grid>
         </form>
       </Container>
@@ -285,8 +282,3 @@ function LaptopForm() {
   );
 }
 export default LaptopForm;
-
-
-
-
-
