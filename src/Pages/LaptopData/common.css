@@ -1,0 +1,68 @@
+
+.overlay {
+    position: fixed; /* Stays in the same place even when scrolling */
+    top: 0; /* Starts from the top of the page */
+    left: 0; /* Starts from the left side of the page */
+    right: 0; /* Extends to the right side of the page */
+    bottom: 0; /* Extends to the bottom of the page */
+    background: #000000b3; /* Black background with 70% opacity */
+    display: flex; /* Flexbox to center the loader */
+    justify-content: center; /* Horizontally center the loader */
+    align-items: center; /* Vertically center the loader */
+    z-index: 9999; /* Ensures the overlay is on top of other elements */
+  }
+  
+  /* Loader: The animated loading text and elements */
+  .loader {
+    width: 250px; /* Width of the loader box */
+    height: 50px; /* Height of the loader box */
+    line-height: 50px; /* Aligns text vertically in the center of the loader */
+    text-align: center; /* Centers the text horizontally */
+    position: relative; /* Positioned relative to its normal position */
+    font-family: helvetica, arial, sans-serif; /* Font family for the loader text */
+    text-transform: uppercase; /* Converts text to uppercase */
+    font-weight: 900; /* Sets the font weight to bold */
+    color: #5C785A ; /* Text color */
+    letter-spacing: 0.2em; 
+  }
+  
+  /* Pseudo-elements for animated dots */
+  .loader::before,
+  .loader::after {
+    content: ""; /* No text content, only for styling */
+    display: block; /* Makes the pseudo-elements block-level */
+    width: 15px; /* Width of the dots */
+    height: 15px; /* Height of the dots */
+    background: #CED7CE; /* Background color of the dots */
+    position: absolute; /* Positioned absolutely within the loader */
+    animation: load 0.7s infinite alternate ease-in-out; /* Animation properties */
+  }
+  
+  /* Positioning of the top dot */
+  .loader::before {
+    top: 0; /* Positioned at the top */
+  }
+  
+  /* Positioning of the bottom dot */
+  .loader::after {
+    bottom: 0; /* Positioned at the bottom */
+  }
+  
+  /* Keyframes for the dot animation */
+  @keyframes load {
+    0% {
+      left: 0; /* Dot starts at the left side */
+      height: 30px; /* Initial height of the dot */
+      width: 15px; /* Initial width of the dot */
+    }
+    50% {
+      height: 8px; /* Changes to a smaller height in the middle of the animation */
+      width: 40px; /* Expands width to create a stretching effect */
+    }
+    100% {
+      left: 235px; /* Dot moves to the right side */
+      height: 30px; /* Returns to the original height */
+      width: 15px; /* Returns to the original width */
+    }
+  }
+  

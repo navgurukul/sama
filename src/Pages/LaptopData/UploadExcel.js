@@ -10,37 +10,40 @@ import {
 } from "@mui/material";
 import * as XLSX from "xlsx";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import "./common.css";
 
 const Upload = () => {
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState(null); // State to store the selected file
+  const [loading, setLoading] = useState(false); // State to manage loading state
 
   const handleFileChange = (e) => {
-    const uploadedFile = e.target.files[0];
+    const uploadedFile = e.target.files[0]; // Get the uploaded file
     if (
       uploadedFile &&
       uploadedFile.type ===
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
-      setFile(uploadedFile);
+      setFile(uploadedFile); // Set the file if it's a valid Excel file
     } else {
-      alert("Please upload an Excel file (.xlsx format).");
+      alert("Please upload an Excel file (.xlsx format)."); // Alert if the file is not valid
     }
   };
 
   const handleUpload = async () => {
     if (!file) {
-      alert("No file selected!");
+      alert("No file selected!"); // Alert if no file is selected
       return;
     }
 
-    const reader = new FileReader();
+    setLoading(true); // Show loader when starting the upload
+    const reader = new FileReader(); // Create a FileReader object
     reader.onload = async (event) => {
-      const binaryStr = event.target.result;
-      const workbook = XLSX.read(binaryStr, { type: "binary" });
+      const binaryStr = event.target.result; // Read file as binary string
+      const workbook = XLSX.read(binaryStr, { type: "binary" }); // Parse the binary string to workbook
 
       // Convert first sheet data to JSON
-      const sheetName = workbook.SheetNames[0];
-      const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+      const sheetName = workbook.SheetNames[0]; // Get the first sheet name
+      const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]); // Convert sheet to JSON
 
       // Add the type to the data being sent to the backend
       const dataToSend = {
@@ -50,30 +53,36 @@ const Upload = () => {
 
       // Post data to Google Apps Script
       try {
-        const response = await fetch(
+        await fetch(
           "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
           {
-            method: "POST",
-            body: JSON.stringify(dataToSend),
-            mode: "no-cors",
+            method: "POST", 
+            body: JSON.stringify(dataToSend), // Data to send
+            mode: "no-cors", // Mode for cross-origin request
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": "application/json", // Content-Type header
             },
           }
         );
 
-        // Since we can't actually get the response, we'll just alert success here
-        alert("Data uploaded successfully!");
+        alert("Data uploaded successfully!"); // Success alert
       } catch (error) {
-        console.error("Error uploading data:", error);
-        alert("Failed to upload data. Please try again.");
+        console.error("Error uploading data:", error); // Log the error
+        alert("Failed to upload data. Please try again."); // Error alert
       }
+      setLoading(false); // Hide loader after completion
     };
-    reader.readAsBinaryString(file);
+    reader.readAsBinaryString(file); // Read the file as binary string
   };
 
   return (
     <Container maxWidth="sm" style={{ marginTop: "30px" }}>
+      {/* Display the loader and overlay if loading is true */}
+      {loading && (
+        <div className="overlay">
+          <div className="loader">Loading...</div>
+        </div>
+      )}
       <Paper
         elevation={3}
         style={{ padding: "20px", textAlign: "center", marginBottom: "50px" }}
@@ -125,7 +134,7 @@ const Upload = () => {
               variant="contained"
               color="primary"
               onClick={handleUpload}
-              disabled={!file}
+              disabled={!file} // Disable button if no file is selected
             >
               Upload
             </Button>
@@ -144,4 +153,4 @@ const Upload = () => {
   );
 };
 
-export default Upload;
+export default Upload; 

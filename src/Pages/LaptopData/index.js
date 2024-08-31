@@ -33,7 +33,7 @@ const LaptopInventory = () => {
               <FormControlLabel
                 value="manual"
                 control={<Radio />}
-                label="Manual Entry"
+                label="Single Entry"
               />
               <FormControlLabel
                 value="bulk"

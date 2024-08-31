@@ -1,19 +1,20 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; // Import React and the useState hook from React
 import {
   TextField,
   Button,
   Container,
   Grid,
-  Typography,
-  Select,
-  MenuItem,
   FormControl,
   InputLabel,
+  Select,
+  MenuItem,
   Checkbox,
   ListItemText,
 } from "@mui/material";
+import "./common.css";
 
 function LaptopForm() {
+  // State to store form data
   const [formData, setFormData] = useState({
     type: "laptopLabeling",
     donorCompanyName: "",
@@ -30,36 +31,49 @@ function LaptopForm() {
     others: "",
     macAddress: "",
   });
-  console.log(formData);
+
+  // State to manage loading state for the loader
+  const [loading, setLoading] = useState(false);
+
+  // Function to handle changes in text fields
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target; // Get the name and value from the event target
     setFormData({
-      ...formData,
-      [name]: value,
+      ...formData, // Spread existing form data
+      [name]: value, // Update the changed field
     });
   };
+
+  // Function to handle changes in select fields
   const handleSelectChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target; // Get the name and value from the event target
     setFormData({
-      ...formData,
-      [name]: typeof value === "string" ? value.split(",") : value,
+      ...formData, // Spread existing form data
+      [name]: typeof value === "string" ? value.split(",") : value, // Update select field values
     });
   };
+
+  // Function to handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent the default form submission behavior
+    setLoading(true); // Show the loader when form submission starts
     try {
-      const response = await fetch(
+      await fetch(
         "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
         {
           method: "POST",
-          body: JSON.stringify(formData),
-          mode: "no-cors",
+          body: JSON.stringify(formData), // Convert form data to JSON
+          mode: "no-cors", // Use no-cors mode since it's a cross-origin request
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json", // Specify content type as JSON
           },
         }
       );
-      // In no-cors mode, you can't read the response body, so you can't use response.json()
+
+      alert("Data uploaded successfully!"); // Show success message after data upload
+      setLoading(false); // Hide the loader
+
+      // Reset the form data to its initial state
       setFormData({
         type: "laptopLabeling",
         donorCompanyName: "",
@@ -77,10 +91,13 @@ function LaptopForm() {
         macAddress: "",
       });
     } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred. Please try again.");
+      console.error("Error:", error); // Log error to the console
+      alert("An error occurred. Please try again."); // Show error message
+      setLoading(false); // Hide the loader on error
     }
   };
+
+  // Options for major issues in the select field
   const majorIssueOptions = [
     "Fan",
     "Speaker",
@@ -97,6 +114,8 @@ function LaptopForm() {
     "Water Damage",
     "USB Ports",
   ];
+
+  // Options for minor issues in the select field
   const minorIssuesOptions = [
     "Cosmetic Wear",
     "Loose Hinges",
@@ -107,11 +126,19 @@ function LaptopForm() {
     "Port Wear",
     "Trackpad Sensitivity",
   ];
+
   return (
     <>
       <Container sx={{ mt: 5 }} maxWidth="sm">
+        {/* Display the loader and overlay if loading is true */}
+        {loading && (
+          <div className="overlay">
+            <div className="loader">Loading...</div>
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
+            {/* Form Fields */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -122,6 +149,7 @@ function LaptopForm() {
                 variant="outlined"
               />
             </Grid>
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -271,6 +299,7 @@ function LaptopForm() {
                 variant="contained"
                 color="primary"
                 fullWidth
+                disabled={loading} // Disable button while loading
               >
                 Submit
               </Button>
@@ -281,4 +310,5 @@ function LaptopForm() {
     </>
   );
 }
-export default LaptopForm;
+
+export default LaptopForm; 
