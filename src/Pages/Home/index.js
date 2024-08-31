@@ -9,6 +9,7 @@ import ContactForm from "./ContactForm";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import diamond from "./assets/dimanod.png";
 import SamaGroupImage from './assets/Group365.png';
+import { fontSize, fontWeight, shadows } from "@mui/system";
 
 function Home() {
   const [impact, setImpact] = useState("environmental");
@@ -29,7 +30,7 @@ function Home() {
     height: 'auto',
     bottom: '15px',
     right: '15px',
-    height:"167px",
+    height: "167px",
     boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)"
   };
 
@@ -75,10 +76,10 @@ function Home() {
               <Typography variant="body1" gutterBottom>
                 Sama, a non-profit organisation, and a subsidiary of NavGurukul, helps modern businesses responsibly repurpose their e-waste for educational usage by underserved women. Our aim is to embed Net Zero Through Giving into the culture of a client organisation so that every member understands the role they can play in supporting the transition towards a greener and inclusive future.
               </Typography>
-              <Button variant="text" href="/about" color="primary">
-                <Typography variant="subtitle1">Know more</Typography>
-                <ChevronRightIcon />
-              </Button>
+              <a href="/about" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>
+                <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "bold", fontSize: "18px" }}>Know more</Typography>
+                <ChevronRightIcon color="primary" />
+              </a>
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography variant="h6" gutterBottom style={{ color: "#5C785A" }}>
@@ -87,10 +88,10 @@ function Home() {
               <Typography variant="body1" gutterBottom>
                 Sama is not just a laptop donation project; it's a comprehensive education initiative aimed at empowering 1 million girls and women by 2030 with cutting-edge devices and skills, leveraging the existing infrastructure of our corporate partners.
               </Typography>
-              <Button variant="text" href="/our-approach" color="primary">
-                <Typography variant="subtitle1">Know more</Typography>
-                <ChevronRightIcon />
-              </Button>
+              <a href="/about" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>
+                <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "bold", fontSize: "18px" }}>Know more</Typography>
+                <ChevronRightIcon color="primary" />
+              </a>
             </Grid>
           </Grid>
         </Container>
@@ -115,19 +116,26 @@ function Home() {
               </Grid>
             ))}
           </Grid>
-          <Typography variant="body2"  color="#4A4A4A" sx={{ my: 4 ,fontSize:"14px"}} gutterBottom>
+          <Typography variant="body2" color="#4A4A4A" sx={{
+            fontFamily: 'Raleway',
+            fontSize: '14px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            my: 4,
+            lineHeight: '170%'
+          }} gutterBottom>
             *All calculations based on relevant people benefiting from 1 M laptops by 2030
           </Typography>
         </Container>
       </Box>
-      <Container maxWidth="xxl" style={{ padding: 0 }}>
+      <Container maxWidth="xxl" style={{ padding: 0, backgroundColor: "#F0F4EF" }}>
         <img
           src={SamaGroupImage}
           alt="Sama Group"
-          style={{ display: "block", width:"100%", margin: 0, padding: 0 }}
+          style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
         />
       </Container>
-      <Container maxWidth="xl" sx={{ my: 10 }}>
+      <Container maxWidth="lg" sx={{ my: 10 }}>
         <Typography variant="h5">Metrics that Matter</Typography>
         <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
         <Box sx={!isActive && { display: 'flex', my: 4 }} spacing={3}>
@@ -136,7 +144,7 @@ function Home() {
             onClick={() => setImpact("environmental")}>
             Environmental Impact
           </Button>
-          <Button  color="primary" variant={impact === "social" ? "contained" : "outlined"}
+          <Button color="primary" variant={impact === "social" ? "contained" : "outlined"}
             style={isActive ? { margin: "16px 0px" } : { borderRadius: "100px", marginLeft: "32px" }}
             onClick={() => setImpact("social")}>
             Social Impact
@@ -144,7 +152,7 @@ function Home() {
         </Box>
         <Box className="dashboardBox">
           {impact === "environmental" ? (
-            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" />
+            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" sx={{shadows:""}}/>
           ) : (
             <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" />
           )}
@@ -152,7 +160,7 @@ function Home() {
       </Container>
 
       <Box sx={{ my: 10 }}>
-        <Container maxWidth="xl">
+        <Container maxWidth="lg">
           <Typography variant="h5">Sustainability Development Goals</Typography>
           <Typography variant="body1" style={{ width: "65%", margin: "32px 0px" }}>
             Sama's mission of repurposing e-waste for educational use by underserved women aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:

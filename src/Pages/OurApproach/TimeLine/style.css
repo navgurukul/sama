@@ -32,6 +32,8 @@
   float: left;
   text-align: right;
   clear: both;
+  border: 1px solid red;
+
 
 }
 
@@ -73,6 +75,7 @@
   box-shadow: 0 0 0 10px rgba(224, 224, 224, 1);
   top: 210px;
 }
+
 .timeline ul li:nth-child(even):before {
   content: '';
   position: absolute;

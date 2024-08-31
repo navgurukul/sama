@@ -16,7 +16,7 @@ const goals = [
 
 const SamaGoals = () => {
     return (
-        <Box sx={samaGoalsStyles.boxContainer}>
+        <Box sx={samaGoalsStyles.boxContainer} >
             <Container maxWidth="lg" sx={samaGoalsStyles.container} >
                 <Typography variant="h5" sx={samaGoalsStyles.titleText}>
                     <b>This is how Sama was born,</b> with two simple but audacious <b>goals:</b>

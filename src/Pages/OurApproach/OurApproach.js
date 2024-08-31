@@ -13,9 +13,9 @@ const OurApproach = () => {
   return (
     <>
       <Box sx={clases.backgroundAndPadding} bgcolor="primary.main">
-        <Container maxWidth="xl">
+        <Container maxWidth="lg">
           <Grid container spacing={6}>
-            <Grid item xs={12} md={7} lg={5}>
+            <Grid item xs={12} md={7} lg={7}>
               <Typography variant="h5" color="white.main">
                 Our Rationale
               </Typography>
@@ -28,11 +28,10 @@ const OurApproach = () => {
             </Grid>
           </Grid>
 
-          <Typography variant="h6" color="white.main" sx={{ marginTop: "60px" }}>
+          <Typography variant="h6" color="white.main" sx={{ marginTop: "50px" }}>
             The E-Waste Crisis
           </Typography>
-
-          <Grid container spacing={6} sx={{mt:1}}>
+          <Grid container spacing={6} sx={{ mt: 1 }}>
             <Grid item xs={12} md={4}>
               <Box sx={clases.CardContent}>
                 <Box sx={clases.boxStyle}>
@@ -75,7 +74,6 @@ const OurApproach = () => {
               </Box>
             </Grid>
           </Grid>
-
           <Typography variant="h6" color="white.main" sx={{ marginTop: "64px" }}>
             The Digital Gender Divide
           </Typography>

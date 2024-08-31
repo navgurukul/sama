@@ -21,8 +21,8 @@ const TestimonialSlider = () => {
       alt: 'Student 2',
       name: "Anjali Singh",
       place: "Pune",
-      text:  "With a laptop as my tool, I've transitioned from a NavGurukul " +
-      "student to an academic intern, connecting with diverse learners across India and fostering personal growth."
+      text: "With a laptop as my tool, I've transitioned from a NavGurukul " +
+        "student to an academic intern, connecting with diverse learners across India and fostering personal growth."
     },
     {
       src: require('./assets/riya.png'),
@@ -53,10 +53,10 @@ const TestimonialSlider = () => {
   const groupedTestimonials = isMobile
     ? testimonials.map((testimonial) => [testimonial])
     : [
-        [testimonials[0], testimonials[1]],
-        [testimonials[2], testimonials[3]],
-        [testimonials[4]],
-      ];
+      [testimonials[0], testimonials[1]],
+      [testimonials[2], testimonials[3]],
+      [testimonials[4]],
+    ];
 
   const [sliderRef, slider] = useKeenSlider({
     loop: true,
@@ -69,15 +69,12 @@ const TestimonialSlider = () => {
   const intervalRef = useRef(null);
 
   useEffect(() => {
-    // Clear existing interval
     if (intervalRef.current) clearInterval(intervalRef.current);
-
-    // Set up new interval for autoplay
     intervalRef.current = setInterval(() => {
       if (slider) slider.current?.next();
-    }, 10000); // 10 seconds between slides
+    }, 10000); 
 
-    return () => clearInterval(intervalRef.current); // Cleanup on unmount
+    return () => clearInterval(intervalRef.current); 
   }, [slider]);
 
   const handlePrevClick = () => {
@@ -90,7 +87,7 @@ const TestimonialSlider = () => {
 
   return (
     <Box style={{ backgroundColor: "#5C785A" }}>
-      <Container sx={isMobile?{py:4}:{ py: 10 }}>
+      <Container sx={isMobile ? { py: 4 } : { py: 10 }}>
         <Typography variant="h5" style={{ color: "#FFF" }}>
           Student Speaks
         </Typography>
@@ -98,26 +95,28 @@ const TestimonialSlider = () => {
           <IconButton onClick={handlePrevClick} style={{ position: "absolute", left: "-100px" }}>
             <ChevronLeftIcon style={{ color: "#FFFFFF" }} />
           </IconButton>
-          <Box ref={sliderRef} className="keen-slider" 
-          sx={{ overflow: 'hidden',
-           width: '100%', 
-           color:"#FFF",
-           marginTop: "16px",
+          <Box ref={sliderRef} className="keen-slider"
+            sx={{
+              overflow: 'hidden',
+              width: '100%',
+              color: "#FFF",
+              marginTop: "16px",
             }}>
             {groupedTestimonials.map((group, index) => (
               <Box key={index} className="keen-slider__slide" display="flex" sx={{ width: '100%' }} color="white">
                 {group.map((testimonial, idx) => (
-                  <Box key={idx} sx={isMobile?{ width: '100%' }:{ width: '50%', paddingRight: '16px' }}>
+                  <Box key={idx} sx={isMobile ? { width: '100%' } : { width: '50%', paddingRight: '16px' }}>
 
-                    <Typography variant="body1" sx={!isMobile && { height:"100px"}}>{testimonial.text}</Typography>
-                    <img src={testimonial.src} alt={testimonial.alt} 
-                    style={{ padding: " 8px 0px",
-                     width: "64px",
-                      height: "64px",
-                       borderRadius: "50%",
-                        objectFit:"cover" }} />
+                    <Typography variant="body1" sx={!isMobile && { height: "100px" }}>{testimonial.text}</Typography>
+                    <img src={testimonial.src} alt={testimonial.alt}
+                      style={{
+                        padding: " 8px 0px",
+                        width: "64px",
+                        height: "80px",
+                        borderRadius: "50%",
+                        objectFit: "cover"
+                      }} />
                     <Typography variant="subtitle1">{testimonial.name}</Typography>
-                    {/* <Typography variant="body2">({testimonial.place})</Typography> */}
                   </Box>
                 ))}
               </Box>

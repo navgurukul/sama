@@ -165,15 +165,15 @@ function Donation() {
   return (
     <>
       <Container maxWidth="xl" style={{ backgroundColor: "#E0E0E0" }}>
-        <Box sx={{ padding: "10", backgroundColor: "#E0E0E0", py: 10 }}>
-          <Container maxWidth="lg" sx={{ paddingBottom: "4%" }}>
+        <Box sx={{ padding: "5px", backgroundColor: "#E0E0E0" }}>
+          <Container maxWidth="lg" sx={{ paddingBottom: "7%", paddingTop: "7%" }}>
             <Typography
               variant="h6"
-              sx={{ marginBottom: "25px", color: "#4A4A4A", fontSize: "24px" }}
+              sx={{ color: "#4A4A4A", fontSize: "24px" }}
             >
               Support Sama's Mission
             </Typography>
-            <Grid container spacing={4}>
+            <Grid container spacing={4} sx={{ mt: 1 }}>
               <Grid item xs={12} md={4}>
                 <Box>
                   <img
@@ -181,12 +181,12 @@ function Donation() {
                   />
                   <Typography
                     className="customSubtitle1"
-                    sx={{ margin: "14px 0px" }}
+                    sx={{ mt: 2 }}
                   >
                     Corporate Laptop Donation
                   </Typography>
                   <Typography variant="body1">
-                    Transform your end-of-life laptops into powerful tools 
+                    Transform your end-of-life laptops into powerful tools
                     for education and empowerment.
                   </Typography>
                 </Box>
@@ -199,8 +199,9 @@ function Donation() {
                   />
                   <Typography
                     className="customSubtitle1"
-                    // variant="subtitle1"
-                    sx={{ margin: "14px 0px" }}
+                    variant="subtitle1"
+                    sx={{ mt: 2 }}
+                  // sx={{ margin: "14px 0px" }}
                   >
                     Corporate Impact Funding
                   </Typography>
@@ -218,7 +219,9 @@ function Donation() {
                   />
                   <Typography
                     className="customSubtitle1"
-                    sx={{ margin: "14px 0px" }}
+                    sx={{ mt: 2 }}
+
+                  // sx={{ margin: "14px 0px" }}
                   >
                     Individual Contribution
                   </Typography>
@@ -452,7 +455,7 @@ function Donation() {
                     fullWidth
                     variant="outlined"
                     name="numberOfLaptops"
-                    placeholder="Estimated number of laptops"
+                    placeholder="Ex: 20"
                     value={formData.numberOfLaptops}
                     onChange={handleChange}
                     sx={{ backgroundColor: "white" }}
@@ -471,7 +474,7 @@ function Donation() {
                     fullWidth
                     variant="outlined"
                     name="donateAmount"
-                    placeholder="Donate Amount"
+                    placeholder="Ex : 3,00,000"
                     value={formData.donateAmount}
                     onChange={handleChange}
                     sx={{ backgroundColor: "white" }}
@@ -491,7 +494,7 @@ function Donation() {
                       fullWidth
                       variant="outlined"
                       name="numberOfLaptops"
-                      placeholder="Estimated number of laptops"
+                      placeholder="Ex : 34"
                       value={formData.numberOfLaptops}
                       onChange={handleChange}
                       sx={{ backgroundColor: "white" }}
@@ -507,7 +510,7 @@ function Donation() {
                       fullWidth
                       variant="outlined"
                       name="donateAmount"
-                      placeholder="Donate Amount"
+                      placeholder=""
                       value={formData.donateAmount}
                       onChange={handleChange}
                       sx={{ backgroundColor: "white" }}
@@ -522,7 +525,6 @@ function Donation() {
                 <FormControl component="fieldset" error={!!errors.hearAbout}>
                   <Typography
                     className="customSubtitle1"
-                    // variant="subtitle1"
                     sx={{ marginBottom: "10px" }}
                   >
                     How did you hear about Sama?
@@ -581,7 +583,8 @@ function Donation() {
 
               <Grid item xs={12}>
                 <Grid item xs={12}>
-                  <Typography variant="subtitle2" sx={{ marginBottom: "10px" }}>
+                  <Typography className="customSubtitle1"
+                    sx={{ marginBottom: "10px" }}>
                     Any additional information or questions{" "}
                     <span style={{ color: "#4A4A4A" }}>(Optional)</span>
                   </Typography>
@@ -589,7 +592,7 @@ function Donation() {
                     fullWidth
                     variant="outlined"
                     name="message"
-                    placeholder="Message"
+                    placeholder="Ex: hii"
                     value={formData.message}
                     onChange={handleChange}
                     sx={{ backgroundColor: "white" }}
@@ -623,7 +626,7 @@ function Donation() {
                   alignItems: "center",
                 }}
               >
-                <Button type="submit" variant="contained" color="primary" style={{width: "126px", height: "48px" }}>
+                <Button type="submit" variant="contained" color="primary" style={{ width: "126px", height: "48px" }}>
                   Submit
                 </Button>
                 {successMessage && (

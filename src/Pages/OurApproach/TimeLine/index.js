@@ -11,14 +11,15 @@ import { Grid, Box, Container, Typography } from '@mui/material';
 import "../OurApproach.css";
 import "./style.css";
 import classes from "./style.js";
+import { padding } from '@mui/system';
 
 const TimeLine = () => {
   return (
     <>
       <Box paddingBottom="80px" sx={{ background: "rgba(248, 243, 240, 1)" }}>
-        <Container maxWidth="xl">
+        <Container maxWidth="lg">
           <Grid container spacing={2}>
-            <Grid item xs={12} lg={5} md={7} sx={{ mt: "80px" }}>
+            <Grid item xs={12} lg={7} md={7} sx={{ mt: "80px" }}>
               <Typography variant='h5' color="primary.main">Our 3D model:</Typography>
               <Typography variant='body1' sx={{ mt: 3 }}>Our 3D Model forms the backbone of our approach.
                 Through this comprehensive approach, we transform e-waste
@@ -33,7 +34,7 @@ const TimeLine = () => {
               <Box className="container-timeline">
                 <Box className="content-timeline active-content-timeline">
                   <Box className="header-timeline">
-                    <Box>
+                    <Box >
                       <Typography
 
                         color="primary.main"
@@ -195,13 +196,15 @@ const TimeLine = () => {
           </Grid>
 
           <Grid container spacing={2} sx={{ display: { xs: 'none', lg: 'flex', md: 'flex' }, height: "auto" }}>
-            <div className="timeline" sx={{ border: "1px solid red" }}>
+            <div className="timeline">
               <ul>
                 <li>
                   <Box
                     sx={classes.titleBox}
+                    // sx={{ p: 4, border: "1px solid red" }}
                   >
-                    <Typography variant='h6' color="primary.main">
+                    <Typography variant='h6' color="primary.main"
+                    >
                       Digital Tracking and Reporting
                     </Typography>
                   </Box>
@@ -403,13 +406,13 @@ const TimeLine = () => {
                     style={{ marginTop: "-39px" }}
 
                   >
-                    <Box sx={{mt:13}}>
+                    <Box sx={{ mt: 13 }}>
                       <img
                         style={{ width: '200px' }}
                         src={Img7}
                         alt="Digital Tracking and Reporting"
                       />
-                      <Typography variant='body1' sx={{mt:4}}>
+                      <Typography variant='body1' sx={{ mt: 4 }}>
                         We utilize insights to improve processes and maximize impact
                       </Typography>
                     </Box>

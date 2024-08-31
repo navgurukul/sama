@@ -3,7 +3,7 @@ import { border, borderBottom, margin, padding, positions, width } from "@mui/sy
 const samaGoalsStyles = {
     boxContainer: {
         backgroundColor: '#EDEDED',
-        marginTop: '130px',
+        marginTop: '90px',
     },
     container: {
         padding: { xs: '10px 40px', sm: '50px', md: '50', lg: "80px 0px" },

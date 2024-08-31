@@ -113,7 +113,7 @@ function ContactForm() {
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} md={6}>
                   <TextField
-                    label="First Name"
+                    label="Ex : khushboo"
                     margin="normal"
                     fullWidth
                     variant="outlined"
@@ -127,7 +127,7 @@ function ContactForm() {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    label="Last Name"
+                    label="Ex : Kumari"
                     margin="normal"
                     fullWidth
                     variant="outlined"
@@ -143,7 +143,7 @@ function ContactForm() {
 
               <TextField
                 fullWidth
-                label="Email"
+                label="khushboo@navgurukul.org"
                 margin="normal"
                 variant="outlined"
                 name="email"
@@ -155,7 +155,7 @@ function ContactForm() {
               />
               <TextField
                 fullWidth
-                label="Contact"
+                label="Ex : 8091872070"
                 margin="normal"
                 variant="outlined"
                 name="contact"
@@ -168,7 +168,7 @@ function ContactForm() {
               />
               <TextField
                 fullWidth
-                label="Message"
+                label="Hello"
                 margin="normal"
                 multiline
                 rows={4}
