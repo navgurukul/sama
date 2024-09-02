@@ -95,8 +95,9 @@ const Upload = () => {
           sample file to understand the required format.
         </Alert>
         <Link
-          href="/sample-file.xlsx"
+          href="https://docs.google.com/spreadsheets/d/1GjbjBH1YhzQDD3sVtUJbtht-fKw0zi4Ac5UuvvRfv84/edit?gid=0#gid=0"
           download
+          target="_blank"
           style={{ display: "block", marginBottom: "20px" }}
         >
           Download Sample File
@@ -125,7 +126,7 @@ const Upload = () => {
                   marginRight: "13px",
                   padding: "6px 12px",
                 }}
-                startIcon={<AttachFileIcon style={{ marginRight: "-5px" }} />} // Adjusting the margin
+                startIcon={<AttachFileIcon style={{ marginRight: "-5px" }} />} 
               >
                 Choose File
               </Button>
@@ -134,7 +135,7 @@ const Upload = () => {
               variant="contained"
               color="primary"
               onClick={handleUpload}
-              disabled={!file} // Disable button if no file is selected
+              disabled={!file} 
             >
               Upload
             </Button>

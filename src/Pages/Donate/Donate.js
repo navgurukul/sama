@@ -13,7 +13,7 @@ import {
   FormHelperText,
   FormControl,
   Container,
-  Snackbar, // Import Snackbar
+  Snackbar, 
   Alert,
 } from "@mui/material";
 import "./Donate.css";

@@ -129,7 +129,7 @@ function LaptopForm() {
 
   return (
     <>
-      <Container sx={{ mt: 5 }} maxWidth="sm">
+      <Container sx={{ mt: 5, }} maxWidth="sm">
         {/* Display the loader and overlay if loading is true */}
         {loading && (
           <div className="overlay">
@@ -293,7 +293,7 @@ function LaptopForm() {
                 variant="outlined"
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{marginBottom:"10%"}}>
               <Button
                 type="submit"
                 variant="contained"
