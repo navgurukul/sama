@@ -18,10 +18,12 @@ function Overview() {
                             <Typography variant="body1" component="p" sx={TypographyBodyStyle}>
                                 In this journey, we realised that a laptop is one of the most crucial enablers. Our ecosystem partners, including industry leaders like Amazon, Macquarie, DXC, MSDF, Tiger Analytics and Fossil have contributed about 1000 End-of-Life laptops already, thus multiplying the impact significantly. These donations have resulted in 314 jobs created and 900+ females from the remotest corners of 11 states becoming digitally adept, thereby breaking social and cultural barriers.
                             </Typography>
-                            
+                            {/* <Typography variant="body1" component="p" sx={TypographyBodyStyle}>
+                                If a number as small as 1000 laptops can create such a profound impact on few lives, imagine what we could achieve if we solved this not only for NavGurukul students but for all students.
+                            </Typography> */}
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} md={5} lg={5}>
+                    <Grid item xs={12} md={5} lg={5} >
                         <Box sx={BoxStyle}>
                             <img
                                 src={student}

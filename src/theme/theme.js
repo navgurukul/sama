@@ -106,7 +106,6 @@ theme = createTheme(theme, {
       textTransform: "none",
       fontFamily: "Raleway",
       fontWeight: 700,
-
     },
   },
 });
@@ -132,12 +131,10 @@ theme.components = {
       root: {
         borderRadius: "100px",
         height: "48px",
-        padding:"0px 32px 0px 32px",
         
         "&:hover": {
       backgroundColor: "#5C785A",
       color: '#FFFFFF',
-      
     },
 
       },
