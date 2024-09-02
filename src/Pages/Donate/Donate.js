@@ -136,7 +136,6 @@ function Donation() {
         );
         // console.log("Response--------", response);
 
-        console.log("Form Data Submitted:", formData);
 
         setFormData({
           firstName: "",
