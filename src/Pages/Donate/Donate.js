@@ -13,10 +13,11 @@ import {
   FormHelperText,
   FormControl,
   Container,
-  Snackbar, 
+  Snackbar,
   Alert,
 } from "@mui/material";
 import "./Donate.css";
+import icon1 from "./assets/Group 22 (1).svg";
 
 function Donation() {
   const [formData, setFormData] = useState({
@@ -176,19 +177,16 @@ function Donation() {
             <Grid container spacing={4}>
               <Grid item xs={12} md={4}>
                 <Box>
-                  <img
-                    src={require("./assets/Group 22 (1).svg").default}
-                    alt="Corporate Laptop Donation"
-                  />
+                  <img src={icon1} />
                   <Typography
                     className="customSubtitle1"
-                    // variant="subtitle1"
                     sx={{ margin: "14px 0px" }}
                   >
                     Corporate Laptop Donation
                   </Typography>
                   <Typography variant="body1">
-                  Transform your end-of-life laptops into powerful tools for education and empowerment.
+                    Transform your end-of-life laptops into powerful tools for
+                    education and empowerment.
                   </Typography>
                 </Box>
               </Grid>
@@ -219,7 +217,6 @@ function Donation() {
                   />
                   <Typography
                     className="customSubtitle1"
-                    // variant="subtitle1"
                     sx={{ margin: "14px 0px" }}
                   >
                     Individual Contribution
@@ -250,7 +247,7 @@ function Donation() {
                   variant="outlined"
                   name="firstName"
                   value={formData.firstName}
-                  placeholder="First Name"
+                  placeholder="Ex : Khushboo"
                   onChange={handleChange}
                   sx={{ backgroundColor: "white" }}
                   error={!!errors.firstName}
@@ -264,7 +261,7 @@ function Donation() {
                 <TextField
                   fullWidth
                   required
-                  placeholder="Last Name"
+                  placeholder="Ex : kumari"
                   variant="outlined"
                   name="lastName"
                   value={formData.lastName}
@@ -282,7 +279,7 @@ function Donation() {
                   fullWidth
                   required
                   type="email"
-                  placeholder="Email Address"
+                  placeholder="Ex : khushboo@navgurukul.org"
                   variant="outlined"
                   name="email"
                   value={formData.email}
@@ -301,7 +298,7 @@ function Donation() {
                   required
                   type="tel"
                   variant="outlined"
-                  placeholder="Phone Number"
+                  placeholder="Ex : 9140832342"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
@@ -407,15 +404,6 @@ function Donation() {
                   )}
                 </FormControl>
               </Grid>
-
-           
-
-              
-
-              
-
-
-
 
               {formData.donationType === "donate-laptops" && (
                 <Grid item xs={12} md={6}>
@@ -597,7 +585,12 @@ function Donation() {
                   alignItems: "center",
                 }}
               >
-                <Button type="submit" variant="contained" color="primary">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  style={{ width: "126px", height: "48px" }}
+                >
                   Submit
                 </Button>
                 {successMessage && (

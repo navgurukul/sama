@@ -1,4 +1,4 @@
-.hero-text{
+.hero-text {
   font-size: 64px !important;
   font-weight: 700 !important;
   line-height: 130% !important;
@@ -6,13 +6,15 @@
   font-family: Montserrat;
 
 }
-.hero-text-large{
+
+.hero-text-large {
   font-size: 24px !important;
   font-weight: 700 !important;
   line-height: 130% !important;
   color: var(--white, #FFF);
   font-family: Montserrat;
 }
+
 .carousel-container {
   overflow: hidden;
   width: 100%;
@@ -22,27 +24,39 @@
 .carousel-content {
   display: flex;
   flex-direction: row;
-  width: 100%; /* Double the width to fit the duplicated images */
+  width: 100%;
+  /* Double the width to fit the duplicated images */
   animation: scroll-left 30s linear infinite;
 }
-h5{
+
+h5 {
   color: #4A4A4A;
 }
-.hero-text{
+
+.hero-text {
   color: var(--white, #FFF);
-    text-align: center;
-    font-family: Montserrat;
-    font-size: 64px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 130%; 
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 64px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 130%;
 }
 
 @keyframes scroll-left {
   from {
     transform: translateX(0);
   }
+
   to {
-    transform: translateX(-100%); /* Move left by half the container's width */
+    transform: translateX(-100%);
+    /* Move left by half the container's width */
   }
 }
+
+.dashboardBox {
+  border-radius: 16px;
+  box-shadow: 0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08);
+}
+
+

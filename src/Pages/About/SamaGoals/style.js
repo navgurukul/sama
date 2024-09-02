@@ -1,4 +1,4 @@
-import { border, borderBottom, margin, padding, positions } from "@mui/system";
+import { border, borderBottom, margin, padding, positions, width } from "@mui/system";
 
 const samaGoalsStyles = {
     boxContainer: {

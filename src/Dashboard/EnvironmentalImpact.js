@@ -26,7 +26,6 @@ const EnvironmenttalImpact = () => {
     return (
         <>
             <Grid container spacing={3} mt={1} 
-            // display="flex" justifyContent="space-between"
             >
                 <Grid item xs={12} md={4}>
                     <StyledCard>
@@ -37,8 +36,6 @@ const EnvironmenttalImpact = () => {
                             <TypographyTitle sx={{ mt: 1 }}>
                                 <b>Highest Impact Area:</b> Plastic with 1956 kg of waste reduced and lead with 5705 grams of seepage reduced have the highest impact in their respective categories. It indicates a significant opportunity for cost savings and enhanced brand reputation.
                             </TypographyTitle>
-                        {/* </CardContent>
-                        <CardContent> */}
                             <TypographyTitle mt= {2}>
                                 <b>Resource Optimization:</b> Plastic waste reduction of 1222.5 kg (62.5%) and lead seepage reduction of 5705 grams (81.2%) have the highest percentage in their respective categories, suggesting a high impact on future environmental sustainability and optimization.
                             </TypographyTitle>
