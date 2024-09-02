@@ -17,7 +17,9 @@ import {
   Alert,
 } from "@mui/material";
 import "./Donate.css";
+
 import icon1 from "./assets/Group 22 (1).svg";
+
 
 function Donation() {
   const [formData, setFormData] = useState({
