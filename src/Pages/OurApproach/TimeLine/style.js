@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 import { Typography } from '@mui/material';
 import bgImage from "./assets/Group.svg";
+import { margin, padding } from '@mui/system';
 export const StepTitle = styled(Typography)({
     fontSize: "24px",
     fontWeight: 'bold',
@@ -203,7 +204,7 @@ const classes = {
     },
     titleBox: {
         position: 'relative',
-        left: { lg: '240px', md: "200px" },
+        left: { lg: '220px', md: "200px" },
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -211,9 +212,8 @@ const classes = {
         textAlign: 'center',
         background: "rgba(206, 215, 206, 1)",
         bottom: "20px",
-        padding: "16px, 32px, 16px, 32px",
         borderRadius: "32px",
-        width: "431px",
+        width: "460px",
     },
     containerBox: {
         display: 'flex',

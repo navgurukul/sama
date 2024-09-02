@@ -9,8 +9,7 @@ import ContactForm from "./ContactForm";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import diamond from "./assets/dimanod.png";
 import SamaGroupImage from './assets/Group365.png';
-import { fontSize, fontWeight, shadows } from "@mui/system";
-
+import BGIMG from "./assets/BGIMG.svg"
 function Home() {
   const [impact, setImpact] = useState("environmental");
   const isActive = useMediaQuery("(max-width:600px)");
@@ -62,9 +61,7 @@ function Home() {
           </Button>
         </Container>
       </Box>
-
       <LaptopDonor />
-
       <Box sx={{ my: 10 }}>
         <Container maxWidth="lg">
           <Typography variant="h5" align="left" mb={4}></Typography>
@@ -128,13 +125,30 @@ function Home() {
           </Typography>
         </Container>
       </Box>
-      <Container maxWidth="xxl" style={{ padding: 0, backgroundColor: "#F0F4EF" }}>
+      {/* <Container maxWidth="xxl" style={{ padding: 0, backgroundColor: "#F0F4EF" }}>
         <img
-          src={SamaGroupImage}
+          src={BGIMG}
           alt="Sama Group"
           style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
         />
+      </Container>  */}
+      <Container maxWidth="xxl" style={{ padding: 0, backgroundColor: "#F0F4EF", position: "relative" }}>
+        <img
+          src={BGIMG}
+          alt="Sama Group"
+          style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
+        />
+        <div className="main-circle">
+          <div className="circle">
+            <span className="circle-text">
+              magine 1 million underprivileged women holding laptops.
+              This is the future we’re building at Sama by<br></br>
+              2030
+            </span>
+          </div>
+        </div>
       </Container>
+
       <Container maxWidth="lg" sx={{ my: 10 }}>
         <Typography variant="h5">Metrics that Matter</Typography>
         <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
@@ -152,7 +166,7 @@ function Home() {
         </Box>
         <Box className="dashboardBox">
           {impact === "environmental" ? (
-            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" sx={{shadows:""}}/>
+            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" sx={{ shadows: "" }} />
           ) : (
             <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" />
           )}

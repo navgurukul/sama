@@ -22,7 +22,7 @@
 
 .nav-link:hover,
 .nav-link.active {
-  color: #549B79 !important; 
+  color: rgba(92, 120, 90, 1) !important; 
 }
 
 .mobile-nav {

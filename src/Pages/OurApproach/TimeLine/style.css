@@ -1,4 +1,4 @@
-.timeline {
+/* .timeline {
   position: relative;
   margin: 50px auto;
   padding: 40px 0;
@@ -32,9 +32,6 @@
   float: left;
   text-align: right;
   clear: both;
-  border: 1px solid red;
-
-
 }
 
 .timeline ul li:nth-child(even) {
@@ -59,9 +56,10 @@
   background: rgba(92, 120, 90, 1);
   border-radius: 50%;
   box-shadow: 0 0 0 10px rgba(224, 224, 224, 1);
-  top: 210px;
+  top: 215px;
+  bottom: 20px;
+  border: 1px solid red;
 }
-
 
 .timeline1 ul li:nth-child(odd):before {
   content: '';
@@ -205,7 +203,6 @@ time {
   display: grid;
   place-content: center;
   padding: 30px;
-  /* padding: 2rem; */
 }
 
 .container-timeline {
@@ -273,4 +270,276 @@ active-content-timeline .marker-timeline {
 active-content-timeline .title-timeline {
   font-weight: 700;
   color: green;
+} */
+
+
+
+
+
+
+/* Common styles */
+
+/* 
+.my-timeline {
+  position: relative;
+  max-width: 1200px;
+  margin: 100px auto;
+}
+
+.my-container {
+  padding: 32px 50px;
+  position: relative;
+  width: 40%;
+  opacity: 1;
+}
+
+.text-box {
+  padding: 20px 30px;
+  position: relative;
+  font-size: 16px;
+  color: #1f1f1f;
+  font-weight: 400;
+  background-color: white;
+  border: 1px solid #0FA99F;
+  filter: drop-shadow(0px 0px 20px rgba(190, 190, 190, 0.25));
+  border-radius: 6px;
+}
+
+.left-container {
+  left: 0;
+}
+
+.right-container {
+  left: 50%;
+}
+
+.timeline-line {
+  position: absolute;
+  width: 4px;
+  background-color: #0FA99F;
+  top: 0;
+  left: 50%;
+  margin-left: -2px;
+  border: 1px solid red;
+  z-index: 1;
+  height: 100%;
+}
+
+.timeline-image {
+  position: absolute;
+  left: 47.6%;
+  width: 60px;
+  height: auto;
+  transition: top 0.5s ease;
+  top: 0;
+  border: 1px solid red;
+}
+
+.my-container h5 {
+  position: absolute;
+  color: #000;
+  text-align: center;
+  font-family: "Lato";
+  font-size: 21px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  right: -162px;
+  top: 56px;
+}
+
+.right-container h5 {
+  left: -995px;
+}
+
+.my-container:nth-child(4) .timeline-image,
+.my-container:nth-child(8) .timeline-image {
+  display: none;
+}
+
+.timeline-image {
+  top: -30px;
+}
+
+@media screen and (max-width: 600px) {
+  .my-timeline {
+      margin: 50px auto;
+  }
+
+  .my-timeline::after {
+      left: 40px;
+  }
+
+  .my-container {
+      width: 100%;
+      padding-left: 80px;
+      padding-right: 25px;
+  }
+
+  .text-box {
+      font-size: 14px;
+  }
+
+  .right-container {
+      left: 0;
+  }
+}
+
+.circle {
+  width: 20px;
+  height: 20px;
+  background-color: #0FA99F;
+  border-radius: 50%;
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  z-index: 2;
+  border: 4px solid white;
+}
+
+.timeline-point {
+  position: relative;
+} */
+
+
+/* Container for the timeline */
+
+.my-timeline {
+  position: relative;
+  max-width: 1200px;
+  margin: 100px auto;
+}
+
+/* Container for timeline items */
+.my-container {
+  padding: 32px 50px;
+  position: relative;
+  width: 40%;
+  opacity: 1;
+}
+
+/* Text box styling */
+.text-box {
+  padding: 20px 30px;
+  position: relative;
+  font-size: 16px;
+  color: #1f1f1f;
+  font-weight: 400;
+  background-color: white;
+  border: 1px solid #0FA99F;
+  filter: drop-shadow(0px 0px 20px rgba(190, 190, 190, 0.25));
+  border-radius: 6px;
+}
+
+/* Left container positioning */
+.left-container {
+  left: 0;
+}
+
+/* Right container positioning */
+.right-container {
+  left: 50%;
+}
+
+/* Timeline line styling */
+.timeline-line {
+  position: absolute;
+  width: 4px;
+  background-color: #0FA99F;
+  top: 0;
+  left: 50%;
+  margin-left: -2px;
+  border: 1px solid red; /* Remove or adjust this if needed */
+  z-index: 1;
+  height: 100%;
+}
+
+/* Timeline image styling */
+.timeline-image {
+  position: absolute;
+  left: 47.6%;
+  width: 60px;
+  height: auto;
+  transition: top 0.5s ease;
+  top: 0;
+  border: 1px solid red; /* Remove or adjust this if needed */
+}
+
+/* Heading styling */
+.my-container h5 {
+  position: absolute;
+  color: #000;
+  text-align: center;
+  font-family: "Lato";
+  font-size: 21px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  right: -162px;
+  top: 56px;
+}
+
+/* Styling for the right container heading */
+.right-container h5 {
+  left: -995px;
+}
+
+/* Hide images for specific timeline items */
+.my-container:nth-child(4) .timeline-image,
+.my-container:nth-child(8) .timeline-image {
+  display: none;
+}
+
+/* Adjust the image position */
+.timeline-image {
+  top: -30px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 600px) {
+  .my-timeline {
+    margin: 50px auto;
+  }
+
+  .my-timeline::after {
+    left: 40px;
+  }
+
+  .my-container {
+    width: 100%;
+    padding-left: 80px;
+    padding-right: 25px;
+  }
+
+  .text-box {
+    font-size: 14px;
+  }
+
+  .right-container {
+    left: 0;
+  }
+}
+
+/* Circle point on the timeline */
+.circle {
+  width: 20px;
+  height: 20px;
+  background-color: #0FA99F;
+  border-radius: 50%;
+  position: relative;
+  left: 50%;
+  margin-left: -10px; /* Half of the circle width to center it */
+  z-index: 2;
+  border: 4px solid white;
+  top: 0; /* Adjust this as needed to align with the timeline line */
+}
+/* Ensure that the circle points are correctly positioned above the timeline */
+.my-container:nth-child(odd) .circle {
+  position: absolute;
+  left: 500; /* Position to the left side of the timeline */
+}
+
+.my-container:nth-child(even) .circle {
+  position: absolute;
+  right: 0; /* Position to the right side of the timeline */
 }

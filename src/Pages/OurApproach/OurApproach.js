@@ -1,19 +1,18 @@
 import { Container, Grid, Typography, Box } from "@mui/material";
 import TimeLine from "./TimeLine";
-import Icon1 from "./assets/icon1.png";
-import Icon2 from "./assets/icon2.png";
-import Icon3 from "./assets/icon3.png";
-import Icon4 from "./assets/icon4.png";
-import Icon5 from "./assets/icon5.png";
-import Icon6 from "./assets/icon6.png";
-
+import Img1 from "./assets/Sama Internal Edits (1) 1.svg";
+import Img2 from "./assets/IMG2.svg";
+import Img3 from "./assets/IMG3.svg";
+import Img4 from "./assets/IMG5.svg";
+import imgIcon2 from "./assets/imgIcon2.svg";
+import imgICon4 from "./assets/imgIcon4.svg"
 import clases from "./style";
 
 const OurApproach = () => {
   return (
     <>
       <Box sx={clases.backgroundAndPadding} bgcolor="primary.main">
-        <Container maxWidth="lg">
+        <Container maxWidth="xl" sx={{ px: {md:9,sm:10,sm:10} }}>
           <Grid container spacing={6}>
             <Grid item xs={12} md={7} lg={7}>
               <Typography variant="h5" color="white.main">
@@ -35,7 +34,7 @@ const OurApproach = () => {
             <Grid item xs={12} md={4}>
               <Box sx={clases.CardContent}>
                 <Box sx={clases.boxStyle}>
-                  <img src={Icon1} alt="money logo" />
+                  <img src={Img1} alt="money logo" />
                   <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
                     2M tons
                   </Typography>
@@ -49,7 +48,7 @@ const OurApproach = () => {
             <Grid item xs={12} md={4}>
               <Box sx={clases.CardContent}>
                 <Box sx={clases.boxStyle}>
-                  <img src={Icon2} alt="money logo" />
+                  <img src={imgIcon2} alt="money logo" />
                   <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
                     70%
                   </Typography>
@@ -62,7 +61,7 @@ const OurApproach = () => {
             <Grid item xs={12} md={4}>
               <Box sx={clases.CardContent}>
                 <Box sx={clases.boxStyle}>
-                  <img src={Icon3} alt="money logo" />
+                  <img src={Img2} alt="money logo" />
                   <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
                     80%
                   </Typography>
@@ -82,7 +81,7 @@ const OurApproach = () => {
             <Grid item xs={12} md={4}>
               <Box sx={clases.CardContent}>
                 <Box sx={clases.boxStyle}>
-                  <img src={Icon4} alt="money logo" />
+                  <img src={Img3} alt="money logo" />
                   <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
                     33%
                   </Typography>
@@ -98,7 +97,7 @@ const OurApproach = () => {
             <Grid item xs={12} md={4}>
               <Box sx={clases.CardContent}>
                 <Box sx={clases.boxStyle}>
-                  <img src={Icon5} alt="money logo" />
+                  <img src={imgICon4} alt="money logo" />
                   <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
                     158M
                   </Typography>
@@ -113,7 +112,7 @@ const OurApproach = () => {
             <Grid item xs={12} md={4}>
               <Box sx={clases.CardContent}>
                 <Box sx={clases.boxStyle}>
-                  <img src={Icon6} alt="money logo" />
+                  <img src={Img4} alt="money logo" />
                   <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
                     17%
                   </Typography>
