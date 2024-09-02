@@ -11,15 +11,12 @@ import OurApproach from './Pages/OurApproach/OurApproach';
 import Donate from './Pages/Donate/Donate';
 import DashboardPage from './Dashboard';
 import './App.css';
-import FormComponent from './Userdetails';
-import Userdatabulkupload from './Userdatabulkupload';
-import Redioforms from './Redioforms';
+
+import Redioforms from ".././src/OppsFiles/UserDetails/Redioforms"
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <Redioforms />
-      {/* // <Userdatabulkupload /> */}
-      {/* <FormComponent /> */}
       {/* <Router>
         <div className="layout">
           <Navbar />

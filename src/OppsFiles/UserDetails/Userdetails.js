@@ -17,7 +17,7 @@ import {
 
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import { breakpoints } from "../src/theme/constant";
+import { breakpoints } from "../../theme/constant";
 
 const FormComponent = () => {
   const statesOptions = [
@@ -168,17 +168,17 @@ const FormComponent = () => {
           file: base64File,
           fileName: file.name,
           mimeType: file.type,
-          type: "uploadImage",
+          type: "userdetails",
         };
         var withoutFile = {
           ...formData,
-          type: "uploadImage",
+          type: "userdetails",
         };
         const finalData = file ? withFile : withoutFile;
 
         try {
           const response = await fetch(
-            "https://script.google.com/macros/s/AKfycbyFSqHccZqfs0MH5F7I_CQO20_Ar2Tfbos8pU-zSs4ARN38ecBCg7-hk2Tltp7XB_E9EA/exec",
+            "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
             {
               method: "POST",
               headers: {
