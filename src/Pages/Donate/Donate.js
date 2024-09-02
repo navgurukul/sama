@@ -13,11 +13,11 @@ import {
   FormHelperText,
   FormControl,
   Container,
-  Snackbar, // Import Snackbar
+  Snackbar,
   Alert,
 } from "@mui/material";
 import "./Donate.css";
-
+import icon1 from "./assets/Group 22 (1).svg"
 function Donation() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -105,12 +105,12 @@ function Donation() {
         formData.contributionType === "company" ? formData.companyName : "",
       numberOfLaptops:
         formData.donationType === "donate-laptops" ||
-        formData.donationType === "both"
+          formData.donationType === "both"
           ? formData.numberOfLaptops
           : "",
       donateAmount:
         formData.donationType === "financial-contribution" ||
-        formData.donationType === "both"
+          formData.donationType === "both"
           ? formData.donateAmount
           : "",
       hearAbout:
@@ -123,7 +123,7 @@ function Donation() {
     } else {
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbzpJM1YwhElNojDizOb1ksc56XxwfWuZzpz-T3A9Tw9vh90XIAP5E__FQZT-idBRY4DBw/exec",
+          "https://script.google.com/macros/s/AKfycbzfImx2bSi8jva1VGirHI8G7a-yVrfxmjRutPiO3MyVjuHnctOWGYo8cfuz10MFXSooIA/exec",
           {
             method: "POST",
             headers: {
@@ -177,18 +177,17 @@ function Donation() {
               <Grid item xs={12} md={4}>
                 <Box>
                   <img
-                    src={require("./assets/Group 22 (1).svg").default}
-                    alt="Corporate Laptop Donation"
+                    src={icon1}
                   />
                   <Typography
                     className="customSubtitle1"
-                    // variant="subtitle1"
                     sx={{ margin: "14px 0px" }}
                   >
                     Corporate Laptop Donation
                   </Typography>
                   <Typography variant="body1">
-                  Transform your end-of-life laptops into powerful tools for education and empowerment.
+                    Transform your end-of-life laptops into powerful tools 
+                    for education and empowerment.
                   </Typography>
                 </Box>
               </Grid>
@@ -219,7 +218,6 @@ function Donation() {
                   />
                   <Typography
                     className="customSubtitle1"
-                    // variant="subtitle1"
                     sx={{ margin: "14px 0px" }}
                   >
                     Individual Contribution
@@ -250,7 +248,7 @@ function Donation() {
                   variant="outlined"
                   name="firstName"
                   value={formData.firstName}
-                  placeholder="First Name"
+                  placeholder="Ex : Khushboo"
                   onChange={handleChange}
                   sx={{ backgroundColor: "white" }}
                   error={!!errors.firstName}
@@ -264,7 +262,7 @@ function Donation() {
                 <TextField
                   fullWidth
                   required
-                  placeholder="Last Name"
+                  placeholder="Ex : kumari"
                   variant="outlined"
                   name="lastName"
                   value={formData.lastName}
@@ -282,7 +280,7 @@ function Donation() {
                   fullWidth
                   required
                   type="email"
-                  placeholder="Email Address"
+                  placeholder="Ex : khushboo@navgurukul.org"
                   variant="outlined"
                   name="email"
                   value={formData.email}
@@ -301,7 +299,7 @@ function Donation() {
                   required
                   type="tel"
                   variant="outlined"
-                  placeholder="Phone Number"
+                  placeholder="Ex : 9140832342"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
@@ -312,6 +310,48 @@ function Donation() {
               </Grid>
 
               <Grid item xs={12}>
+                <FormControl component="fieldset" error={!!errors.donationType}>
+                  <Typography
+                    className="customSubtitle1"
+                    // variant="subtitle1"
+                    sx={{ marginBottom: "10px" }}
+                  >
+                    I would like to:
+                  </Typography>
+                  <RadioGroup
+                    row
+                    name="donationType"
+                    value={formData.donationType}
+                    onChange={handleChange}
+                  >
+                    <FormControlLabel
+                      value="donate-laptops"
+                      control={<Radio />}
+                      label="Donate laptops"
+                    />
+                    <FormControlLabel
+                      value="financial-contribution"
+                      control={<Radio />}
+                      label="Make a financial contribution"
+                    />
+                    <FormControlLabel
+                      value="both"
+                      control={<Radio />}
+                      label="Both donate laptops and contribute financially"
+                    />
+                    <FormControlLabel
+                      value="volunteer"
+                      control={<Radio />}
+                      label="Volunteer"
+                    />
+                  </RadioGroup>
+                  {errors.donationType && (
+                    <FormHelperText>{errors.donationType}</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+
+              {/* <Grid item xs={12}>
                 <FormControl
                   component="fieldset"
                   error={!!errors.contributionType}
@@ -395,26 +435,13 @@ function Donation() {
                       control={<Radio />}
                       label="Both donate laptops and contribute financially"
                     />
-                    <FormControlLabel
-                      value="volunteer"
-                      control={<Radio />}
-                      label="Volunteer"
-                    />
+                    
                   </RadioGroup>
                   {errors.donationType && (
                     <FormHelperText>{errors.donationType}</FormHelperText>
                   )}
                 </FormControl>
-              </Grid>
-
-           
-
-              
-
-              
-
-
-
+              </Grid> */}
 
               {formData.donationType === "donate-laptops" && (
                 <Grid item xs={12} md={6}>
@@ -596,7 +623,7 @@ function Donation() {
                   alignItems: "center",
                 }}
               >
-                <Button type="submit" variant="contained" color="primary">
+                <Button type="submit" variant="contained" color="primary" style={{width: "126px", height: "48px" }}>
                   Submit
                 </Button>
                 {successMessage && (
