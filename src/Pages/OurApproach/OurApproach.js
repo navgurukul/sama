@@ -12,11 +12,9 @@ import {
   styles,
 } from "./style.js";
 import { data } from "./data.js";
-import TimeLine from "./TimeLine/index.js";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 import we from "./we.svg"
-
 const OurApproach = () => {
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
@@ -98,7 +96,6 @@ const OurApproach = () => {
           </Grid>
         </Container>
       </Box>
-      {/* <TimeLine /> */}
       <Container>
       <Typography variant="h5" my={6} sx = {{align : "left"}} >
                This is how we transform your donated laptops into tools of impact!
@@ -121,4 +118,4 @@ const OurApproach = () => {
   );
 };
 
-export default OurApproach
+export default OurApproach;

@@ -1,9 +1,7 @@
-import { border, borderBottom, margin, padding, positions, width } from "@mui/system";
-
 const samaGoalsStyles = {
     boxContainer: {
         backgroundColor: '#EDEDED',
-        marginTop: '90px',
+        marginTop: '125px',
     },
     container: {
         padding: { xs: '10px 40px', sm: '50px', md: '50', lg: "80px 0px" },

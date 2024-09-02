@@ -111,7 +111,6 @@ h5 {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  /* Ensure content does not overflow */
 }
 
 .circle::before {
@@ -160,6 +159,13 @@ h5 {
   .circle-text {
     font-size: 20px;
     padding: 40px;
+    color: var(--white, #FFF);
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 162%;
   }
 }
 
@@ -172,20 +178,53 @@ h5 {
   .circle-text {
     font-size: 13px;
     padding: 30px;
+    color: var(--white, #FFF);
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 162%;
     max-width: 85%;
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 976px) {
   .circle {
-    width: 200px;
-    height: 200px;
+    width: 500px;
+    height: 500px;
   }
 
   .circle-text {
     font-size: 6px;
     padding: 40px;
-    max-width: 80%;
+    color: var(--white, #FFF);
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 162%;
+  }
+}
+
+@media (max-width: 770px) {
+  .circle {
+    width: 300px;
+    height: 300px;
+
+  }
+
+  .circle-text {
+    font-size: 6px;
+    padding: 20px;
+    color: var(--white, #FFF);
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 162%;
   }
 }
 
@@ -198,6 +237,26 @@ h5 {
   .circle-text {
     font-size: 9px;
     padding: 10px;
+    color: var(--white, #FFF);
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 162%;
     max-width: 75%;
+  }
+}
+
+@media (max-width: 378px) {
+  .circle {
+    width: 200px;
+    height: 200px;
+  }
+  .circle-text {
+    font-size: 9px;
+    color: var(--white, #FFF);
+    font-family: Montserrat;
+    font-style: normal;
   }
 }

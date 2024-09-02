@@ -1,21 +1,22 @@
+import  moneyLogo from "./money.png";
 export const data = [
     {
       title: "The E-Waste Crisis",
       statistics: [
         {
           value: "2M tons",
-          // moneyLogo: moneyLogo,
+          moneyLogo: moneyLogo,
           description:
             "of e-waste is generated annually in India, making it the world’s third-largest e-waste producer.",
         },
         {
           value: "70%",
-          // moneyLogo: moneyLogo,
+          moneyLogo: moneyLogo,
           description: "of India’s e-waste comes from discarded laptops.",
         },
         {
           value: "80%",
-          // moneyLogo: moneyLogo,
+          moneyLogo: moneyLogo,
           description: "of e-waste is processed informally.",
         },
       ],
@@ -25,19 +26,19 @@ export const data = [
       statistics: [
         {
           value: "33%",
-          // moneyLogo: moneyLogo,
+          moneyLogo: moneyLogo,
           description:
             "of women in India have ever used the internet, compared to 57% of men, highlighting a significant digital divide.",
         },
         {
           value: "158M",
-          // moneyLogo: moneyLogo,
+          moneyLogo: moneyLogo,
           description:
             "girl students were affected by the COVID-19 lockdown, jeopardizing their education and future prospects.",
         },
         {
           value: "17%",
-          // moneyLogo: moneyLogo,
+          moneyLogo: moneyLogo,
           description:
             "of rural students have internet access in rural areas, whereas 44% in urban areas do and a mere 2% of the poorest income groups have access to a computer with internet.",
         },

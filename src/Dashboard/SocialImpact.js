@@ -3,8 +3,10 @@ import { Grid, Card, CardContent, Typography, Box } from '@mui/material';
 import { styles } from "./style";
 import { styled } from '@mui/system';
 import IndiaImg from './assets/india.png';
+import Komal from "./assets/Komal.png";
+import ZiyaImg from "./assets/ZiyaImg .png";
 import { skills, JobData } from './data.js';
-import { useEffect } from 'react';
+
 const StyledCard = styled(Card)({
     height: '100%',
     borderRadius: '8px',
@@ -12,52 +14,7 @@ const StyledCard = styled(Card)({
     boxShadow: '0px 2px 10px 0px rgba(0, 0, 0, 0.10)',
 });
 
-const students = [
-    {
-        src: require('./assets/Komal.png'),
-        alt: 'Student 3',
-        name: "Riya Kumari",
-        place: "Maharashtra",
-        text: "From not knowing how to use a laptop to S&P Global employee: NavGurukul's tech-enabled training launched my career in just one year."
-    },
-    {
-        src: require('./assets/Komal.png'),
-        alt: 'Student 4',
-        name: "Ziya Afreen",
-        place: "Delhi",
-        text: "This laptop isn't just a tool; it's my bridge from a novice to a future software developer."
-    },
-    {
-        src: require('./assets/Komal.png'),
-        alt: 'Student 5',
-        name: "Komal Chaudhary",
-        place: "Bangalore",
-        text: "Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it."
-    },
-    {
-        src: require('./assets/Komal.png'),
-        alt: 'Student 4',
-        name: "Ziya Afreen",
-        place: "Delhi",
-        text: "This laptop isn't just a tool; it's my bridge from a novice to a future software developer."
-    },
-    {
-        src: require('./assets/Komal.png'),
-        alt: 'Student 5',
-        name: "Komal Chaudhary",
-        place: "Bangalore",
-        text: "Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it."
-    },
-];
-
 const SocialImpactPage = () => {
-    useEffect(() => {
-        const element = document.getElementById('some-id');
-        if (element) {
-            const height = element.clientHeight;
-            console.log(height);
-        }
-    }, []);
 
     return (
         <>
@@ -74,6 +31,7 @@ const SocialImpactPage = () => {
                     </Grid>
                 ))}
             </Grid>
+
             <Grid container spacing={1} mt={3}>
                 <Grid item xs={12} md={6}>
                     <StyledCard>
@@ -88,16 +46,16 @@ const SocialImpactPage = () => {
                                 </Grid>
                                 <Grid item xs={12} md={6}>
                                     <img
+                                        component="img"
                                         src={IndiaImg}
                                         alt="Map of India"
-                                        style={{ width: '100%', height: 'auto' }} // Ensure image scales correctly
+                                        style={{ width: '100%' }}
                                     />
                                 </Grid>
                             </Grid>
                         </CardContent>
                     </StyledCard>
                 </Grid>
-
                 <Grid item xs={12} md={6}>
                     <Typography variant="" sx={{ mt: 2, ml: 2 }} style={styles.subtitle1}>SKILLS IMPARTED</Typography>
                     <Grid container spacing={3} style={{ padding: "16px" }}>
@@ -111,57 +69,26 @@ const SocialImpactPage = () => {
                         ))}
                     </Grid>
                     <Grid container style={{ padding: "16px" }}>
-                        <Typography variant="h6" style={styles.subtitle1}>STUDENT SPEAKS</Typography>
+                        <Typography variant="" style={styles.subtitle1}>STUDENT SPEAKS</Typography>
                         <Grid item xs={12} md={12} sx={{ mt: 4 }}>
-                            <Box
-                                sx={{
-                                    overflow: 'hidden',
-                                    position: 'relative',
-                                    height: '330px',
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: '100%',
-                                        animation: 'scrollUp 7s linear infinite',
-                                        '@keyframes scrollUp': {
-                                            '0%': { transform: 'translateY(0)' },
-                                            '100%': { transform: `translateY(-250px)` },
-                                        },
-
-                                    }}
-                                >
-                                    {students.map((student, index) => (
-                                        <Box key={index} sx={{ height: '125px' }}>
-                                            <Box display="flex" alignItems="center">
-
-                                                <Box sx={{ borderRadius: '50px', overflow: 'hidden', width: '99px', height: '90px' }}>
-                                                    <img
-                                                        src={student.src}
-                                                        alt={student.alt}
-                                                        style={{ height: 'auto', width: '100%', objectFit: 'cover' }}
-                                                    />
-                                                </Box>
-
-                                                <Box sx={{ ml: 3 ,mt:2}}>
-                                                    <Typography variant="subtitle1" style={styles.subtitle1}>
-                                                        {`“ ${student.text} ”`}
-                                                    </Typography>
-                                                    <Typography variant="body2" style={styles.body2} sx={{mt:1}}>
-                                                        {student.name}
-                                                    </Typography>
-                                                </Box>
-
-                                            </Box>
-                                        </Box>
-                                    ))}
+                            <Box display="flex" alignItems="center">
+                                <img src={ZiyaImg} style={{ marginRight: '8px' }} />
+                                <Box sx={{ ml: 3 }}>
+                                    <Typography variant="subtitle1" style={styles.subtitle1}>“ Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it ”</Typography>
+                                    <Typography variant='body2' style={styles.body2} sx={{ mt: 2 }}>Ziya Afreen</Typography>
+                                </Box>
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} md={12} style={{ marginTop: "32px" }}>
+                            <Box display="flex" alignItems="center">
+                                <img src={Komal} style={{ marginRight: '8px' }} />
+                                <Box sx={{ ml: 3 }}>
+                                    <Typography variant="subtitle1" style={styles.subtitle1}> “ This laptop isn't just a tool. It is my bridge from being a novice to a full-fledged future software developer “</Typography>
+                                    <Typography variant='body2' style={styles.body2} sx={{ mt: 2 }}>Komal Chaudhary</Typography>
                                 </Box>
                             </Box>
                         </Grid>
                     </Grid>
-
                 </Grid>
             </Grid>
         </>
@@ -169,6 +96,3 @@ const SocialImpactPage = () => {
 };
 
 export default SocialImpactPage;
-
-
-

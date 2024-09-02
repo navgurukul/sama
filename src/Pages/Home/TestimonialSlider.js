@@ -112,7 +112,7 @@ const TestimonialSlider = () => {
                       style={{
                         padding: " 8px 0px",
                         width: "64px",
-                        height: "80px",
+                        height: "64px",
                         borderRadius: "50%",
                         objectFit: "cover"
                       }} />

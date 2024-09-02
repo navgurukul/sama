@@ -8,7 +8,6 @@ import LaptopDonor from "./LaptopDonor";
 import ContactForm from "./ContactForm";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import diamond from "./assets/dimanod.png";
-// import SamaGroupImage from './assets/Group365.png';
 import BGIMG from "./assets/BGIMG.svg"
 function Home() {
   const [impact, setImpact] = useState("environmental");
@@ -131,15 +130,15 @@ function Home() {
           alt="Sama Group"
           style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
         />
-        <div className="main-circle">
-          <div className="circle">
+        <Box className="main-circle">
+          <Box className="circle">
             <span className="circle-text">
               magine 1 million underprivileged women holding laptops.
               This is the future we’re building at Sama by<br></br>
               2030
             </span>
-          </div>
-        </div>
+          </Box>
+        </Box>
       </Container>
 
       <Container maxWidth="lg" sx={{ my: 10 }}>
