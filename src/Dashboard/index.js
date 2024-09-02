@@ -9,8 +9,7 @@ import {
   styles,
 } from "./style";
 import { Container } from "@mui/system";
-
-function DashboardPage() {
+function DashboardPage(){
   const [activeTab, setActiveTab] = useState(0);
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -31,7 +30,6 @@ function DashboardPage() {
               </DigitalHardwareText>
               <Typography
                 variant="body1"
-              // style={styles.body2}
               >
                 Monitor your e-waste management efforts with ease
               </Typography>

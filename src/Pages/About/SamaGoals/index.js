@@ -32,14 +32,15 @@ const SamaGoals = () => {
                                 <Box
                                     sx={{
                                         padding: "10px",
-                                        width: "64px",
-                                        height: "66px",
+                                        width: "70px",
+                                        height: "70px",
                                         border:"10px solid rgba(92, 120, 90, 1)",
                                         background: "rgba(92, 120, 90, 1)",
                                         borderRadius: "100px",
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
+                                        border:"1px solid white"
                                     }}
                                 >
                                     <img

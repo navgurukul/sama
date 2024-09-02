@@ -8,7 +8,7 @@ import LaptopDonor from "./LaptopDonor";
 import ContactForm from "./ContactForm";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import diamond from "./assets/dimanod.png";
-import SamaGroupImage from './assets/Group365.png';
+// import SamaGroupImage from './assets/Group365.png';
 import BGIMG from "./assets/BGIMG.svg"
 function Home() {
   const [impact, setImpact] = useState("environmental");
@@ -125,13 +125,6 @@ function Home() {
           </Typography>
         </Container>
       </Box>
-      {/* <Container maxWidth="xxl" style={{ padding: 0, backgroundColor: "#F0F4EF" }}>
-        <img
-          src={BGIMG}
-          alt="Sama Group"
-          style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
-        />
-      </Container>  */}
       <Container maxWidth="xxl" style={{ padding: 0, backgroundColor: "#F0F4EF", position: "relative" }}>
         <img
           src={BGIMG}

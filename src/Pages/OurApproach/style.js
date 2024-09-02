@@ -19,4 +19,3 @@ const clases = {
 };
 
 export default clases;
-
