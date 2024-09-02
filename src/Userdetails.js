@@ -1,183 +1,224 @@
+import React, { useState, useEffect } from "react";
+import {
+  Button,
+  TextField,
+  Container,
+  FormControl,
+  Snackbar,
+  InputLabel,
+  Select,
+  MenuItem,
+  Alert,
+  Typography,
+  List,
+  ListItemText,
+  ListItem,
+} from "@mui/material";
 
-import React, { useState, useEffect } from 'react';
-import { Button, TextField, Container, FormControl, InputLabel, Select, MenuItem, Typography,List, ListItemText , ListItem} from '@mui/material';
-// import { DatePicker } from '@mui/lab';
-// import { DatePicker } from '@mui/lab';  // Import the DatePicker component
-// import AdapterDateFns from '@mui/lab/AdapterDateFns';  // Import the date adapter
-// import LocalizationProvider from '@mui/lab/LocalizationProvider'; 
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-// import TextField from '@mui/material/TextField';
+import useMediaQuery from "@mui/material/useMediaQuery";
+
+import { breakpoints } from "../src/theme/constant";
 
 const FormComponent = () => {
+  const statesOptions = [
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jammu and Kashmir",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttarakhand",
+    "Uttar Pradesh",
+    "West Bengal",
+    "Andaman and Nicobar Islands",
+    "Chandigarh",
+    "Dadra and Nagar Haveli",
+    "Daman and Diu",
+    "Delhi",
+    "Lakshadweep",
+    "Puducherry",
+  ];
 
-    const statesOptions = [
-        "Andhra Pradesh",
-        "Arunachal Pradesh",
-        "Assam",
-        "Bihar",
-        "Chhattisgarh",
-        "Goa",
-        "Gujarat",
-        "Haryana",
-        "Himachal Pradesh",
-        "Jammu and Kashmir",
-        "Jharkhand",
-        "Karnataka",
-        "Kerala",
-        "Madhya Pradesh",
-        "Maharashtra",
-        "Manipur",
-        "Meghalaya",
-        "Mizoram",
-        "Nagaland",
-        "Odisha",
-        "Punjab",
-        "Rajasthan",
-        "Sikkim",
-        "Tamil Nadu",
-        "Telangana",
-        "Tripura",
-        "Uttarakhand",
-        "Uttar Pradesh",
-        "West Bengal",
-        "Andaman and Nicobar Islands",
-        "Chandigarh",
-        "Dadra and Nagar Haveli",
-        "Daman and Diu",
-        "Delhi",
-        "Lakshadweep",
-        "Puducherry"
-    ];
+  const idProofOptions = [
+    "Ration card",
+    "Aadhar Card",
+    "Voter ID card",
+    "Driving License",
+    "PAN Card",
+    "Passport",
+    "Domicile/Secondary/Senior Secondary Marksheet",
+  ];
 
-        const idProofOptions = [
-          'Ration card',
-          'Aadhar Card',
-          'Voter ID card',
-          'Driving License',
-          'PAN Card',
-          'Passport',
-          'Domicile/Secondary/Senior Secondary Marksheet'
-        ];
-
-        const useCaseOptions = [
-            'Income Increase/Job',
-            'Entrepreneurship',
-            'Internships',
-            'Skilling/Vocations'
-          ];
-
+  const useCaseOptions = [
+    "Income Increase/Job",
+    "Entrepreneurship",
+    "Internships",
+    "Skilling/Vocations",
+  ];
 
   const statusOptions = [
-    'Laptop Received',
-    'Employed',
-    'Intern',
-    'Entrepreneur/Freelancing',
-    'Trainer'
+    "Laptop Received",
+    "Employed",
+    "Intern",
+    "Entrepreneur/Freelancing",
+    "Trainer",
   ];
-
-
 
   const fields = [
-    
-    { label: 'Name', name: 'name' },
-    { label: 'Email', name: 'email' },
-    { label: 'Contact Number', name: 'contactNumber' },
-    { label: 'Address', name: 'address' },
-    { label: 'Address State', name: 'addressState' },
-    { label: 'ID Proof Type', name: 'idProofType' },
-    { label: 'ID Number', name: 'idNumber' },
-    { label: 'Qualification', name: 'qualification' },
-    { label: 'Occupation', name: 'occupation' },
-    { label: 'Date Of Birth', name: 'dateOfBirth' },
-    { label: 'Use Case', name: 'useCase' },
-    { label: 'Number of Family Members', name: 'familyMembers' },
-    { label: 'Status', name: 'status' },
-    { label: 'Laptop Assigned', name: 'laptopAssigned' },
+    { label: "Name", name: "name" },
+    { label: "Email", name: "email" },
+    { label: "Contact Number", name: "contactNumber" },
+    { label: "Address", name: "address" },
+    { label: "Address State", name: "addressState" },
+    { label: "ID Proof Type", name: "idProofType" },
+    { label: "ID Number", name: "idNumber" },
+    { label: "Qualification", name: "qualification" },
+    { label: "Occupation", name: "occupation" },
+    { label: "Date Of Birth", name: "dateOfBirth" },
+    { label: "Use Case", name: "useCase" },
+    { label: "Number of Family Members", name: "familyMembers" },
+    { label: "Status", name: "status" },
+    { label: "Laptop Assigned", name: "laptopAssigned" },
   ];
 
- 
-  
-  const [data, setData] = useState([]);
+  const [formData, setFormData] = useState({
+    idProofType: "",
+    useCase: "",
+    addressState: "",
+    status: "",
+  });
+
   const [errors, setErrors] = useState({});
+  const [file, setFile] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const validate = () => {
     let tempErrors = {};
-    tempErrors.email = formData.email ? (/\S+@\S+\.\S+/.test(formData.email) ? "" : "Email is not valid") : "Email is required";
-    tempErrors.contactNumber = formData.contactNumber ? (/^\d{10}$/.test(formData.contactNumber) ? "" : "Contact number should be 10 digits") : "Contact number is required";
+    tempErrors.email = formData.email
+      ? /\S+@\S+\.\S+/.test(formData.email)
+        ? ""
+        : "Email is not valid"
+      : "Email is required";
+    tempErrors.contactNumber = formData.contactNumber
+      ? /^\d{10}$/.test(formData.contactNumber)
+        ? ""
+        : "Contact number should be 10 digits Number only"
+      : "Contact number is required";
+    if (formData.idProofType === "Aadhar Card") {
+      tempErrors.idNumber = formData.idNumber
+        ? /^\d{12}$/.test(formData.idNumber)
+          ? ""
+          : "Aadhar Card number should be 12 digits and only contain numbers"
+        : "Aadhar Card number is required";
+    }
+
+    tempErrors.file = file ? "" : "Please upload a id proof image";
+
     setErrors(tempErrors);
-    return Object.values(tempErrors).every(x => x === "");
+
+    return Object.values(tempErrors).every((x) => x === "");
   };
 
-
-  const [formData, setFormData] = useState({idProofType: '',useCase: '',states : '',
-    status: ''},);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+  const handleChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (validate()) {
-    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        const base64File = reader.result.split(",")[1];
+        var withFile = {
+          ...formData,
+          file: base64File,
+          fileName: file.name,
+          mimeType: file.type,
+          type: "uploadImage",
+        };
+        var withoutFile = {
+          ...formData,
+          type: "uploadImage",
+        };
+        const finalData = file ? withFile : withoutFile;
 
-      const response = await fetch('https://script.google.com/macros/s/AKfycbwEVN-I9lxlHMKLQSRETImQOm2_WfyeQldbbOBoYt8xkodgDH5EcrkCMnnOqjXnf7xV9A/exec', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        mode: 'no-cors',
-        body: JSON.stringify(formData),  // Send the entire formData object
-      });
+        try {
+          const response = await fetch(
+            "https://script.google.com/macros/s/AKfycbyFSqHccZqfs0MH5F7I_CQO20_Ar2Tfbos8pU-zSs4ARN38ecBCg7-hk2Tltp7XB_E9EA/exec",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              mode: "no-cors",
+              body: JSON.stringify(finalData), // Send the entire formData object
+            }
+          );
 
-      const result = await response.json();
-      
-      if (result.result === 'success') {
-        alert('Data submitted successfully!');
-      } else {
-        alert('Error: ' + result.message);
-      }
-    } catch (error) {
-      alert('Request failed: ' + error.message);
+          setSnackbarOpen(true);
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          } else {
+            setSnackbarOpen(true);
+          }
+        } catch (error) {
+          console.error("Error uploading file:", error);
+        }
+      };
     }
-}
   };
 
-// // 
-//   const DataDisplayComponent = () => {
- 
-
-  useEffect(() => {
-    fetch('https://script.google.com/macros/s/AKfycbwEVN-I9lxlHMKLQSRETImQOm2_WfyeQldbbOBoYt8xkodgDH5EcrkCMnnOqjXnf7xV9A/exec')
-      .then(response => response.json())
-      .then(data => setData(data)
-      )
-      .catch(error => console.error('Error fetching data:', error));
-  }, []);
-// }
-
-console.log(data);
-
-
   return (
-    <Container>
-        <Typography variant="h4" gutterBottom align='center'>
-            User Details Form
-        </Typography>
+    <Container maxWidth="sm" sx={{ mb: 2, pb: 2 }}>
+      <Typography variant="h6" gutterBottom align="center" mt={2}>
+        Single data upload Form
+      </Typography>
       <form onSubmit={handleSubmit}>
         {fields.map((field) => {
-          if (field.name === 'idProofType') {
+          if (field.name === "idProofType") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
                 <InputLabel>{field.label}</InputLabel>
                 <Select
                   name={field.name}
-                  value={formData[field.name] || ''}
+                  value={formData[field.name] || ""}
                   onChange={handleChange}
+                  label={field.label}
+                  sx={{ textAlign: "left" }}
                 >
                   {idProofOptions.map((option, index) => (
                     <MenuItem key={index} value={option}>
@@ -187,14 +228,21 @@ console.log(data);
                 </Select>
               </FormControl>
             );
-          } else if (field.name === 'useCase') {
+          } else if (field.name === "useCase") {
             return (
-              <FormControl fullWidth margin="normal" key={field.name}>
+              <FormControl
+                fullWidth={isActive && "true"}
+                sx={!isActive && { width: "55%" }}
+                margin="normal"
+                key={field.name}
+              >
                 <InputLabel>{field.label}</InputLabel>
                 <Select
                   name={field.name}
-                  value={formData[field.name] || ''}
+                  value={formData[field.name] || ""}
                   onChange={handleChange}
+                  label={field.label}
+                  sx={{ textAlign: "left" }}
                 >
                   {useCaseOptions.map((option, index) => (
                     <MenuItem key={index} value={option}>
@@ -204,14 +252,16 @@ console.log(data);
                 </Select>
               </FormControl>
             );
-          } else if (field.name === 'status') {
+          } else if (field.name === "status") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
                 <InputLabel>{field.label}</InputLabel>
                 <Select
                   name={field.name}
-                  value={formData[field.name] || ''}
+                  value={formData[field.name] || ""}
                   onChange={handleChange}
+                  label={field.label}
+                  sx={{ textAlign: "left" }}
                 >
                   {statusOptions.map((option, index) => (
                     <MenuItem key={index} value={option}>
@@ -221,31 +271,32 @@ console.log(data);
                 </Select>
               </FormControl>
             );
-          } else if (field.name === 'dateOfBirth') {
+          } else if (field.name === "dateOfBirth") {
             return (
-
               <TextField
-              fullWidth
-              key={field.name}
+                fullWidth={isActive && "true"}
+                sx={!isActive && { width: "43%", marginRight: "10px" }}
+                key={field.name}
                 label={field.label}
                 name={field.name}
-              type="date"
-              InputLabelProps={{ shrink: true }}
-              value={formData[field.name] || ''}
-              onChange={handleChange}
-              variant="outlined"
-              margin="normal"
-            />
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={formData[field.name] || ""}
+                onChange={handleChange}
+                variant="outlined"
+                margin="normal"
+              />
             );
-          }
-          else if (field.name === 'addressState') {
+          } else if (field.name === "addressState") {
             return (
-                <FormControl fullWidth margin="normal" key={field.name}>
+              <FormControl fullWidth margin="normal" key={field.name}>
                 <InputLabel>{field.label}</InputLabel>
                 <Select
                   name={field.name}
-                  value={formData[field.name] || ''}
+                  value={formData[field.name] || ""}
                   onChange={handleChange}
+                  label={field.label}
+                  sx={{ textAlign: "left" }}
                 >
                   {statesOptions.map((option, index) => (
                     <MenuItem key={index} value={option}>
@@ -254,7 +305,6 @@ console.log(data);
                   ))}
                 </Select>
               </FormControl>
-          
             );
           } else {
             return (
@@ -262,42 +312,54 @@ console.log(data);
                 key={field.name}
                 label={field.label}
                 name={field.name}
-                value={formData[field.name] || ''}
+                value={formData[field.name] || ""}
                 onChange={handleChange}
                 fullWidth
                 margin="normal"
                 error={!!errors[field.name]}
-                helperText={errors[field.name]}
-
+                // helperText={errors[field.name]}
               />
             );
           }
         })}
-        <Button type="submit" variant="contained" color="primary">
+        <Button
+          variant="contained"
+          component="label"
+          style={{ marginTop: "16px" }}
+        >
+          Upload ID Proof Image
+          <input type="file" hidden onChange={handleFileChange} />
+        </Button>
+        {file && (
+          <Typography variant="body1" mt={2}>
+            {file.name}
+          </Typography>
+        )}
+        {!file && (
+          <Typography color="error" mt={2}>
+            {errors.file}
+          </Typography>
+        )}
+
+        <Button type="submit" variant="contained">
           Submit
         </Button>
       </form>
-
-      {/* <Container>
-      <Typography variant="h4" gutterBottom>
-        Data from Google Sheet
-      </Typography>
-      <List>
-        {data.map((item, index) => (
-          <ListItem key={index}>
-            <ListItemText
-              primary={item['Name']} // Example: Replace 'Name' with your actual column header
-              secondary={`Email: ${item['Email']}, Contact Number: ${item['Contact Number']}`}
-            />
-          </ListItem>
-        ))}
-      </List>
-    </Container> */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Data stored successfully!
+        </Alert>
+      </Snackbar>
     </Container>
-
-    
   );
 };
 
 export default FormComponent;
-
