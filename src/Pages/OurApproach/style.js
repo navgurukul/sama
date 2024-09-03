@@ -1,6 +1,6 @@
+
 export const container = {
-    background: "var(--primary, #5C785A)",
-    
+    background: "var(--primary, #5C785A)",    
 };
 
 export const lgContainer = {
@@ -44,6 +44,7 @@ export const styleh5 = {
     fontWeight: 700,
     lineHeight: " 41.6px",
     fontStyle: "normal",
+    
 }
 export const Modelbody1 = {
     color: "var(--white, #FFF)",

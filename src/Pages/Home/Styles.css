@@ -58,14 +58,14 @@ h5 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 560.84px;
-  height: 560.84px;
+  width: 510.84px;
+  height: 510.84px;
   background-color: rgba(92, 120, 90, 1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 10px 10px rgba(240, 244, 239, 0.8);
+  box-shadow: 0 0 30px 30px rgba(240, 244, 239, 0.8);
 } 
 
 

@@ -201,7 +201,6 @@ function Donation() {
                     className="customSubtitle1"
                     variant="subtitle1"
                     sx={{ mt: 2 }}
-                  // sx={{ margin: "14px 0px" }}
                   >
                     Corporate Impact Funding
                   </Typography>
@@ -592,7 +591,7 @@ function Donation() {
                     fullWidth
                     variant="outlined"
                     name="message"
-                    placeholder="Ex: hii"
+                    placeholder="message"
                     value={formData.message}
                     onChange={handleChange}
                     sx={{ backgroundColor: "white" }}

@@ -93,7 +93,7 @@ const TestimonialSlider = () => {
         </Typography>
         <Box display="flex" alignItems="center" position="relative" mt={3}>
           <IconButton onClick={handlePrevClick} style={{ position: "absolute", left: "-100px" }}>
-            <ChevronLeftIcon style={{ color: "#FFFFFF" }} />
+            <ChevronLeftIcon style={{ color: "#FFFFFF",width:"40.74px",height:"40.74px"}} />
           </IconButton>
           <Box ref={sliderRef} className="keen-slider"
             sx={{
@@ -124,7 +124,7 @@ const TestimonialSlider = () => {
             ))}
           </Box>
           <IconButton onClick={handleNextClick} style={{ position: "absolute", right: "-20px", color: "#FFFFFF" }}>
-            <ChevronRightIcon style={{ color: "#FFFFFF" }} />
+            <ChevronRightIcon style={{ color: "#FFFFFF",width:"40.74px",height:"40.74px"}}  />
           </IconButton>
         </Box>
       </Container>

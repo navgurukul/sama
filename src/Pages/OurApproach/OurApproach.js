@@ -21,6 +21,7 @@ const OurApproach = () => {
   return (
     <>
       <Box
+
         style={container}
         sx={{
           ...container,
@@ -29,7 +30,7 @@ const OurApproach = () => {
         }}
       >
         <Container maxWidth="lg" style={lgContainer}>
-          <Grid container my={isActive ? 0 : 4}>
+          <Grid container my={isActive ? 0 : 6}>
             <Grid item xs={12} md={7}>
               <Typography sx={styleh5} variant="h5">
                 Our Rationale
