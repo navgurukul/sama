@@ -56,7 +56,7 @@ function Home() {
           <Typography variant="body1" margin="0 8px" style={{ color: "#FFF" }}>
             Bridging Digital Divide Through Repurposed Devices
           </Typography>
-          <Button variant="contained" color="primary" href="/donate" sx={{ mt: 6, borderRadius: "100px", padding: "0px 32px 0px 32px" }}>
+          <Button variant="contained" color="primary" href="/donate" sx={{ mt: 6, borderRadius: "100px"}}>
             Donate Now
           </Button>
         </Container>
@@ -132,13 +132,13 @@ function Home() {
           style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
         />
         <Box className="main-circle">
-          <div className="circle">
-            <span className="circle-text">
-              magine 1 million underprivileged women holding laptops.
-              This is the future we’re building at Sama by<br></br>
+          <Box className="circle">
+            <Typography  variant="h6" sx={{px:7,textAlign: 'center',lineHeight:"38.88px" }} color="#FFF">
+              Imagine 1 million underprivileged women holding laptops.
+              This is the future we’re building at Sama by <br></br>
               2030
-            </span>
-          </div>
+            </Typography>
+          </Box>
         </Box>
       </Container>
 

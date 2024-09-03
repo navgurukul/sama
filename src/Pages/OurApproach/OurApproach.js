@@ -50,7 +50,7 @@ const OurApproach = () => {
               <>
                 <Typography
                   variant="h6"
-                  mt={4}
+                  mt={3}
                   sx={{
                     ...container,
                     paddingTop: isActive && 6,

@@ -7,7 +7,6 @@ function ContactForm() {
     lastName: '',
     email: '',
     message: '',
-    contact: ''
   });
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
@@ -100,7 +99,7 @@ function ContactForm() {
   };
 
   return (
-    <Box sx={{ py: 10, backgroundColor: "#FFFAF8" }}>
+    <Box sx={{ paddingBottom:"80px",paddingTop:"80px", backgroundColor: "#FFFAF8" }}>
       <Container maxWidth="lg" style={{ marginBottom: "40px" }}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={8}>
@@ -127,7 +126,7 @@ function ContactForm() {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    label="Ex : Das"
+                    label="Ex :  Doe"
                     margin="normal"
                     fullWidth
                     variant="outlined"
@@ -153,22 +152,10 @@ function ContactForm() {
                 error={!!errors.email}
                 helperText={errors.email}
               />
+             
               <TextField
                 fullWidth
-                label="Ex : 8091872070"
-                margin="normal"
-                variant="outlined"
-                name="contact"
-                sx={{ backgroundColor: 'white' }}
-                value={formData.contact}
-                onChange={handleChange}
-                error={!!errors.contact}
-                helperText={errors.contact}
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-              />
-              <TextField
-                fullWidth
-                label="Hello"
+                label="message"
                 margin="normal"
                 multiline
                 rows={4}

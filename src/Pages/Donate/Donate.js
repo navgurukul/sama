@@ -133,7 +133,6 @@ function Donation() {
             mode: "no-cors",
           }
         );
-        // console.log("Response--------", response);
 
         console.log("Form Data Submitted:", formData);
 
@@ -165,8 +164,8 @@ function Donation() {
   return (
     <>
       <Container maxWidth="xl" style={{ backgroundColor: "#E0E0E0" }}>
-        <Box sx={{ padding: "5px", backgroundColor: "#E0E0E0" }}>
-          <Container maxWidth="lg" sx={{ paddingBottom: "7%", paddingTop: "7%" }}>
+        <Box sx={{ backgroundColor: "#E0E0E0" }} paddingBottom="80px" paddingTop="80px">
+          <Container maxWidth="lg">
             <Typography
               variant="h6"
               sx={{ color: "#4A4A4A", fontSize: "24px" }}
@@ -264,7 +263,7 @@ function Donation() {
                 <TextField
                   fullWidth
                   required
-                  placeholder="Ex : Das"
+                  placeholder="Ex :  Doe"
                   variant="outlined"
                   name="lastName"
                   value={formData.lastName}
@@ -301,7 +300,7 @@ function Donation() {
                   required
                   type="tel"
                   variant="outlined"
-                  placeholder="Ex : 9140832342"
+                  placeholder="Ex :  xxxx xxx xxx"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
