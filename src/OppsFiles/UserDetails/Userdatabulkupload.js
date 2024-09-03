@@ -99,7 +99,7 @@ function Userdatabulkupload() {
           />
           <Box mb={2}>
             <Button
-              variant="outlined"
+              variant="text"
               href="/Example-Sheet.xlsx"
               download="example.xlsx"
             >
@@ -112,7 +112,7 @@ function Userdatabulkupload() {
               component="span"
               startIcon={<CloudUploadIcon />}
             >
-              Select File
+              Select .xlsx File
             </Button>
           </label>
           {file && (

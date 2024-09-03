@@ -10,7 +10,7 @@ import {
 import FormComponent from "./Userdetails";
 import Userdatabulkupload from "./Userdatabulkupload";
 import { Container } from "@mui/system";
-function Redioforms() {
+function Userdata() {
   const [selectedName, setSelectedName] = useState("");
 
   const handleChange = (event) => {
@@ -51,4 +51,4 @@ function Redioforms() {
   );
 }
 
-export default Redioforms;
+export default Userdata;

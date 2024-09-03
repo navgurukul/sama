@@ -12,12 +12,11 @@ import Donate from './Pages/Donate/Donate';
 import DashboardPage from './Dashboard';
 import './App.css';
 
-import Redioforms from ".././src/OppsFiles/UserDetails/Redioforms"
+import Userdata from ".././src/OppsFiles/UserDetails/Userdata"
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Redioforms />
-      {/* <Router>
+      <Router>
         <div className="layout">
           <Navbar />
           <div className="content">
@@ -29,12 +28,13 @@ function App() {
               <Route path="/our-approach" element={<OurApproach />} />
               <Route path="/donate" element={<Donate />} />
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/user-details" element={<Userdata />} />
             </Routes>
             {" "}
           </div>
           <Footer />
         </div>
-      </Router> */}
+      </Router>
     </ThemeProvider>
   );
 }
