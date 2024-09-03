@@ -63,15 +63,15 @@ function ContactForm() {
     }
 
     const capitalizedData = {
-      "First Name": capitalizeFirstLetter(formData.firstName),
-      "Last Name": capitalizeFirstLetter(formData.lastName),
-      "Email": formData.email.toLowerCase(),
-      "Message": capitalizeFirstLetter(formData.message),
-      "Contact": formData.contact
+      "firstName": capitalizeFirstLetter(formData.firstName),
+      "lastName": capitalizeFirstLetter(formData.lastName),
+      "email": formData.email.toLowerCase(),
+      "message": capitalizeFirstLetter(formData.message),
+      "contact": formData.contact
     };
 
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbzvE_7seAHD6CIIaztbdgg79priaBdoNl-yrQcJFtbQ1i8uSnK1Ki2DBb1_eLzkTqG28g/exec', {
+      await fetch('https://script.google.com/macros/s/AKfycbz-1unt1cD-8gQFAm8JVUcLblr924i_1fCxZxJpDzy9Xt0dCs3u_Fjx-DK5InIpee-JAw/exec', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
