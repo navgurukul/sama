@@ -9,6 +9,7 @@ import ContactForm from "./ContactForm";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import diamond from "./assets/dimanod.png";
 import BGIMG from "./assets/BGIMG.svg"
+import { border } from "@mui/system";
 function Home() {
   const [impact, setImpact] = useState("environmental");
   const isActive = useMediaQuery("(max-width:600px)");
@@ -131,13 +132,13 @@ function Home() {
           style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
         />
         <Box className="main-circle">
-          <Box className="circle">
+          <div className="circle">
             <span className="circle-text">
               magine 1 million underprivileged women holding laptops.
               This is the future we’re building at Sama by<br></br>
               2030
             </span>
-          </Box>
+          </div>
         </Box>
       </Container>
 
@@ -156,11 +157,12 @@ function Home() {
             Social Impact
           </Button>
         </Box>
-        <Box className="dashboardBox">
+        <Box>
           {impact === "environmental" ? (
-            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" sx={{ shadows: "" }} />
+            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" style={{boxShadow:"0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)",borderRadius:"16px"}}
+            />
           ) : (
-            <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" />
+            <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" style={{boxShadow:"0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)",borderRadius:"16px"}} />
           )}
         </Box>
       </Container>

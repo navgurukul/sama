@@ -14,7 +14,7 @@ import {
 import { data } from "./data.js";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
-import we from "./we.svg"
+import we from "./we.svg";
 const OurApproach = () => {
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
@@ -34,7 +34,7 @@ const OurApproach = () => {
               <Typography sx={styleh5} variant="h5">
                 Our Rationale
               </Typography>
-              <Typography style={Modelbody1} variant="body1" sx={{ mt: 2 }}>
+              <Typography  variant="body1" sx={{ mt: 2 ,color:"var(--white, #FFF)"}}>
                 We strongly believe that investing in women's digital education
                 can reap multifold benefits for society as a whole. As we
                 rapidly advance in technology, it's crucial to ensure that
@@ -77,13 +77,13 @@ const OurApproach = () => {
                           alt="money logo"
                           style={statLogo}
                         />
-                        <Typography style={styles.h4} component="span">
+                        <Typography style={styles.h4} variant="h6" component="span">
                           {stat.value}
                         </Typography>
                       </Box>
                       <Typography
                         variant="body1"
-                        style={subtitle1}
+                        // style={subtitle1}
                         sx={{ mt: 2, width: { md: "305px" } }}
                       >
                         {stat.description}

@@ -283,7 +283,7 @@ function Donation() {
                   fullWidth
                   required
                   type="email"
-                  placeholder="Ex : John@.gmail.com"
+                  placeholder="Ex : John@gmail.com"
                   variant="outlined"
                   name="email"
                   value={formData.email}
@@ -474,7 +474,7 @@ function Donation() {
                     fullWidth
                     variant="outlined"
                     name="donateAmount"
-                    placeholder="Ex : 3,00,000"
+                    placeholder="Ex : 200,000"
                     value={formData.donateAmount}
                     onChange={handleChange}
                     sx={{ backgroundColor: "white" }}
@@ -510,7 +510,7 @@ function Donation() {
                       fullWidth
                       variant="outlined"
                       name="donateAmount"
-                      placeholder=""
+                      placeholder="600,000"
                       value={formData.donateAmount}
                       onChange={handleChange}
                       sx={{ backgroundColor: "white" }}

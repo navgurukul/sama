@@ -15,7 +15,7 @@ function Overview() {
                             <Typography variant="body1" >
                                 We started 8 years ago with a vision to bring quality higher education and jobs to underprivileged women in India. Our vision has since grown into 7 residential centres with a capacity for 1200+ students, resulting in 800+ job placements and a strong network of 100+ ecosystem supporters until now.
                             </Typography>
-                            <Typography variant="body1" >
+                            <Typography variant="body1" sx={{mt:4}}>
                                 In this journey, we realised that a laptop is one of the most crucial enablers. Our ecosystem partners, including industry leaders like Amazon, Macquarie, DXC, MSDF, Tiger Analytics and Fossil have contributed about 1000 End-of-Life laptops already, thus multiplying the impact significantly. These donations have resulted in 314 jobs created and 900+ females from the remotest corners of 11 states becoming digitally adept, thereby breaking social and cultural barriers.
                             </Typography>
 

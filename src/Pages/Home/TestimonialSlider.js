@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { Container } from '@mui/system';
+import { borderRadius, Container, padding } from '@mui/system';
 import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -72,9 +72,9 @@ const TestimonialSlider = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       if (slider) slider.current?.next();
-    }, 10000); 
+    }, 10000);
 
-    return () => clearInterval(intervalRef.current); 
+    return () => clearInterval(intervalRef.current);
   }, [slider]);
 
   const handlePrevClick = () => {
@@ -107,16 +107,17 @@ const TestimonialSlider = () => {
                 {group.map((testimonial, idx) => (
                   <Box key={idx} sx={isMobile ? { width: '100%' } : { width: '50%', paddingRight: '16px' }}>
 
-                    <Typography variant="body1" sx={!isMobile && { height: "100px" }}>{testimonial.text}</Typography>
+                    <Typography  variant="body1" sx={!isMobile && { height: "100px" }}>{testimonial.text}</Typography>
+                    <Box style={{width:"64px",height:"64px",border: "7.7px solid rgba(178, 95, 101, 1)",marginTop:"30px",borderRadius:"50px"}}>
                     <img src={testimonial.src} alt={testimonial.alt}
                       style={{
-                        padding: " 8px 0px",
                         width: "64px",
                         height: "64px",
                         borderRadius: "50%",
                         objectFit: "cover"
                       }} />
-                    <Typography variant="subtitle1">{testimonial.name}</Typography>
+                      </Box>
+                    <Typography variant="subtitle1" sx={{mt:2,fontWeight:"bold"}}>{testimonial.name}</Typography>
                   </Box>
                 ))}
               </Box>
