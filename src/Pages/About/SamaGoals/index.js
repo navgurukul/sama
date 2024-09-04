@@ -16,8 +16,8 @@ const goals = [
 
 const SamaGoals = () => {
     return (
-        <Box sx={samaGoalsStyles.boxContainer}>
-            <Container maxWidth="lg" sx={samaGoalsStyles.container} >
+        <Box sx={samaGoalsStyles.boxContainer} >
+            <Container maxWidth="lg" sx={samaGoalsStyles.container}  >
                 <Typography variant="h5" sx={samaGoalsStyles.titleText}>
                     <b>This is how Sama was born,</b> with two simple but audacious <b>goals:</b>
                 </Typography>
@@ -32,14 +32,15 @@ const SamaGoals = () => {
                                 <Box
                                     sx={{
                                         padding: "10px",
-                                        width: "64px",
-                                        height: "66px",
+                                        width: "50px",
+                                        height: "50px",
                                         border:"10px solid rgba(92, 120, 90, 1)",
                                         background: "rgba(92, 120, 90, 1)",
                                         borderRadius: "100px",
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
+                                        border:"1px solid white"
                                     }}
                                 >
                                     <img

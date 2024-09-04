@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -29,12 +29,19 @@ const Navbar = () => {
     { text: "Donate", href: "/donate" },
   ];
 
+  useEffect(() => {
+    setActiveTab(location.pathname);
+  }, [location.pathname]);
+
   const handleMenuToggle = () => {
     setMenuVisible(!menuVisible);
   };
 
   const handleTabClick = (href) => {
     setActiveTab(href);
+    if (href === "/") {
+      setActiveTab(""); // Reset activeTab if navigating to home
+    }
     setMenuVisible(false);
   };
 
@@ -69,9 +76,8 @@ const Navbar = () => {
                 sx={{ margin: 1, color: "#4A4A4A" }}
                 component={Link}
                 to={item.href}
-                className={`nav-link ${
-                  activeTab === item.href ? "active" : ""
-                }`}
+                className={`nav-link ${activeTab === item.href ? "active" : ""
+                  }`}
                 key={index}
                 onClick={() => handleTabClick(item.href)}
               >
@@ -79,6 +85,7 @@ const Navbar = () => {
                   variant="body1"
                   sx={{
                     textTransform: "none",
+                    color: activeTab === item.href ? "primary.main" : "inherit",
                     fontWeight: activeTab === item.href ? "bold" : "normal",
                   }}
                 >

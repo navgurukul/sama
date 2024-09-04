@@ -1,136 +1,130 @@
-import { Container, Grid, Typography, Box } from "@mui/material";
-import TimeLine from "./TimeLine";
-import Icon1 from "./assets/icon1.png";
-import Icon2 from "./assets/icon2.png";
-import Icon3 from "./assets/icon3.png";
-import Icon4 from "./assets/icon4.png";
-import Icon5 from "./assets/icon5.png";
-import Icon6 from "./assets/icon6.png";
-
-import clases from "./style";
-
+import React from "react";
+import { Container, Grid, Box, Typography } from "@mui/material";
+import {
+  container,
+  lgContainer,
+  h6,
+  statItem,
+  h4,
+  statLogo,
+  subtitle1,
+  styleh5,
+  Modelbody1,
+  styles,
+} from "./style.js";
+import { data } from "./data.js";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { breakpoints } from "../../theme/constant";
+import we from "./we.svg";
 const OurApproach = () => {
+  const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
+
   return (
     <>
-      <Box sx={clases.backgroundAndPadding} bgcolor="primary.main">
-        <Container maxWidth="xl">
-          <Grid container spacing={6}>
-            <Grid item xs={12} md={7} lg={5}>
-              <Typography variant="h5" color="white.main">
+      <Box
+
+        style={container}
+        sx={{
+          ...container,
+          paddingLeft: isActive ? "16px" : "0px",
+          paddingRight: isActive ? "16px" : "0px",
+        }}
+      >
+        <Container maxWidth="lg" style={lgContainer}>
+          <Grid container sx={{paddingTop:"60px"}}>
+            <Grid item xs={12} md={7}>
+              <Typography sx={styleh5} variant="h5">
                 Our Rationale
               </Typography>
-              <Typography variant="body1" color="white.main" sx={{ mt: 2 }}>
-                We strongly believe that investing in women's digital education can reap
-                multifold benefits for society as a whole. As we rapidly advance in technology,
-                it's crucial to ensure that underserved women aren't left behind. Sama addresses
-                two pressing issues simultaneously:
+              <Typography variant="body1" sx={{color: "var(--white, #FFF)" }} paddingTop="16px">
+                We strongly believe that investing in women's digital education
+                can reap multifold benefits for society as a whole. As we
+                rapidly advance in technology, it's crucial to ensure that
+                underserved women aren't left behind. Sama addresses two
+                pressing issues simultaneously:
               </Typography>
             </Grid>
           </Grid>
+          <Grid container color="#fff"  paddingTop="40px" >
+            {data.map((section, sectionIndex) => (
+              <React.Fragment key={sectionIndex}>
+                <Typography
+                  variant="h6"
+                  mt={3}
+                  sx={{
+                    ...container,
+                    paddingTop: isActive && 6,
+                    mt: sectionIndex === 1 ? 8 : 4,
 
-          <Typography variant="h6" color="white.main" sx={{ marginTop: "60px" }}>
-            The E-Waste Crisis
-          </Typography>
 
-          <Grid container spacing={6} sx={{mt:1}}>
-            <Grid item xs={12} md={4}>
-              <Box sx={clases.CardContent}>
-                <Box sx={clases.boxStyle}>
-                  <img src={Icon1} alt="money logo" />
-                  <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
-                    2M tons
-                  </Typography>
-                </Box>
-                <Typography variant="body1" sx={{ mt: 2 }} color="white.main">
-                  of e-waste is generated annually in India, making it the world's third-largest e-waste producer.
+                  }}
+                >
+                  {section.title}
                 </Typography>
-              </Box>
-            </Grid>
+                <Grid
+                  container
 
-            <Grid item xs={12} md={4}>
-              <Box sx={clases.CardContent}>
-                <Box sx={clases.boxStyle}>
-                  <img src={Icon2} alt="money logo" />
-                  <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
-                    70%
-                  </Typography>
-                </Box>
-                <Typography variant="body1" sx={{ mt: 2 }} color="white.main">
-                  of India's e-waste comes from discarded laptops.
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Box sx={clases.CardContent}>
-                <Box sx={clases.boxStyle}>
-                  <img src={Icon3} alt="money logo" />
-                  <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
-                    80%
-                  </Typography>
-                </Box>
-                <Typography variant="body1" sx={{ mt: 2 }} color="white.main">
-                  of women in India have ever used the internet, compared to 57%
-                  of men, highlighting a significant digital divide.
-                </Typography>
-              </Box>
-            </Grid>
+                >
+                  {section.statistics.map((stat, statIndex) => (
+                    <Grid
+                      item
+                      xs={12}
+                      md={4}
+                      lg={4}
+                      key={statIndex}
+                      style={statItem}
+                      sx={{
+                        ...container,
+                        marginTop: isActive && "16px",
+                      }}
+                    >
+                      <Box display="flex" alignItems="center" sx={{ paddingTop: "32px" }}>
+                        <img
+                          src={stat.moneyLogo}
+                          alt="money logo"
+                          style={statLogo}
+                        />
+                        <Typography
+                          style={styles.h4}
+                          variant="h6"
+                          component="span"
+                        >
+                          {stat.value}
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="body1"
+                        sx={{ mt: 2, width: { md: "305px" } }}
+                      >
+                        {stat.description}
+                      </Typography>
+                    </Grid>
+                  ))}
+                </Grid>
+              </React.Fragment>
+            ))}
           </Grid>
 
-          <Typography variant="h6" color="white.main" sx={{ marginTop: "64px" }}>
-            The Digital Gender Divide
-          </Typography>
-
-          <Grid container spacing={6} sx={{ mt: 1 }}>
-            <Grid item xs={12} md={4}>
-              <Box sx={clases.CardContent}>
-                <Box sx={clases.boxStyle}>
-                  <img src={Icon4} alt="money logo" />
-                  <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
-                    33%
-                  </Typography>
-                </Box>
-                <Typography variant="body1" sx={{ mt: 2 }} color="white.main">
-                  of women in India have ever used the internet,
-                  compared to 57% of men, highlighting a
-                  significant digital divide.
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Box sx={clases.CardContent}>
-                <Box sx={clases.boxStyle}>
-                  <img src={Icon5} alt="money logo" />
-                  <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
-                    158M
-                  </Typography>
-                </Box>
-                <Typography variant="body1" sx={{ mt: 2 }} color="white.main">
-                  girl students were affected by the COVID-19 lockdown,
-                  jeopardizing their education and future prospects.
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Box sx={clases.CardContent}>
-                <Box sx={clases.boxStyle}>
-                  <img src={Icon6} alt="money logo" />
-                  <Typography sx={{ ml: 3 }} variant="h4" color="white.main">
-                    17%
-                  </Typography>
-                </Box>
-                <Typography variant="body1" sx={{ mt: 2 }} color="white.main">
-                  of rural students have internet access in rural areas, whereas 44%
-                  in urban areas do and a mere 2% of
-                  the poorest income groups have access to a computer with internet.
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
         </Container>
-      </Box>
-      <TimeLine />
+      </Box >
+      <Container>
+        <Typography variant="h5" my={6} sx={{ align: "left" }} >
+          This is how we transform your donated laptops into tools of impact!
+        </Typography>
+        <Box
+          component="img"
+          src={we}
+          alt="Logo"
+          sx={{
+            width: '100%',
+            height: 'auto',
+            display: 'block',
+            maxWidth: '100%',
+            marginBottom: '60px',
+          }}
+        />
+      </Container>
+
     </>
   );
 };

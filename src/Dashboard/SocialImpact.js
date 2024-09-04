@@ -1,27 +1,74 @@
-import React from 'react';
 import { Grid, Card, CardContent, Typography, Box } from '@mui/material';
 import { styles } from "./style";
-import { styled } from '@mui/system';
+import { styled} from '@mui/system';
 import IndiaImg from './assets/india.png';
-import Komal from "./assets/Komal.png";
-import ZiyaImg from "./assets/ZiyaImg .png";
 import { skills, JobData } from './data.js';
+import Avatar from '@mui/material/Avatar';
 
+import { useEffect, useState, useRef } from 'react';
 const StyledCard = styled(Card)({
     height: '100%',
     borderRadius: '8px',
     background: '#FFF',
     boxShadow: '0px 2px 10px 0px rgba(0, 0, 0, 0.10)',
 });
+const students = [
+    {
+        src: require('./assets/Komal.png'),
+        name: "Komal Chaudhary (NavGurukul Student)",
+        width: "99px",
+        height: "99px",
+        text: "Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it",
+    },
+    {
+        src: require('./assets/ZiyaImg .png'),
+        name: "Ziya Afreen (NavGurukul Student)",
+        width: "99px",
+        height: "99px",
+        text: "This laptop isn't just a tool. It is my bridge from being a novice to a full-fledged future software developer",
+    },
+
+];
 
 const SocialImpactPage = () => {
+    const [isScrolling, setIsScrolling] = useState(true);
+    const [currentY, setCurrentY] = useState(0);
+    const containerRef = useRef(null);
 
+    useEffect(() => {
+        let animationFrame;
+        const step = () => {
+            if (isScrolling) {
+                setCurrentY(prevY => {
+                    const nextY = prevY - 1;
+                    const containerHeight = containerRef.current.clientHeight;
+                    const contentHeight = containerRef.current.scrollHeight / 2;
+                    if (Math.abs(nextY) >= contentHeight) {
+                        return 0;
+                    }
+                    containerRef.current.style.transform = `translateY(${nextY}px)`;
+                    return nextY;
+                });
+            }
+            animationFrame = requestAnimationFrame(step);
+        };
+        animationFrame = requestAnimationFrame(step);
+        return () => cancelAnimationFrame(animationFrame);
+    }, [isScrolling]);
+
+    const handleMouseEnter = () => {
+        setIsScrolling(false);
+    };
+
+    const handleMouseLeave = () => {
+        setIsScrolling(true);
+    };
     return (
         <>
             <Grid container spacing={3} sx={{ mt: 1 }}>
                 {JobData.map((item, index) => (
                     <Grid item xs={12} md={2.4} key={index}>
-                        <StyledCard >
+                        <StyledCard sx={{p:1}}>
                             <CardContent>
                                 <Typography variant="subtitle1" style={styles.subtitle1}>{item.title}</Typography>
                                 <Typography style={styles.h5} variant="h5" color="primary" sx={{ mt: 1 }}>{item.number}</Typography>
@@ -31,11 +78,10 @@ const SocialImpactPage = () => {
                     </Grid>
                 ))}
             </Grid>
-
-            <Grid container spacing={1} mt={3}>
+            <Grid container spacing={1} mt={4}>
                 <Grid item xs={12} md={6}>
                     <StyledCard>
-                        <CardContent>
+                        <CardContent sx={{p:3}}>
                             <Grid container spacing={3} mt={1}>
                                 <Grid item xs={12} md={6} style={{ position: "relative", bottom: "14px" }}>
                                     <Typography variant="" style={styles.subtitle1}>STATES IMPACTED</Typography>
@@ -46,10 +92,9 @@ const SocialImpactPage = () => {
                                 </Grid>
                                 <Grid item xs={12} md={6}>
                                     <img
-                                        component="img"
                                         src={IndiaImg}
                                         alt="Map of India"
-                                        style={{ width: '100%' }}
+                                        style={{ width: '100%', height: 'auto' }}
                                     />
                                 </Grid>
                             </Grid>
@@ -69,26 +114,65 @@ const SocialImpactPage = () => {
                         ))}
                     </Grid>
                     <Grid container style={{ padding: "16px" }}>
-                        <Typography variant="" style={styles.subtitle1}>STUDENT SPEAKS</Typography>
+                        <Typography variant="h6" style={styles.subtitle1}>
+                            STUDENT SPEAKS
+                        </Typography>
                         <Grid item xs={12} md={12} sx={{ mt: 4 }}>
-                            <Box display="flex" alignItems="center">
-                                <img src={ZiyaImg} style={{ marginRight: '8px' }} />
-                                <Box sx={{ ml: 3 }}>
-                                    <Typography variant="subtitle1" style={styles.subtitle1}>“ Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it ”</Typography>
-                                    <Typography variant='body2' style={styles.body2} sx={{ mt: 2 }}>Ziya Afreen</Typography>
-                                </Box>
-                            </Box>
-                        </Grid>
-                        <Grid item xs={12} md={12} style={{ marginTop: "32px" }}>
-                            <Box display="flex" alignItems="center">
-                                <img src={Komal} style={{ marginRight: '8px' }} />
-                                <Box sx={{ ml: 3 }}>
-                                    <Typography variant="subtitle1" style={styles.subtitle1}> “ This laptop isn't just a tool. It is my bridge from being a novice to a full-fledged future software developer “</Typography>
-                                    <Typography variant='body2' style={styles.body2} sx={{ mt: 2 }}>Komal Chaudhary</Typography>
+                            <Box
+                                sx={{
+                                    overflow: 'hidden',
+                                    position: 'relative',
+                                    height: '220px',
+                                }}
+                                onMouseEnter={handleMouseEnter}
+                                onMouseLeave={handleMouseLeave}
+                            >
+                                <Box
+                                    ref={containerRef}
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        height: '100%',
+                                        transform: `translateY(${currentY}px)`,
+                                    }}
+                                >
+                                    {[...students, ...students].map((student, index) => (
+                                        <Box key={index}>
+                                            <Box display="flex" alignItems="center">
+                                                <Box
+                                                >
+                                                    <Avatar
+                                                        alt="Remy Sharp"
+                                                        src={student.src}
+                                                        style={{
+                                                            width: student.width,
+                                                            height: student.height,
+                                                            marginRight: '8px',
+                                                        }}
+                                                    >
+                                                        B
+                                                    </Avatar>
+                                                </Box>
+                                                <Box sx={{ ml: 3, mt: 3}}>
+                                                    <Typography variant="subtitle1" style={styles.subtitle1}>
+                                                        {`"${student.text}"`}
+                                                    </Typography>
+                                                    <Typography
+                                                        variant="body2"
+                                                        style={styles.body2}
+                                                        sx={{ mt: 2 }}
+                                                    >
+                                                        {student.name}
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                    ))}
                                 </Box>
                             </Box>
                         </Grid>
                     </Grid>
+
                 </Grid>
             </Grid>
         </>
