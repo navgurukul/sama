@@ -68,7 +68,7 @@ const SocialImpactPage = () => {
             <Grid container spacing={3} sx={{ mt: 1 }}>
                 {JobData.map((item, index) => (
                     <Grid item xs={12} md={2.4} key={index}>
-                        <StyledCard >
+                        <StyledCard sx={{p:1}}>
                             <CardContent>
                                 <Typography variant="subtitle1" style={styles.subtitle1}>{item.title}</Typography>
                                 <Typography style={styles.h5} variant="h5" color="primary" sx={{ mt: 1 }}>{item.number}</Typography>
@@ -78,10 +78,10 @@ const SocialImpactPage = () => {
                     </Grid>
                 ))}
             </Grid>
-            <Grid container spacing={1} mt={3}>
+            <Grid container spacing={1} mt={4}>
                 <Grid item xs={12} md={6}>
                     <StyledCard>
-                        <CardContent>
+                        <CardContent sx={{p:3}}>
                             <Grid container spacing={3} mt={1}>
                                 <Grid item xs={12} md={6} style={{ position: "relative", bottom: "14px" }}>
                                     <Typography variant="" style={styles.subtitle1}>STATES IMPACTED</Typography>
