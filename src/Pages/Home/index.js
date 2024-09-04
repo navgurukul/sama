@@ -8,12 +8,16 @@ import LaptopDonor from "./LaptopDonor";
 import ContactForm from "./ContactForm";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import diamond from "./assets/dimanod.png";
-import BGIMG from "./assets/BGIMG.svg"
-import { border } from "@mui/system";
+import BGIMG from "./assets/BGIMG.svg";
+import { circleBox, text, containerStyles, imageStyles } from './style';
+
+
 function Home() {
+
   const [impact, setImpact] = useState("environmental");
   const isActive = useMediaQuery("(max-width:600px)");
   const isActiveIpad = useMediaQuery("(max-width:1300px)");
+  const isXs = useMediaQuery('(max-width:600px)');
 
   const commonImageStyle = {
     width: "100%",
@@ -32,6 +36,7 @@ function Home() {
     height: "167px",
     boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)"
   };
+
 
   return (
     <>
@@ -113,34 +118,52 @@ function Home() {
               </Grid>
             ))}
           </Grid>
-          <Typography variant="body2" color="#4A4A4A" sx={{
-            fontFamily: 'Raleway',
-            fontSize: '14px',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            my: 4,
-            lineHeight: '170%'
-          }} gutterBottom>
+          <Typography variant="body2"
+            color="#4A4A4A"
+            sx={{
+              fontFamily: 'Raleway',
+              fontSize: '14px',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              my: 4,
+              lineHeight: '170%'
+            }} gutterBottom>
             *All calculations based on relevant people benefiting from 1 M laptops by 2030
           </Typography>
         </Container>
       </Box>
-      <Container maxWidth="xxl" style={{ padding: 0, backgroundColor: "#F0F4EF", position: "relative" }}>
-        <img
-          src={BGIMG}
-          alt="Sama Group"
-          style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
-        />
-        <Box className="circle">
-          <Typography className="text" variant="h6" sx={{ px: 7, textAlign: 'center', lineHeight: "38.88px" }} color="#FFF">
+
+      <Container
+        maxWidth="xxl"
+        style={containerStyles}
+      >
+        {!isXs && (
+          <img
+            src={BGIMG}
+            style={imageStyles}
+            alt="Sama Group"
+          />
+        )}
+
+        <Box
+          className="circle"
+          sx={circleBox}
+        >
+          <Typography
+            variant="h6"
+            sx={text}
+          >
             Imagine 1 million underprivileged women holding laptops.
-            This is the future we’re building at Sama by <br></br>
+            This is the future we’re building at Sama by <br />
             2030
           </Typography>
         </Box>
       </Container>
 
-      <Container maxWidth="lg" sx={{ my: 10 }}>
+      <Container maxWidth="lg" sx={{
+        my: 10, mt: { xs: 35, md: 10, lg: 0, sm: 10 }
+      }}
+      >
         <Typography variant="h5">Metrics that Matter</Typography>
         <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
         <Box sx={!isActive && { display: 'flex', my: 4 }} spacing={3}>

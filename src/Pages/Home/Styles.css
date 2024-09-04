@@ -66,34 +66,3 @@ h5 {
   justify-content: center;
   box-shadow: 0 0 30px 30px rgba(240, 244, 239, 0.8);
 }
-
-@media (max-width: 600px) {
-  .circle {
-    width: 300px;
-    height: 300px;
-    box-shadow: 0 0 20px 20px rgba(240, 244, 239, 0.8);
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 550px) {
-  .circle {
-    width: 400px;
-    height: 400px;
-    box-shadow: 0 0 10px 10px rgba(240, 244, 239, 0.8);
-  }
-
-  .text {
-    font-size: 1px;
-    text-align: center;
-  }
-}
-
-@media (max-width: 400px) {
-  .circle {
-    display: none;
-    width: 100px;
-    height: 100px;
-    box-shadow: 0 0 10px 10px rgba(240, 244, 239, 0.8);
-  }
-}
