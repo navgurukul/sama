@@ -56,7 +56,7 @@ function Home() {
           <Typography variant="body1" margin="0 8px" style={{ color: "#FFF" }}>
             Bridging Digital Divide Through Repurposed Devices
           </Typography>
-          <Button variant="contained" color="primary" href="/donate" sx={{ mt: 6, borderRadius: "100px"}}>
+          <Button variant="contained" color="primary" href="/donate" sx={{ mt: 6, borderRadius: "100px" }}>
             Donate Now
           </Button>
         </Container>
@@ -131,14 +131,12 @@ function Home() {
           alt="Sama Group"
           style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
         />
-        <Box className="main-circle">
-          <Box className="circle">
-            <Typography  variant="h6" sx={{px:7,textAlign: 'center',lineHeight:"38.88px" }} color="#FFF">
-              Imagine 1 million underprivileged women holding laptops.
-              This is the future we’re building at Sama by <br></br>
-              2030
-            </Typography>
-          </Box>
+        <Box className="circle">
+          <Typography className="text" variant="h6" sx={{ px: 7, textAlign: 'center', lineHeight: "38.88px" }} color="#FFF">
+            Imagine 1 million underprivileged women holding laptops.
+            This is the future we’re building at Sama by <br></br>
+            2030
+          </Typography>
         </Box>
       </Container>
 
@@ -159,10 +157,10 @@ function Home() {
         </Box>
         <Box>
           {impact === "environmental" ? (
-            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" style={{boxShadow:"0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)",borderRadius:"16px"}}
+            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" style={{ boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)", borderRadius: "16px" }}
             />
           ) : (
-            <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" style={{boxShadow:"0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)",borderRadius:"16px"}} />
+            <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" style={{ boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)", borderRadius: "16px" }} />
           )}
         </Box>
       </Container>
