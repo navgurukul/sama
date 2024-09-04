@@ -31,7 +31,7 @@ function DashboardPage(){
 
         fetchData();
     }, []);
-    console.log(data);
+    
   return (
     <Box sx={{ background: "#FFFAF8", pb: 6, }}>
       <Container maxWidth="xxl">
