@@ -31,12 +31,12 @@ const OurApproach = () => {
         }}
       >
         <Container maxWidth="lg" style={lgContainer}>
-          <Grid container my={isActive ? 0 : 6}>
+          <Grid container sx={{paddingTop:"60px"}}>
             <Grid item xs={12} md={7}>
               <Typography sx={styleh5} variant="h5">
                 Our Rationale
               </Typography>
-              <Typography variant="body1" sx={{ mt: 2, color: "var(--white, #FFF)" }}>
+              <Typography variant="body1" sx={{color: "var(--white, #FFF)" }} paddingTop="16px">
                 We strongly believe that investing in women's digital education
                 can reap multifold benefits for society as a whole. As we
                 rapidly advance in technology, it's crucial to ensure that
@@ -45,7 +45,7 @@ const OurApproach = () => {
               </Typography>
             </Grid>
           </Grid>
-          <Grid container color="#fff">
+          <Grid container color="#fff"  paddingTop="40px" >
             {data.map((section, sectionIndex) => (
               <React.Fragment key={sectionIndex}>
                 <Typography
