@@ -161,7 +161,7 @@ function Home() {
       </Container>
 
       <Container maxWidth="lg" sx={{
-        my: 10, mt: { xs: 35, md: 10, lg: 0, sm: 10 }
+        my: 10, mt: { xs: 35, md: 10, lg: 10, sm: 10 }
       }}
       >
         <Typography variant="h5">Metrics that Matter</Typography>
