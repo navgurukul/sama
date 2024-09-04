@@ -8,10 +8,7 @@ import LaptopDonor from "./LaptopDonor";
 import ContactForm from "./ContactForm";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import diamond from "./assets/dimanod.png";
-import BGIMG from "./assets/BGIMG.svg";
-import { circleBox, text, containerStyles, imageStyles } from './style';
-
-
+import BGIMG from "./assets/Group365.png";
 function Home() {
 
   const [impact, setImpact] = useState("environmental");
@@ -133,7 +130,7 @@ function Home() {
         </Container>
       </Box>
 
-      <Container
+      {/* <Container
         maxWidth="xxl"
         style={containerStyles}
       >
@@ -158,10 +155,18 @@ function Home() {
             2030
           </Typography>
         </Box>
+      </Container> */}
+      <Container maxWidth="xxl" style={{ padding: 0 }}>
+        <img
+          src={BGIMG}
+          alt="Sama Group"
+          style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
+        />
       </Container>
 
+
       <Container maxWidth="lg" sx={{
-        my: 10, mt: { xs: 55, md: 10, lg: 10, sm: 10 }
+        my: 10, mt: { xs: 35, md: 10, lg: 10, sm: 10 }
       }}
       >
         <Typography variant="h5">Metrics that Matter</Typography>
