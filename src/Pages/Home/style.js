@@ -1,14 +1,13 @@
-// styles.js
 export const circleBox = {
     width: {
-        xs: '200px',
-        sm: '230px',
+        xs: '350px',
+        sm: '330px',
         md: '400px',
         lg: '460.84px',
     },
     height: {
-        xs: '200px',
-        sm: '230px',
+        xs: '350px',
+        sm: '330px',
         md: '400px',
         lg: '460.84px',
     },
@@ -18,7 +17,7 @@ export const circleBox = {
     justifyContent: 'center',
     overflow: 'hidden',
     marginTop: {
-        xs: '140px',
+        xs: '220px',
         sm: '0px',
     },
 };
@@ -28,19 +27,19 @@ export const text = {
     lineHeight: {
         lg: '38.88px',
         md: '30px',
-        sm: '24px',
-        xs: '16px',
+        sm: '35px',
+        xs: '30px',
     },
     color: '#FFF',
     fontSize: {
-        xs: '10px',
-        sm: '10px',
+        xs: '22px',
+        sm: '20px',
         md: '20px',
         lg: '24px',
     },
     px: {
-        xs: 2,
-        sm: 5,
+        xs: 4,
+        sm: 4,
         md: 5,
         lg: 6,
         xl: 7,
