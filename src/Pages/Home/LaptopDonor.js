@@ -4,12 +4,12 @@ import "./Styles.css";
 
 const LaptopDonorsCarousel = () => {
   const images = [
-    { src: require("./assets/amazon.svg").default, alt: "Amazon" },
-    { src: require("./assets/Frame 31289.svg").default, alt: "Macquarie" },
-    { src: require("./assets/tiger.svg").default, alt: "Tiger Analytics" },
-    { src: require("./assets/image.png"), alt: "fossil" },
-    { src: require("./assets/Frame 31293.svg").default, alt: "DXC" },
-    { src: require("./assets/Frame 31292.svg").default, alt: "DXC" },
+    { src: require("./assets/Logo1.png"), alt: "Amazon" },
+    { src: require("./assets/Logo2.png"), alt: "Macquarie" },
+    { src: require("./assets/Logo3.png"), alt: "Tiger Analytics" },
+    { src: require("./assets/Logo4.png"), alt: "fossil" },
+    { src: require("./assets/LOgo5.png"), alt: "DXC" },
+    { src: require("./assets/Logo6.png"), alt: "DXC" },
   ];
 
   return (
