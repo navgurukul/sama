@@ -30,9 +30,9 @@ const OurApproach = () => {
           paddingRight: isActive ? "16px" : "0px",
         }}
       >
-        <Container maxWidth="lg" style={lgContainer}>
-          <Grid container sx={{paddingTop:"60px"}}>
-            <Grid item xs={12} md={7}>
+        <Container maxWidth="lg" style={lgContainer} sx={{}}>
+          <Grid container sx={{paddingTop:"80px"}} >
+            <Grid item xs={12} md={7} sm={12} sx={{px:{lg:0,sm:5,md:3,sx:5}}}>
               <Typography sx={styleh5} variant="h5">
                 Our Rationale
               </Typography>
@@ -45,7 +45,7 @@ const OurApproach = () => {
               </Typography>
             </Grid>
           </Grid>
-          <Grid container color="#fff"  paddingTop="40px" >
+          <Grid container color="#fff"  paddingTop="40px" sx={{px:{lg:0,sm:5,md:3,sx:5}}}>
             {data.map((section, sectionIndex) => (
               <React.Fragment key={sectionIndex}>
                 <Typography
@@ -120,7 +120,7 @@ const OurApproach = () => {
             height: 'auto',
             display: 'block',
             maxWidth: '100%',
-            marginBottom: '60px',
+            marginBottom: '80px',
           }}
         />
       </Container>

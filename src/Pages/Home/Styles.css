@@ -25,7 +25,6 @@
   display: flex;
   flex-direction: row;
   width: 100%;
-  /* Double the width to fit the duplicated images */
   animation: scroll-left 30s linear infinite;
 }
 
@@ -52,7 +51,7 @@ h5 {
     transform: translateX(-100%);
   }
 }
-
+/* 
 .circle {
   position: absolute;
   top: 50%;
@@ -66,5 +65,4 @@ h5 {
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 30px 30px rgba(240, 244, 239, 0.8);
-} 
-
+} */
