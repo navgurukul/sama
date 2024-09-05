@@ -123,7 +123,7 @@ function Donation() {
     } else {
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbzpJM1YwhElNojDizOb1ksc56XxwfWuZzpz-T3A9Tw9vh90XIAP5E__FQZT-idBRY4DBw/exec",
+        "https://script.google.com/macros/s/AKfycbxwfJKTEMZkpAHtsh8rT1E6Ba3BrqvAd3FzlCKOIhCbD2A5kC_hXN5I0VCTvMgrjgBR/exec",
           {
             method: "POST",
             headers: {
@@ -137,6 +137,7 @@ function Donation() {
         console.log("Form Data Submitted:", formData);
 
         setFormData({
+          type: "",
           firstName: "",
           lastName: "",
           email: "",
