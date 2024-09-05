@@ -87,7 +87,7 @@ const TestimonialSlider = () => {
 
   return (
     <Box style={{ backgroundColor: "#5C785A"}}>
-      <Container sx={isMobile ? { py: 4 } : { py: 10 }}>
+      <Container maxWidth="lg" sx={isMobile ? { py: 4 } : { py: 10 }}>
         <Typography variant="h5" style={{ color: "#FFF" }}>
           Student Speaks
         </Typography>
