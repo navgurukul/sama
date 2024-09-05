@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from '@mui/material/styles';
 import WaterContaminationLogo from "./assets/WaterContaminationLogo.png";
 import lifecycleLogo from "./assets/lifecycleLogo.png";
-import { data } from "./data";
+
 
 import { TypographySubtitle1, TypographyTitle, TypographyBody2, TypographyAmountText, Typographyh5 } from "./style";
 import {
@@ -10,8 +10,10 @@ import {
     Grid,
     Card,
     CardContent,
+    Box,
+    Container
 } from '@mui/material';
-import { Container } from "@mui/system";
+
 
 const StyledCard = styled(Card)({
     borderRadius: '8px',
@@ -23,10 +25,11 @@ const StyledCard = styled(Card)({
     justifyContent: 'space-between',
 });
 
-const EnvironmenttalImpact = () => {
+const EnvironmenttalImpact = ({data}) => {
+    
     return (
         <>
-            <Container maxWidth="xl">
+            <Container maxWidth="xl" sx={{mb:"40px"}}>
                 <Grid container spacing={3} mt={1}
                 >
                     <Grid item xs={12} md={4}>
@@ -52,57 +55,98 @@ const EnvironmenttalImpact = () => {
                                     <b>Cost Savings:</b> Estimated cost savings of ₹23 lakhs to ₹32 lakhs from resource waste, toxic waste seepage, and carbon footprint reduction.
                                 </TypographyTitle>
 
-                                <TypographyTitle mt={2}>
-                                    <b>Enhanced Brand Reputation:</b> These actions generate influence in public and can lead to a 5% to 10% increase in brand value (approximate) and a 3% to 5% increase in customer retention (approximate).
-                                </TypographyTitle>
-                            </CardContent>
-                        </StyledCard>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <StyledCard>
-                            <CardContent sx={{ p: 3 }}>
-                                <TypographySubtitle1>RESOURCE WASTE REDUCTION</TypographySubtitle1>
-                                <TypographyAmountText sx={{ mt: 1 }}>1956 Kg</TypographyAmountText>
-                                <TypographyTitle sx={{ mt: 1 }}>
-                                    <b>Material wise breakup (Kg)</b>
-                                </TypographyTitle>
-                                {Object.entries(data.wasteBreakup).map(([material, amount]) => (
-                                    <Typography key={material} variant="body2" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <TypographyBody2>{material}</TypographyBody2>
-                                        <TypographyBody2>{amount} </TypographyBody2>
-                                    </Typography>
-                                ))}
-                            </CardContent>
-                        </StyledCard>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <StyledCard>
-                            <CardContent sx={{ p: 3 }}>
-                                <TypographySubtitle1>TOXIC WASTE SEEPAGE REDUCTION</TypographySubtitle1>
-                                <TypographyAmountText sx={{ mt: 1 }}>7009 g</TypographyAmountText>
-                                <TypographyTitle sx={{ mt: 1 }}>
-                                    <b>Waste wise breakup (grams)</b>
-                                </TypographyTitle>
-                                {Object.entries(data.toxicWasteBreakup).map(([material, amount]) => (
-                                    <Typography key={material} variant="body2" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <TypographyBody2>{material}</TypographyBody2>
-                                        <TypographyBody2>{amount} kg</TypographyBody2>
-                                    </Typography>
-                                ))}
-                            </CardContent>
-                        </StyledCard>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <StyledCard sx={{ height: "auto" }}>
-                            <CardContent sx={{ p: 3 }}>
-                                <TypographySubtitle1>CARBON FOOTPRINT REDUCTION</TypographySubtitle1>
-                                <TypographyAmountText sx={{ mt: 1 }}>326 Tons</TypographyAmountText>
-                                <TypographyBody2>
-                                    Approximate CO2 amount prevented from entering into the atmosphere.
-                                </TypographyBody2>
-                            </CardContent>
-                        </StyledCard>
-                    </Grid>
+                            <TypographyTitle mt={2}>
+                                <b>Enhanced Brand Reputation:</b> These actions generate influence in public and can lead to a 5% to 10% increase in brand value (approximate) and a 3% to 5% increase in customer retention (approximate).
+                            </TypographyTitle>
+                        </CardContent>
+                    </StyledCard>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <StyledCard>
+                        <CardContent sx={{ p: 3 }}>
+                            <TypographySubtitle1>RESOURCE WASTE REDUCTION</TypographySubtitle1>
+                            <TypographyAmountText sx={{ mt: 1 }}>{data && data["Resource Waste Reduction"]} Kg</TypographyAmountText>
+                            <TypographyTitle sx={{ mt: 1 }}>
+                                <b>Material wise breakup (Kg)</b>
+                            </TypographyTitle>
+                            <Typography component='div'
+                                style={{ display: 'flex', justifyContent: 'space-between', }}
+                            >
+                                <TypographyBody2>Plastic</TypographyBody2>
+                                <TypographyBody2>{data?.Plastic} kg</TypographyBody2>
+
+                            </Typography>
+                            <Typography component='div'
+                                style={{ display: 'flex', justifyContent: 'space-between' }}
+                            >
+                                <TypographyBody2>Aluminium</TypographyBody2>
+                                <TypographyBody2>{data?.Aluminium} kg</TypographyBody2>
+
+                            </Typography>
+                            <Typography component='div'
+                                style={{ display: 'flex', justifyContent: 'space-between' }}
+                            >
+                                <TypographyBody2>Copper</TypographyBody2>
+                                <TypographyBody2>{data?.Copper} kg</TypographyBody2>
+
+                            </Typography>
+                            <Typography component='div'
+                                style={{ display: 'flex', justifyContent: 'space-between' }}
+                            >
+                                <TypographyBody2>Gold</TypographyBody2>
+                                <TypographyBody2>{data?.Gold} kg</TypographyBody2>
+
+                            </Typography>
+                            <Typography component='div'
+                                style={{ display: 'flex', justifyContent: 'space-between' }}
+                            >
+                                <TypographyBody2>Silver</TypographyBody2>
+                                <TypographyBody2>{data?.Silver} kg</TypographyBody2>
+
+                            </Typography>
+                            
+                        </CardContent>
+                    </StyledCard>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <StyledCard>
+                        <CardContent sx={{ p: 3 }}>
+                            <TypographySubtitle1>TOXIC WASTE SEEPAGE REDUCTION</TypographySubtitle1>
+                            <TypographyAmountText sx={{ mt: 1 }}>{data && data["Toxic Waste Seepage Reduction"]} g</TypographyAmountText>
+                            <TypographyTitle sx={{ mt: 1 }}>
+                            
+                                <b> Waste wise breakup (grams)</b>
+                            </TypographyTitle>
+                            <Typography component='div' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <TypographyBody2>Lead</TypographyBody2>
+                                <TypographyBody2>{data?.Lead} g</TypographyBody2>
+                            </Typography>
+                            <Typography component='div' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <TypographyBody2>Mercury</TypographyBody2>
+                                <TypographyBody2>{data?.Mercury} g</TypographyBody2>
+                            </Typography>
+                            <Typography component='div' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <TypographyBody2>Cadmium</TypographyBody2>
+                                <TypographyBody2>{data?.Cadmium} g</TypographyBody2>
+                            </Typography>
+                            <Typography component='div' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <TypographyBody2>Chromium</TypographyBody2>
+                                <TypographyBody2>{data?.Chromium} g</TypographyBody2>
+                            </Typography>
+                        </CardContent>
+                    </StyledCard>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <StyledCard sx={{height:"auto"}}>
+                        <CardContent sx={{p: 3}}>
+                            <TypographySubtitle1>CARBON FOOTPRINT REDUCTION</TypographySubtitle1>
+                            <TypographyAmountText sx={{ mt: 1 }}>{data && data["Carbon Footprint Reduction"]} Tons</TypographyAmountText>
+                            <TypographyBody2>
+                                Approximate CO2 amount prevented from entering into the atmosphere.
+                            </TypographyBody2>
+                        </CardContent>
+                    </StyledCard>
+                </Grid>
 
                     <Grid item xs={12} md={4}>
                         <CardContent sx={{ p: 3 }}>

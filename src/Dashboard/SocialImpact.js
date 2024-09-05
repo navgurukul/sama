@@ -54,7 +54,7 @@ const students = [
 
 ];
 
-const SocialImpactPage = () => {
+const SocialImpactPage = ({data}) => {
     const [isScrolling, setIsScrolling] = useState(true);
     const [currentY, setCurrentY] = useState(0);
     const containerRef = useRef(null);
