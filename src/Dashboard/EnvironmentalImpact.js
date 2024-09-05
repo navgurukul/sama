@@ -26,6 +26,8 @@ const StyledCard = styled(Card)({
 });
 
 const EnvironmenttalImpact = ({data}) => {
+
+    
     
     return (
         <>
