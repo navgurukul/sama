@@ -99,15 +99,26 @@ function ContactForm() {
   };
 
   return (
-    <Box sx={{ paddingBottom:"80px",paddingTop:"80px", backgroundColor: "#FFFAF8" }}>
-      <Container maxWidth="lg" style={{ marginBottom: "40px" }}>
+    <Box
+
+      sx={{
+        paddingBottom: {
+          lg: "110.74px",
+          sm: "55px",
+          xs: "30px"
+        },
+        paddingTop: "80px",
+        backgroundColor: "#FFFAF8"
+      }}
+
+    >
+      <Container maxWidth="lg" >
         <Grid container spacing={4}>
           <Grid item xs={12} md={8}>
             <Typography variant="h5">Contact Us</Typography>
             <Typography variant="body1" mt={2}>
               Fill out the form, and we’ll get back to you as soon as possible.
             </Typography>
-
             <form onSubmit={handleSubmit}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} md={6}>
@@ -152,7 +163,7 @@ function ContactForm() {
                 error={!!errors.email}
                 helperText={errors.email}
               />
-             
+
               <TextField
                 fullWidth
                 label="message"

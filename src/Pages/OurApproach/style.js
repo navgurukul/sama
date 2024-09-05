@@ -1,10 +1,11 @@
+import { border } from "@mui/system";
 
 export const container = {
     background: "var(--primary, #5C785A)",    
 };
 
 export const lgContainer = {
-    padding: '32px 0px 64px 0px',
+    padding: '0px 0px 64px 0px',
 };
 export const sectionTitle ={
     color: "white"
