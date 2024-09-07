@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Grid, Box, Typography } from "@mui/material";
+import Index from "./TimeLine/index.js";
 import {
   container,
   lgContainer,
@@ -107,7 +108,8 @@ const OurApproach = () => {
 
         </Container>
       </Box >
-      <Container>
+      <Index></Index>
+      {/* <Container>
         <Typography variant="h5" my={6} sx={{ align: "left" }} >
           This is how we transform your donated laptops into tools of impact!
         </Typography>
@@ -123,7 +125,7 @@ const OurApproach = () => {
             marginBottom: '80px',
           }}
         />
-      </Container>
+      </Container> */}
 
     </>
   );

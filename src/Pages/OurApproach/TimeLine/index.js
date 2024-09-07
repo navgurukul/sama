@@ -1,204 +1,35 @@
-// import React from "react";
-// import { Grid, Box, Container, Typography } from "@mui/material";
-// import {
-//   StepNumber,
-//   StepTitle,
-//   StepDescription,
-//   container,
-//   lgContainer,
-//   h6,
-//   styles,
-// } from "./style";
-// import { boxStyle, gridItemStyle, innerBoxStyle } from "./style";
-// import { steps } from "../data";
-// import bgImage from "./assets/Group.svg";
-// import useMediaQuery from "@mui/material/useMediaQuery";
-// import { breakpoints } from "../../../theme/constant";
-// const TimeLine = () => {
-//   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
-//   return (
-//     <>
-//       <Box style={container} paddingBottom="80px">
-//         <Container maxWidth="lg" style={lgContainer}>
-//           <Grid
-//             container
-//             rowSpacing={1}
-//             columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-//             sx={{ display: { xs: "flex", lg: "none" } }}
-//           >
-//             <Grid item xs={12} lg={8} md={10} sm={10}>
-//               <Typography variant="h5" my={2}>
-//                This is how we transform your donated laptops into tools of impact!
-//               </Typography>
-//               <Typography>
-//                 Our 3D Model forms the backbone of our approach. Through this
-//                 comprehensive approach, we transform e-waste into educational
-//                 tools , thereby providing impact reports to our donors.
-//               </Typography>
-//             </Grid>
-//             {steps.map((step) => (
-//               <Grid item xs={12} sm={12} md={4} key={step.number}>
-//                 <StepNumber sx={{ ml: 4 }}>{step.number}</StepNumber>
-//                 <ul style={{ marginTop: "30px" }}>
-//                   <StepTitle>{step.title}</StepTitle>
-//                   {step.description.map((desc, index) => {
-//                     const [boldText, normalText] = desc.split(":");
-//                     return (
-//                       <li key={index}>
-//                         <StepDescription>
-//                           <Typography
-//                             component="span"
-//                             sx={{ fontWeight: "bold", fontWeight: 700 }}
-//                           >
-//                             {boldText}:
-//                           </Typography>
-//                           {normalText}
-//                         </StepDescription>
-//                       </li>
-//                     );
-//                   })}
-//                 </ul>
-//               </Grid>
-//             ))}
-//           </Grid>
 
-//           <Grid
-//             container
-//             spacing={2}
-//             sx={{ display: { xs: "none", lg: "flex" }, height: "auto" }}
-//           >
-//             <Box
-//               sx={{
-//                 backgroundImage: url(${bgImage}),
-//                 backgroundSize: "contain",
-//                 backgroundPosition: "right",
-//                 backgroundRepeat: "no-repeat",
-//                 display: "flex",
-//                 flexDirection: "column",
-//                 justifyContent: "left",
-//               }}
-//             >
-//               <Grid Container marginTop="48px">
-//                 <Grid item xs={12} md={6} sm={12}>
-//                   <Typography style={styles.h5} variant="h5" mb = {2}>
-//                   This is how we transform your donated laptops into tools of impact!
-//                   </Typography>
-//                   <Typography>
-//                     Our 3D Model forms the backbone of our approach. Through
-//                     this comprehensive approach, we transform e-waste into
-//                     educational tools , thereby providing impact reports to our
-//                     donors.
-//                   </Typography>
-//                 </Grid>
-//               </Grid>
 
-//               <Grid container spacing={3}>
-//                 <Grid item xs={12} md={3} sm={12}></Grid>
-//                 <Grid item xs={12} md={5} sm={12}>
-//                   <Box sx={gridItemStyle}>
-//                     <Box sx={innerBoxStyle}>
-//                       <StepTitle style={h6} variant="h6" sx={{ mt: 2 }}>
-//                         {steps[0].title}
-//                       </StepTitle>
-//                       <ul>
-//                         {steps[0].description.map((desc, idx) => {
-//                           const [boldText, normalText] = desc.split(":");
-//                           return (
-//                             <li>
-//                               <StepDescription>
-//                                 <Typography
-//                                   component="span"
-//                                   sx={{ fontWeight: "bold", fontWeight: 700 }}
-//                                 >
-//                                   {boldText}:
-//                                 </Typography>
-//                                 {normalText}
-//                               </StepDescription>
-//                             </li>
-//                           );
-//                         })}
-//                       </ul>
-//                     </Box>
-//                   </Box>
-//                 </Grid>
-//                 <Grid item md={4} sm={3}></Grid>
-//               </Grid>
+import React from 'react';
+import "./style.css";
+import { Box } from '@mui/material';
+import MobailVeiwTimeLine from "./Mobile";
+import TimelineDesktop from "./DeskTop";
+import { Typography, Grid } from '@mui/material';
+import { Container } from '@mui/system';
+function Index() {
+    return (
+        <>
+            <Container maxWidth="lg" sx={{ py: { lg: "80px", md: "80px", sm: "40px", xs: "40px" } }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} sx={12} lg={6} md={6} >
+                        <Typography variant='h5' sx={{ color: "#5C785A" }}>Our 3D model:</Typography>
+                        <Typography variant='body1' sx={{ mt: 2, color: "#4A4A4A" }}>Our 3D Model forms the backbone of our approach.
+                            Through this comprehensive approach, we transform e-waste
+                            into educational tools , thereby providing impact reports
+                            to our donors.</Typography>
+                    </Grid>
+                </Grid>
+                <Box sx={{ display: { lg: 'none', md: 'none', sm: 'block', xs: 'block' } }}>
+                    < MobailVeiwTimeLine />
+                </Box>
+                {/* <Box sx={{ display: { lg: 'flex', md: 'flex', sm: 'none', xs: 'none' } }}>
+                    <TimelineDesktop />
+                </Box> */}
+            </Container>
+        </>
+    );
+}
 
-//               <Grid container spacing={3}>
-//                 <Grid item md={4} sm={2}></Grid>
-//                 <Grid
-//                   item
-//                   xs={12}
-//                   md={6}
-//                   sm={10}
-//                   sx={{ position: "relative", top: "70px" }}
-//                 >
-//                   <Box sx={gridItemStyle}>
-//                     <Box sx={innerBoxStyle}>
-//                       <StepTitle>{steps[1].title}</StepTitle>
-//                       <ul>
-//                         {steps[1].description.map((desc, idx) => {
-//                           const [boldText, normalText] = desc.split(":");
-//                           return (
-//                             <li>
-//                               <StepDescription>
-//                                 <Typography
-//                                   variant="subtitle1"
-//                                   component="span"
-//                                   sx={{ fontWeight: "bold", fontWeight: 700 }}
-//                                 >
-//                                   {boldText}:
-//                                 </Typography>
-//                                 {normalText}
-//                               </StepDescription>
-//                             </li>
-//                           );
-//                         })}
-//                       </ul>
-//                     </Box>
-//                   </Box>
-//                 </Grid>
-//               </Grid>
-//               <Grid container spacing={3}>
-//                 <Grid item md={2} sm={2}></Grid>
-//                 <Grid
-//                   item
-//                   xs={12}
-//                   md={5}
-//                   sm={7}
-//                   style={{ position: "relative", top: "70px" }}
-//                 >
-//                   <Box sx={gridItemStyle}>
-//                     <Box sx={innerBoxStyle}>
-//                       <StepTitle variant="h6">{steps[2].title}</StepTitle>
-//                       <ul>
-//                         {steps[2].description.map((desc, idx) => {
-//                           const [boldText, normalText] = desc.split(":");
-//                           return (
-//                             <li>
-//                               <StepDescription>
-//                                 <Typography
-//                                   component="span"
-//                                   sx={{ fontWeight: "bold", fontWeight: 700 }}
-//                                 >
-//                                   {boldText}:
-//                                 </Typography>
-//                                 {normalText}
-//                               </StepDescription>
-//                             </li>
-//                           );
-//                         })}
-//                       </ul>
-//                     </Box>
-//                   </Box>
-//                 </Grid>
-//                 <Grid item md={5} sm={4}></Grid>
-//               </Grid>
-//             </Box>
-//           </Grid>
-//         </Container>
-//       </Box>
-//     </>
-//   );
-// };
-// export default TimeLine;
+export default Index;
+
