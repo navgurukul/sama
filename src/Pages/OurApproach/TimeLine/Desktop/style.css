@@ -3,34 +3,34 @@
   
     .timeline-event {
       position: relative;
-      padding-top: 5px;
-      padding-bottom: 5px;
+      padding-top: 20px;
+      padding-bottom: 17px;
   
       .timeline-content {
         position: relative;
-        width: calc(50% - 50px);
-      }
+        width: calc(50%);
   
+      }
       &::before {
         display: block;
         content: "";
-        width: 2px;
-        height: calc(50% - 30px);
+        width: 16px;
+        height: calc(50% - 8px); 
         position: absolute;
         background: #d2d2d2;
-        left: calc(50% - 1px);
+        left: calc(50%);
         top: 0;
       }
   
       &::after {
         display: block;
         content: "";
-        width: 2px;
-        height: calc(50% - 30px);
+        width: 16px;
+        height: calc(50% - 8px);
         position: absolute;
         background: #d2d2d2;
-        left: calc(50% - 1px);
-        top: calc(50% + 30px);
+        left: calc(50%);
+        top: calc(50% + 17px); 
       }
   
       &:first-child::before, 
@@ -49,36 +49,71 @@
   
     .timeline-badge {
       position: absolute;
-      width: 16px;
-      height: 16px;
-      background: #d2d2d2;
-      top: calc(50% - 8px);
-      left: calc(50% - 8px); /* Adjusted to center the badge properly */
+      width: 22px;
+      height: 22px;
+      background: var(--primary, #5C785A);
+      top: 50%; 
+      left: calc(50% - 10px); 
       border-radius: 50%;
       text-align: center;
+      transform: translateY(-50%); 
       cursor: default;
+      border: 8px solid #d2d2d2;
+  
     }
   }
   
-  @media (max-width: 600px) {
+  @media (max-width: 768px) {
     .timeline {
       .timeline-event {
         .timeline-content {
-          width: calc(100% - 70px);
+          width: calc(100% - 40px);
+          margin-left: 20px;
+          padding: 10px;
         }
   
         &::before, &::after {
-          left: 19px;
+          left: 40px;
         }
   
         &:nth-child(even) .timeline-content, 
         &:nth-child(odd) .timeline-content {
-          margin-left: 70px;
+          margin-left: 20px;
         }
       }
   
       .timeline-badge {
-        left: 12px; /* Adjusted for smaller screens */
+        left: 28px; 
+      }
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .timeline {
+      .timeline-event {
+        padding-top: 10px;
+        padding-bottom: 10px;
+  
+        .timeline-content {
+          width: calc(100% - 30px);
+          margin-left: 15px;
+        }
+  
+        &::before, &::after {
+          left: 25px;
+          width: 10px;
+        }
+  
+        &:nth-child(even) .timeline-content, 
+        &:nth-child(odd) .timeline-content {
+          margin-left: 15px;
+        }
+      }
+  
+      .timeline-badge {
+        left: 20px;
+        width: 15px;
+        height: 15px;
       }
     }
   }

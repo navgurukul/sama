@@ -2,14 +2,12 @@ export const container = {
     background: "var(--primary, #5C785A)",
     
 };
-
 export const lgContainer = {
     padding: '32px 0px 64px 0px',
 };
 export const sectionTitle ={
     color: "white"
 };
-
 export const statItem = {
     padding: '1px',
 };

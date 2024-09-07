@@ -1,121 +1,192 @@
-import { Container, Grid, Box, Typography } from "@mui/material";
-import {
-  container,
-  lgContainer,
-  h6,
-  statItem,
-  h4,
-  statLogo,
-  subtitle1,
-  styleh5,
-  Modelbody1,
-  styles,
-} from "./style.js";
-import { data } from "./data.js";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { breakpoints } from "../../theme/constant";
-import we from "./we.svg"
-const OurApproach = () => {
-  const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
+// import * as React from 'react';
+// import Timeline from '@mui/lab/Timeline';
+// import TimelineItem from '@mui/lab/TimelineItem';
+// import TimelineSeparator from '@mui/lab/TimelineSeparator';
+// import TimelineConnector from '@mui/lab/TimelineConnector';
+// import TimelineContent from '@mui/lab/TimelineContent';
+// import TimelineDot from '@mui/lab/TimelineDot';
+// import Typography from '@mui/material/Typography'; 
 
+// export default function TimeLine() {
+//   const timelineData = [
+//     'We collect end-of-life laptops from corporate partners like you',
+//     'Our team securely wipes all data from the laptops',
+//     'We refurbish the laptops to extend their lifespan',
+//     'The laptops are then loaded with educational software',
+//     'We distribute the laptops to schools and communities in need',
+//     'Teachers receive training on how to use the laptops effectively',
+//     'Students gain access to a world of knowledge and learning resources',
+//     'Communities benefit from increased digital literacy',
+//     'Our program reduces electronic waste and its environmental impact',
+//   ];
+
+//   return (
+//     <div style={{ backgroundColor: '#F0ECE7', padding: '20px', borderRadius: '8px', textAlign: 'center', marginBottom: '20px' }}>
+//       <Typography variant="h5" component="h2" style={{ color: '#555555', fontWeight: 'bold', padding: '10px 20px', backgroundColor: '#E0E0E0', borderRadius: '16px', display: 'inline-block' }}>
+//         Digital Resource Recovery
+//       </Typography>
+//       <Timeline position="alternate-reverse">
+//         {timelineData.map((text, index) => (
+//           <TimelineItem key={index} style={{ height: "204px" }}>
+//             <TimelineSeparator>
+//               <TimelineDot sx={{ margin: 0, padding: 0 }} style={{ width: "22px", height: "22px", border: "10px solid #E0E0E0", position: "relative", bottom: "1px" }} />
+//               {index < timelineData.length - 1 && (
+//                 <TimelineConnector style={{ backgroundColor: "#E0E0E0", position: "relative", bottom: "1px", height: "8px", width: "14px" }} />
+//               )}
+//             </TimelineSeparator>
+//             <TimelineContent sx={{ fontWeight: 'bold' }}>{text}</TimelineContent>
+//           </TimelineItem>
+//         ))}
+//       </Timeline>
+//     </div>
+//   );
+// }
+
+
+
+import * as React from 'react';
+import Timeline from '@mui/lab/Timeline';
+import TimelineItem from '@mui/lab/TimelineItem';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineConnector from '@mui/lab/TimelineConnector';
+import TimelineContent from '@mui/lab/TimelineContent';
+import TimelineDot from '@mui/lab/TimelineDot';
+import Typography from '@mui/material/Typography';
+
+export default function TimeLine() {
   return (
-    <>
-      <Box
-        style={container}
-        sx={{
-          ...container,
-          paddingLeft: isActive ? "16px" : "0px",
-          paddingRight: isActive ? "16px" : "0px",
-        }}
-      >
-        <Container maxWidth="lg" style={lgContainer}>
-          <Grid container my={isActive ? 0 : 4}>
-            <Grid item xs={12} md={7}>
-              <Typography sx={styleh5} variant="h5">
-                Our Rationale
-              </Typography>
-              <Typography style={Modelbody1} variant="body1" sx={{ mt: 2 }}>
-                We strongly believe that investing in women's digital education
-                can reap multifold benefits for society as a whole. As we
-                rapidly advance in technology, it's crucial to ensure that
-                underserved women aren't left behind. Sama addresses two
-                pressing issues simultaneously:
-              </Typography>
-            </Grid>
-          </Grid>
+    <div style={{ backgroundColor: '#F0ECE7', padding: '20px', borderRadius: '8px', textAlign: 'center', marginBottom: '20px' }}>
+      <Typography variant="h5" component="h2" style={{ color: '#555555', fontWeight: 'bold', padding: '10px 20px', backgroundColor: '#E0E0E0', borderRadius: '16px', display: 'inline-block' }}>
+        Digital Resource Recovery
+      </Typography>
+      <Timeline position="alternate-reverse">
 
-          <Grid container color="#fff">
-            {data.map((section, sectionIndex) => (
-              <>
-                <Typography
-                  variant="h6"
-                  mt={4}
-                  sx={{
-                    ...container,
-                    paddingTop: isActive && 6,
-                  }}
-                >
-                  {section.title}
-                </Typography>
-                <Grid container sx={{ mt: 4 }}>
-                  {section.statistics.map((stat, statIndex) => (
-                    <Grid
-                      item
-                      xs={12}
-                      md={4}
-                      lg={4}
-                      key={statIndex}
-                      style={statItem}
-                      sx={{
-                        ...container,
-                        marginTop: isActive && "16px",
-                      }}
-                    >
-                      <Box display="flex" alignItems="center">
-                        <img
-                          src={stat.moneyLogo}
-                          alt="money logo"
-                          style={statLogo}
-                        />
-                        <Typography style={styles.h4} component="span">
-                          {stat.value}
-                        </Typography>
-                      </Box>
-                      <Typography
-                        variant="body1"
-                        style={subtitle1}
-                        sx={{ mt: 2, width: { md: "305px" } }}
-                      >
-                        {stat.description}
-                      </Typography>
-                    </Grid>
-                  ))}
-                </Grid>
-              </>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-      <Container>
-      <Typography variant="h5" my={6} sx = {{align : "left"}} >
-               This is how we transform your donated laptops into tools of impact!
-              </Typography>
-        <Box
-            component="img"
-            src={we}
-            alt="Logo"
-            sx={{
-                width: '100%', 
-                height: 'auto', 
-                display: 'block', 
-                maxWidth: '100%', 
-                marginBottom: '60px',
-            }}
-        />
-    </Container>
+        {/* Timeline Item 1 */}
+        <TimelineItem style={{ height: "204px" }}>
+          <TimelineSeparator>
+            <TimelineDot sx={{ margin: 0, padding: 0 }} style={{ width: "22px", height: "22px", border: "10px solid #E0E0E0", position: "relative", bottom: "1px" }} />
+            <TimelineConnector style={{ backgroundColor: "#E0E0E0", position: "relative", bottom: "1px", height: "8px", width: "14px" }} />
+          </TimelineSeparator>
+          <TimelineContent sx={{ fontWeight: 'bold' }}>
+            We collect end-of-life laptops from corporate partners like you
+          </TimelineContent>
+        </TimelineItem>
 
-    </>
+        {/* Timeline Item 2 */}
+        <TimelineItem style={{ height: "204px" }}>
+          <TimelineSeparator>
+            <TimelineDot sx={{ margin: 0, padding: 0 }} style={{ width: "22px", height: "22px", border: "10px solid #E0E0E0", position: "relative", bottom: "1px" }} />
+            <TimelineConnector style={{ backgroundColor: "#E0E0E0", position: "relative", bottom: "1px", height: "8px", width: "14px" }} />
+          </TimelineSeparator>
+          <TimelineContent sx={{ fontWeight: 'bold' }}>
+            Our team securely wipes all data from the laptops
+          </TimelineContent>
+        </TimelineItem>
+        {/* Timeline Item 3 */}
+        <TimelineItem style={{ height: "204px" }}>
+          <TimelineSeparator>
+            <TimelineDot sx={{ margin: 0, padding: 0 }} style={{ width: "22px", height: "22px", border: "10px solid #E0E0E0", position: "relative", bottom: "1px" }} />
+            <TimelineConnector style={{ backgroundColor: "#E0E0E0", position: "relative", bottom: "1px", height: "8px", width: "14px" }} />
+          </TimelineSeparator>
+          <TimelineContent sx={{ fontWeight: 'bold' }}>
+            We refurbish the laptops to extend their lifespan
+          </TimelineContent>
+        </TimelineItem>
+
+
+        <TimelineItem
+          style={{
+            height: "2px",
+            border: "1px solid red",
+            position: "relative",
+            width: "500px",
+            margin: "0 auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography align="center">Digital Inclusion Pipeline</Typography>
+        </TimelineItem>
+        <TimelineItem>
+          <TimelineSeparator>
+            <TimelineConnector style={{ backgroundColor: "#E0E0E0", position: "relative", bottom: "1px", height: "8px", width: "14px" }} />
+          </TimelineSeparator>
+        </TimelineItem>
+        <TimelineItem style={{ height: "204px", position: "relative", bottom: "70px" }}>
+          <TimelineSeparator>
+            <TimelineConnector style={{ backgroundColor: "#E0E0E0", position: "relative", bottom: "1px", height: "8px", width: "14px" }} />
+          </TimelineSeparator>
+          <TimelineContent sx={{ fontWeight: 'bold' }}>
+          </TimelineContent>
+        </TimelineItem>
+
+
+        <TimelineItem style={{ height: "204px", position: "relative", bottom: "70px" }}>
+          <TimelineSeparator>
+            <TimelineDot sx={{ margin: 0, padding: 0 }} style={{ width: "22px", height: "22px", border: "10px solid #E0E0E0", position: "relative", bottom: "1px" }} />
+            <TimelineConnector style={{ backgroundColor: "#E0E0E0", position: "relative", bottom: "1px", height: "8px", width: "14px" }} />
+          </TimelineSeparator>
+          <TimelineContent sx={{ fontWeight: 'bold' }}>
+            Communities benefit from increased digital literacy
+          </TimelineContent>
+        </TimelineItem>
+
+        <TimelineItem style={{ height: "204px", position: "relative", bottom: "70px" }}>
+          <TimelineSeparator>
+            <TimelineDot sx={{ margin: 0, padding: 0 }} style={{ width: "22px", height: "22px", border: "10px solid #E0E0E0", position: "relative", bottom: "1px" }} />
+            <TimelineConnector style={{ backgroundColor: "#E0E0E0", position: "relative", bottom: "1px", height: "8px", width: "14px" }} />
+          </TimelineSeparator>
+          <TimelineContent sx={{ fontWeight: 'bold' }}>
+            Our team securely wipes all data from the laptops
+          </TimelineContent>
+        </TimelineItem>
+
+
+        <TimelineItem style={{ height: "204px", position: "relative", bottom: "70px" }}>
+          <TimelineSeparator>
+            <TimelineDot sx={{ margin: 0, padding: 0 }} style={{ width: "22px", height: "22px", border: "10px solid #E0E0E0", position: "relative", bottom: "1px" }} />
+            <TimelineConnector style={{ backgroundColor: "#E0E0E0", position: "relative", bottom: "1px", height: "8px", width: "14px" }} />
+          </TimelineSeparator>
+          <TimelineContent sx={{ fontWeight: 'bold' }}>
+            Our team securely wipes all data from the laptops
+          </TimelineContent>
+        </TimelineItem>
+
+        <TimelineItem style={{ height: "204px", position: "relative", bottom: "70px" }}>
+            <TimelineDot sx={{ margin: 0, padding: 0 }} style={{ width: "22px", height: "22px", border: "10px solid #E0E0E0", position: "relative", bottom: "1px" }} />
+            <TimelineConnector style={{ backgroundColor: "#E0E0E0", position: "relative", bottom: "1px", height: "8px", width: "14px" }} />
+        
+
+            <TimelineItem
+              style={{
+                height: "2px",
+                border: "1px solid red",
+                position: "relative",
+                width: "500px",
+                margin: "0 auto",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography align="center">Digital Inclusion Pipeline</Typography>
+            </TimelineItem>
+
+            {/* Our team securely wipes all data from the laptops */}
+          {/* </TimelineContent> */}
+        </TimelineItem>
+
+        {/* Timeline Item 9 */}
+        <TimelineItem style={{ height: "204px", position: "relative", bottom: "70px" }}>
+          <TimelineSeparator>
+            <TimelineDot sx={{ margin: 0, padding: 0 }} style={{ width: "22px", height: "22px", border: "10px solid #E0E0E0", position: "relative", bottom: "1px" }} />
+          </TimelineSeparator>
+          <TimelineContent sx={{ fontWeight: 'bold' }}>
+            Our program reduces electronic waste and its environmental impact
+          </TimelineContent>
+        </TimelineItem>
+      </Timeline>
+    </div>
   );
-};
-
-export default OurApproach;
+}
