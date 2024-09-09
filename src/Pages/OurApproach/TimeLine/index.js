@@ -23,9 +23,9 @@ function Index() {
                 <Box sx={{ display: { lg: 'none', md: 'none', sm: 'block', xs: 'block' } }}>
                     < MobailVeiwTimeLine />
                 </Box>
-                {/* <Box sx={{ display: { lg: 'flex', md: 'flex', sm: 'none', xs: 'none' } }}>
+                <Box sx={{ display: { lg: 'flex', md: 'flex', sm: 'none', xs: 'none' } }}>
                     <TimelineDesktop />
-                </Box> */}
+                </Box>
             </Container>
         </>
     );
