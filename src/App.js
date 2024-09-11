@@ -10,6 +10,8 @@ import GiveToday from './Pages/GiveToday';
 import OurApproach from './Pages/OurApproach/OurApproach';
 import Donate from './Pages/Donate/Donate';
 import DashboardPage from './Dashboard';
+import LaptopInventory from './Pages/LaptopData/index';
+
 import './App.css';
 
 import Userdata from ".././src/OppsFiles/UserDetails/Userdata"
@@ -29,6 +31,7 @@ function App() {
               <Route path="/donate" element={<Donate />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/user-details" element={<Userdata />} />
+              <Route path="/laptopinventory" element={<LaptopInventory />} />
             </Routes>
             {" "}
           </div>

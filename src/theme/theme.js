@@ -106,6 +106,7 @@ theme = createTheme(theme, {
       textTransform: "none",
       fontFamily: "Raleway",
       fontWeight: 700,
+      borderRadius: "100px"
     },
   },
 });
@@ -129,12 +130,14 @@ theme.components = {
   MuiButton: {
     styleOverrides: {
       root: {
-        borderRadius: "100px",
+        // borderRadius: "100px",
         height: "48px",
+        padding:"0px 32px 0px 32px",
         
         "&:hover": {
       backgroundColor: "#5C785A",
       color: '#FFFFFF',
+      
     },
 
       },
