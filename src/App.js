@@ -13,6 +13,8 @@ import DashboardPage from './Dashboard';
 import LaptopInventory from './Pages/LaptopData/index';
 
 import './App.css';
+
+import Userdata from ".././src/OppsFiles/UserDetails/Userdata"
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -28,6 +30,7 @@ function App() {
               <Route path="/our-approach" element={<OurApproach />} />
               <Route path="/donate" element={<Donate />} />
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/user-details" element={<Userdata />} />
               <Route path="/laptopinventory" element={<LaptopInventory />} />
             </Routes>
             {" "}
