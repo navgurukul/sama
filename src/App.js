@@ -10,11 +10,13 @@ import GiveToday from './Pages/GiveToday';
 import OurApproach from './Pages/OurApproach/OurApproach';
 import Donate from './Pages/Donate/Donate';
 import DashboardPage from './Dashboard';
+import MacRearch from './Pages/MacRearch';
 import './App.css';
+import UserRearsh from './Pages/UserRearsh';
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Router>
+      {/* <Router>
         <div className="layout">
           <Navbar />
           <div className="content">
@@ -31,7 +33,9 @@ function App() {
           </div>
           <Footer />
         </div>
-      </Router>
+      </Router> */}
+      <MacRearch />
+      {/* <UserRearsh/> */}
     </ThemeProvider>
   );
 }
