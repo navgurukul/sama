@@ -49,7 +49,7 @@ export const Clases = {
     ,
     Identification: {
         p: 4, fontWeight: "bold",
-        color: "#5C785A"
+        color: "rgba(74, 74, 74, 1)"
 
     }, Seachbar: {
         mb: 2,
