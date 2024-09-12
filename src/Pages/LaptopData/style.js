@@ -1,6 +1,8 @@
+import { width } from "@mui/system";
 
 export const Clases = {
     searchItem: {
+        width: "50%",
         mb: 2,
         borderRadius: '8px',
         '& .MuiOutlinedInput-root': {
@@ -51,6 +53,7 @@ export const Clases = {
 
     }, Seachbar: {
         mb: 2,
+        width:"50%",
         borderRadius: '8px',
         '& .MuiOutlinedInput-root': {
             borderRadius: '8px',
@@ -90,12 +93,16 @@ export const Clases = {
         TableLaptop: {
             fontWeight: "bold",
             color: "white"
+            
         },
         IdentificationTable: {
             p: 4,
             fontWeight: "bold",
             color: "#5C785A"
-        }
+        },
+        TableContainerBox: {
+            boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px"
     }
+}
 
 }

@@ -7,6 +7,7 @@ import { Alert, AlertTitle, Box } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 import { Clases } from './style.js';
+import { padding } from '@mui/system';
 
 const ContainerBox = styled('div')(({ theme }) => ({
     background: "white",
@@ -134,104 +135,105 @@ export default function LaptopData() {
     };
     return (
         <ContainerBox maxWidth="xl" sx={{ py: 6 }}>
+            <Typography sx={Clases.Identification} align='center' variant='h3'>Assessing Laptop</Typography>
+            <Typography sx={Clases.Identification} align='center' variant='h4' style={{ position: "relative", bottom: "20px" }}>Laptop's Identification Table</Typography>
             {filteredData.length > 0 ? (
-                <TableContainer component={Paper}>
-                    <Typography sx={Clases.IdentificationTable} align='center' variant='h6'>Laptop Identification Table</Typography>
-                    <CardContent >
-                        <TextField
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search by ID or Mac Address"
-                            variant="outlined"
-                            fullWidth
-                            sx={Clases.searchItem}
+                <TableContainer style={{boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }} sx={Clases.TableContainerBox}>
+                    <CardContent
+                    >
+                        <Box>
+                            <TextField
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search by ID or Mac Address"
+                                variant="outlined"
+                                fullWidth
+                                sx={Clases.searchItem}
 
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            <Table sx={{ minWidth: 650, mt: 4 }} aria-label="caption table" >
 
-                        <Table sx={{ minWidth: 650, mt: 4 }} aria-label="caption table">
-                            <TableHead sx={{ backgroundColor: "rgba(92, 120, 90, 1)", color: "white" }}>
-                                <TableRow
-                                >
-                                    <TableCell sx={Clases.TableLaptop} >ID</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Date of Intake</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Donor Company Name</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>ROM</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Manufacturer Model</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Processor</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Manufacturing Date</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Condition Status</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Minor Issues</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Major Issues</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Other Issues</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Inventory Location</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Laptop Weight</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Mac Address</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Assigned</TableCell>
-                                    <TableCell sx={Clases.TableLaptop}>Status</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {filteredData.map((item, index) => (
-                                    <TableRow key={index}
-                                        sx={{
-                                            '&:hover': {
-                                                backgroundColor: '#f0f0f0',
-                                            },
-                                        }}
+                                <TableHead sx={{ backgroundColor: "rgba(92, 120, 90, 1)", color: "white" }}>
+                                    <TableRow
                                     >
-                                        <TableCell>{item.ID || 'N/A'}</TableCell>
-                                        <TableCell>{item['Date of Intake'] || 'N/A'}</TableCell>
-                                        <TableCell>{item['Donor Company Name'] || 'N/A'}</TableCell>
-                                        <TableCell>{item.ROM || 'N/A'}</TableCell>
-                                        <TableCell>{item['Manufacturer Model'] || 'N/A'}</TableCell>
-                                        <TableCell>{item.Processor || 'N/A'}</TableCell>
-                                        <TableCell>{item['Manufacturing Date'] || 'N/A'}</TableCell>
-                                        <TableCell>{item['Condition Status'] || 'N/A'}</TableCell>
-                                        <TableCell>{item['Minor Issues'] || 'N/A'}</TableCell>
-                                        <TableCell>{item['Major Issues'] || 'N/A'}</TableCell>
-                                        <TableCell>{item['Other Issues'] || 'N/A'}</TableCell>
-                                        <TableCell>{item['Inventory Location'] || 'N/A'}</TableCell>
-                                        <TableCell>{item['Laptop Weight'] || 'N/A'}</TableCell>
-                                        <TableCell>{item['Mac Address'] || 'N/A'}</TableCell>
-                                        <TableCell>{item.Assigned || 'N/A'}</TableCell>
-                                        <TableCell>{item.Status || 'N/A'}</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }} >ID</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }} >Date of Intake</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }} >Donor Company Name</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }} >ROM</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }} >Manufacturer Model</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }} >Processor</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Manufacturing Date</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Condition Status</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Minor Issues</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Major Issues</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Other Issues</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Inventory Location</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Laptop Weight</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Mac Address</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Assigned</TableCell>
+                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Status</TableCell>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                            {searchQuery && (
-                                <caption>
+                                </TableHead>
+                                <TableBody>
+                                    {filteredData.map((item, index) => (
+                                        <TableRow key={index}
+                                            sx={{
+                                                '&:hover': {
+                                                    backgroundColor: '#f0f0f0',
+                                                },
+                                            }}
+                                        >
+                                            <TableCell>{item.ID || 'N/A'}</TableCell>
+                                            <TableCell>{item['Date of Intake'] || 'N/A'}</TableCell>
+                                            <TableCell>{item['Donor Company Name'] || 'N/A'}</TableCell>
+                                            <TableCell>{item.ROM || 'N/A'}</TableCell>
+                                            <TableCell>{item['Manufacturer Model'] || 'N/A'}</TableCell>
+                                            <TableCell>{item.Processor || 'N/A'}</TableCell>
+                                            <TableCell>{item['Manufacturing Date'] || 'N/A'}</TableCell>
+                                            <TableCell>{item['Condition Status'] || 'N/A'}</TableCell>
+                                            <TableCell>{item['Minor Issues'] || 'N/A'}</TableCell>
+                                            <TableCell>{item['Major Issues'] || 'N/A'}</TableCell>
+                                            <TableCell>{item['Other Issues'] || 'N/A'}</TableCell>
+                                            <TableCell>{item['Inventory Location'] || 'N/A'}</TableCell>
+                                            <TableCell>{item['Laptop Weight'] || 'N/A'}</TableCell>
+                                            <TableCell>{item['Mac Address'] || 'N/A'}</TableCell>
+                                            <TableCell>{item.Assigned || 'N/A'}</TableCell>
+                                            <TableCell>{item.Status || 'N/A'}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                                {searchQuery && (
+                                    <caption>
 
-                                    <Button
-                                        onClick={handleButtonClick}
-                                        variant="contained"
-                                        sx={{ background: "rgba(92, 120, 90, 1)" }}
-                                        endIcon={<i className="fa fa-download" />}
-                                    >
-                                        Assign the laptop
-                                    </Button>
-                                </caption>
-                            )}
-                        </Table>
+                                        <Button
+                                            onClick={handleButtonClick}
+                                            variant="contained"
+                                            sx={{ background: "rgba(92, 120, 90, 1)" }}
+                                            endIcon={<i className="fa fa-download" />}
+                                        >
+                                            Assign the laptop
+                                        </Button>
+                                    </caption>
+                                )}
+                            </Table>
+                        </Box>
                         {showWelcome && (
-                            <Container>
-                                <Card sx={{ mt: 4, background: "#FFFAF8" }}>
+                            <Container maxWidth="xxl">
+                                <Card sx={{ mt: 3 }} style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }}>
                                     <CardContent>
                                         <Typography sx={Clases.Identification} align='center' variant='h4'>User's Identification Table</Typography>
-
                                         <TextField
                                             value={searchItem}
                                             onChange={handleInputChange}
-                                            placeholder="Type to search"
+                                            placeholder="Search by phone or name or email"
                                             variant="outlined"
-                                            fullWidth
-
                                             sx={Clases.Seachbar}
                                             InputProps={{
                                                 startAdornment: (
@@ -243,14 +245,21 @@ export default function LaptopData() {
                                         />
 
                                         {filteredData1.length > 0 ? (
-                                            <Table sx={{ minWidth: 650 }} aria-label="user data table">
-                                                <TableHead sx={Clases.TableHeadUser}>
+                                            <Table aria-label="user data table">
+                                                <TableHead sx={{ backgroundColor: "rgba(92, 120, 90, 1)", color: "white" }}>
                                                     <TableRow >
-                                                        <TableCell sx={Clases.TableCellUser}>User ID</TableCell>
-                                                        <TableCell sx={Clases.TableCellUser} >Name</TableCell>
-                                                        <TableCell sx={Clases.TableCellUser}>Email</TableCell>
-                                                        <TableCell sx={Clases.TableCellUser}>Contact Number</TableCell>
-                                                        <TableCell sx={Clases.TableCellUser}>Address</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>User ID</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Name</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Email</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Contact Number</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Address</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Laptop Assigned</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }} >Number of Family members</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Qualification</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Contact Number</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Address</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Use case</TableCell>
+                                                        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>ID Proof number</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
@@ -267,6 +276,13 @@ export default function LaptopData() {
                                                             <TableCell>{user.email}</TableCell>
                                                             <TableCell>{user['contact number']}</TableCell>
                                                             <TableCell>{user.Address}</TableCell>
+                                                            <TableCell>{user["Laptop Assigned"]}</TableCell>
+                                                            <TableCell>{user["Number of Family members(who might use the laptop)"]}</TableCell>
+                                                            <TableCell>{user.Qualification}</TableCell>
+                                                            <TableCell>{user.status}</TableCell>
+                                                            <TableCell>{user["Laptop Assigned"]}</TableCell>
+                                                            <TableCell>{user["Use case"]}</TableCell>
+                                                            <TableCell>{user["ID Proof number"]}</TableCell>
                                                         </TableRow>
                                                     ))}
                                                 </TableBody>
@@ -278,11 +294,12 @@ export default function LaptopData() {
                                         )}
 
                                         {searchItem && (
-                                            <caption style={{ paddingTop: "30px" }}>
+                                            <caption style={{ paddingTop: "30px", color: "#5C785A" }}>
                                                 <Button
                                                     sx={Clases.SubmitButton}
                                                     onClick={handleSubmit}
                                                     variant="contained"
+                                                    style={{ background: "#5C785A" }}
                                                     endIcon={<i className="fa fa-download" />}
                                                 >
                                                     Submit
