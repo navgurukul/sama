@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Button,
@@ -15,6 +16,24 @@ import "./common.css";
 const Upload = () => {
   const [file, setFile] = useState(null); // State to store the selected file
   const [loading, setLoading] = useState(false); // State to manage loading state
+  const [error, setError] = useState(""); // State to store any error messages
+
+  // Define the expected columns (from the sample file)
+  const expectedColumns = [
+    "Donor Company Name",
+    "RAM",
+    "ROM",
+    "Manufacturer Model",
+    "Processor",
+    "Manufacturing Date(if available)",
+    "Condition Status",
+    "Minor Issues",
+    "Major Issues",
+    "Other Issues",
+    "Inventory Location",
+    "Laptop Weight",
+    "Mac Address",
+  ];
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0]; // Get the uploaded file
@@ -24,6 +43,7 @@ const Upload = () => {
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
       setFile(uploadedFile); // Set the file if it's a valid Excel file
+      setError(""); // Clear any previous errors
     } else {
       alert("Please upload an Excel file (.xlsx format)."); // Alert if the file is not valid
     }
@@ -34,47 +54,72 @@ const Upload = () => {
       alert("No file selected!"); // Alert if no file is selected
       return;
     }
-
+  
     setLoading(true); // Show loader when starting the upload
     const reader = new FileReader(); // Create a FileReader object
     reader.onload = async (event) => {
       const binaryStr = event.target.result; // Read file as binary string
       const workbook = XLSX.read(binaryStr, { type: "binary" }); // Parse the binary string to workbook
-
+  
       // Convert first sheet data to JSON
       const sheetName = workbook.SheetNames[0]; // Get the first sheet name
-      const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]); // Convert sheet to JSON
-
-      // Add the type to the data being sent to the backend
+      const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
+        header: 1, // Get headers (first row)
+      }); 
+  
+      // Get the column headers from the first row and normalize them by trimming spaces and converting to lowercase
+      const fileColumns = sheetData[0].map(col => col.trim().toLowerCase());
+  
+      // Normalize expected columns in the same way
+      const normalizedExpectedColumns = expectedColumns.map(col =>
+        col.trim().toLowerCase()
+      );
+  
+      // Check if the uploaded file has the same columns as the expected ones
+      const isValid = normalizedExpectedColumns.every(
+        (col, index) => col === fileColumns[index]
+      );
+  
+      if (!isValid) {
+        setError(
+          "The uploaded file does not match the expected format. Please upload a valid file."
+        );
+        setLoading(false);
+        return;
+      }
+  
+      // If valid, proceed with the upload
       const dataToSend = {
         type: "bulkupload",
-        data: sheetData,
+        data: XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]), // Convert sheet to JSON
       };
-
+  
       // Post data to Google Apps Script
       try {
         await fetch(
           "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
           {
-            method: "POST", 
-            body: JSON.stringify(dataToSend), // Data to send
-            mode: "no-cors", // Mode for cross-origin request
+            method: "POST",
+            body: JSON.stringify(dataToSend),
+            mode: "no-cors",
             headers: {
-              "Content-Type": "application/json", // Content-Type header
+              "Content-Type": "application/json",
             },
           }
         );
-
+  
         alert("Data uploaded successfully!"); // Success alert
       } catch (error) {
         console.error("Error uploading data:", error); // Log the error
         alert("Failed to upload data. Please try again."); // Error alert
       }
+  
       setLoading(false); // Hide loader after completion
     };
+  
     reader.readAsBinaryString(file); // Read the file as binary string
   };
-
+  
   return (
     <Container maxWidth="sm" style={{ marginTop: "30px" }}>
       {/* Display the loader and overlay if loading is true */}
@@ -91,8 +136,7 @@ const Upload = () => {
           Bulk Data Upload
         </Typography>
         <Alert severity="info" style={{ marginBottom: "20px" }}>
-          Please upload an Excel file (.xlsx format). You can download the
-          sample file to understand the required format.
+          Please upload an Excel file (.xlsx format). You can download the sample file to understand the required format.
         </Alert>
         <Link
           href="https://docs.google.com/spreadsheets/d/1GjbjBH1YhzQDD3sVtUJbtht-fKw0zi4Ac5UuvvRfv84/edit?gid=0#gid=0"
@@ -126,7 +170,7 @@ const Upload = () => {
                   marginRight: "13px",
                   padding: "6px 12px",
                 }}
-                startIcon={<AttachFileIcon style={{ marginRight: "-5px" }} />} 
+                startIcon={<AttachFileIcon style={{ marginRight: "-5px" }} />}
               >
                 Choose File
               </Button>
@@ -135,7 +179,7 @@ const Upload = () => {
               variant="contained"
               color="primary"
               onClick={handleUpload}
-              disabled={!file} 
+              disabled={!file}
             >
               Upload
             </Button>
@@ -149,9 +193,15 @@ const Upload = () => {
             </Typography>
           )}
         </Box>
+        {error && (
+          <Alert severity="error" style={{ marginTop: "20px" }}>
+            {error}
+          </Alert>
+        )}
       </Paper>
     </Container>
   );
 };
 
-export default Upload; 
+export default Upload;
+
