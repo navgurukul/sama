@@ -156,6 +156,7 @@ const FormComponent = () => {
   };
 
   const handleSubmit = async (e) => {
+    console.log("click me");
     e.preventDefault();
 
     if (validate()) {
@@ -204,9 +205,9 @@ const FormComponent = () => {
 
   return (
     <Container maxWidth="sm" sx={{ mb: 2, pb: 2 }}>
-      <Typography variant="h6" gutterBottom align="center" mt={2}>
+      {/* <Typography variant="h6" gutterBottom align="center" mt={2}>
         Single data upload Form
-      </Typography>
+      </Typography> */}
       <form onSubmit={handleSubmit}>
         {fields.map((field) => {
           if (field.name === "idProofType") {
