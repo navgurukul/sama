@@ -59,7 +59,7 @@ function LaptopForm() {
     setLoading(true); // Show the loader when form submission starts
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
+        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
         {
           method: "POST",
           body: JSON.stringify(formData), // Convert form data to JSON

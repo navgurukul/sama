@@ -11,7 +11,7 @@ import FormComponent from "./Userdetails";
 import Userdatabulkupload from "./Userdatabulkupload";
 import { Container } from "@mui/system";
 function Userdata() {
-  const [selectedName, setSelectedName] = useState("");
+  const [selectedName, setSelectedName] = useState("Single");
 
   const handleChange = (event) => {
     setSelectedName(event.target.value);
@@ -20,7 +20,7 @@ function Userdata() {
   return (
     <div>
       <Container maxWidth="sm" align="center" sx={{ my: 5 }}>
-        <Typography variant="h2" gutterBottom>
+        <Typography variant="h6" gutterBottom>
           User Details Form
         </Typography>
 

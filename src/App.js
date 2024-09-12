@@ -11,6 +11,7 @@ import OurApproach from './Pages/OurApproach/OurApproach';
 import Donate from './Pages/Donate/Donate';
 import DashboardPage from './Dashboard';
 import LaptopInventory from './Pages/LaptopData/index';
+import Ops from './components/OPS/index';
 
 import './App.css';
 
@@ -32,6 +33,7 @@ function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/user-details" element={<Userdata />} />
               <Route path="/laptopinventory" element={<LaptopInventory />} />
+              <Route path='/ops' element={<Ops />} />
             </Routes>
             {" "}
           </div>
