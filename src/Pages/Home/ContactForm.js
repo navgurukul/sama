@@ -7,7 +7,6 @@ function ContactForm() {
     lastName: '',
     email: '',
     message: '',
-    contact: ''
   });
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
@@ -100,20 +99,31 @@ function ContactForm() {
   };
 
   return (
-    <Box sx={{ py: 10, backgroundColor: "#FFFAF8" }}>
-      <Container maxWidth="lg" style={{ marginBottom: "40px" }}>
+    <Box
+
+      sx={{
+        paddingBottom: {
+          lg: "110.74px",
+          sm: "55px",
+          xs: "30px"
+        },
+        paddingTop: "80px",
+        backgroundColor: "#FFFAF8"
+      }}
+
+    >
+      <Container maxWidth="lg" >
         <Grid container spacing={4}>
           <Grid item xs={12} md={8}>
             <Typography variant="h5">Contact Us</Typography>
             <Typography variant="body1" mt={2}>
               Fill out the form, and we’ll get back to you as soon as possible.
             </Typography>
-
             <form onSubmit={handleSubmit}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} md={6}>
                   <TextField
-                    label="First Name"
+                    label="Ex : John"
                     margin="normal"
                     fullWidth
                     variant="outlined"
@@ -127,7 +137,7 @@ function ContactForm() {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    label="Last Name"
+                    label="Ex :  Doe"
                     margin="normal"
                     fullWidth
                     variant="outlined"
@@ -143,7 +153,7 @@ function ContactForm() {
 
               <TextField
                 fullWidth
-                label="Email"
+                label="Ex : John@gmail.com"
                 margin="normal"
                 variant="outlined"
                 name="email"
@@ -153,22 +163,10 @@ function ContactForm() {
                 error={!!errors.email}
                 helperText={errors.email}
               />
+
               <TextField
                 fullWidth
-                label="Contact"
-                margin="normal"
-                variant="outlined"
-                name="contact"
-                sx={{ backgroundColor: 'white' }}
-                value={formData.contact}
-                onChange={handleChange}
-                error={!!errors.contact}
-                helperText={errors.contact}
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-              />
-              <TextField
-                fullWidth
-                label="Message"
+                label="message"
                 margin="normal"
                 multiline
                 rows={4}
