@@ -5,9 +5,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import { Alert, AlertTitle, Box } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import Clases from "./style.js"
+
+import { Clases } from './style.js';
+
 const ContainerBox = styled('div')(({ theme }) => ({
-    background:"white",
+    background: "white",
 
 }));
 
@@ -217,7 +219,6 @@ export default function LaptopData() {
                                 </caption>
                             )}
                         </Table>
-                        {/* <Pagination sx={{ p: 4 }} count={10} variant="outlined" /> */}
                         {showWelcome && (
                             <Container>
                                 <Card sx={{ mt: 4, background: "#FFFAF8" }}>
@@ -289,7 +290,6 @@ export default function LaptopData() {
                                             </caption>
                                         )}
                                     </CardContent>
-                                    {/* <Pagination sx={{ p: 4 }} count={10} variant="outlined" /> */}
                                 </Card>
                             </Container>
                         )}
@@ -315,82 +315,6 @@ export default function LaptopData() {
                     </Alert>
                 </Box>
             )}
-            {/* {showWelcome && (
-                <Container>
-                    <Card sx={{ mt: 4, background: "#FFFAF8" }}>
-                        <CardContent>
-                            <Typography sx={Clases.Identification} align='center' variant='h4'>User's Identification Table</Typography>
-
-                            <TextField
-                                value={searchItem}
-                                onChange={handleInputChange}
-                                placeholder="Type to search"
-                                variant="outlined"
-                                fullWidth
-
-                                sx={Clases.Seachbar}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-
-                            {filteredData1.length > 0 ? (
-                                <Table sx={{ minWidth: 650 }} aria-label="user data table">
-                                    <TableHead sx={Clases.TableHeadUser}>
-                                        <TableRow >
-                                            <TableCell sx={Clases.TableCellUser}>User ID</TableCell>
-                                            <TableCell sx={Clases.TableCellUser} >Name</TableCell>
-                                            <TableCell sx={Clases.TableCellUser}>Email</TableCell>
-                                            <TableCell sx={Clases.TableCellUser}>Contact Number</TableCell>
-                                            <TableCell sx={Clases.TableCellUser}>Address</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {filteredData1.map((user) => (
-                                            <TableRow key={user.userId}
-                                                sx={{
-                                                    '&:hover': {
-                                                        backgroundColor: '#f0f0f0',
-                                                    },
-                                                }}
-                                            >
-                                                <TableCell>{user.userId}</TableCell>
-                                                <TableCell>{user.name}</TableCell>
-                                                <TableCell>{user.email}</TableCell>
-                                                <TableCell>{user['contact number']}</TableCell>
-                                                <TableCell>{user.Address}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            ) : (
-                                <Typography align="center" sx={{ mt: 4, color: 'red' }}>
-                                    No data available.
-                                </Typography>
-                            )}
-
-                            {searchItem && (
-                                <caption style={{ paddingTop: "30px" }}>
-                                    <Button
-                                        sx={Clases.SubmitButton}
-                                        onClick={handleSubmit}
-                                        variant="contained"
-                                        endIcon={<i className="fa fa-download" />}
-                                    >
-                                        Submit
-                                    </Button>
-                                </caption>
-                            )}
-                        </CardContent>
-                        <Pagination sx={{ p: 4 }} count={10} variant="outlined" />
-                    </Card>
-                </Container>
-            )} */}
-
         </ContainerBox>
     );
 }

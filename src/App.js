@@ -39,8 +39,7 @@
 
 
 
-
-import LaptopData from "./Dashboard/LaptopData";
+import  LaptopData from "./Pages/LaptopData/LaptopData";
 function App() {
   return (
     <div className="App">
