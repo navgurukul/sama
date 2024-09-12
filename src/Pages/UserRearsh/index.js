@@ -130,6 +130,7 @@ const majorIssuesOptions = [
 
 function LaptopForm() {
   const [formData, setFormData] = useState({
+    type:"laptopLabeling",
     donorCompanyName: '',
     ram: '',
     rom: '',
@@ -165,7 +166,7 @@ function LaptopForm() {
     e.preventDefault();
     console.log(formData);
     try{
-    await fetch('https://script.google.com/macros/s/AKfycbxnmLLeaOu6vUtEYfnZjAVGkykBBZF8Ne30F0AJmK8UuKC9dWPo_ujlCOga3CbpY0w-/exec', {
+    await fetch('https://script.google.com/macros/s/AKfycbzOnMNkCIFCaPwPcXGXpW-ROdo3j1YdYzlFvpthEn7n_8oKWHBzn7e8HluT0L8w0tYU/exec', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
