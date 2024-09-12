@@ -1,336 +1,295 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Typography, TextField, Button, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import InputAdornment from '@mui/material/InputAdornment';
-import SearchIcon from '@mui/icons-material/Search';
-import { Alert, AlertTitle, Box } from '@mui/material';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { Clases } from './style.js';
-const ContainerBox = styled('div')(({ theme }) => ({
-    background: "white",
-
-}));
-
-const DarkText = styled(Typography)(({ theme }) => ({
-    color: '#2E2E2E',
-}));
-
-export default function LaptopData() {
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [showWelcome, setShowWelcome] = useState(false);
-    const [userData, setUserData] = useState([]);
-    const [searchItem, setSearchItem] = useState('');
+// Pending tasks, design fix, and code cleanup, table is comming without clicking on search button
+// while adding any id itis showing data more then one
+// search should be work with mac, id ,name, email no,etc
+// if the usersearch is open so the assig to user button should hide
+// if both selected data should go in the correct sheet
+// need to add snackbar for success and error message
+// need to add loader
+// need to add validation for the input field
+// if data submit evertthing should vanish
+// have a testing for the code
 
 
+import React, { useState, useEffect } from 'react';
+import { Container, Typography, TextField, Button, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
-    useEffect(() => {
-        fetch('https://script.google.com/macros/s/AKfycbxRTl4xrlGZxt7RsWbCvyDsI_PCiFzKxrKoMweuVAaYwV4WSfC-KgvSzg_0_MYbyk9w/exec')
-            .then((res) => res.json())
-            .then((data) => {
-                console.log('Raw data:', data);
-                setUserData(data);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-                setError(error);
-                setLoading(false);
-            });
-    }, []);
+const DataAssignmentForm = () => {
+  const [idQuery, setIdQuery] = useState('');
+  const [userQuery, setUserQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]); // Laptop data
+  const [userData, setUserData] = useState([]); // User data
+  const [showTable, setShowTable] = useState(false); // Control laptop table visibility
+  const [showUserTable, setShowUserTable] = useState(false); // Control user table visibility
+  const [showUserDetails, setShowUserDetails] = useState(false); // Control user details section visibility
 
-    useEffect(() => {
-        fetch('https://script.google.com/macros/s/AKfycbxJ0ioHj3RpglVQ5s7wPcphseI0cTTCn5rqUM5OdiXY3zA9817VlQ91OMs0d54NrsSN/exec')
-            .then((res) => res.json())
-            .then((data) => {
-                console.log('Raw data:', data);
-                setData(data);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-                setError(error);
-                setLoading(false);
-            });
-    }, []);
+  // Function to send a POST request to Google Apps Script Web App
+  const AssignToUser = async () => {
+    //   const url = "https://script.google.com/macros/s/AKfycbyFSqHccZqfs0MH5F7I_CQO20_Ar2Tfbos8pU-zSs4ARN38ecBCg7-hk2Tltp7XB_E9EA/exec";  // Replace with the Web App URL
+       const url = "https://script.google.com/macros/s/AKfycbyFSqHccZqfs0MH5F7I_CQO20_Ar2Tfbos8pU-zSs4ARN38ecBCg7-hk2Tltp7XB_E9EA/exec";  // Replace with the Web App URL
+   
+       
+   
+       const requestBody = JSON.stringify({ 
+        laptopId: idQuery, // Laptop ID to be added
+        userId: userQuery,     // User ID to be added
+        issuedDate: new Date().toLocaleDateString(),
+           type: 'assign',
+       
+        });
+   
+       try {
+         const response = await fetch(url, {
+           method: 'POST',
+           body: requestBody,
+           headers: {
+             'Content-Type': 'application/json',
+           },
+           mode: 'no-cors'
+         });
+   
+         const result = await response.text();
+         console.log("aman king");
+       //   setResponseMessage(result);  // Show success message
+       } catch (error) {
+       //   setResponseMessage('Error occurred while submitting');
+       }
+     };
 
-    const filteredData1 = userData.filter((item) =>
-        item.status === 'Not Assigned'
-    );
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+  // Fetch the laptop data based on the search query (ID or MAC address)
+  useEffect(() => {
+    if (!idQuery) return;
 
-    if (error) {
-        return <div>Error loading data: {error.message}</div>;
-    }
-
-    const handleInputChange = (e) => {
-        const searchTerm = e.target.value.trim(); // Trim to avoid extra spaces
-        setSearchItem(searchTerm); // Set the search term state
-
-        if (searchTerm) {
-            const filteredItems = filteredData1.filter((user) =>
-                user.name?.toLowerCase().includes(searchTerm.toLowerCase()) || // Check name
-                user.email?.toLowerCase().includes(searchTerm.toLowerCase()) || // Check email
-                user.userId?.toString().includes(searchTerm) || // Check userId
-                user.Address?.email?.toLowerCase().includes(searchTerm.toLowerCase()) || // Check Address.email
-                user['contact number']?.toString().includes(searchTerm) // Check contact number
-            );
-
-            setUserData(filteredItems); // Update the data with filtered items
-        } else {
-            setUserData([]); // Clear the data when search is empty
-        }
+    const url = "https://script.google.com/macros/s/AKfycbzoDFfHvdHiX4P6UqzTr_ZZZ7ouaSRHIjmfT5cNEgZLHruYDTUP2QlfqqimeokdLEhP/exec";
+    setLoading(true);
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${url}?idQuery=${idQuery}&type=getLaptopData`, {
+          method: 'GET',
+        });
+        const result = await response.json();
+        setData(result); // Set the laptop data
+        setShowTable(true); // Show laptop table after data is fetched
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
     };
+    fetchData();
+  }, [idQuery]);
 
+  console.log(idQuery,userQuery);
+  
+  // Fetch the user data based on the search query (e.g., User ID or email)
+  useEffect(() => {
+    if (!userQuery) return;
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
-    if (error) {
-        return <div>Error loading data: {error.message}</div>;
-    }
-
-    const filteredData = data.filter((item) => {
-        const isTagged = item.Status && item.Status.trim().toLowerCase() === 'tagged';
-        const matchesSearch =
-            item.ID?.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item['Mac Address']?.toLowerCase().includes(searchQuery.toLowerCase());
-        return isTagged && matchesSearch;
-    });
-
-    const handleButtonClick = () => {
-        setShowWelcome(true);
+    const url = "https://script.google.com/macros/s/AKfycbzoDFfHvdHiX4P6UqzTr_ZZZ7ouaSRHIjmfT5cNEgZLHruYDTUP2QlfqqimeokdLEhP/exec";
+    setLoading(true);
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`${url}?idQuery=${userQuery}&type=getUserData`, {
+          method: 'GET',
+        });
+        const result = await response.json();
+        setUserData(result); // Set the user data
+        setShowUserTable(true); // Show user table after data is fetched
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
     };
+    fetchUserData();
+  }, [userQuery]);
 
-    return (
-        <ContainerBox maxWidth="xl" sx={{ py: 6 }}>
-            <Typography sx={Clases.Identification} align='center' variant='h3'>Assessing Laptop</Typography>
+  const handleSearch = () => {
+    setShowTable(true); // Show table only after search is clicked
+  };
 
-            {filteredData.length > 0 ? (
-                <TableContainer sx={Clases.TableContainerBox}>
-                    <CardContent
+  const handleUserSearch = () => {
+    setShowUserTable(true); // Show user table only after search is clicked
+  };
 
-                    >
-                        <Card sx={{ mt: 1 }} style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }}>
-                            <Typography sx={Clases.Identification} align='center' variant='h4' style={{ position: "relative", bottom: "20px" }}>Laptop's Identification Table</Typography>
-                            <Box>
-                                <TextField
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Search by ID or Mac Address"
-                                    variant="outlined"
-                                    fullWidth
-                                    sx={Clases.searchItem}
+  const handleReset = () => {
+    setIdQuery('');
+    setData([]); // Clear data
+    setShowTable(false); // Hide table after reset
+    setUserQuery(''); // Clear user query
+    setUserData([]); // Clear user data
+    setShowUserTable(false); // Hide user table if reset
+    setShowUserDetails(false); // Hide user details section if reset
+  };
 
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                                <Table sx={{ minWidth: 650, mt: 4 }} aria-label="caption table" >
+  const handleAssignToUser = () => {
+    setShowUserDetails(true); // Show user details section
+  };
 
-                                    
-                                    {searchQuery && filteredData.length > 0 ? (
-                                        <TableContainer sx={Clases.TableContainerBox}>
-                                            <CardContent>
-                                                <Card sx={{ mt: 1 }} style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }}>
-                                                   
-                                                    <Box>
-                                                       
-                                                        <Table sx={{ minWidth: 650, mt: 4 }} aria-label="caption table">
-                                                            <TableHead sx={{ backgroundColor: "rgba(92, 120, 90, 1)", color: "white" }}>
-                                                                <TableRow>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>ID</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Date of Intake</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Donor Company Name</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>ROM</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Manufacturer Model</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Processor</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Manufacturing Date</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Condition Status</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Minor Issues</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Major Issues</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Other Issues</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Inventory Location</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Laptop Weight</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Mac Address</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Assigned</TableCell>
-                                                                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Status</TableCell>
-                                                                </TableRow>
-                                                            </TableHead>
-                                                            <TableBody>
-                                                                {filteredData.map((item, index) => (
-                                                                    <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }}>
-                                                                        <TableCell>{item.ID || 'N/A'}</TableCell>
-                                                                        <TableCell>{item['Date of Intake'] || 'N/A'}</TableCell>
-                                                                        <TableCell>{item['Donor Company Name'] || 'N/A'}</TableCell>
-                                                                        <TableCell>{item.ROM || 'N/A'}</TableCell>
-                                                                        <TableCell>{item['Manufacturer Model'] || 'N/A'}</TableCell>
-                                                                        <TableCell>{item.Processor || 'N/A'}</TableCell>
-                                                                        <TableCell>{item['Manufacturing Date'] || 'N/A'}</TableCell>
-                                                                        <TableCell>{item['Condition Status'] || 'N/A'}</TableCell>
-                                                                        <TableCell>{item['Minor Issues'] || 'N/A'}</TableCell>
-                                                                        <TableCell>{item['Major Issues'] || 'N/A'}</TableCell>
-                                                                        <TableCell>{item['Other Issues'] || 'N/A'}</TableCell>
-                                                                        <TableCell>{item['Inventory Location'] || 'N/A'}</TableCell>
-                                                                        <TableCell>{item['Laptop Weight'] || 'N/A'}</TableCell>
-                                                                        <TableCell>{item['Mac Address'] || 'N/A'}</TableCell>
-                                                                        <TableCell>{item.Assigned || 'N/A'}</TableCell>
-                                                                        <TableCell>{item.Status || 'N/A'}</TableCell>
-                                                                    </TableRow>
-                                                                ))}
-                                                            </TableBody>
-                                                            {searchQuery && (
-                                                                <caption>
-                                                                    <Button
-                                                                        onClick={handleButtonClick}
-                                                                        variant="contained"
-                                                                        sx={{ background: "rgba(92, 120, 90, 1)" }}
-                                                                        endIcon={<i className="fa fa-download" />}
-                                                                    >
-                                                                        Assign the laptop
-                                                                    </Button>
-                                                                </caption>
-                                                            )}
-                                                        </Table>
-                                                    </Box>
-                                                </Card>
-                                            </CardContent>
-                                        </TableContainer>
-                                    ) : (
-                                        <p></p>
-                                    )}
-                                </Table>
-                            </Box>
-                            {showWelcome && (
-                                <Container maxWidth="xxl">
-                                    <Card sx={{ mt: 3 }} style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }}>
-                                        <CardContent>
-                                            <Typography sx={Clases.Identification} align='center' variant='h4'>
-                                                User's Identification Table
-                                            </Typography>
-                                            <TextField
-                                                value={searchItem}
-                                                onChange={handleInputChange}
-                                                placeholder="Search by phone or name or email"
-                                                variant="outlined"
-                                                sx={Clases.Seachbar}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <SearchIcon />
-                                                        </InputAdornment>
-                                                    ),
-                                                }}
-                                            />
+  // Extract headers from the first object in the data array (for laptop data)
+  const laptopHeaders = data.length > 0 ? Object.keys(data[0]) : [];
+  // Extract headers from the first object in the user data array (for user data)
+  const userHeaders = userData.length > 0 ? Object.keys(userData[0]) : [];
 
-                                            {/* Conditionally Render Table */}
-                                            {searchItem ? (
-                                                filteredData1.length > 0 ? (
-                                                    <Table aria-label="user data table">
-                                                        <TableHead sx={{ backgroundColor: "rgba(92, 120, 90, 1)", color: "white" }}>
-                                                            <TableRow>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>User ID</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Name</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Email</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Contact Number</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Address</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Laptop Assigned</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Number of Family members</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Qualification</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Status</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Laptop Assigned</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>Use case</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>ID Proof number</TableCell>
-                                                            </TableRow>
-                                                        </TableHead>
-                                                        <TableBody>
-                                                            {filteredData1.map((user) => (
-                                                                <TableRow
-                                                                    key={user.userId}
-                                                                    sx={{
-                                                                        '&:hover': { backgroundColor: '#f0f0f0' },
-                                                                    }}
-                                                                >
-                                                                    <TableCell>{user.userId}</TableCell>
-                                                                    <TableCell>{user.name}</TableCell>
-                                                                    <TableCell>{user.email}</TableCell>
-                                                                    <TableCell>{user['contact number']}</TableCell>
-                                                                    <TableCell>{user.Address}</TableCell>
-                                                                    <TableCell>{user["Laptop Assigned"]}</TableCell>
-                                                                    <TableCell>{user["Number of Family members(who might use the laptop)"]}</TableCell>
-                                                                    <TableCell>{user.Qualification}</TableCell>
-                                                                    <TableCell>{user.status}</TableCell>
-                                                                    <TableCell>{user["Laptop Assigned"]}</TableCell>
-                                                                    <TableCell>{user["Use case"]}</TableCell>
-                                                                    <TableCell>{user["ID Proof number"]}</TableCell>
-                                                                </TableRow>
-                                                            ))}
-                                                        </TableBody>
-                                                    </Table>
-                                                ) : (
-                                                    // Display when no results found
-                                                    <Typography align="center" sx={{ mt: 4, color: 'red' }}>
-                                                        No data available.
-                                                    </Typography>
-                                                )
-                                            ) : (
-                                                null
-                                            )}
+  return (
+    <Container maxWidth="lg" style={{ marginTop: '50px' }}>
+      <Typography variant="h4" gutterBottom>
+        Data Assignment Form
+      </Typography>
 
-                                            {searchItem && (
-                                                <caption style={{ paddingTop: "30px", color: "#5C785A" }}>
-                                                    <Button
-                                                        sx={Clases.SubmitButton}
-                                                        variant="contained"
-                                                        style={{ background: "#5C785A" }}
-                                                        endIcon={<i className="fa fa-download" />}
-                                                    >
-                                                        Submit
-                                                    </Button>
-                                                </caption>
-                                            )}
-                                        </CardContent>
-                                    </Card>
-                                </Container>
-                            )}
+      <Typography variant="h5" gutterBottom>
+        Laptop Identification
+      </Typography>
 
-                        </Card>
-                    </CardContent>
-                </TableContainer>
+      <Box display="flex" flexDirection="column" alignItems="center" marginBottom={2}>
+        <TextField
+          label="Enter Laptop ID or MAC Address"
+          variant="outlined"
+          style={{ width: '50%' }}
+          value={idQuery}
+          onChange={(e) => setIdQuery(e.target.value)}
+        />
+        <Box marginTop={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSearch}
+            disabled={!idQuery}
+          >
+            Search
+          </Button>
+        </Box>
+      </Box>
 
-            ) : (
-                <Box sx={Clases.AlertBox}>
-                    <Alert
-                        severity="warning"
-                        iconMapping={{
-                            warning: <WarningAmberIcon fontSize="inherit" />,
-                        }}
-                        sx={Clases.AlertMeg}
-                    >
-                        <AlertTitle sx={Clases.AlertTitle}>Warning</AlertTitle>
-                        <Typography variant="body1">
-                            <strong></strong>
-                        </Typography>
-                        <Typography variant="body2" sx={{ mt: 1 }}>
-                            Please check again or contact support if the issue persists.
-                        </Typography>
-                    </Alert>
-                </Box>
-            )}
-        </ContainerBox>
-    );
-}
+      <Box display="flex" justifyContent="center" marginTop={2}>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={handleReset}
+        >
+          Reset
+        </Button>
+      </Box>
 
+      {/* Laptop Table */}
+      {showTable && data.length > 0 && (
+        <>
+          <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  {/* Display laptop headers */}
+                  {laptopHeaders.map((header) => (
+                    <TableCell key={header}><strong>{header}</strong></TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {/* Map over the laptop data array to display each object as a row */}
+                {data.map((row, rowIndex) => (
+                  <TableRow key={rowIndex}>
+                    {/* Display each value corresponding to the header */}
+                    {laptopHeaders.map((header) => (
+                      <TableCell key={header}>
+                        {row[header] || 'N/A'}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
+          {/* Button to assign to user */}
+          <Box display="flex" justifyContent="center" marginTop={2}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAssignToUser}
+            >
+              Assign to User
+            </Button>
+          </Box>
+        </>
+      )}
 
+      {/* User Details Section */}
+      {showUserDetails && (
+        <Container maxWidth="lg" style={{ marginTop: '50px' }}>
+          <Typography variant="h5" gutterBottom>
+            User Details
+          </Typography>
 
+          <Box display="flex" flexDirection="column" alignItems="center" marginBottom={2}>
+            <TextField
+              label="Enter User ID or Email"
+              variant="outlined"
+              style={{ width: '50%' }}
+              value={userQuery}
+              onChange={(e) => setUserQuery(e.target.value)}
+            />
+            <Box marginTop={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleUserSearch}
+                disabled={!userQuery}
+              >
+                Search
+              </Button>
+            </Box>
+          </Box>
+
+          <Box display="flex" justifyContent="center" marginTop={2}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleReset}
+            >
+              Reset
+            </Button>
+          </Box>
+
+          {/* User Table */}
+          {showUserTable && userData.length > 0 && (<>
+            <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {userHeaders.map((header) => (
+                      <TableCell key={header}><strong>{header}</strong></TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {userData.map((row, rowIndex) => (
+                    <TableRow key={rowIndex}>
+                      {userHeaders.map((header) => (
+                        <TableCell key={header}>
+                          {row[header] || 'N/A'}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Box display="flex" justifyContent="center" marginTop={2}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={AssignToUser}
+            >
+              Submit data
+            </Button>
+          </Box>
+            </>
+          )}
+        </Container>
+      )}
+    </Container>
+  );
+};
+
+export default DataAssignmentForm;
 
