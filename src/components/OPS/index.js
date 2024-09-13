@@ -22,12 +22,12 @@ function Ops() {
 
       {/* Laptop Detail Form Description and Button */}
       <Box mt={4}>
-        <Grid container spacing={4} justifyContent="center">
+        <Grid container spacing={4} >
           <Grid item xs={12} sm={6}>
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6" component="h2" gutterBottom>
-                  Laptop Donation Details
+                Laptop Detail Form
                 </Typography>
                 <Typography variant="body1" color="textSecondary" gutterBottom>
                   Use this form to submit details about the laptops for single
@@ -47,7 +47,7 @@ function Ops() {
           </Grid>
 
           {/* User Detail Form Description and Button */}
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6} md={6}>
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6" component="h2" gutterBottom>
@@ -64,6 +64,28 @@ function Ops() {
                     href="/user-details"
                   >
                     User Detail Form
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={6}>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h6" component="h2" gutterBottom>
+                  Laptop Tagging
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  Use this for tagging laptops.
+                </Typography>
+                <Box mt={2}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="/laptop-tagging"
+                  >
+                    Laptop tagging
                   </Button>
                 </Box>
               </CardContent>
