@@ -8,12 +8,13 @@ import LaptopDonor from "./LaptopDonor";
 import ContactForm from "./ContactForm";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import diamond from "./assets/dimanod.png";
-import BGIMG from "./assets/BGIMG.svg"
-import { border } from "@mui/system";
+import BGIMG from "./assets/Group365.png";
 function Home() {
+
   const [impact, setImpact] = useState("environmental");
   const isActive = useMediaQuery("(max-width:600px)");
   const isActiveIpad = useMediaQuery("(max-width:1300px)");
+  const isXs = useMediaQuery('(max-width:600px)');
 
   const commonImageStyle = {
     width: "100%",
@@ -32,6 +33,7 @@ function Home() {
     height: "167px",
     boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)"
   };
+
 
   return (
     <>
@@ -56,13 +58,14 @@ function Home() {
           <Typography variant="body1" margin="0 8px" style={{ color: "#FFF" }}>
             Bridging Digital Divide Through Repurposed Devices
           </Typography>
-          <Button variant="contained" color="primary" href="/donate" sx={{ mt: 6, borderRadius: "100px"}}>
+          <Button variant="contained" color="primary" href="/donate" sx={{ mt: 6, borderRadius: "100px" }}>
             Donate Now
           </Button>
         </Container>
       </Box>
       <LaptopDonor />
-      <Box sx={{ my: 10 }}>
+
+      <Box sx={{ my: 10}} >
         <Container maxWidth="lg">
           <Typography variant="h5" align="left" mb={4}></Typography>
           <Grid container spacing={4}>
@@ -85,7 +88,7 @@ function Home() {
               <Typography variant="body1" gutterBottom>
                 Sama is not just a laptop donation project; it's a comprehensive education initiative aimed at empowering 1 million girls and women by 2030 with cutting-edge devices and skills, leveraging the existing infrastructure of our corporate partners.
               </Typography>
-              <a href="/about" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>
+              <a href="/our-approach" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>
                 <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "bold", fontSize: "18px" }}>Know more</Typography>
                 <ChevronRightIcon color="primary" />
               </a>
@@ -113,36 +116,57 @@ function Home() {
               </Grid>
             ))}
           </Grid>
-          <Typography variant="body2" color="#4A4A4A" sx={{
-            fontFamily: 'Raleway',
-            fontSize: '14px',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            my: 4,
-            lineHeight: '170%'
-          }} gutterBottom>
+          <Typography variant="body2"
+            color="#4A4A4A"
+            sx={{
+              fontFamily: 'Raleway',
+              fontSize: '14px',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              my: 4,
+              lineHeight: '170%'
+            }} gutterBottom>
             *All calculations based on relevant people benefiting from 1 M laptops by 2030
           </Typography>
         </Container>
       </Box>
-      <Container maxWidth="xxl" style={{ padding: 0, backgroundColor: "#F0F4EF", position: "relative" }}>
+
+      {/* <Container
+        maxWidth="xxl"
+        style={containerStyles}
+      >
+        {!isXs && (
+          <img
+            src={BGIMG}
+            style={imageStyles}
+            alt="Sama Group"
+          />
+        )}
+
+        <Box
+          className="circle"
+          sx={circleBox}
+        >
+          <Typography
+            variant="h6"
+            sx={text}
+          >
+            Imagine 1 million underprivileged women holding laptops.
+            This is the future we’re building at Sama by <br />
+            2030
+          </Typography>
+        </Box>
+      </Container> */}
+      <Container maxWidth="xxl" style={{ padding: 0,background:"#F0F4EF" }}>
         <img
           src={BGIMG}
           alt="Sama Group"
           style={{ display: "block", width: "100%", margin: 0, padding: 0 }}
         />
-        <Box className="main-circle">
-          <Box className="circle">
-            <Typography  variant="h6" sx={{px:7,textAlign: 'center',lineHeight:"38.88px" }} color="#FFF">
-              Imagine 1 million underprivileged women holding laptops.
-              This is the future we’re building at Sama by <br></br>
-              2030
-            </Typography>
-          </Box>
-        </Box>
       </Container>
 
-      <Container maxWidth="lg" sx={{ my: 10 }}>
+
+      <Container maxWidth="lg" sx={{py:"80px",backgroundColor: "#FFFAF8"}}>
         <Typography variant="h5">Metrics that Matter</Typography>
         <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
         <Box sx={!isActive && { display: 'flex', my: 4 }} spacing={3}>
@@ -159,16 +183,16 @@ function Home() {
         </Box>
         <Box>
           {impact === "environmental" ? (
-            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" style={{boxShadow:"0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)",borderRadius:"16px"}}
+            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" style={{ boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)", borderRadius: "16px" }}
             />
           ) : (
-            <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" style={{boxShadow:"0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)",borderRadius:"16px"}} />
+            <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" style={{ boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)", borderRadius: "16px" }} />
           )}
         </Box>
       </Container>
 
-      <Box sx={{ my: 10 }}>
-        <Container maxWidth="lg">
+      <Box>
+        <Container maxWidth="lg" sx={{py:"80px"}}>
           <Typography variant="h5">Sustainability Development Goals</Typography>
           <Typography variant="body1" style={{ width: "65%", margin: "32px 0px" }}>
             Sama's mission of repurposing e-waste for educational use by underserved women aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:

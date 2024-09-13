@@ -86,16 +86,17 @@ const TestimonialSlider = () => {
   };
 
   return (
-    <Box style={{ backgroundColor: "#5C785A" }}>
-      <Container sx={isMobile ? { py: 4 } : { py: 10 }}>
+    <Box style={{ backgroundColor: "#5C785A"}}>
+      <Container maxWidth="lg" sx={isMobile ? { py: 4 } : { py: 10 }}>
         <Typography variant="h5" style={{ color: "#FFF" }}>
           Student Speaks
         </Typography>
-        <Box display="flex" alignItems="center" position="relative" mt={3}>
+
+         <Box display="flex" alignItems="center" position="relative" mt={3}>
           <IconButton onClick={handlePrevClick} style={{ position: "absolute", left: "-100px" }}>
             <ChevronLeftIcon style={{ color: "#FFFFFF",width:"40.74px",height:"40.74px"}} />
           </IconButton>
-          <Box ref={sliderRef} className="keen-slider"
+           <Box ref={sliderRef} className="keen-slider"
             sx={{
               overflow: 'hidden',
               width: '100%',
@@ -122,11 +123,11 @@ const TestimonialSlider = () => {
                 ))}
               </Box>
             ))}
-          </Box>
-          <IconButton onClick={handleNextClick} style={{ position: "absolute", right: "-20px", color: "#FFFFFF" }}>
+          </Box> 
+           <IconButton onClick={handleNextClick} style={{ position: "absolute", right: "-10px", color: "#FFFFFF" }}>
             <ChevronRightIcon style={{ color: "#FFFFFF",width:"40.74px",height:"40.74px"}}  />
-          </IconButton>
-        </Box>
+          </IconButton>  
+         </Box> 
       </Container>
     </Box>
   );
