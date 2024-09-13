@@ -26,7 +26,7 @@ const DataAssignmentForm = () => {
   // Function to send a POST request to Google Apps Script Web App
   const AssignToUser = async () => {
     //   const url = "https://script.google.com/macros/s/AKfycbyFSqHccZqfs0MH5F7I_CQO20_Ar2Tfbos8pU-zSs4ARN38ecBCg7-hk2Tltp7XB_E9EA/exec";  // Replace with the Web App URL
-       const url = "https://script.google.com/macros/s/AKfycbyFSqHccZqfs0MH5F7I_CQO20_Ar2Tfbos8pU-zSs4ARN38ecBCg7-hk2Tltp7XB_E9EA/exec";  // Replace with the Web App URL
+       const url = "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec";  // Replace with the Web App URL
    
        
    
@@ -201,6 +201,7 @@ const DataAssignmentForm = () => {
           </TableContainer>
 
           {/* Button to assign to user */}
+          {!showUserDetails && 
           <Box display="flex" justifyContent="center" marginTop={2}>
             <Button
               variant="contained"
@@ -210,6 +211,7 @@ const DataAssignmentForm = () => {
               Assign to User
             </Button>
           </Box>
+          }
         </>
       )}
 
