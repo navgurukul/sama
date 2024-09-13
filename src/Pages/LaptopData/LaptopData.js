@@ -1,9 +1,8 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, TextField, Button, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress } from '@mui/material';
-import Snackbar from '@mui/material/Snackbar';
-import IconButton from '@mui/material/IconButton';
+import {Container, Snackbar, Typography,IconButton, TextField, Button, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress } from '@mui/material';
+
 import CloseIcon from '@mui/icons-material/Close';
 
 const DataAssignmentForm = () => {
@@ -20,9 +19,10 @@ const DataAssignmentForm = () => {
   const [errorOpen, setErrorOpen] = useState(false); // Error Snackbar
   const [searchTriggered, setSearchTriggered] = useState(false);
   const [loadingLaplopData, setLoadingLaplopData] = useState(false)
+  const [noDataAvailable, setNoDataAvailable] = useState(false);
+  const [noUserDataAvailable, setNoUserDataAvailable] = useState(false); // Define the state
 
   const AssignToUser = async () => {
-
     const url = "https://script.google.com/macros/s/AKfycbyFSqHccZqfs0MH5F7I_CQO20_Ar2Tfbos8pU-zSs4ARN38ecBCg7-hk2Tltp7XB_E9EA/exec";  // Replace with the Web App URL
     const requestBody = JSON.stringify({
       laptopId: idQuery,
@@ -44,9 +44,9 @@ const DataAssignmentForm = () => {
       if (!response.ok) throw new Error('Network response was not ok');
       setErrorOpen(true)
     } catch (error) {
-      setOpen(true); // Show error Snackbar
+      setOpen(true);
     } finally {
-      handleReset(); // Reset form after assignment
+      handleReset();
     }
   };
 
@@ -68,7 +68,16 @@ const DataAssignmentForm = () => {
           method: 'GET',
         });
         const result = await response.json();
-        setData(result);
+
+        const taggedData = result.filter(item => item.Status === 'Tagged');
+
+        if (taggedData.length === 0) {
+          setNoDataAvailable(true);
+        } else {
+          setNoDataAvailable(false);
+        }
+
+        setData(taggedData);
         setShowTable(true);
       } catch (error) {
         console.error('Error:', error);
@@ -90,7 +99,16 @@ const DataAssignmentForm = () => {
         method: 'GET',
       });
       const result = await response.json();
-      setUserData(result);
+
+      const assignedData = result.filter(item => item.status === 'Laptop Assigned');
+
+      if (assignedData.length === 0) {
+        setNoUserDataAvailable(true);
+      } else {
+        setNoUserDataAvailable(false);
+      }
+
+      setUserData(assignedData);
       setShowUserTable(true);
     } catch (error) {
       console.error('Error:', error);
@@ -137,9 +155,7 @@ const DataAssignmentForm = () => {
     setShowUserDetails(true);
   };
 
-  // Extract headers from the first object in the data array (for laptop data)
   const laptopHeaders = data.length > 0 ? Object.keys(data[0]) : [];
-  // Extract headers from the first object in the user data array (for user data)
   const userHeaders = userData.length > 0 ? Object.keys(userData[0]) : [];
 
   return (
@@ -169,6 +185,7 @@ const DataAssignmentForm = () => {
           Search
         </Button>
         {loading && <CircularProgress />}
+
       </Box>
 
       <Box display="flex" justifyContent="center" marginTop={2}>
@@ -181,24 +198,21 @@ const DataAssignmentForm = () => {
         </Button>
       </Box>
 
-      {/* Laptop Table */}
-      {showTable && data.length > 0 && (
+      {noDataAvailable && <Typography variant='h6'>No data available</Typography>}
+      {!noDataAvailable && showTable && data.length > 0 && (
         <>
           <TableContainer component={Paper} style={{ marginTop: '20px' }}>
             <Table>
               <TableHead>
                 <TableRow>
-                  {/* Display laptop headers */}
                   {laptopHeaders.map((header) => (
                     <TableCell key={header}><strong>{header}</strong></TableCell>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* Map over the laptop data array to display each object as a row */}
                 {data.map((row, rowIndex) => (
                   <TableRow key={rowIndex}>
-                    {/* Display each value corresponding to the header */}
                     {laptopHeaders.map((header) => (
                       <TableCell key={header}>
                         {row[header] || 'N/A'}
@@ -210,7 +224,6 @@ const DataAssignmentForm = () => {
             </Table>
           </TableContainer>
 
-          {/* Button to assign to user */}
           <Box display="flex" justifyContent="center" marginTop={2}>
             <Button
               variant="contained"
@@ -258,7 +271,9 @@ const DataAssignmentForm = () => {
           </Box>
 
           {/* User Table */}
-          {showUserTable && userData.length > 0 && (
+          {noUserDataAvailable && <Typography variant='h6'>No data available</Typography>}
+
+          {!noUserDataAvailable && showUserTable && userData.length > 0 && (
             <>
               <TableContainer component={Paper} style={{ marginTop: '20px' }}>
                 <Table>
@@ -283,7 +298,6 @@ const DataAssignmentForm = () => {
                 </Table>
               </TableContainer>
 
-              {/* Button to assign to user */}
               <Box display="flex" justifyContent="center" marginTop={2}>
                 <Button
                   variant="contained"
@@ -303,15 +317,15 @@ const DataAssignmentForm = () => {
         onClose={handleClose}
         message=" 🎉 Data assigned successfully!"
         action={action}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Positioning at the top center
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
         sx={{
           '& .MuiSnackbarContent-root': {
-            backgroundColor: '#4CAF50', // Green background
-            color: '#fff', // White text
-            fontSize: '16px', // Bigger font size
-            fontWeight: 'bold', // Bold text
-            borderRadius: '8px', // Rounded corners
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Shadow for better look
+            backgroundColor: '#4CAF50', 
+            color: '#fff', 
+            fontSize: '16px', 
+            fontWeight: 'bold', 
+            borderRadius: '8px', 
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', 
           },
         }}
       />
@@ -321,15 +335,15 @@ const DataAssignmentForm = () => {
         onClose={handleClose}
         message=" Error!"
         action={action}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Positioning at the top center
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         sx={{
           '& .MuiSnackbarContent-root': {
-            backgroundColor: 'red', // Green background
-            color: '#fff', // White text
-            fontSize: '16px', // Bigger font size
-            fontWeight: 'bold', // Bold text
-            borderRadius: '8px', // Rounded corners
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Shadow for better look
+            backgroundColor: 'red',
+            color: '#fff',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            borderRadius: '8px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
           },
         }}
       />
