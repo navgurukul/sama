@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Button,
   TextField,
@@ -10,78 +10,72 @@ import {
   MenuItem,
   Alert,
   Typography,
-  List,
-  ListItemText,
-  ListItem,
 } from "@mui/material";
 
 import useMediaQuery from "@mui/material/useMediaQuery";
-
 import { breakpoints } from "../../theme/constant";
 
 const FormComponent = () => {
   const statesOptions = [
-    "Andhra Pradesh",
+    "Andhra Pradesh", 
     "Arunachal Pradesh",
     "Assam",
-    "Bihar",
+    "Bihar", 
     "Chhattisgarh",
-    "Goa",
+    "Goa", 
     "Gujarat",
-    "Haryana",
+    "Haryana", 
     "Himachal Pradesh",
-    "Jammu and Kashmir",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
+    "Jammu and Kashmir", 
+    "Jharkhand", 
+    "Karnataka", 
+    "Kerala", 
+    "Madhya Pradesh", 
     "Maharashtra",
-    "Manipur",
+    "Manipur", 
     "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttarakhand",
-    "Uttar Pradesh",
-    "West Bengal",
-    "Andaman and Nicobar Islands",
-    "Chandigarh",
-    "Dadra and Nagar Haveli",
-    "Daman and Diu",
-    "Delhi",
-    "Lakshadweep",
-    "Puducherry",
+    "Mizoram", 
+    "Nagaland", 
+    "Odisha", 
+    "Punjab", 
+    "Rajasthan", 
+    "Sikkim", 
+    "Tamil Nadu", 
+    "Telangana", 
+    "Tripura", 
+    "Uttarakhand", 
+    "Uttar Pradesh", 
+    "West Bengal", 
+    "Andaman and Nicobar Islands", 
+    "Chandigarh", 
+    "Dadra and Nagar Haveli", 
+    "Daman and Diu", 
+    "Delhi", 
+    "Lakshadweep", 
+    "Puducherry"
   ];
 
   const idProofOptions = [
-    "Ration card",
-    "Aadhar Card",
-    "Voter ID card",
-    "Driving License",
-    "PAN Card",
-    "Passport",
-    "Domicile/Secondary/Senior Secondary Marksheet",
+    "Ration card", 
+    "Aadhar Card", 
+    "Voter ID card", 
+    "Driving License", 
+    "PAN Card", 
+    "Passport", 
+    "Domicile/Secondary/Senior Secondary Marksheet"
   ];
-
   const useCaseOptions = [
-    "Income Increase/Job",
-    "Entrepreneurship",
-    "Internships",
-    "Skilling/Vocations",
+    "Income Increase/Job", 
+    "Entrepreneurship", 
+    "Internships", 
+    "Skilling/Vocations"
   ];
-
   const statusOptions = [
-    "Laptop Received",
-    "Employed",
-    "Intern",
-    "Entrepreneur/Freelancing",
-    "Trainer",
+    "Laptop Received", 
+    "Employed", 
+    "Intern", 
+    "Entrepreneur/Freelancing", 
+    "Trainer"
   ];
 
   const fields = [
@@ -111,6 +105,9 @@ const FormComponent = () => {
   const [errors, setErrors] = useState({});
   const [file, setFile] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState(""); // To store custom message
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // Success or Error
+
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
   const handleFileChange = (event) => {
@@ -123,16 +120,19 @@ const FormComponent = () => {
 
   const validate = () => {
     let tempErrors = {};
+
     tempErrors.email = formData.email
       ? /\S+@\S+\.\S+/.test(formData.email)
         ? ""
         : "Email is not valid"
       : "Email is required";
+
     tempErrors.contactNumber = formData.contactNumber
       ? /^\d{10}$/.test(formData.contactNumber)
         ? ""
         : "Contact number should be 10 digits Number only"
       : "Contact number is required";
+
     if (formData.idProofType === "Aadhar Card") {
       tempErrors.idNumber = formData.idNumber
         ? /^\d{12}$/.test(formData.idNumber)
@@ -141,7 +141,7 @@ const FormComponent = () => {
         : "Aadhar Card number is required";
     }
 
-    tempErrors.file = file ? "" : "Please upload a id proof image";
+    tempErrors.file = file ? "" : "Please upload a valid ID proof image";
 
     setErrors(tempErrors);
 
@@ -156,7 +156,6 @@ const FormComponent = () => {
   };
 
   const handleSubmit = async (e) => {
-    console.log("click me");
     e.preventDefault();
 
     if (validate()) {
@@ -186,28 +185,38 @@ const FormComponent = () => {
                 "Content-Type": "application/json",
               },
               mode: "no-cors",
-              body: JSON.stringify(finalData), // Send the entire formData object
+              body: JSON.stringify(finalData),
             }
           );
 
+          // Reset form after successful submission
+          setFormData({
+            idProofType: "",
+            useCase: "",
+            addressState: "",
+            status: "",
+          });
+          setFile(null); // Reset file input
+          setSnackbarMessage("Data updated successfully!");
+          setSnackbarSeverity("success");
           setSnackbarOpen(true);
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          } else {
-            setSnackbarOpen(true);
-          }
         } catch (error) {
           console.error("Error uploading file:", error);
+          setSnackbarMessage("Something went wrong!");
+          setSnackbarSeverity("error");
+          setSnackbarOpen(true);
         }
       };
+    } else {
+      // If validation fails, show error message
+      setSnackbarMessage("Please correct the number and ID fields.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
   return (
     <Container maxWidth="sm" sx={{ mb: 2, pb: 2 }}>
-      {/* <Typography variant="h6" gutterBottom align="center" mt={2}>
-        Single data upload Form
-      </Typography> */}
       <form onSubmit={handleSubmit}>
         {fields.map((field) => {
           if (field.name === "idProofType") {
@@ -231,12 +240,7 @@ const FormComponent = () => {
             );
           } else if (field.name === "useCase") {
             return (
-              <FormControl
-                fullWidth={isActive && "true"}
-                sx={!isActive && { width: "55%" }}
-                margin="normal"
-                key={field.name}
-              >
+              <FormControl fullWidth margin="normal" key={field.name}>
                 <InputLabel>{field.label}</InputLabel>
                 <Select
                   name={field.name}
@@ -275,8 +279,7 @@ const FormComponent = () => {
           } else if (field.name === "dateOfBirth") {
             return (
               <TextField
-                fullWidth={isActive && "true"}
-                sx={!isActive && { width: "43%", marginRight: "10px" }}
+                fullWidth
                 key={field.name}
                 label={field.label}
                 name={field.name}
@@ -310,42 +313,39 @@ const FormComponent = () => {
           } else {
             return (
               <TextField
+                fullWidth
                 key={field.name}
                 label={field.label}
                 name={field.name}
                 value={formData[field.name] || ""}
                 onChange={handleChange}
-                fullWidth
+                variant="outlined"
                 margin="normal"
-                error={!!errors[field.name]}
-                // helperText={errors[field.name]}
               />
             );
           }
         })}
-        <Button
-          variant="contained"
-          component="label"
-          style={{ marginTop: "16px" }}
-        >
-          Upload ID Proof Image
-          <input type="file" hidden onChange={handleFileChange} />
-        </Button>
-        {file && (
-          <Typography variant="body1" mt={2}>
-            {file.name}
-          </Typography>
-        )}
-        {!file && (
-          <Typography color="error" mt={2}>
-            {errors.file}
-          </Typography>
-        )}
+          <FormControl fullWidth margin="normal">
+           <Button variant="outlined" component="label">
+              Upload ID Proof Image
+              <input type="file" hidden onChange={handleFileChange} />
+           </Button>
+           {errors.file && (
+             <Typography color="error">{errors.file}</Typography>           
+             )}
+        </FormControl>
 
-        <Button type="submit" variant="contained">
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          sx={{ mt: 2 }}
+          type="submit"
+        >
           Submit
         </Button>
       </form>
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
@@ -353,10 +353,10 @@ const FormComponent = () => {
       >
         <Alert
           onClose={handleSnackbarClose}
-          severity="success"
+          severity={snackbarSeverity}
           sx={{ width: "100%" }}
         >
-          Data stored successfully!
+          {snackbarMessage}
         </Alert>
       </Snackbar>
     </Container>
