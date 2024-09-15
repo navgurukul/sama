@@ -1,24 +1,20 @@
-// // Pending tasks, design fix, and code cleanup, table is comming without clicking on search button
 // // while adding any id itis showing data more then one
-// // search should be work with mac, id ,name, email no,etc
-// // if the usersearch is open so the assig to user button should hide
-// // if both selected data should go in the correct sheet
-// // need to add snackbar for success and error message
-// // need to add loader
-// // need to add validation for the input field
-// // if data submit evertthing should vanish
-// // have a testing for the code
-
+// // search should be work with id ,name, email no,etc
 
 import React, { useState } from 'react';
-import { Container, Typography, TextField, Button, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Snackbar, Alert } from '@mui/material';
+import { Container, Typography, TextField, Button, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,CircularProgress, Paper, Snackbar, Alert } from '@mui/material';
 
 const DataAssignmentForm = () => {
   const [idQuery, setIdQuery] = useState('');
   const [macQuery, setMacQuery] = useState('');
   const [userIdQuery, setUserIdQuery] = useState('');
+    // const [emailQuery, setEmailQuery] = useState('');
+    // const [contactQuery, setContactQuery] = useState('');
+const [selectedLaptopId, setSelectedLaptopId] = useState(null); // Store selected laptopId
+const [selectedUserId, setSelectedUserId] = useState(null); // Store selected userId
   const [userQuery, setUserQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [userLoading, setUserLoading] = useState(false);
   const [data, setData] = useState([]); // Laptop data
   const [userData, setUserData] = useState([]); // User data
   const [showTable, setShowTable] = useState(false); // Control laptop table visibility
@@ -27,27 +23,41 @@ const DataAssignmentForm = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar visibility
   const [snackbarMessage, setSnackbarMessage] = useState(''); // Snackbar message
 
+  
   // Function to send a POST request to Google Apps Script Web App
   const AssignToUser = async () => {
     const url = "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec";  // Replace with the Web App URL
+    setUserLoading(true);
     const requestBody = JSON.stringify({
-      laptopId: idQuery,
+      laptopId: selectedLaptopId,
+    //   userId: selectedUserId,
+    //   laptopId: idQuery,
       userId: userIdQuery,
       issuedDate: new Date().toLocaleDateString(),
       type: 'assign',
     });
 
     try {
-      await fetch(url, {
+      const response = await fetch(url, {
         method: 'POST',
         body: requestBody,
         headers: {
           'Content-Type': 'application/json',
         },
-        mode: 'cors'
+        mode: 'no-cors'
       });
+      const result = await response.text();
       setSnackbarMessage("Data submitted successfully.");
       setSnackbarOpen(true);
+      setUserLoading(false);
+      setIdQuery('');
+        setMacQuery('');
+        setUserQuery('');
+        setData([]); 
+        setShowTable(false); 
+        setUserData([]); 
+        setShowUserTable(false); 
+        setShowUserDetails(false); 
     } catch (error) {
       console.error('Error submitting data:', error);
       setSnackbarMessage('Error submitting data. Please try again.');
@@ -55,7 +65,7 @@ const DataAssignmentForm = () => {
     }
   };
 
-  // Fetch the laptop data based on the search query (ID or MAC address)
+//   // Fetch the laptop data based on the search query (ID or MAC address)
   const fetchLaptopData = async () => {
     const url = "https://script.google.com/macros/s/AKfycbzoDFfHvdHiX4P6UqzTr_ZZZ7ouaSRHIjmfT5cNEgZLHruYDTUP2QlfqqimeokdLEhP/exec";
     setLoading(true);
@@ -65,12 +75,13 @@ const DataAssignmentForm = () => {
       });
       const result = await response.json();
       if (result.length === 0) {
-        setSnackbarMessage('No data found for the given Laptop ID or MAC Address.');
+        setSnackbarMessage('No Tagged data available for the given Laptop ID or MAC Address.');
         setSnackbarOpen(true);
         setShowTable(false);
       } else {
-        setData(result); // Set the laptop data
-        setShowTable(true); // Show laptop table after data is fetched
+        setData(result); 
+setSelectedLaptopId(result[0].ID);
+        setShowTable(true); 
       }
     } catch (error) {
       console.error('Error:', error);
@@ -81,103 +92,70 @@ const DataAssignmentForm = () => {
     }
   };
 
- // Fetch the user data based on the search query (name, email, or ID)
+ // Fetch the user data based on the search query (Contact, email, or ID)
   const fetchUserData = async () => {
+       
     const url = "https://script.google.com/macros/s/AKfycbzoDFfHvdHiX4P6UqzTr_ZZZ7ouaSRHIjmfT5cNEgZLHruYDTUP2QlfqqimeokdLEhP/exec";
-    setLoading(true);
+    setUserLoading(true);
+
     try {
-      const response = await fetch(`${url}?userIdQuery=${userIdQuery}&userQuery=${userQuery}&type=getUserData`, {
+            const response = await fetch(`${url}?userIdQuery=${userIdQuery}&type=getUserData`, {
         method: 'GET',
       });
       const result = await response.json();
 
-      const filteredResult = result.filter(user =>
-        (user.name && user.name.toLowerCase().includes(userQuery.toLowerCase())) ||
-        (user.email && user.email.toLowerCase().includes(userQuery.toLowerCase())) ||
-        (user.id && user.id.parseInt() === userIdQuery.parseInt())
-      );
+      const filteredResult = result.filter(user => {
+        if (user.ID === userIdQuery || user.contact === userIdQuery || user.email === userIdQuery) {
+            console.log(user);
+setSelectedUserId(user.ID);
+          return true;        // Return true to include the user in the filtered array
+        }
+        return false;         // Return false to exclude non-matching users
+      });
       
-      setUserData(filteredResult); // Set the filtered user data
+      setUserData(result);
+      console.log(result);
+      
+
       setShowUserTable(true); // Show user table after data is fetched
     } catch (error) {
       console.error('Error:', error);
       setSnackbarMessage('Error fetching user data. Please try again.');
       setSnackbarOpen(true);
     } finally {
-      setLoading(false);
+      setUserLoading(false);
     }
   };
-// const fetchUserData = async () => {
-//     const url = "https://script.google.com/macros/s/AKfycbzoDFfHvdHiX4P6UqzTr_ZZZ7ouaSRHIjmfT5cNEgZLHruYDTUP2QlfqqimeokdLEhP/exec";
-//     setLoading(true);
-//     try {
-//       const response = await fetch(`${url}?userIdQuery=${userIdQuery}&userQuery=${userQuery}&type=getUserData`, {
-//         method: 'GET',
-//       });
-//       const result = await response.json();
-  
-//       // Ensure userIdQuery is an integer if it needs to be compared as such
-//       const userIdQueryInt = parseInt(userIdQuery, 10);
-  
-//       // Filter the user data based on the userIdQuery and userQuery
-//       const filteredResult = result.filter(user => {
-//         const userId = user.id ? parseInt(user.id, 10) : null;
-  
-//         return (
-//           (user.name && user.name.toLowerCase().includes(userQuery.toLowerCase())) ||
-//           (user.email && user.email.toLowerCase().includes(userQuery.toLowerCase())) ||
-//           (userId !== null && userId === userIdQueryInt)
-//         );
-//       });
-  
-//       if (filteredResult.length === 0) {
-//         setSnackbarMessage('User ID does not exist.');
-//         setSnackbarOpen(true);
-//         setShowUserTable(false); // Hide user table if no data is found
-//       } else {
-//         setUserData(filteredResult); // Set the filtered user data
-//         setShowUserTable(true); // Show user table after data is fetched
-//       }
-//     } catch (error) {
-//       console.error('Error:', error);
-//       setSnackbarMessage('Error fetching user data. Please try again.');
-//       setSnackbarOpen(true);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
   
   const handleLaptopSearch = () => {
-    if (!idQuery.match(/^[A-Z]{4}-[A-Z]{3}-\d{2}$/)) {
-      setSnackbarMessage('Please provide a valid full Laptop ID in the format: XXXX-XXX-XX.');
-      setSnackbarOpen(true);
-    } else {
-      fetchLaptopData(); // Fetch laptop data based on the queries
-    }
+    fetchLaptopData();
   };
 
   const handleUserSearch = () => {
-    fetchUserData(); // Fetch the user data based on the query
+    fetchUserData(); 
   };
 
   const handleReset = () => {
     setIdQuery('');
     setMacQuery('');
-    setUserIdQuery('');
     setUserQuery('');
-    setData([]); // Clear laptop data
-    setShowTable(false); // Hide laptop table after reset
-    setUserData([]); // Clear user data
-    setShowUserTable(false); // Hide user table if reset
-    setShowUserDetails(false); // Hide user details section if reset
+    setData([]); 
+    setShowTable(false); 
+    setUserData([]); 
+    setShowUserTable(false); 
+    setShowUserDetails(false); 
   };
 
+  const resetUser = () => {
+    setUserIdQuery('');
+    setUserData([]);
+  };
   const handleAssignToUser = () => {
-    setShowUserDetails(true); // Show user details section
+    setShowUserDetails(true); 
   };
 
   const handleSnackbarClose = () => {
-    setSnackbarOpen(false); // Close Snackbar
+    setSnackbarOpen(false); 
   };
 
   // Extract headers from the first object in the data array (for laptop data)
@@ -186,31 +164,32 @@ const DataAssignmentForm = () => {
   const userHeaders = userData.length > 0 ? Object.keys(userData[0]) : [];
 
   return (
-    <Container maxWidth="lg" style={{ marginTop: '50px' }}>
-      <Typography variant="h4" gutterBottom>
+    <Container maxWidth="lg" sx={{ mt: 5,mb: '1000px', marginBottom: '100px !important' }}
+    >
+      <Typography variant="h4" gutterBottom align='center'>
         Data Assignment Form
       </Typography>
 
       {/* Laptop Identification Section */}
-      <Typography variant="h5" gutterBottom>
-        Laptop Identification (Search by Laptop ID or MAC Address)
+      <Typography variant="h5" gutterBottom align='center'>
+        Laptop Identification 
       </Typography>
-      <Box display="flex" flexDirection="column" marginBottom={2}>
+      <Box display="flex" flexDirection="raw" marginBottom={2} mt = {8}>
         <TextField
-          label="Enter Laptop ID"
+          label="Search By Laptop ID"
           variant="outlined"
-          style={{ width: '50%' }}
+          style={{ width: '50%', marginRight: '10px' }}
           value={idQuery}
           onChange={(e) => setIdQuery(e.target.value)}
         />
         <TextField
-          label="Enter MAC Address"
+          label="Search By MAC Address"
           variant="outlined"
-          style={{ width: '50%', marginTop: '10px' }}
+          style={{ width: '50%' }}
           value={macQuery}
           onChange={(e) => setMacQuery(e.target.value)}
         />
-        
+
       </Box>
 
       
@@ -222,7 +201,7 @@ const DataAssignmentForm = () => {
                     onClick={handleLaptopSearch}
                     disabled={!idQuery && !macQuery}
                   >
-                   Search
+                    {loading ? <CircularProgress size={24} color='white' /> : "Search"}
                    </Button>
                 </Box>
                     <Box marginLeft={3}>
@@ -239,7 +218,7 @@ const DataAssignmentForm = () => {
       {/* Laptop Table */}
       {showTable && data.length > 0 && (
         <>
-          <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+          <TableContainer component={Paper} style={{ marginTop: '40px' }}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -259,24 +238,27 @@ const DataAssignmentForm = () => {
               </TableBody>
             </Table>
           </TableContainer>
-
+          {!showUserDetails && 
           <Box display="flex" justifyContent="center" marginTop={2}>
             <Button variant="contained" color="primary" onClick={handleAssignToUser}>
               Assign to User
             </Button>
           </Box>
+                    }
         </>
       )}
 
       {/* User Details Section */}
       {showUserDetails && (
-        <Container maxWidth="lg" style={{ marginTop: '50px' }}>
-          <Typography variant="h5" gutterBottom>
+        <Container maxWidth="lg" style={{ marginTop: '60px', mb: '80px', marginBottom: '100px !important' }} 
+        sx = {{mb :10 , marginBottom: '100px !important'}}
+        >
+          <Typography variant="h5" gutterBottom align = "center">
             User Details
           </Typography>
-          <Box display="flex" marginBottom={2}>
+          <Box display="flex" marginBottom={2} mt = {5}>
             <TextField
-              label="Search by User ID, Name, or Email"
+              label="Search by User ID"
               variant="outlined"
               style={{ width: '50%' }}
               value={userIdQuery}
@@ -296,16 +278,15 @@ const DataAssignmentForm = () => {
                 Search
               </Button>
             </Box>
-          
-
-          <Box marginLeft={5} >
-            <Button variant="outlined" color="secondary" onClick={handleReset}>
+          <Box marginLeft={3} >
+            <Button variant="outlined" color="secondary" onClick={resetUser}>
               Reset
             </Button>
           </Box>
               </Box>
-          {/* User Table */}
+
           {showUserTable && userData.length > 0 && (
+            <>
             <TableContainer component={Paper} style={{ marginTop: '20px' }}>
               <Table>
                 <TableHead>
@@ -327,18 +308,23 @@ const DataAssignmentForm = () => {
               </Table>
               
             </TableContainer>
-
-            
-          )}
-           <Box display="flex" justifyContent="center" marginTop={2}>
+            <Box display="flex" 
+            justifyContent="center" 
+            marginTop={4} 
+            mb = {10 } >
              <Button
                variant="contained"
                color="primary"
                onClick={AssignToUser}
             >
-              Submit data
+              {userLoading ? <CircularProgress size={24} color='white' /> : "Submit data"}
              </Button>
+             <br /><br />
            </Box>
+           </>
+            
+          )}
+           
         </Container>
         
       )}
@@ -358,3 +344,5 @@ const DataAssignmentForm = () => {
 };
 
 export default DataAssignmentForm;
+
+
