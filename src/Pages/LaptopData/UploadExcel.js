@@ -20,6 +20,7 @@ const Upload = () => {
 
   // Define the expected columns (from the sample file)
   const expectedColumns = [
+    "ID",
     "Donor Company Name",
     "RAM",
     "ROM",

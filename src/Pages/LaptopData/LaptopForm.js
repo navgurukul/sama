@@ -76,6 +76,7 @@ function LaptopForm() {
       // Reset the form data to its initial state
       setFormData({
         type: "laptopLabeling",
+        id:"",
         donorCompanyName: "",
         ram: "",
         rom: "",
@@ -273,12 +274,22 @@ function LaptopForm() {
                 variant="outlined"
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <TextField
                 fullWidth
                 label="Laptop Weight"
                 name="laptopWeight"
                 value={formData.laptopWeight}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Id"
+                name="id"
+                value={formData.id}
                 onChange={handleChange}
                 variant="outlined"
               />
