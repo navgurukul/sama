@@ -15,6 +15,7 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
   const [userQuery, setUserQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [userLoading, setUserLoading] = useState(false);
+  const [submitLoading, setSumbitLoading] = useState(false);
   const [data, setData] = useState([]); // Laptop data
   const [userData, setUserData] = useState([]); // User data
   const [showTable, setShowTable] = useState(false); // Control laptop table visibility
@@ -27,12 +28,12 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
   // Function to send a POST request to Google Apps Script Web App
   const AssignToUser = async () => {
     const url = "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec";  // Replace with the Web App URL
-    setUserLoading(true);
+    setSumbitLoading(true);
     const requestBody = JSON.stringify({
       laptopId: selectedLaptopId,
-    //   userId: selectedUserId,
+      userId: selectedUserId,
     //   laptopId: idQuery,
-      userId: userIdQuery,
+    //   userId: userIdQuery,
       issuedDate: new Date().toLocaleDateString(),
       type: 'assign',
     });
@@ -49,15 +50,17 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
       const result = await response.text();
       setSnackbarMessage("Data submitted successfully.");
       setSnackbarOpen(true);
-      setUserLoading(false);
+      setSumbitLoading(false);
       setIdQuery('');
         setMacQuery('');
+        setUserIdQuery('');
         setUserQuery('');
         setData([]); 
         setShowTable(false); 
         setUserData([]); 
         setShowUserTable(false); 
         setShowUserDetails(false); 
+        setSelectedLaptopId("");
     } catch (error) {
       console.error('Error submitting data:', error);
       setSnackbarMessage('Error submitting data. Please try again.');
@@ -73,15 +76,21 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
       const response = await fetch(`${url}?idQuery=${idQuery}&macQuery=${macQuery}&type=getLaptopData`, {
         method: 'GET',
       });
-      const result = await response.json();
-      if (result.length === 0) {
-        setSnackbarMessage('No Tagged data available for the given Laptop ID or MAC Address.');
+      const result = await response.json();      
+      if (result.length === 0 ||result.length > 1) {
+        setSnackbarMessage('No data available for the given Laptop ID or MAC Address, Please fill the correct id.');
         setSnackbarOpen(true);
         setShowTable(false);
       } else {
-        setData(result); 
-setSelectedLaptopId(result[0].ID);
-        setShowTable(true); 
+        if (result[0].Status === "Laptop Assigned"){
+            setSnackbarMessage('This data is already assigned.');
+            setSnackbarOpen(true);
+        }
+        else if (result[0].Status === "Tagged"){
+            setData(result); 
+            setSelectedLaptopId(result[0].ID);
+            setShowTable(true);
+        };
       }
     } catch (error) {
       console.error('Error:', error);
@@ -94,29 +103,14 @@ setSelectedLaptopId(result[0].ID);
 
  // Fetch the user data based on the search query (Contact, email, or ID)
   const fetchUserData = async () => {
-       
-    const url = "https://script.google.com/macros/s/AKfycbzoDFfHvdHiX4P6UqzTr_ZZZ7ouaSRHIjmfT5cNEgZLHruYDTUP2QlfqqimeokdLEhP/exec";
-    setUserLoading(true);
+        setUserLoading(true);
 
     try {
-            const response = await fetch(`${url}?userIdQuery=${userIdQuery}&type=getUserData`, {
-        method: 'GET',
-      });
+            const response = await fetch(`https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${userIdQuery}`)
+
       const result = await response.json();
-
-      const filteredResult = result.filter(user => {
-        if (user.ID === userIdQuery || user.contact === userIdQuery || user.email === userIdQuery) {
-            console.log(user);
-setSelectedUserId(user.ID);
-          return true;        // Return true to include the user in the filtered array
-        }
-        return false;         // Return false to exclude non-matching users
-      });
-      
       setUserData(result);
-      console.log(result);
-      
-
+      setSelectedUserId(result[0].ID);
       setShowUserTable(true); // Show user table after data is fetched
     } catch (error) {
       console.error('Error:', error);
@@ -190,9 +184,7 @@ setSelectedUserId(user.ID);
           onChange={(e) => setMacQuery(e.target.value)}
         />
 
-      </Box>
-
-      
+      </Box>      
             <Box display="flex"  alignItems="center" marginTop={2}>
               <Box>
                   <Button
@@ -214,7 +206,6 @@ setSelectedUserId(user.ID);
                     </Button>
                   </Box>
                 </Box>
-
       {/* Laptop Table */}
       {showTable && data.length > 0 && (
         <>
@@ -247,7 +238,6 @@ setSelectedUserId(user.ID);
                     }
         </>
       )}
-
       {/* User Details Section */}
       {showUserDetails && (
         <Container maxWidth="lg" style={{ marginTop: '60px', mb: '80px', marginBottom: '100px !important' }} 
@@ -275,7 +265,7 @@ setSelectedUserId(user.ID);
                 onClick={handleUserSearch}
                 disabled={!userIdQuery && !userQuery}
               >
-                Search
+                 {userLoading ? <CircularProgress size={24} color='white' /> : "Search"}
               </Button>
             </Box>
           <Box marginLeft={3} >
@@ -317,7 +307,7 @@ setSelectedUserId(user.ID);
                color="primary"
                onClick={AssignToUser}
             >
-              {userLoading ? <CircularProgress size={24} color='white' /> : "Submit data"}
+              {submitLoading ? <CircularProgress size={24} color='white' /> : "Submit data"}
              </Button>
              <br /><br />
            </Box>
@@ -344,5 +334,3 @@ setSelectedUserId(user.ID);
 };
 
 export default DataAssignmentForm;
-
-
