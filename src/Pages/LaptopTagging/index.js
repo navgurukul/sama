@@ -41,6 +41,8 @@ function LaptopTagging() {
   const [selectedUser, setSelectedUser] = useState(null); // Store selected row
   const [taggedLaptops, setTaggedLaptops] = useState({}); // Track tagged status
   const [open, setOpen] = useState(false); // Modal state
+  const [selectedRowIndex, setSelectedRowIndex] = useState(null); // To store selected row index
+  const [isChecked, setIsChecked] = useState(false); // To store the desired checked state
   const printRef = useRef(); // Reference to the div for printing
 
   const handleOpen = () => setOpen(true);
@@ -53,13 +55,13 @@ function LaptopTagging() {
       try {
         const response = await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getLaptopData");
         const result = await response.json();
-  
+        console.log(result)
         const filteredData = result.filter(laptop => {
           if (idQuery) {
-            return laptop.ID.toUpperCase() === idQuery.toUpperCase();
+            return String(laptop["ID"]).toUpperCase() === idQuery.toUpperCase();
           }
           if (macQuery) {
-            return laptop['Mac address'].toUpperCase() === macQuery.toUpperCase();
+            return String(laptop['Mac address']).toUpperCase() === macQuery.toUpperCase();
           }
           return false;
         });
@@ -71,7 +73,8 @@ function LaptopTagging() {
       }
     }
   };
-  
+
+ 
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
@@ -218,37 +221,60 @@ function LaptopTagging() {
     setData([]); // Clear data
   };
 
-  const handleTagChange = async (event, rowIndex) => {
+  // Updated function to handle checkbox click
+  const handleTagClick = (event, rowIndex) => {
+    event.stopPropagation();
+    event.preventDefault();
 
-    const isChecked = event.target.checked;
-    const laptopId = data[rowIndex].ID; // Assuming each row has an ID field
+    const isCurrentlyChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : data[rowIndex].Status === "Tagged";
+    setSelectedRowIndex(rowIndex);
+    setIsChecked(!isCurrentlyChecked);
+    setOpen(true); // Open the modal
+  };
+
+  // Function to handle modal confirmation (Okay button)
+  const handleModalConfirm = async () => {
+    const laptopId = data[selectedRowIndex].ID;
+
+    // Update the taggedLaptops state
     setTaggedLaptops(prevState => ({
       ...prevState,
-      [rowIndex]: isChecked
-      
+      [selectedRowIndex]: isChecked
     }));
-    handleOpen(); 
-    
-    // Make a request to the backend to update the tag status
-    const payload = {
-      type:"laptopLabeling",
-      id: laptopId,
-      // macAddress: data[rowIndex]["Mac address"],
-      status: "tagged", // Update status field
-    };
-    try {
-      await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-        mode: 'no-cors'
-      });
-      
-    } catch (error) {
-      console.error('Error tagging the laptop:', error);
+
+    if (isChecked) {
+      // Perform the tagging action
+      const payload = {
+        type: "laptopLabeling",
+        id: laptopId,
+        status: "tagged"
+      };
+      try {
+        await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+          mode: 'no-cors'
+        });
+      } catch (error) {
+        console.error('Error tagging the laptop:', error);
+      }
+    } else {
+      // Handle untagging if necessary
     }
+
+    setOpen(false);
+    setSelectedRowIndex(null);
+    setIsChecked(false);
+  };
+
+  // Function to handle modal cancellation (Cancel button)
+  const handleModalClose = () => {
+    setOpen(false);
+    setSelectedRowIndex(null);
+    setIsChecked(false);
   };
 
  
@@ -368,20 +394,15 @@ function LaptopTagging() {
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
-          const isChecked = laptopData.Status === "Tagged" || taggedLaptops[rowIndex];
+          const isChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : laptopData.Status === "Tagged";
 
           return (
             <Checkbox
               checked={isChecked}
-              onChange={(event) => {
-                handleTagChange(event, rowIndex);
-
-               // Open modal on checkbox click
-              }}
+              onClick={(event) => handleTagClick(event, rowIndex)}
               color="primary"
-              className="custom-body-cell" // Apply custom CSS class
+              className="custom-body-cell"
             />
-
           );
         },
         setCellProps: () => ({
@@ -480,19 +501,25 @@ function LaptopTagging() {
       {/* Modal for checkbox click */}
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={handleModalClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Laptop Tagged
+            {isChecked ? 'Tag Laptop' : 'Untag Laptop'}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            The laptop has been successfully tagged.
+            Would you like to  {isChecked ? 'tag' : 'untag'} this laptop?
           </Typography>
-          <Button onClick={handleClose} style={{marginTop:"20px"}}>Close</Button>
-          {/* <Button onClick={handleClose}>Tagged</Button> */}
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button variant="outlined" color="secondary" onClick={handleModalClose} style={{ marginRight: 8 }}>
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary" onClick={handleModalConfirm}>
+              Okay
+            </Button>
+          </Box>
         </Box>
       </Modal>
 
