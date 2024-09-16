@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import CircularProgress from "@mui/material/CircularProgress";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 
@@ -95,6 +96,7 @@ const FormComponent = () => {
     { label: "Laptop Assigned", name: "laptopAssigned" },
   ];
 
+
   const [formData, setFormData] = useState({
     idProofType: "",
     useCase: "",
@@ -107,6 +109,7 @@ const FormComponent = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState(""); // To store custom message
   const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // Success or Error
+  const [loading, setLoading] = useState(false); 
 
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
@@ -157,8 +160,9 @@ const FormComponent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     if (validate()) {
+      setLoading(true);
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = async () => {
@@ -196,6 +200,7 @@ const FormComponent = () => {
             addressState: "",
             status: "",
           });
+          setLoading(false);
           setFile(null); // Reset file input
           setSnackbarMessage("Data updated successfully!");
           setSnackbarSeverity("success");
@@ -330,9 +335,12 @@ const FormComponent = () => {
               Upload ID Proof Image
               <input type="file" hidden onChange={handleFileChange} />
            </Button>
-           {errors.file && (
-             <Typography color="error">{errors.file}</Typography>           
-             )}
+           {file ? (
+            <Typography sx={{ mt: 1 }}>Selected file: {file.name}</Typography>
+          ) : (
+            errors.file && <Typography color="error">{errors.file}</Typography>
+          )}
+
         </FormControl>
 
         <Button
@@ -342,7 +350,12 @@ const FormComponent = () => {
           sx={{ mt: 2 }}
           type="submit"
         >
-          Submit
+           {loading ? (
+            <CircularProgress size={24} color="white" sx={{ color: "white" }} />
+          ) : (
+            "Submit"
+          )}
+          
         </Button>
       </form>
 
