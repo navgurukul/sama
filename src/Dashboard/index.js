@@ -31,7 +31,6 @@ function DashboardPage() {
 
         fetchData();
     }, []);
-    
   return (
 
     <Container maxWidth="xl" sx={{mb:"40px"}}>

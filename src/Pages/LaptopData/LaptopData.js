@@ -23,7 +23,7 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
   const [showUserDetails, setShowUserDetails] = useState(false); // Control user details section visibility
   const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar visibility
   const [snackbarMessage, setSnackbarMessage] = useState(''); // Snackbar message
-
+  const [snackbarType, setSnackbarType] = useState("success"); 
   
   // Function to send a POST request to Google Apps Script Web App
   const AssignToUser = async () => {
@@ -61,6 +61,7 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
         setShowUserTable(false); 
         setShowUserDetails(false); 
         setSelectedLaptopId("");
+        setSnackbarType('success');
     } catch (error) {
       console.error('Error submitting data:', error);
       setSnackbarMessage('Error submitting data. Please try again.');
@@ -76,21 +77,31 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
       const response = await fetch(`${url}?idQuery=${idQuery}&macQuery=${macQuery}&type=getLaptopData`, {
         method: 'GET',
       });
-      const result = await response.json();      
+      const result = await response.json(); 
+      console.log(result);
+           
       if (result.length === 0 ||result.length > 1) {
-        setSnackbarMessage('No data available for the given Laptop ID or MAC Address, Please fill the correct id.');
+        setSnackbarMessage('No Tagged data available for the given Laptop ID or MAC Address');
         setSnackbarOpen(true);
         setShowTable(false);
+        setSnackbarType('error');
       } else {
         if (result[0].Status === "Laptop Assigned"){
             setSnackbarMessage('This data is already assigned.');
+            setSnackbarType('error');
             setSnackbarOpen(true);
         }
         else if (result[0].Status === "Tagged"){
             setData(result); 
             setSelectedLaptopId(result[0].ID);
             setShowTable(true);
-        };
+            setSnackbarType('success');
+        }
+        else{
+            setSnackbarMessage('The Laptop is not tagged yet.');
+            setSnackbarOpen(true);
+            setSnackbarType('error');
+        }
       }
     } catch (error) {
       console.error('Error:', error);
@@ -109,9 +120,26 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
             const response = await fetch(`https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${userIdQuery}`)
 
       const result = await response.json();
-      setUserData(result);
-      setSelectedUserId(result[0].ID);
-      setShowUserTable(true); // Show user table after data is fetched
+
+    //   setUserData(result);
+    //   setSelectedUserId(result[0].ID);
+    //   setShowUserTable(true); // Show user table after data is fetched
+
+    if (result.length === 0) {
+        setSnackbarMessage('No user found for the given ID, email, or contact.');
+        setSnackbarOpen(true);
+        setSnackbarType('error');
+        setShowUserTable(false);
+      } else if (result.length > 1) {
+        setSnackbarMessage('Multiple users found, please narrow your search.');
+        setSnackbarOpen(true);
+        setSnackbarType('error');
+      } else {
+        setUserData(result);
+        setSelectedUserId(result[0].ID);
+        setShowUserTable(true);
+        setSnackbarType('success');
+      }
     } catch (error) {
       console.error('Error:', error);
       setSnackbarMessage('Error fetching user data. Please try again.');
@@ -248,7 +276,7 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
           </Typography>
           <Box display="flex" marginBottom={2} mt = {5}>
             <TextField
-              label="Search by User ID"
+              label="Search by User ID, Email, or Contact"
               variant="outlined"
               style={{ width: '50%' }}
               value={userIdQuery}
@@ -325,7 +353,10 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
       >
-        <Alert onClose={handleSnackbarClose} severity={snackbarMessage.includes('Error') ? 'error' : 'success'}>
+        <Alert onClose={handleSnackbarClose} 
+        severity={snackbarMessage.includes('Error') ? 'error' : 'success'}
+        sx={{ backgroundColor: snackbarType === 'error' ? '#FF7F7F' : "#90EE90", color: 'black' }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>
