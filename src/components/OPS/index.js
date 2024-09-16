@@ -21,7 +21,7 @@ function Ops() {
       </Box>
 
       {/* Laptop Detail Form Description and Button */}
-      <Box mt={4}>
+      <Box my={4}>
         <Grid container spacing={4} >
           <Grid item xs={12} sm={6}>
             <Card variant="outlined">
@@ -86,6 +86,27 @@ function Ops() {
                     href="/laptop-tagging"
                   >
                     Laptop tagging
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={6}>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h6" component="h2" gutterBottom>
+                  Laptop Assignment
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  Use this for Assign laptops to user.
+                </Typography>
+                <Box mt={2}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="/data-assignment-form"
+                  >
+                    Laptop Assignment
                   </Button>
                 </Box>
               </CardContent>

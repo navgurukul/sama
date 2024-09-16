@@ -11,6 +11,7 @@ import OurApproach from './Pages/OurApproach/OurApproach';
 import Donate from './Pages/Donate/Donate';
 import DashboardPage from './Dashboard';
 import MacRearch from './Pages/LaptopTagging';
+import DataAssignmentForm from './Pages/LaptopData/LaptopData';
 import './App.css';
 import LaptopInventory from './Pages/LaptopData/index';
 import Ops from './components/OPS/index';
@@ -32,6 +33,7 @@ function App() {
               <Route path="/donate" element={<Donate />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/laptop-tagging" element={<MacRearch />} />
+              <Route path="/data-assignment-form" element={<DataAssignmentForm />} />
               <Route path="/user-details" element={<Userdata />} />
               <Route path="/laptopinventory" element={<LaptopInventory />} />
               <Route path='/ops' element={<Ops />} />
@@ -47,6 +49,5 @@ function App() {
   );
 }
 export default App;
-
 
 
