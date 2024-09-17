@@ -21,7 +21,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import './styles.css';
 import EditButton from './EditButton';
-import { type } from '@testing-library/user-event/dist/type';
+
 
 const style = {
   position: 'absolute',
@@ -46,6 +46,7 @@ function LaptopTagging() {
   const [selectedRowIndex, setSelectedRowIndex] = useState(null); // To store selected row index
   const [isChecked, setIsChecked] = useState(false); // To store the desired checked state
   const printRef = useRef(); // Reference to the div for printing
+  const [changeStatus, setChangeStatus] = useState(false);
 
 
   const handleOpen = () => setOpen(true);
@@ -228,9 +229,10 @@ function LaptopTagging() {
     event.stopPropagation();
     event.preventDefault();
 
-    const isCurrentlyChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : data[rowIndex].Status === "Tagged";
+    const isCurrentlyChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : data[rowIndex].Working === "working";
     setSelectedRowIndex(rowIndex);
     setIsChecked(!isCurrentlyChecked);
+    setChangeStatus(false);
     setOpen(true); // Open the modal
   };
 
@@ -249,19 +251,17 @@ function LaptopTagging() {
       const payload = {
         type:"laptopLabeling",
         id: laptopId,
-        working: isChecked?"working":"no working",
-        donorCompany: rowIndex["Donor Company Name"],
+        working: !changeStatus && (isChecked?"Working":"Not working"),
+        donorCompanyName: rowIndex["Donor Company Name"],
         ram: rowIndex.RAM,
         rom: rowIndex.ROM,
-        manufacturerModel: rowIndex["Manufacturer Model"],
-        minorIssues: rowIndex["Minor Issues"],
-        majorIssues: rowIndex["Major Issues"], 
+        manufacturerModel: rowIndex["Manufacturer Model"], 
         inventoryLocation: rowIndex["Inventory Location"],
         macAddress: rowIndex["Mac address"],
         processor: rowIndex["Processor"],
         others: rowIndex["Others"], 
         status: rowIndex["Status"],
-        laptopWeight: rowIndex["Laptop Weight"],
+        laptopWeight: rowIndex["laptop weight"],
         conditionStatus: rowIndex["Condition Status"],
         manufacturingDate: rowIndex["Manufacturing Date"],
       };
@@ -296,6 +296,8 @@ function LaptopTagging() {
     const updatedData = [...data];
     updatedData[rowIndex].Status = newStatus;
     setData(updatedData);
+    setChangeStatus(true);
+    handleTagClick(event, rowIndex);
   };
 
   const columns = [
@@ -422,7 +424,7 @@ function LaptopTagging() {
             >
               <MenuItem value=""><em>None</em></MenuItem>
               <MenuItem value="Laptop Recevived">Laptop Recevived</MenuItem>
-              <MenuItem value="Laptop Recevived">Laptop Refurbished</MenuItem>
+              <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
             </Select>
           );
         },
@@ -435,13 +437,13 @@ function LaptopTagging() {
       }
     },
     {
-      name: "Tag",
-      label: "Tag Laptop",
+      name: "working",
+      label: "working",
       options: {
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
-          const isChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : laptopData.working === "working";
+          const isChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : laptopData.Working === "working";
           
           return (
             <Checkbox
