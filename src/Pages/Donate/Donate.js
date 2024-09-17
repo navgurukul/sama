@@ -16,6 +16,7 @@ import {
   
 } from "@mui/material";
 import "./Donate.css";
+
 import icon1 from "./assets/Group 22 (1).svg";
 
 
@@ -185,8 +186,8 @@ function Donation() {
                     Corporate Laptop Donation
                   </Typography>
                   <Typography variant="body1">
-                    Transform your end-of-life laptops into powerful tools for
-                    education and empowerment.
+                    Transform your end-of-life laptops into powerful tools
+                    for education and empowerment.
                   </Typography>
                 </Box>
               </Grid>
@@ -218,7 +219,6 @@ function Donation() {
                   <Typography
                     className="customSubtitle1"
                     sx={{ mt: 2 }}
-
                   // sx={{ margin: "14px 0px" }}
                   >
                     Individual Contribution
@@ -363,6 +363,7 @@ function Donation() {
                   />
                 </Grid>
               )}
+
 
               <Grid item xs={12}>
                 <FormControl component="fieldset" error={!!errors.donationType}>
@@ -586,12 +587,7 @@ function Donation() {
                   alignItems: "center",
                 }}
               >
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  style={{ width: "126px", height: "48px" }}
-                >
+                <Button type="submit" variant="contained" color="primary" style={{ width: "126px", height: "48px", borderRadius:"100px" }}>
                   Submit
                 </Button>
                 {successMessage && (
