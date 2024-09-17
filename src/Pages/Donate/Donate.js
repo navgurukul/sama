@@ -219,7 +219,6 @@ function Donation() {
                   <Typography
                     className="customSubtitle1"
                     sx={{ mt: 2 }}
-
                   // sx={{ margin: "14px 0px" }}
                   >
                     Individual Contribution
