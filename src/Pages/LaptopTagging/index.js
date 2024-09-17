@@ -484,9 +484,6 @@ function LaptopTagging() {
             setOpen={setOpen}
             setSelectedRowIndex={setSelectedRowIndex}
             style={style}
-          
-
-          
             />
           );
         },
