@@ -592,7 +592,10 @@ function LaptopTagging() {
             {isChecked ? 'working' : 'no working'}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Would you like to  {isChecked ? 'tag' : 'untag'} this laptop?
+         {changeStatus?
+          "Are you sure you want to change the status of the laptop?"
+          : `Are you sure you want to mark this laptop as ${isChecked ? 'working' : 'no working'}?`
+         }
           </Typography>
           <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="outlined" color="secondary" onClick={handleModalClose} style={{ marginRight: 8 }}>
