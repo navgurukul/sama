@@ -143,6 +143,16 @@ function LaptopForm() {
             <Grid item xs={12}>
               <TextField
                 fullWidth
+                label="Serial Number"
+                name="id"
+                value={formData.id}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
                 label="Donor Company Name"
                 name="donorCompanyName"
                 value={formData.donorCompanyName}
@@ -274,7 +284,7 @@ function LaptopForm() {
                 variant="outlined"
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Laptop Weight"
@@ -284,16 +294,7 @@ function LaptopForm() {
                 variant="outlined"
               />
             </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Id"
-                name="id"
-                value={formData.id}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid>
+            
             <Grid item xs={12}>
               <TextField
                 fullWidth
