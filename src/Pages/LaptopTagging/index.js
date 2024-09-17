@@ -47,7 +47,8 @@ function LaptopTagging() {
   const [isChecked, setIsChecked] = useState(false); // To store the desired checked state
   const printRef = useRef(); // Reference to the div for printing
   const [changeStatus, setChangeStatus] = useState(false);
-  const [title, setTitle] = useState('');
+
+  const [modelStatus, setModelStatus] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -59,7 +60,6 @@ function LaptopTagging() {
       try {
         const response = await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getLaptopData");
         const result = await response.json();
-        console.log(result)
         const filteredData = result.filter(laptop => {
           if (idQuery) {
             return String(laptop["ID"]).toUpperCase() === idQuery.toUpperCase();
@@ -226,7 +226,6 @@ function LaptopTagging() {
 
   // Updated function to handle checkbox click
   const handleTagClick = (event, rowIndex) => {
-    setTitle(event.target.value);
     event.stopPropagation();
     event.preventDefault();
 
@@ -282,6 +281,7 @@ function LaptopTagging() {
     setOpen(false);
     setSelectedRowIndex(null);
     setIsChecked(false);
+    setModelStatus(false);
   };
 
   // Function to handle modal cancellation (Cancel button)
@@ -289,14 +289,16 @@ function LaptopTagging() {
     setOpen(false);
     setSelectedRowIndex(null);
     setIsChecked(false);
+    setModelStatus(false);
   };
 
   // Function to handle status change
   const handleStatusChange = (event, rowIndex) => {
-    const newStatus = event.target.value;
+    const modelStatustatus = event.target.value;
     const updatedData = [...data];
-    updatedData[rowIndex].Status = newStatus;
+    updatedData[rowIndex].Status = modelStatustatus;
     setData(updatedData);
+    setModelStatus(true);
     setChangeStatus(true);
     handleTagClick(event, rowIndex);
   };
@@ -498,6 +500,8 @@ function LaptopTagging() {
     }
   ];
 
+  
+  
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2} style={{ marginBottom: '32px', marginTop: '80px' }}>
@@ -590,11 +594,14 @@ function LaptopTagging() {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            {!isChecked ? 'Working' : 'Not Working'}
+            
+            {modelStatus ? "Status" :!isChecked ? 'Working' : 'Not Working'}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-         {changeStatus?
-          "Are you sure you want to change the status of the laptop?"
+
+          
+         {modelStatus ?
+          "Are you sure you want to change the status for this laptop?"
           : `Are you sure you want to mark this laptop as ${!isChecked ? 'Working' : 'Not Working'}?`
          }
           </Typography>
@@ -603,7 +610,7 @@ function LaptopTagging() {
               Cancel
             </Button>
             <Button variant="contained" color="primary" onClick={handleModalConfirm}>
-              Okay
+              Yes
             </Button>
           </Box>
         </Box>
