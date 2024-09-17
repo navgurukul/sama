@@ -11,6 +11,8 @@ import {
   IconButton,
   Modal,
   Box,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import MUIDataTable from "mui-datatables";
 import GetAppIcon from '@mui/icons-material/GetApp';
@@ -18,7 +20,8 @@ import PrintIcon from '@mui/icons-material/Print';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import './styles.css';
-import { Sort } from '@mui/icons-material';
+import EditButton from './EditButton';
+
 
 const style = {
   position: 'absolute',
@@ -38,12 +41,13 @@ function LaptopTagging() {
   const [idQuery, setIdQuery] = useState('');
   const [macQuery, setMacQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null); // Store selected row
   const [taggedLaptops, setTaggedLaptops] = useState({}); // Track tagged status
   const [open, setOpen] = useState(false); // Modal state
   const [selectedRowIndex, setSelectedRowIndex] = useState(null); // To store selected row index
   const [isChecked, setIsChecked] = useState(false); // To store the desired checked state
   const printRef = useRef(); // Reference to the div for printing
+  const [changeStatus, setChangeStatus] = useState(false);
+
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -216,7 +220,6 @@ function LaptopTagging() {
   const handleReset = () => {
     setIdQuery('');
     setMacQuery('');
-    setSelectedUser(null); // Reset selected user
     setTaggedLaptops({}); // Reset tagged status
     setData([]); // Clear data
   };
@@ -226,14 +229,16 @@ function LaptopTagging() {
     event.stopPropagation();
     event.preventDefault();
 
-    const isCurrentlyChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : data[rowIndex].Status === "Tagged";
+    const isCurrentlyChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : data[rowIndex].Working === "working";
     setSelectedRowIndex(rowIndex);
     setIsChecked(!isCurrentlyChecked);
+    setChangeStatus(false);
     setOpen(true); // Open the modal
   };
 
   // Function to handle modal confirmation (Okay button)
   const handleModalConfirm = async () => {
+    const rowIndex = data[selectedRowIndex];
     const laptopId = data[selectedRowIndex].ID;
 
     // Update the taggedLaptops state
@@ -242,12 +247,23 @@ function LaptopTagging() {
       [selectedRowIndex]: isChecked
     }));
 
-    if (isChecked) {
-      // Perform the tagging action
+   
       const payload = {
-        type: "laptopLabeling",
+        type:"laptopLabeling",
         id: laptopId,
-        status: "tagged"
+        working: !changeStatus && (!isChecked?"Working":"Not Working"),
+        donorCompanyName: rowIndex["Donor Company Name"],
+        ram: rowIndex.RAM,
+        rom: rowIndex.ROM,
+        manufacturerModel: rowIndex["Manufacturer Model"], 
+        inventoryLocation: rowIndex["Inventory Location"],
+        macAddress: rowIndex["Mac address"],
+        processor: rowIndex["Processor"],
+        others: rowIndex["Others"], 
+        status: rowIndex["Status"],
+        laptopWeight: rowIndex["laptop weight"],
+        conditionStatus: rowIndex["Condition Status"],
+        manufacturingDate: rowIndex["Manufacturing Date"],
       };
       try {
         await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
@@ -261,10 +277,7 @@ function LaptopTagging() {
       } catch (error) {
         console.error('Error tagging the laptop:', error);
       }
-    } else {
-      // Handle untagging if necessary
-    }
-
+   
     setOpen(false);
     setSelectedRowIndex(null);
     setIsChecked(false);
@@ -277,11 +290,20 @@ function LaptopTagging() {
     setIsChecked(false);
   };
 
- 
+  // Function to handle status change
+  const handleStatusChange = (event, rowIndex) => {
+    const newStatus = event.target.value;
+    const updatedData = [...data];
+    updatedData[rowIndex].Status = newStatus;
+    setData(updatedData);
+    setChangeStatus(true);
+    handleTagClick(event, rowIndex);
+  };
+
   const columns = [
     { 
       name: "ID", 
-      label: "ID", 
+      label: "Serial No", //Serial No = ID  
       options: {
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -388,21 +410,22 @@ function LaptopTagging() {
       }
     },
     {
-      name: "Tag",
-      label: "Tag Laptop",
+      name: "Status",
+      label: "Status",
       options: {
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
-          const isChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : laptopData.Status === "Tagged";
-
           return (
-            <Checkbox
-              checked={isChecked}
-              onClick={(event) => handleTagClick(event, rowIndex)}
-              color="primary"
-              className="custom-body-cell"
-            />
+            <Select
+              value={laptopData.Status || ''}
+              onChange={(event) => handleStatusChange(event, rowIndex)}
+              displayEmpty
+            >
+              <MenuItem value=""><em>None</em></MenuItem>
+              <MenuItem value="Laptop Received">Laptop Received</MenuItem>
+              <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
+            </Select>
           );
         },
         setCellProps: () => ({
@@ -413,6 +436,65 @@ function LaptopTagging() {
         })
       }
     },
+    {
+      name: "working",
+      label: "Not Working",
+      options: {
+        customBodyRender: (value, tableMeta) => {
+          const rowIndex = tableMeta.rowIndex;
+          const laptopData = data[rowIndex];
+          const isChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : laptopData.Working === "working";
+          
+          return (
+            <Checkbox
+              checked={isChecked}
+              onClick={(event) => handleTagClick(event, rowIndex)}
+              color="primary"
+              className="custom-body-cell"
+            /> 
+          
+          )
+        
+       
+        },
+        setCellProps: () => ({
+          className: 'custom-body-cell'
+        }),
+        setCellHeaderProps: () => ({
+          className: 'custom-header-cell'
+        })
+      }
+    },
+    {
+      name: "Edit",
+      label: "Edit",
+      options: {
+        customBodyRender: (value, tableMeta) => {
+          const rowIndex = tableMeta.rowIndex;
+          const laptopData = data[rowIndex]; // Fetch the current row's laptop data
+          return (
+            <EditButton 
+            laptopData={laptopData} 
+            rowIndex={rowIndex}
+            data={data}
+            setData={setData}
+            setOpen={setOpen}
+            setSelectedRowIndex={setSelectedRowIndex}
+            style={style}
+          
+
+          
+            />
+          );
+        },
+        setCellProps: () => ({
+          className: 'custom-body-cell'
+        }),
+        setCellHeaderProps: () => ({
+          className: 'custom-header-cell'
+        })
+      }
+    }
   ];
 
   return (
@@ -490,7 +572,7 @@ function LaptopTagging() {
             ),
             filterType: 'checkbox',
             selectableRows: 'none', 
-            // pagination: false, // Disable pagination
+            
             download: false, // Disable the default download button
             print: false,    // Disable the default print button
             sort: false,
@@ -507,10 +589,13 @@ function LaptopTagging() {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            {isChecked ? 'Tag Laptop' : 'Untag Laptop'}
+            {!isChecked ? 'Working' : 'Not Norking'}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Would you like to  {isChecked ? 'tag' : 'untag'} this laptop?
+         {changeStatus?
+          "Are you sure you want to change the status of the laptop?"
+          : `Are you sure you want to mark this laptop as ${isChecked ? 'Working' : 'Not Working'}?`
+         }
           </Typography>
           <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="outlined" color="secondary" onClick={handleModalClose} style={{ marginRight: 8 }}>
