@@ -251,7 +251,7 @@ function LaptopTagging() {
       const payload = {
         type:"laptopLabeling",
         id: laptopId,
-        working: !changeStatus && (isChecked?"Working":"Not working"),
+        working: !changeStatus && (!isChecked?"Working":"Not Working"),
         donorCompanyName: rowIndex["Donor Company Name"],
         ram: rowIndex.RAM,
         rom: rowIndex.ROM,
@@ -303,7 +303,7 @@ function LaptopTagging() {
   const columns = [
     { 
       name: "ID", 
-      label: "ID", 
+      label: "Serial No", //Serial No = ID  
       options: {
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -423,7 +423,7 @@ function LaptopTagging() {
               displayEmpty
             >
               <MenuItem value=""><em>None</em></MenuItem>
-              <MenuItem value="Laptop Recevived">Laptop Recevived</MenuItem>
+              <MenuItem value="Laptop Received">Laptop Received</MenuItem>
               <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
             </Select>
           );
@@ -438,7 +438,7 @@ function LaptopTagging() {
     },
     {
       name: "working",
-      label: "working",
+      label: "Not Working",
       options: {
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -589,12 +589,12 @@ function LaptopTagging() {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            {isChecked ? 'working' : 'no working'}
+            {!isChecked ? 'Working' : 'Not Norking'}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
          {changeStatus?
           "Are you sure you want to change the status of the laptop?"
-          : `Are you sure you want to mark this laptop as ${isChecked ? 'working' : 'no working'}?`
+          : `Are you sure you want to mark this laptop as ${isChecked ? 'Working' : 'Not Working'}?`
          }
           </Typography>
           <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
