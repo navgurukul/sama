@@ -47,7 +47,7 @@ function LaptopTagging() {
   const [isChecked, setIsChecked] = useState(false); // To store the desired checked state
   const printRef = useRef(); // Reference to the div for printing
   const [changeStatus, setChangeStatus] = useState(false);
-
+  const [title, setTitle] = useState('');
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -226,6 +226,7 @@ function LaptopTagging() {
 
   // Updated function to handle checkbox click
   const handleTagClick = (event, rowIndex) => {
+    setTitle(event.target.value);
     event.stopPropagation();
     event.preventDefault();
 
@@ -422,7 +423,7 @@ function LaptopTagging() {
               onChange={(event) => handleStatusChange(event, rowIndex)}
               displayEmpty
             >
-              <MenuItem value=""><em>None</em></MenuItem>
+              {/* <MenuItem value=""><em>None</em></MenuItem> */}
               <MenuItem value="Laptop Received">Laptop Received</MenuItem>
               <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
             </Select>
@@ -589,12 +590,12 @@ function LaptopTagging() {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            {!isChecked ? 'Working' : 'Not Norking'}
+            {!isChecked ? 'Working' : 'Not Working'}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
          {changeStatus?
           "Are you sure you want to change the status of the laptop?"
-          : `Are you sure you want to mark this laptop as ${isChecked ? 'Working' : 'Not Working'}?`
+          : `Are you sure you want to mark this laptop as ${!isChecked ? 'Working' : 'Not Working'}?`
          }
           </Typography>
           <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>

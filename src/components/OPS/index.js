@@ -24,7 +24,7 @@ function Ops() {
       <Box my={4}>
         <Grid container spacing={4} >
           <Grid item xs={12} sm={6}>
-            <Card variant="outlined">
+            <Card variant="outlined" style={{ height: '100%' }}> 
               <CardContent>
                 <Typography variant="h6" component="h2" gutterBottom>
                 Laptop Detail Form
@@ -47,7 +47,7 @@ function Ops() {
           </Grid>
 
           {/* User Detail Form Description and Button */}
-          <Grid item xs={12} sm={6} md={6}>
+          {/* <Grid item xs={12} sm={6} md={6}>
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6" component="h2" gutterBottom>
@@ -68,30 +68,32 @@ function Ops() {
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12} sm={6} md={6}>
-            <Card variant="outlined">
-              <CardContent>
+            <Card variant="outlined"
+             style={{ height: '100%' }}
+            >
+              <CardContent style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <Typography variant="h6" component="h2" gutterBottom>
-                  Laptop Tagging
+                Warehouse operations
                 </Typography>
-                <Typography variant="body1" color="textSecondary" gutterBottom>
+                {/* <Typography variant="body1" color="textSecondary" gutterBottom>
                   Use this for tagging laptops.
-                </Typography>
+                </Typography> */}
                 <Box mt={2}>
                   <Button
                     variant="contained"
                     color="primary"
                     href="/laptop-tagging"
                   >
-                    Laptop tagging
+                    Warehouse operations
                   </Button>
                 </Box>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} sm={6} md={6}>
+          {/* <Grid item xs={12} sm={6} md={6}>
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6" component="h2" gutterBottom>
@@ -111,7 +113,7 @@ function Ops() {
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Box>
     </Container>
