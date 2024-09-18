@@ -506,9 +506,10 @@ function LaptopTagging() {
             setOpen={setOpen}
             setSelectedRowIndex={setSelectedRowIndex}
             style={style}
+
             setRefresh={setRefresh}
             refresh={refresh}
-          
+
             />
           );
         },

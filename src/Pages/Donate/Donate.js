@@ -13,8 +13,7 @@ import {
   FormHelperText,
   FormControl,
   Container,
-  Snackbar,
-  Alert,
+  
 } from "@mui/material";
 import "./Donate.css";
 
@@ -126,7 +125,7 @@ function Donation() {
     } else {
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbzfImx2bSi8jva1VGirHI8G7a-yVrfxmjRutPiO3MyVjuHnctOWGYo8cfuz10MFXSooIA/exec",
+        "https://script.google.com/macros/s/AKfycbxwfJKTEMZkpAHtsh8rT1E6Ba3BrqvAd3FzlCKOIhCbD2A5kC_hXN5I0VCTvMgrjgBR/exec",
           {
             method: "POST",
             headers: {
@@ -140,6 +139,7 @@ function Donation() {
         console.log("Form Data Submitted:", formData);
 
         setFormData({
+          type: "",
           firstName: "",
           lastName: "",
           email: "",
@@ -219,7 +219,6 @@ function Donation() {
                   <Typography
                     className="customSubtitle1"
                     sx={{ mt: 2 }}
-
                   // sx={{ margin: "14px 0px" }}
                   >
                     Individual Contribution
