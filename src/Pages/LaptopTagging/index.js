@@ -47,36 +47,47 @@ function LaptopTagging() {
   const [isChecked, setIsChecked] = useState(false); // To store the desired checked state
   const printRef = useRef(); // Reference to the div for printing
   const [changeStatus, setChangeStatus] = useState(false);
+  const [allData, setAllData] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
   const [modelStatus, setModelStatus] = useState(false);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
 
-  const handleSearch = async () => {
-    if (idQuery || macQuery) {
+
+ useEffect(() => {
+    const fetchData = async () => {
       setLoading(true);
-      setTaggedLaptops({}); // Reset the tagged state for a new search
       try {
         const response = await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getLaptopData");
         const result = await response.json();
-        const filteredData = result.filter(laptop => {
-          if (idQuery) {
-            return String(laptop["ID"]).toUpperCase() === idQuery.toUpperCase();
-          }
-          if (macQuery) {
-            return String(laptop['Mac address']).toUpperCase() === macQuery.toUpperCase();
-          }
-          return false;
-        });
-        setData(filteredData);
+        setAllData(result);
+        // setFilteredData(result); // Set filteredData to the fetched data initially
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
-    }
+    };
+
+    fetchData(); // Only called once when component mounts
+  }, [refresh]);
+
+
+  const handleSearch = () => {
+     
+    const filtered = allData.filter(laptop => {
+      if (idQuery) {
+        return String(laptop.ID).toUpperCase() === idQuery.toUpperCase();
+      }
+      if (macQuery) {
+        return String(laptop['Mac address']).toUpperCase() === macQuery.toUpperCase();
+      }
+      return false;
+    });
+    setData(filtered);
+    
   };
+
 
  
 
@@ -229,29 +240,34 @@ function LaptopTagging() {
     event.stopPropagation();
     event.preventDefault();
 
-    const isCurrentlyChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : data[rowIndex].Working === "working";
+    const isCurrentlyChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : data[rowIndex].Working === "Not Working";
     setSelectedRowIndex(rowIndex);
     setIsChecked(!isCurrentlyChecked);
     setChangeStatus(false);
+
     setOpen(true); // Open the modal
   };
+
+
 
   // Function to handle modal confirmation (Okay button)
   const handleModalConfirm = async () => {
     const rowIndex = data[selectedRowIndex];
-    const laptopId = data[selectedRowIndex].ID;
+    const laptopId = data[selectedRowIndex]?.ID;
 
     // Update the taggedLaptops state
+    if (!changeStatus) {
     setTaggedLaptops(prevState => ({
       ...prevState,
       [selectedRowIndex]: isChecked
     }));
+  }
 
    
       const payload = {
         type:"laptopLabeling",
         id: laptopId,
-        working: !changeStatus && (!isChecked?"Working":"Not Working"),
+        working: !changeStatus ? (!isChecked?"Working":"Not Working"):rowIndex.Working,
         donorCompanyName: rowIndex["Donor Company Name"],
         ram: rowIndex.RAM,
         rom: rowIndex.ROM,
@@ -282,6 +298,8 @@ function LaptopTagging() {
     setSelectedRowIndex(null);
     setIsChecked(false);
     setModelStatus(false);
+    setRefresh(!refresh);
+    handleSearch()
   };
 
   // Function to handle modal cancellation (Cancel button)
@@ -294,13 +312,15 @@ function LaptopTagging() {
 
   // Function to handle status change
   const handleStatusChange = (event, rowIndex) => {
+    setSelectedRowIndex(rowIndex);
     const modelStatustatus = event.target.value;
     const updatedData = [...data];
     updatedData[rowIndex].Status = modelStatustatus;
     setData(updatedData);
     setModelStatus(true);
     setChangeStatus(true);
-    handleTagClick(event, rowIndex);
+    setOpen(true);
+    
   };
 
   const columns = [
@@ -421,11 +441,13 @@ function LaptopTagging() {
           const laptopData = data[rowIndex];
           return (
             <Select
-              value={laptopData.Status || ''}
+              value={laptopData.Status}
               onChange={(event) => handleStatusChange(event, rowIndex)}
               displayEmpty
+              style={{borderRadius:"20px"}}
             >
               {/* <MenuItem value=""><em>None</em></MenuItem> */}
+              <MenuItem value="Data Entered">Data Entered</MenuItem>
               <MenuItem value="Laptop Received">Laptop Received</MenuItem>
               <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
             </Select>
@@ -441,12 +463,12 @@ function LaptopTagging() {
     },
     {
       name: "working",
-      label: "Not Working",
+      label: "Not Working",// Not Working
       options: {
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
-          const isChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : laptopData.Working === "working";
+          const isChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : laptopData.Working === "Not Working";
           
           return (
             <Checkbox
@@ -484,6 +506,10 @@ function LaptopTagging() {
             setOpen={setOpen}
             setSelectedRowIndex={setSelectedRowIndex}
             style={style}
+
+            setRefresh={setRefresh}
+            refresh={refresh}
+
             />
           );
         },
@@ -504,7 +530,7 @@ function LaptopTagging() {
       <Grid container spacing={2} style={{ marginBottom: '32px', marginTop: '80px' }}>
         <Grid item xs={12} sm={6}>
           <TextField
-            label="Search by ID"
+            label="Search by Serial No"
             variant="outlined"
             fullWidth
             value={idQuery}

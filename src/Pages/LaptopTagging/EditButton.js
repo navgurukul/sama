@@ -22,44 +22,44 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 500,
     bgcolor: 'background.paper',
     borderRadius: 4,
     boxShadow: 24,
-    maxHeight: 500,
+    maxHeight: 600,
     overflowY: "scroll",
     p: 4,
     
 };
 
 const EditButton = ({
-    data,
-    setData,
-    selectedRowIndex,
+    setRefresh,
     laptopData,
-    isChecked,
+    refresh,
+   
 }) => {
-    const [editData, setEditData] = useState({
-        id: laptopData.ID || "",
-        donorCompanyName: laptopData["Donor Company Name"] || "",
-        ram: laptopData.RAM || "",
-        rom: laptopData.ROM || "",
-        manufacturerModel: laptopData["Manufacturer Model"] || "",
-        processor: laptopData.Processor || "",
-        macAddress: laptopData["Mac address"] || "",
-        status: laptopData.Status || "",
-        working: laptopData.Working || "",
-        inventoryLocation: laptopData["Inventory Location"] || "",
-        laptopWeight: laptopData["laptop weight"] || "",
-        conditionStatus: laptopData["Condition Status"] || "",
-        manufacturingDate: laptopData["Manufacturing Date"] || "",
-        majorIssues: laptopData["Major Issues"] ? laptopData["Major Issues"].split(",") : [],
-        minorIssues: laptopData["Minor Issues"] ? laptopData["Minor Issues"].split(",") : [],
-    });
+    const [editData, setEditData] = useState();
 
     const [open, setOpen] = useState(false);
 
     const handleEditClick = () => {
+        setEditData({
+            id: laptopData.ID || "",
+            donorCompanyName: laptopData["Donor Company Name"] || "",
+            ram: laptopData.RAM || "",
+            rom: laptopData.ROM || "",
+            manufacturerModel: laptopData["Manufacturer Model"] || "",
+            processor: laptopData.Processor || "",
+            macAddress: laptopData["Mac address"] || "",
+            status: laptopData.Status || "",
+            working: laptopData.Working || "",
+            inventoryLocation: laptopData["Inventory Location"] || "",
+            laptopWeight: laptopData["laptop weight"] || "",
+            conditionStatus: laptopData["Condition Status"] || "",
+            manufacturingDate: laptopData["Manufacturing Date"] || "",
+            majorIssues: laptopData["Major Issues"] ? laptopData["Major Issues"].split(",") : [],
+            minorIssues: laptopData["Minor Issues"] ? laptopData["Minor Issues"].split(",") : [],
+        });
         setOpen(true);
     };
 
@@ -97,9 +97,29 @@ const EditButton = ({
                     body: JSON.stringify(dataToSend),
                     mode: "no-cors",
                 }
+                
             );
             // Close the modal and reset the data after successfully saving
-            setEditData(null);
+            setRefresh(!refresh);
+            setEditData(
+                {
+                    id: "",
+                    donorCompanyName: "",
+                    ram: "",
+                    rom: "",
+                    manufacturerModel: "",
+                    processor: "",
+                    macAddress: "",
+                    status: "",
+                    working: "",
+                    inventoryLocation: "",
+                    laptopWeight: "",
+                    conditionStatus: "",
+                    manufacturingDate: "",
+                    majorIssues: [],
+                    minorIssues: [],
+                }
+            );
             handleModalClose();
         } catch (error) {
             console.error("Error tagging the laptop:", error);
@@ -161,7 +181,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="RAM"
                                 name="ram"
@@ -171,7 +191,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="ROM"
                                 name="rom"
@@ -191,7 +211,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="Processor"
                                 name="processor"
@@ -201,7 +221,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="MAC Address"
                                 name="macAddress"
@@ -211,7 +231,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="Laptop Weight"
                                 name="laptopWeight"
@@ -221,7 +241,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="Condition Status"
                                 name="conditionStatus"
