@@ -22,11 +22,11 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 500,
     bgcolor: 'background.paper',
     borderRadius: 4,
     boxShadow: 24,
-    maxHeight: 500,
+    maxHeight: 600,
     overflowY: "scroll",
     p: 4,
     
@@ -181,7 +181,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="RAM"
                                 name="ram"
@@ -191,7 +191,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="ROM"
                                 name="rom"
@@ -211,7 +211,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="Processor"
                                 name="processor"
@@ -221,7 +221,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="MAC Address"
                                 name="macAddress"
@@ -231,7 +231,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="Laptop Weight"
                                 name="laptopWeight"
@@ -241,7 +241,7 @@ const EditButton = ({
                                 margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 label="Condition Status"
                                 name="conditionStatus"
