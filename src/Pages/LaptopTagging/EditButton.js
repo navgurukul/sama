@@ -33,33 +33,33 @@ const style = {
 };
 
 const EditButton = ({
-    data,
-    setData,
-    selectedRowIndex,
+    setRefresh,
     laptopData,
-    isChecked,
+    refresh,
+   
 }) => {
-    const [editData, setEditData] = useState({
-        id: laptopData.ID || "",
-        donorCompanyName: laptopData["Donor Company Name"] || "",
-        ram: laptopData.RAM || "",
-        rom: laptopData.ROM || "",
-        manufacturerModel: laptopData["Manufacturer Model"] || "",
-        processor: laptopData.Processor || "",
-        macAddress: laptopData["Mac address"] || "",
-        status: laptopData.Status || "",
-        working: laptopData.Working || "",
-        inventoryLocation: laptopData["Inventory Location"] || "",
-        laptopWeight: laptopData["laptop weight"] || "",
-        conditionStatus: laptopData["Condition Status"] || "",
-        manufacturingDate: laptopData["Manufacturing Date"] || "",
-        majorIssues: laptopData["Major Issues"] ? laptopData["Major Issues"].split(",") : [],
-        minorIssues: laptopData["Minor Issues"] ? laptopData["Minor Issues"].split(",") : [],
-    });
+    const [editData, setEditData] = useState();
 
     const [open, setOpen] = useState(false);
 
     const handleEditClick = () => {
+        setEditData({
+            id: laptopData.ID || "",
+            donorCompanyName: laptopData["Donor Company Name"] || "",
+            ram: laptopData.RAM || "",
+            rom: laptopData.ROM || "",
+            manufacturerModel: laptopData["Manufacturer Model"] || "",
+            processor: laptopData.Processor || "",
+            macAddress: laptopData["Mac address"] || "",
+            status: laptopData.Status || "",
+            working: laptopData.Working || "",
+            inventoryLocation: laptopData["Inventory Location"] || "",
+            laptopWeight: laptopData["laptop weight"] || "",
+            conditionStatus: laptopData["Condition Status"] || "",
+            manufacturingDate: laptopData["Manufacturing Date"] || "",
+            majorIssues: laptopData["Major Issues"] ? laptopData["Major Issues"].split(",") : [],
+            minorIssues: laptopData["Minor Issues"] ? laptopData["Minor Issues"].split(",") : [],
+        });
         setOpen(true);
     };
 
@@ -97,9 +97,29 @@ const EditButton = ({
                     body: JSON.stringify(dataToSend),
                     mode: "no-cors",
                 }
+                
             );
             // Close the modal and reset the data after successfully saving
-            setEditData(null);
+            setRefresh(!refresh);
+            setEditData(
+                {
+                    id: "",
+                    donorCompanyName: "",
+                    ram: "",
+                    rom: "",
+                    manufacturerModel: "",
+                    processor: "",
+                    macAddress: "",
+                    status: "",
+                    working: "",
+                    inventoryLocation: "",
+                    laptopWeight: "",
+                    conditionStatus: "",
+                    manufacturingDate: "",
+                    majorIssues: [],
+                    minorIssues: [],
+                }
+            );
             handleModalClose();
         } catch (error) {
             console.error("Error tagging the laptop:", error);

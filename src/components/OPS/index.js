@@ -76,7 +76,7 @@ function Ops() {
             >
               <CardContent style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <Typography variant="h6" component="h2" gutterBottom>
-                Warehouse operations
+                Warehouse Operations
                 </Typography>
                 {/* <Typography variant="body1" color="textSecondary" gutterBottom>
                   Use this for tagging laptops.
@@ -87,7 +87,7 @@ function Ops() {
                     color="primary"
                     href="/laptop-tagging"
                   >
-                    Warehouse operations
+                    Warehouse Operations
                   </Button>
                 </Box>
               </CardContent>
