@@ -70,6 +70,7 @@ function LaptopTagging() {
     };
 
     fetchData(); // Only called once when component mounts
+    
   }, [refresh]);
 
 
@@ -88,7 +89,10 @@ function LaptopTagging() {
     
   };
 
-
+  useEffect(() => {
+    
+    handleSearch();
+  },[loading]);
  
 
   const handleDownloadPDF = () => {
@@ -256,12 +260,12 @@ function LaptopTagging() {
     const laptopId = data[selectedRowIndex]?.ID;
 
     // Update the taggedLaptops state
-    if (!changeStatus) {
-    setTaggedLaptops(prevState => ({
-      ...prevState,
-      [selectedRowIndex]: isChecked
-    }));
-  }
+  //   if (!changeStatus) {
+  //   setTaggedLaptops(prevState => ({
+  //     ...prevState,
+  //     [selectedRowIndex]: isChecked
+  //   }));
+  // }
 
    
       const payload = {
@@ -290,6 +294,7 @@ function LaptopTagging() {
           body: JSON.stringify(payload),
           mode: 'no-cors'
         });
+        setRefresh(!refresh);
       } catch (error) {
         console.error('Error tagging the laptop:', error);
       }
@@ -298,7 +303,7 @@ function LaptopTagging() {
     setSelectedRowIndex(null);
     setIsChecked(false);
     setModelStatus(false);
-    setRefresh(!refresh);
+    
     handleSearch()
   };
 
@@ -320,6 +325,7 @@ function LaptopTagging() {
     setModelStatus(true);
     setChangeStatus(true);
     setOpen(true);
+    // setRefresh(!refresh);
     
   };
 
@@ -446,8 +452,7 @@ function LaptopTagging() {
               displayEmpty
               style={{borderRadius:"20px"}}
             >
-              {/* <MenuItem value=""><em>None</em></MenuItem> */}
-              <MenuItem value="Data Entered">Data Entered</MenuItem>
+              
               <MenuItem value="Laptop Received">Laptop Received</MenuItem>
               <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
             </Select>
@@ -506,7 +511,6 @@ function LaptopTagging() {
             setOpen={setOpen}
             setSelectedRowIndex={setSelectedRowIndex}
             style={style}
-
             setRefresh={setRefresh}
             refresh={refresh}
 
