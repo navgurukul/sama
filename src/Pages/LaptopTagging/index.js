@@ -260,12 +260,12 @@ function LaptopTagging() {
     const laptopId = data[selectedRowIndex]?.ID;
 
     // Update the taggedLaptops state
-  //   if (!changeStatus) {
-  //   setTaggedLaptops(prevState => ({
-  //     ...prevState,
-  //     [selectedRowIndex]: isChecked
-  //   }));
-  // }
+    if (!changeStatus) {
+    setTaggedLaptops(prevState => ({
+      ...prevState,
+      [selectedRowIndex]: isChecked
+    }));
+  }
 
    
       const payload = {
