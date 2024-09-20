@@ -34,6 +34,8 @@ const Upload = () => {
     "Inventory Location",
     "Laptop Weight",
     "Mac Address",
+    "Status",
+    "Working"
   ];
 
   const handleFileChange = (e) => {
@@ -140,7 +142,7 @@ const Upload = () => {
           Please upload an Excel file (.xlsx format). You can download the sample file to understand the required format.
         </Alert>
         <Link
-          href="https://docs.google.com/spreadsheets/d/1GjbjBH1YhzQDD3sVtUJbtht-fKw0zi4Ac5UuvvRfv84/edit?gid=0#gid=0"
+          href="https://docs.google.com/spreadsheets/d/1Ph-fjbZmDr9J3V_irEZuShMv21rkFpBspaErCqgZqck/edit?gid=0#gid=0"
           download
           target="_blank"
           style={{ display: "block", marginBottom: "20px" }}
