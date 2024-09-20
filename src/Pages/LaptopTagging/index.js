@@ -13,6 +13,7 @@ import {
   IconButton,
   Modal,
   Box,
+  Card,
   Select,
   MenuItem,
 } from '@mui/material';
@@ -42,7 +43,6 @@ function LaptopTagging() {
   const [macQuery, setMacQuery] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // const [fetchingData, setFetchingData] = useState(false); // Renamed from 'loading'
   const [searchLoading, setSearchLoading] = useState(false); // New state for Search button loading
   const [taggedLaptops, setTaggedLaptops] = useState({}); // Track tagged status
   const [open, setOpen] = useState(false); // Modal state
@@ -53,6 +53,8 @@ function LaptopTagging() {
   const [allData, setAllData] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [modelStatus, setModelStatus] = useState(false);
+  const [showData, setShowData] = useState(false);
+
   const theme = useTheme();
   const isXsOrSm = useMediaQuery(theme.breakpoints.down('sm')); // Check for xs and sm
   const isMdOrLg = useMediaQuery(theme.breakpoints.up('md')); // Check for md and lg
@@ -63,16 +65,30 @@ function LaptopTagging() {
       try {
         const response = await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getLaptopData");
         const result = await response.json();
-        setAllData(result);
+
+        // Check if fetched data is different from current allData
+        if (JSON.stringify(result) !== JSON.stringify(allData)) {
+          setAllData(result);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchData(); // Only called once when component mounts or when 'refresh' changes
-  }, [refresh]);
+
+    fetchData(); // Initial fetch on mount
+
+    const intervalId = setInterval(fetchData, 1000); // Adjust as needed
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, [allData]);
+
+  useEffect(() => {
+    if (showData) {
+      // Perform the search only if showData is true
+      handleSearch();
+    }
+  }, [showData, allData, idQuery, macQuery]);
 
   const handleSearch = () => {
     const filtered = allData.filter(laptop => {
@@ -85,10 +101,9 @@ function LaptopTagging() {
       return false;
     });
     setData(filtered); // Update the data with filtered results
+    setShowData(true); // Set to true when the button is clicked
+
   };
-
-
-
   // Handle Download PDF
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
@@ -510,7 +525,7 @@ function LaptopTagging() {
   return (
     <Container maxWidth="xl">
       {/* Search Fields */}
-      <Grid container spacing={2} sx={{}} style={{ marginBottom: '32px', marginTop: '80px' }}>
+      <Grid container spacing={2}  style={{ marginBottom: '32px', marginTop: '80px' }}>
         <Grid item xs={12} sm={6}>
           <TextField
             label="Search by Serial No"
@@ -536,7 +551,7 @@ function LaptopTagging() {
       </Grid>
 
       {/* Search and Reset Buttons */}
-      <Grid container spacing={2} style={{ marginBottom: '32px' }}>
+      <Grid container spacing={2} style={{ marginBottom: '32px'}}>
         <Grid item>
           <Button
             variant="contained"
@@ -558,21 +573,21 @@ function LaptopTagging() {
           </Button>
         </Grid>
       </Grid>
-
       <div>
         {isXsOrSm ? ( // Show data on xs and sm
-          <Box >
-            <Tooltip title="Download PDF">
-              <IconButton onClick={handleDownloadPDF}>
-                <GetAppIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Print">
-              <IconButton onClick={handlePrint}>
-                <PrintIcon />
-              </IconButton>
-            </Tooltip>
+          <Card>
+            <Typography variant='h6'>Laptop Data</Typography>
             <Grid container spacing={2} sx={{ mt: 2, px: 2 }} >
+              <Tooltip title="Download PDF">
+                <IconButton onClick={handleDownloadPDF}>
+                  <GetAppIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Print">
+                <IconButton onClick={handlePrint}>
+                  <PrintIcon />
+                </IconButton>
+              </Tooltip>
               {data.map((item, index) => (
                 <Grid item xs={12} key={index}>
                   <Grid container spacing={2}>
@@ -645,7 +660,7 @@ function LaptopTagging() {
                 </Grid>
               ))}
             </Grid>
-          </Box>
+          </Card>
         ) : (
           isMdOrLg && (
             <MUIDataTable
