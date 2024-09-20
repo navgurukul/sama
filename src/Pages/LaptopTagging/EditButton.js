@@ -15,7 +15,8 @@ import {
     IconButton,
 } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit'; // Import the Edit icon
-
+import { useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 const style = {
     position: 'absolute',
@@ -29,17 +30,18 @@ const style = {
     maxHeight: 600,
     overflowY: "scroll",
     p: 4,
-    
+
 };
 
 const EditButton = ({
     setRefresh,
     laptopData,
     refresh,
-   
+
 }) => {
     const [editData, setEditData] = useState();
-
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [open, setOpen] = useState(false);
 
     const handleEditClick = () => {
@@ -78,7 +80,6 @@ const EditButton = ({
             [name]: typeof value === 'string' ? value.split(',') : value,
         }));
     };
-
     const handleSaveEdit = async () => {
         const dataToSend = {
             ...editData,
@@ -92,17 +93,18 @@ const EditButton = ({
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        
                     },
                     body: JSON.stringify(dataToSend),
                     mode: "no-cors",
                 }
-                
             );
-            // Close the modal and reset the data after successfully saving
-            setRefresh(!refresh);
-            setEditData(
-                {
+
+            // Update the local state to reflect the changes immediately
+            setRefresh(!refresh); // This assumes the parent component is managing the data
+
+            // Optionally, you can implement a delay
+            setTimeout(() => {
+                setEditData({
                     id: "",
                     donorCompanyName: "",
                     ram: "",
@@ -118,14 +120,14 @@ const EditButton = ({
                     manufacturingDate: "",
                     majorIssues: [],
                     minorIssues: [],
-                }
-            );
-            handleModalClose();
+                });
+                handleModalClose();
+            }, 1000); // 1 second delay before closing the modal
+
         } catch (error) {
             console.error("Error tagging the laptop:", error);
         }
     };
-
     const handleModalClose = () => {
         setOpen(false);
     };
@@ -160,7 +162,7 @@ const EditButton = ({
 
     return (
         <>
-             <IconButton
+            <IconButton
                 color="primary"
                 onClick={handleEditClick}
                 aria-label="edit"
@@ -168,7 +170,13 @@ const EditButton = ({
                 <EditIcon />
             </IconButton>
             <Modal open={open} onClose={handleModalClose}>
-                <Box sx={style}>
+                <Box
+                    sx={{
+                        ...style,
+                        padding: isSmallScreen ? '16px' : '24px', // Adjust padding
+                        width: isSmallScreen ? '70%' : '500px' // Set a responsive width
+                    }}
+                >
                     <Typography variant="h6">Edit Laptop</Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>

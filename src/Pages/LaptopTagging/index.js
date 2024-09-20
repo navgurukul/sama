@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTheme } from '@mui/material/styles';
+import { useMediaQuery } from '@mui/material';
 import {
   TextField,
   Button,
@@ -22,7 +24,6 @@ import 'jspdf-autotable';
 import './styles.css';
 import EditButton from './EditButton';
 
-
 const style = {
   position: 'absolute',
   top: '50%',
@@ -30,7 +31,6 @@ const style = {
   transform: 'translate(-50%, -50%)',
   width: 400,
   bgcolor: 'background.paper',
-  // border: '1px solid #000',
   borderRadius: 4,
   boxShadow: 24,
   p: 4,
@@ -41,6 +41,9 @@ function LaptopTagging() {
   const [idQuery, setIdQuery] = useState('');
   const [macQuery, setMacQuery] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // const [fetchingData, setFetchingData] = useState(false); // Renamed from 'loading'
+  const [searchLoading, setSearchLoading] = useState(false); // New state for Search button loading
   const [taggedLaptops, setTaggedLaptops] = useState({}); // Track tagged status
   const [open, setOpen] = useState(false); // Modal state
   const [selectedRowIndex, setSelectedRowIndex] = useState(null); // To store selected row index
@@ -49,19 +52,18 @@ function LaptopTagging() {
   const [changeStatus, setChangeStatus] = useState(false);
   const [allData, setAllData] = useState([]);
   const [refresh, setRefresh] = useState(false);
-
   const [modelStatus, setModelStatus] = useState(false);
-
-
-
- useEffect(() => {
+  const theme = useTheme();
+  const isXsOrSm = useMediaQuery(theme.breakpoints.down('sm')); // Check for xs and sm
+  const isMdOrLg = useMediaQuery(theme.breakpoints.up('md')); // Check for md and lg
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  // Fetch data from API
+  useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       try {
         const response = await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getLaptopData");
         const result = await response.json();
         setAllData(result);
-        // setFilteredData(result); // Set filteredData to the fetched data initially
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -69,12 +71,10 @@ function LaptopTagging() {
       }
     };
 
-    fetchData(); // Only called once when component mounts
+    fetchData(); // Only called once when component mounts or when 'refresh' changes
   }, [refresh]);
 
-
   const handleSearch = () => {
-     
     const filtered = allData.filter(laptop => {
       if (idQuery) {
         return String(laptop.ID).toUpperCase() === idQuery.toUpperCase();
@@ -84,13 +84,12 @@ function LaptopTagging() {
       }
       return false;
     });
-    setData(filtered);
-    
+    setData(filtered); // Update the data with filtered results
   };
 
 
- 
 
+  // Handle Download PDF
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -98,12 +97,12 @@ function LaptopTagging() {
     const cardWidth = pageWidth - padding * 2;
     const cardHeight = 100;
     let yPosition = 20; // Starting Y position for the first card
-  
+
     data.forEach((laptop, index) => {
       // Draw card border
       doc.setDrawColor(0); // Black border
       doc.rect(padding, yPosition, cardWidth, cardHeight);
-  
+
       // Add laptop details inside the card
       doc.setFontSize(12);
       doc.text(`ID: ${laptop.ID}`, padding + 5, yPosition + 10);
@@ -114,27 +113,26 @@ function LaptopTagging() {
       doc.text(`Minor Issues: ${laptop["Minor Issues"]}`, padding + 5, yPosition + 60);
       doc.text(`Major Issues: ${laptop["Major Issues"]}`, padding + 5, yPosition + 70);
       doc.text(`Mac address: ${laptop["Mac address"]}`, padding + 5, yPosition + 80);
-      // doc.text(`barcodeUrl: <img src="${laptop.barcodeUrl}" class="barcode" />`, padding + 5, yPosition + 80);
-  
+      // doc.text(barcodeUrl: <img src="${laptop.barcodeUrl}" class="barcode" />, padding + 5, yPosition + 80);
+
       // Add space between cards
       yPosition += cardHeight + 10;
-  
+
       // Create a new page if the current page is filled
       if (yPosition + cardHeight > doc.internal.pageSize.getHeight() - padding) {
         doc.addPage();
         yPosition = 20; // Reset Y position for new page
       }
     });
-  
+
     // Download the PDF
     doc.save("laptop_data_cards.pdf");
   };
-  
 
+  // Handle Print
   const handlePrint = () => {
     const printContent = document.getElementById('tableToPrint');
     const WindowPrint = window.open('', '', 'width=900,height=650');
-    
 
     // Modify this part to include the structure you want for printing
     WindowPrint.document.write(`
@@ -152,7 +150,6 @@ function LaptopTagging() {
               margin-bottom: 20px;
               position: relative;
               page-break-inside: avoid;
-              // left: 50%;
             }
             .barcode {
               position: absolute;
@@ -160,14 +157,13 @@ function LaptopTagging() {
               right: 30px;
               width: 150px;
               height: 50px;
-               border: 1px dashed black; /* Dashed line for cutting */
+              border: 1px dashed black; /* Dashed line for cutting */
               padding: 10px;
             }
             table {
               width: 100%;
               bottom: 50px;
               left: 10px;
-              
             }
             th, td {
               padding: 8px 0;
@@ -183,7 +179,6 @@ function LaptopTagging() {
             <div class="card">
               <img src="${laptop.barcodeUrl}" class="barcode" />
               <table>
-               
                 <tr>
                   <th>Donor Company:</th>
                   <td>${laptop["Donor Company Name"]}</td>
@@ -212,22 +207,20 @@ function LaptopTagging() {
                   <th>Mac Address:</th>
                   <td>${laptop["Mac address"]}</td>
                 </tr>
-
-                
               </table>
             </div>
           `).join('')}
         </body>
       </html>
     `);
-    
-    
+
     WindowPrint.document.close();
-    // WindowPrint.focus();
     WindowPrint.print();
+    // Optionally close the window after printing
     // WindowPrint.close();
   };
 
+  // Handle Reset
   const handleReset = () => {
     setIdQuery('');
     setMacQuery('');
@@ -248,58 +241,55 @@ function LaptopTagging() {
     setOpen(true); // Open the modal
   };
 
-
-
   // Function to handle modal confirmation (Okay button)
   const handleModalConfirm = async () => {
-    const rowIndex = data[selectedRowIndex];
-    const laptopId = data[selectedRowIndex]?.ID;
+    const rowData = data[selectedRowIndex];
+    const laptopId = rowData?.ID;
 
     // Update the taggedLaptops state
     if (!changeStatus) {
-    setTaggedLaptops(prevState => ({
-      ...prevState,
-      [selectedRowIndex]: isChecked
-    }));
-  }
+      setTaggedLaptops(prevState => ({
+        ...prevState,
+        [selectedRowIndex]: isChecked
+      }));
+    }
 
-   
-      const payload = {
-        type:"laptopLabeling",
-        id: laptopId,
-        working: !changeStatus ? (!isChecked?"Working":"Not Working"):rowIndex.Working,
-        donorCompanyName: rowIndex["Donor Company Name"],
-        ram: rowIndex.RAM,
-        rom: rowIndex.ROM,
-        manufacturerModel: rowIndex["Manufacturer Model"], 
-        inventoryLocation: rowIndex["Inventory Location"],
-        macAddress: rowIndex["Mac address"],
-        processor: rowIndex["Processor"],
-        others: rowIndex["Others"], 
-        status: rowIndex["Status"],
-        laptopWeight: rowIndex["laptop weight"],
-        conditionStatus: rowIndex["Condition Status"],
-        manufacturingDate: rowIndex["Manufacturing Date"],
-      };
-      try {
-        await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-          mode: 'no-cors'
-        });
-      } catch (error) {
-        console.error('Error tagging the laptop:', error);
-      }
-   
+    const payload = {
+      type: "laptopLabeling",
+      id: laptopId,
+      working: !changeStatus ? (!isChecked ? "Working" : "Not Working") : rowData.Working,
+      donorCompanyName: rowData["Donor Company Name"],
+      ram: rowData.RAM,
+      rom: rowData.ROM,
+      manufacturerModel: rowData["Manufacturer Model"],
+      inventoryLocation: rowData["Inventory Location"],
+      macAddress: rowData["Mac address"],
+      processor: rowData["Processor"],
+      others: rowData["Others"],
+      status: rowData["Status"],
+      laptopWeight: rowData["laptop weight"],
+      conditionStatus: rowData["Condition Status"],
+      manufacturingDate: rowData["Manufacturing Date"],
+    };
+    try {
+      await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+        mode: 'no-cors'
+      });
+    } catch (error) {
+      console.error('Error tagging the laptop:', error);
+    }
+
     setOpen(false);
     setSelectedRowIndex(null);
     setIsChecked(false);
     setModelStatus(false);
-    setRefresh(!refresh);
-    handleSearch()
+    setRefresh(!refresh); // Trigger data re-fetch
+    handleSearch(); // Remove this line as handleSearch will be called via useEffect
   };
 
   // Function to handle modal cancellation (Cancel button)
@@ -320,13 +310,12 @@ function LaptopTagging() {
     setModelStatus(true);
     setChangeStatus(true);
     setOpen(true);
-    
   };
 
   const columns = [
-    { 
-      name: "ID", 
-      label: "Serial No", //Serial No = ID  
+    {
+      name: "ID",
+      label: "Serial No", // Serial No = ID  
       options: {
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -336,8 +325,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Donor Company Name", 
+    {
+      name: "Donor Company Name",
       label: "Company Name",
       options: {
         setCellProps: () => ({
@@ -348,8 +337,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "RAM", 
+    {
+      name: "RAM",
       label: "RAM",
       options: {
         setCellProps: () => ({
@@ -360,8 +349,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "ROM", 
+    {
+      name: "ROM",
       label: "ROM",
       options: {
         setCellProps: () => ({
@@ -372,8 +361,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Manufacturer Model", 
+    {
+      name: "Manufacturer Model",
       label: "Manufacturer Model",
       options: {
         setCellProps: () => ({
@@ -384,8 +373,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Minor Issues", 
+    {
+      name: "Minor Issues",
       label: "Minor Issues",
       options: {
         setCellProps: () => ({
@@ -396,8 +385,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Major Issues", 
+    {
+      name: "Major Issues",
       label: "Major Issues",
       options: {
         setCellProps: () => ({
@@ -408,8 +397,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Inventory Location", 
+    {
+      name: "Inventory Location",
       label: "Inventory Location",
       options: {
         setCellProps: () => ({
@@ -420,8 +409,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Mac address", 
+    {
+      name: "Mac address",
       label: "Mac Address",
       options: {
         setCellProps: () => ({
@@ -444,12 +433,12 @@ function LaptopTagging() {
               value={laptopData.Status}
               onChange={(event) => handleStatusChange(event, rowIndex)}
               displayEmpty
-              style={{borderRadius:"20px"}}
+              style={{ borderRadius: "20px", fontSize: "14px" }}
             >
               {/* <MenuItem value=""><em>None</em></MenuItem> */}
-              <MenuItem value="Data Entered">Data Entered</MenuItem>
-              <MenuItem value="Laptop Received">Laptop Received</MenuItem>
-              <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
+              <MenuItem value="Data Entered" style={{ fontSize: "14px" }}>Data Entered</MenuItem>
+              <MenuItem value="Laptop Received" style={{ fontSize: "14px" }}>Laptop Received</MenuItem>
+              <MenuItem value="Laptop Refurbished" style={{ fontSize: "14px" }}>Laptop Refurbished</MenuItem>
             </Select>
           );
         },
@@ -469,18 +458,15 @@ function LaptopTagging() {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           const isChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : laptopData.Working === "Not Working";
-          
+
           return (
             <Checkbox
               checked={isChecked}
               onClick={(event) => handleTagClick(event, rowIndex)}
               color="primary"
               className="custom-body-cell"
-            /> 
-          
+            />
           )
-        
-       
         },
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -498,18 +484,16 @@ function LaptopTagging() {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex]; // Fetch the current row's laptop data
           return (
-            <EditButton 
-            laptopData={laptopData} 
-            rowIndex={rowIndex}
-            data={data}
-            setData={setData}
-            setOpen={setOpen}
-            setSelectedRowIndex={setSelectedRowIndex}
-            style={style}
-
-            setRefresh={setRefresh}
-            refresh={refresh}
-
+            <EditButton
+              laptopData={laptopData}
+              rowIndex={rowIndex}
+              data={data}
+              setData={setData}
+              setOpen={setOpen}
+              setSelectedRowIndex={setSelectedRowIndex}
+              style={style}
+              setRefresh={setRefresh}
+              refresh={refresh}
             />
           );
         },
@@ -523,11 +507,10 @@ function LaptopTagging() {
     }
   ];
 
-  
-  
   return (
     <Container maxWidth="xl">
-      <Grid container spacing={2} style={{ marginBottom: '32px', marginTop: '80px' }}>
+      {/* Search Fields */}
+      <Grid container spacing={2} sx={{}} style={{ marginBottom: '32px', marginTop: '80px' }}>
         <Grid item xs={12} sm={6}>
           <TextField
             label="Search by Serial No"
@@ -535,7 +518,7 @@ function LaptopTagging() {
             fullWidth
             value={idQuery}
             onChange={(e) => setIdQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // Trigger search on Enter key
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch(true)} // Trigger manual search on Enter key
             disabled={macQuery !== ''}
           />
         </Grid>
@@ -546,20 +529,22 @@ function LaptopTagging() {
             fullWidth
             value={macQuery}
             onChange={(e) => setMacQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // Trigger search on Enter key
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch(true)} // Trigger manual search on Enter key
             disabled={idQuery !== ''}
           />
         </Grid>
       </Grid>
-      <Grid container spacing={2} style={{marginBottom:"32px"}}>
+
+      {/* Search and Reset Buttons */}
+      <Grid container spacing={2} style={{ marginBottom: '32px' }}>
         <Grid item>
           <Button
             variant="contained"
             color="primary"
-            onClick={handleSearch}
-            disabled={loading || (!idQuery && !macQuery)}
+            onClick={handleSearch} // Manual search on click
+            disabled={searchLoading || (!idQuery && !macQuery)} // Disable if loading or no query
           >
-            {loading ? <CircularProgress size={24} /> : 'Search'}
+            {searchLoading ? <CircularProgress size={24} /> : 'Search'}
           </Button>
         </Grid>
         <Grid item>
@@ -567,47 +552,133 @@ function LaptopTagging() {
             variant="outlined"
             color="secondary"
             onClick={handleReset}
-            disabled={loading}
+            disabled={loading} // Optionally, disable Reset button while fetching data
           >
             Reset
           </Button>
         </Grid>
       </Grid>
 
-      {/* Conditionally render the data table */}
-      
-      <div id="tableToPrint">
-        <MUIDataTable
-          
-          title={"Laptop Data"}
-          data={data}
-          columns={columns}
-          options={{
-            responsive: 'scrollMaxHeight', // Adjust table height dynamically
-            customToolbar: () => (
-              <React.Fragment>
-                <Tooltip title={"Download PDF"}>
-                  <IconButton onClick={handleDownloadPDF}>
-                    <GetAppIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title={"Print"}>
-                  <IconButton onClick={handlePrint}>
-                    <PrintIcon />
-                  </IconButton>
-                </Tooltip>
-              </React.Fragment>
-            ),
-            filterType: 'checkbox',
-            selectableRows: 'none', 
-            
-            download: false, // Disable the default download button
-            print: false,    // Disable the default print button
-            sort: false,
-          }}
-        />
+      <div>
+        {isXsOrSm ? ( // Show data on xs and sm
+          <Box >
+            <Tooltip title="Download PDF">
+              <IconButton onClick={handleDownloadPDF}>
+                <GetAppIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Print">
+              <IconButton onClick={handlePrint}>
+                <PrintIcon />
+              </IconButton>
+            </Tooltip>
+            <Grid container spacing={2} sx={{ mt: 2, px: 2 }} >
+              {data.map((item, index) => (
+                <Grid item xs={12} key={index}>
+                  <Grid container spacing={2}>
+                    {Object.keys(item).map((key) => (
+                      <React.Fragment key={key}>
+                        <Grid item xs={4}>
+                          <Typography variant="body2" style={{ fontWeight: 'bold' }}>
+                            {key}:
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={8}>
+                          <Typography variant="body2">
+                            {item[key]}
+                          </Typography>
+                        </Grid>
+                      </React.Fragment>
+                    ))}
+                  </Grid>
+
+                  <Grid container alignItems="center" spacing={2}>
+                    <Grid item xs={4}>
+                      <Typography variant="body2" style={{ fontWeight: 'bold' }}>Not Working</Typography>
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Checkbox
+                        checked={isChecked}
+                        onClick={(event) => handleTagClick(event, index)}
+                        color="primary"
+                        className="custom-body-cell"
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Grid container alignItems="center" spacing={5}>
+                    <Grid item xs={4}>
+                      <Typography variant="body2" style={{ fontWeight: 'bold' }}>Status</Typography>
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Select
+                        value={item.Status} // Use the current item's status
+                        onChange={(event) => handleStatusChange(event, index)}
+                        displayEmpty
+                        style={{ borderRadius: '20px' }}
+                      >
+                        <MenuItem value="Data Entered">Data Entered</MenuItem>
+                        <MenuItem value="Laptop Received">Laptop Received</MenuItem>
+                        <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
+                      </Select>
+                    </Grid>
+                  </Grid>
+
+                  <Grid container alignItems="center" spacing={2}>
+                    <Grid item xs={4}>
+                      <Typography variant="body2" style={{ fontWeight: 'bold' }}>Edit</Typography>
+                    </Grid>
+                    <Grid item xs={8}>
+                      <EditButton
+                        laptopData={item} // Pass the current item data
+                        rowIndex={index}
+                        data={data}
+                        setData={setData}
+                        setOpen={setOpen}
+                        setSelectedRowIndex={setSelectedRowIndex}
+                        style={style}
+                        setRefresh={setRefresh}
+                        refresh={refresh}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        ) : (
+          isMdOrLg && (
+            <MUIDataTable
+              title="Laptop Data"
+              data={data}
+              columns={columns}
+              options={{
+                responsive: 'scrollMaxHeight', // Adjust table height dynamically
+                customToolbar: () => (
+                  <React.Fragment>
+                    <Tooltip title="Download PDF">
+                      <IconButton onClick={handleDownloadPDF}>
+                        <GetAppIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Print">
+                      <IconButton onClick={handlePrint}>
+                        <PrintIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </React.Fragment>
+                ),
+                filterType: 'checkbox',
+                selectableRows: 'none',
+                download: false, // Disable the default download button
+                print: false,    // Disable the default print button
+                sort: false,
+              }}
+            />
+          )
+        )}
       </div>
-     
+
       {/* Modal for checkbox click */}
       <Modal
         open={open}
@@ -615,21 +686,23 @@ function LaptopTagging() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box
+          sx={{
+            ...style,
+            padding: isSmallScreen ? '16px' : '24px', // Adjust padding
+            width: isSmallScreen ? '70%' : '400px' // Set a responsive width
+          }}
+        >
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            
-            {modelStatus ? "Status" :!isChecked ? 'Working' : 'Not Working'}
+            {modelStatus ? 'Status' : !isChecked ? 'Working' : 'Not Working'}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-
-          
-         {modelStatus ?
-          "Are you sure you want to change the status for this laptop?"
-          : `Are you sure you want to mark this laptop as ${!isChecked ? 'Working' : 'Not Working'}?`
-         }
+            {modelStatus
+              ? 'Are you sure you want to change the status for this laptop?'
+              : `Are you sure you want to mark this laptop as ${!isChecked ? 'Working' : 'Not Working'}?`}
           </Typography>
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button variant="outlined" color="secondary" onClick={handleModalClose} style={{ marginRight: 8 }}>
+          <Box sx={{ mt: 3, display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', justifyContent: 'flex-end' }}>
+            <Button variant="outlined" color="secondary" onClick={handleModalClose} style={{ marginRight: isSmallScreen ? 0 : 8, marginBottom: isSmallScreen ? 8 : 0 }}>
               Cancel
             </Button>
             <Button variant="contained" color="primary" onClick={handleModalConfirm}>
@@ -642,6 +715,7 @@ function LaptopTagging() {
       {/* Hidden div for printing */}
       <div ref={printRef} style={{ display: 'none' }}></div>
     </Container>
+
   );
 }
 
