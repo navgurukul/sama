@@ -16,6 +16,7 @@ import {
   
 } from "@mui/material";
 import "./Donate.css";
+
 import icon1 from "./assets/Group 22 (1).svg";
 
 
@@ -124,7 +125,7 @@ function Donation() {
     } else {
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbzfImx2bSi8jva1VGirHI8G7a-yVrfxmjRutPiO3MyVjuHnctOWGYo8cfuz10MFXSooIA/exec",
+        "https://script.google.com/macros/s/AKfycbxwfJKTEMZkpAHtsh8rT1E6Ba3BrqvAd3FzlCKOIhCbD2A5kC_hXN5I0VCTvMgrjgBR/exec",
           {
             method: "POST",
             headers: {
@@ -134,10 +135,10 @@ function Donation() {
             mode: "no-cors",
           }
         );
-        // console.log("Response--------", response);
 
 
         setFormData({
+          type: "",
           firstName: "",
           lastName: "",
           email: "",
@@ -165,27 +166,27 @@ function Donation() {
   return (
     <>
       <Container maxWidth="xl" style={{ backgroundColor: "#E0E0E0" }}>
-        <Box sx={{ padding: "10", backgroundColor: "#E0E0E0", py: 10 }}>
-          <Container maxWidth="lg" sx={{ paddingBottom: "4%" }}>
+        <Box sx={{ backgroundColor: "#E0E0E0" }} paddingBottom="80px" paddingTop="80px">
+          <Container maxWidth="lg">
             <Typography
               variant="h6"
-              sx={{ marginBottom: "25px", color: "#4A4A4A", fontSize: "24px" }}
+              sx={{ color: "#4A4A4A", fontSize: "24px" }}
             >
               Support Sama's Mission
             </Typography>
-            <Grid container spacing={4}>
+            <Grid container spacing={4} sx={{ mt: 1 }}>
               <Grid item xs={12} md={4}>
                 <Box>
                   <img src={icon1} />
                   <Typography
                     className="customSubtitle1"
-                    sx={{ margin: "14px 0px" }}
+                    sx={{ mt: 2 }}
                   >
                     Corporate Laptop Donation
                   </Typography>
                   <Typography variant="body1">
-                    Transform your end-of-life laptops into powerful tools for
-                    education and empowerment.
+                    Transform your end-of-life laptops into powerful tools
+                    for education and empowerment.
                   </Typography>
                 </Box>
               </Grid>
@@ -197,8 +198,8 @@ function Donation() {
                   />
                   <Typography
                     className="customSubtitle1"
-                    // variant="subtitle1"
-                    sx={{ margin: "14px 0px" }}
+                    variant="subtitle1"
+                    sx={{ mt: 2 }}
                   >
                     Corporate Impact Funding
                   </Typography>
@@ -216,7 +217,8 @@ function Donation() {
                   />
                   <Typography
                     className="customSubtitle1"
-                    sx={{ margin: "14px 0px" }}
+                    sx={{ mt: 2 }}
+                  // sx={{ margin: "14px 0px" }}
                   >
                     Individual Contribution
                   </Typography>
@@ -246,7 +248,7 @@ function Donation() {
                   variant="outlined"
                   name="firstName"
                   value={formData.firstName}
-                  placeholder="Ex : Khushboo"
+                  placeholder="Ex : John"
                   onChange={handleChange}
                   sx={{ backgroundColor: "white" }}
                   error={!!errors.firstName}
@@ -260,7 +262,7 @@ function Donation() {
                 <TextField
                   fullWidth
                   required
-                  placeholder="Ex : kumari"
+                  placeholder="Ex :  Doe"
                   variant="outlined"
                   name="lastName"
                   value={formData.lastName}
@@ -278,7 +280,7 @@ function Donation() {
                   fullWidth
                   required
                   type="email"
-                  placeholder="Ex : khushboo@navgurukul.org"
+                  placeholder="Ex : John@gmail.com"
                   variant="outlined"
                   name="email"
                   value={formData.email}
@@ -297,7 +299,7 @@ function Donation() {
                   required
                   type="tel"
                   variant="outlined"
-                  placeholder="Ex : 9140832342"
+                  placeholder="Ex :  xxxx xxx xxx"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
@@ -361,6 +363,7 @@ function Donation() {
                 </Grid>
               )}
 
+
               <Grid item xs={12}>
                 <FormControl component="fieldset" error={!!errors.donationType}>
                   <Typography
@@ -412,7 +415,7 @@ function Donation() {
                     fullWidth
                     variant="outlined"
                     name="numberOfLaptops"
-                    placeholder="Estimated number of laptops"
+                    placeholder="Ex: 20"
                     value={formData.numberOfLaptops}
                     onChange={handleChange}
                     sx={{ backgroundColor: "white" }}
@@ -431,7 +434,7 @@ function Donation() {
                     fullWidth
                     variant="outlined"
                     name="donateAmount"
-                    placeholder="Donate Amount"
+                    placeholder="Ex : 200,000"
                     value={formData.donateAmount}
                     onChange={handleChange}
                     sx={{ backgroundColor: "white" }}
@@ -451,7 +454,7 @@ function Donation() {
                       fullWidth
                       variant="outlined"
                       name="numberOfLaptops"
-                      placeholder="Estimated number of laptops"
+                      placeholder="Ex : 34"
                       value={formData.numberOfLaptops}
                       onChange={handleChange}
                       sx={{ backgroundColor: "white" }}
@@ -467,7 +470,7 @@ function Donation() {
                       fullWidth
                       variant="outlined"
                       name="donateAmount"
-                      placeholder="Donate Amount"
+                      placeholder="600,000"
                       value={formData.donateAmount}
                       onChange={handleChange}
                       sx={{ backgroundColor: "white" }}
@@ -482,7 +485,6 @@ function Donation() {
                 <FormControl component="fieldset" error={!!errors.hearAbout}>
                   <Typography
                     className="customSubtitle1"
-                    // variant="subtitle1"
                     sx={{ marginBottom: "10px" }}
                   >
                     How did you hear about Sama?
@@ -541,7 +543,8 @@ function Donation() {
 
               <Grid item xs={12}>
                 <Grid item xs={12}>
-                  <Typography variant="subtitle2" sx={{ marginBottom: "10px" }}>
+                  <Typography className="customSubtitle1"
+                    sx={{ marginBottom: "10px" }}>
                     Any additional information or questions{" "}
                     <span style={{ color: "#4A4A4A" }}>(Optional)</span>
                   </Typography>
@@ -549,7 +552,7 @@ function Donation() {
                     fullWidth
                     variant="outlined"
                     name="message"
-                    placeholder="Message"
+                    placeholder="message"
                     value={formData.message}
                     onChange={handleChange}
                     sx={{ backgroundColor: "white" }}
@@ -583,12 +586,7 @@ function Donation() {
                   alignItems: "center",
                 }}
               >
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  style={{ width: "126px", height: "48px" }}
-                >
+                <Button type="submit" variant="contained" color="primary" style={{ width: "126px", height: "48px", borderRadius:"100px" }}>
                   Submit
                 </Button>
                 {successMessage && (

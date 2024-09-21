@@ -1,21 +1,19 @@
-
 export const ContainerStyle = {
     marginTop: { md: '80px', xs: "14px" },
     width: "100%"
 };
-
 export const PaperStyle = {
-    padding: { xs: "23px", md: "24px", sm: "20px" ,lg:"20px"},
+    padding: { xs: "23px", sm: "20px", md: "24px", lg: "32px" },
     borderRadius: '16px',
     margin: { xs: '10 auto', md: '0 0 0 0px', lg: '0 0 0 92px' },
     zIndex: 8,
-    width: { xs: "auto", md: "100%", lg: "70%" },
+    width: { xs: "auto", md: "100%", lg: "72%" },
     position: 'relative',
-    marginTop: { xs: '60px', md: '60px', lg: '80px'},
-    position:"relative",
-    bottom:"40px"
-
+    marginTop: { xs: '60px', md: '60px', lg: '80px' },
+    bottom: "22px",
+    height: 'auto'
 };
+
 
 export const TypographyH4Style = {
     marginBottom: '16px',
@@ -25,16 +23,6 @@ export const TypographyH4Style = {
     fontStyle: 'normal',
     fontWeight: 700,
     lineHeight: '130%',
-};
-
-export const TypographyBodyStyle = {
-    marginBottom: '50px',
-    color: 'var(--text, #4A4A4A)',
-    fontFamily: 'Raleway',
-    fontSize: '18px',
-    fontStyle: 'normal',
-    fontWeight: 400,
-    lineHeight: '170%',
 };
 
 export const BoxStyle = {
@@ -52,7 +40,7 @@ export const BoxStyle = {
     },
     padding: { xs: '24px', md: '15px', lg: '20px' },
     position: 'relative',
-    margin: { xs: '0 auto', md: '0 0 0 -40px', lg: '0 0 0 -380px' },
+    margin: { xs: '0 auto', md: '0 0 0 -40px', lg: '0 0 0 -340px' },
     borderRadius: '16px',
 };
 
