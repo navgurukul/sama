@@ -489,8 +489,6 @@ function LaptopTagging() {
             />
 
           )
-
-
         },
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -531,8 +529,6 @@ function LaptopTagging() {
       }
     }
   ];
-
-
 
   return (
     <Container maxWidth="xl">
@@ -583,11 +579,13 @@ function LaptopTagging() {
         </Grid>
       </Grid>
       {/* Conditionally render the data table */}
-      <div>
+      <Box paddingBottom={3}>
         {isXsOrSm ? ( // Show data on xs and sm
-          <Card>
+          <Card sx={{ px:{xs: 3,lg:2} }}>
             <Typography variant='h6'>Laptop Data</Typography>
-            <Grid container spacing={2} sx={{ mt: 2, px: 2 }} >
+            <Grid container spacing={2}
+              sx={{ mt: 2 }}
+            >
               <Tooltip title="Download PDF">
                 <IconButton onClick={handleDownloadPDF}>
                   <GetAppIcon />
@@ -648,7 +646,6 @@ function LaptopTagging() {
                       </Select>
                     </Grid>
                   </Grid>
-
                   <Grid container alignItems="center" spacing={2}>
                     <Grid item xs={4}>
                       <Typography variant="body2" style={{ fontWeight: 'bold' }}>Edit</Typography>
@@ -674,6 +671,7 @@ function LaptopTagging() {
         ) : (
           isMdOrLg && (
             <MUIDataTable
+              // style={{border:"1px solid red"}}
               title="Laptop Data"
               data={data}
               columns={columns}
@@ -702,7 +700,7 @@ function LaptopTagging() {
             />
           )
         )}
-      </div>
+      </Box>
 
       {/* Modal for checkbox click */}
       <Modal
