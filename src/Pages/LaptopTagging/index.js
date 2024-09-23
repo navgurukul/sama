@@ -456,11 +456,10 @@ function LaptopTagging() {
               value={laptopData.Status}
               onChange={(event) => handleStatusChange(event, rowIndex)}
               displayEmpty
-              style={{ borderRadius: "20px" }}
+              style={{ borderRadius: "20px", fontSize: "14px" }}
             >
-
-              <MenuItem value="Laptop Received">Laptop Received</MenuItem>
-              <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
+              <MenuItem style={{ fontSize: "14px" }} value="Laptop Received">Laptop Received</MenuItem>
+              <MenuItem style={{ fontSize: "14px" }} value="Laptop Refurbished">Laptop Refurbished</MenuItem>
             </Select>
           );
         },
@@ -583,40 +582,7 @@ function LaptopTagging() {
           </Button>
         </Grid>
       </Grid>
-
-
       {/* Conditionally render the data table */}
-
-      {/* <div id="tableToPrint">
-        <MUIDataTable
-          title={"Laptop Data"}
-          data={data}
-          columns={columns}
-          options={{
-            responsive: 'scrollMaxHeight', // Adjust table height dynamically
-            customToolbar: () => (
-              <React.Fragment>
-                <Tooltip title={"Download PDF"}>
-                  <IconButton onClick={handleDownloadPDF}>
-                    <GetAppIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title={"Print"}>
-                  <IconButton onClick={handlePrint}>
-                    <PrintIcon />
-                  </IconButton>
-                </Tooltip>
-              </React.Fragment>
-            ),
-            filterType: 'checkbox',
-            selectableRows: 'none', 
-            
-            download: false, // Disable the default download button
-            print: false,    // Disable the default print button
-            sort: false,
-          }}
-        />
-      </div> */}
       <div>
         {isXsOrSm ? ( // Show data on xs and sm
           <Card>
@@ -674,11 +640,11 @@ function LaptopTagging() {
                         value={item.Status} // Use the current item's status
                         onChange={(event) => handleStatusChange(event, index)}
                         displayEmpty
-                        style={{ borderRadius: '20px' }}
+                        style={{ borderRadius: '20px', fontSize: "14px" }}
                       >
-                        <MenuItem value="Data Entered">Data Entered</MenuItem>
-                        <MenuItem value="Laptop Received">Laptop Received</MenuItem>
-                        <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
+                        <MenuItem style={{ fontSize: "14px" }} value="Data Entered">Data Entered</MenuItem>
+                        <MenuItem style={{ fontSize: "14px" }} value="Laptop Received">Laptop Received</MenuItem>
+                        <MenuItem style={{ fontSize: "14px" }} value="Laptop Refurbished">Laptop Refurbished</MenuItem>
                       </Select>
                     </Grid>
                   </Grid>
