@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTheme } from '@mui/material/styles';
+import { useMediaQuery } from '@mui/material';
 import {
   TextField,
   Button,
@@ -6,6 +8,7 @@ import {
   CircularProgress,
   Typography,
   Grid,
+  Card,
   Checkbox,
   Tooltip,
   IconButton,
@@ -49,12 +52,15 @@ function LaptopTagging() {
   const [changeStatus, setChangeStatus] = useState(false);
   const [allData, setAllData] = useState([]);
   const [refresh, setRefresh] = useState(false);
-
+  const theme = useTheme();
+  const isXsOrSm = useMediaQuery(theme.breakpoints.down('sm')); // Check for xs and sm
+  const isMdOrLg = useMediaQuery(theme.breakpoints.up('md')); // Check for md and lg
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [modelStatus, setModelStatus] = useState(false);
 
 
 
- useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -70,12 +76,12 @@ function LaptopTagging() {
     };
 
     fetchData(); // Only called once when component mounts
-    
+
   }, [refresh]);
 
 
   const handleSearch = () => {
-     
+
     const filtered = allData.filter(laptop => {
       if (idQuery) {
         return String(laptop.ID).toUpperCase() === idQuery.toUpperCase();
@@ -86,14 +92,14 @@ function LaptopTagging() {
       return false;
     });
     setData(filtered);
-    
+
   };
 
   useEffect(() => {
-    
+
     handleSearch();
-  },[loading]);
- 
+  }, [loading]);
+
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
@@ -102,12 +108,12 @@ function LaptopTagging() {
     const cardWidth = pageWidth - padding * 2;
     const cardHeight = 100;
     let yPosition = 20; // Starting Y position for the first card
-  
+
     data.forEach((laptop, index) => {
       // Draw card border
       doc.setDrawColor(0); // Black border
       doc.rect(padding, yPosition, cardWidth, cardHeight);
-  
+
       // Add laptop details inside the card
       doc.setFontSize(12);
       doc.text(`ID: ${laptop.ID}`, padding + 5, yPosition + 10);
@@ -119,26 +125,26 @@ function LaptopTagging() {
       doc.text(`Major Issues: ${laptop["Major Issues"]}`, padding + 5, yPosition + 70);
       doc.text(`Mac address: ${laptop["Mac address"]}`, padding + 5, yPosition + 80);
       // doc.text(`barcodeUrl: <img src="${laptop.barcodeUrl}" class="barcode" />`, padding + 5, yPosition + 80);
-  
+
       // Add space between cards
       yPosition += cardHeight + 10;
-  
+
       // Create a new page if the current page is filled
       if (yPosition + cardHeight > doc.internal.pageSize.getHeight() - padding) {
         doc.addPage();
         yPosition = 20; // Reset Y position for new page
       }
     });
-  
+
     // Download the PDF
     doc.save("laptop_data_cards.pdf");
   };
-  
+
 
   const handlePrint = () => {
     const printContent = document.getElementById('tableToPrint');
     const WindowPrint = window.open('', '', 'width=900,height=650');
-    
+
 
     // Modify this part to include the structure you want for printing
     WindowPrint.document.write(`
@@ -224,8 +230,8 @@ function LaptopTagging() {
         </body>
       </html>
     `);
-    
-    
+
+
     WindowPrint.document.close();
     // WindowPrint.focus();
     WindowPrint.print();
@@ -261,49 +267,49 @@ function LaptopTagging() {
 
     // Update the taggedLaptops state
     if (!changeStatus) {
-    setTaggedLaptops(prevState => ({
-      ...prevState,
-      [selectedRowIndex]: isChecked
-    }));
-  }
+      setTaggedLaptops(prevState => ({
+        ...prevState,
+        [selectedRowIndex]: isChecked
+      }));
+    }
 
-   
-      const payload = {
-        type:"laptopLabeling",
-        id: laptopId,
-        working: !changeStatus ? (!isChecked?"Working":"Not Working"):rowIndex.Working,
-        donorCompanyName: rowIndex["Donor Company Name"],
-        ram: rowIndex.RAM,
-        rom: rowIndex.ROM,
-        manufacturerModel: rowIndex["Manufacturer Model"], 
-        inventoryLocation: rowIndex["Inventory Location"],
-        macAddress: rowIndex["Mac address"],
-        processor: rowIndex["Processor"],
-        others: rowIndex["Others"], 
-        status: rowIndex["Status"],
-        laptopWeight: rowIndex["laptop weight"],
-        conditionStatus: rowIndex["Condition Status"],
-        manufacturingDate: rowIndex["Manufacturing Date"],
-      };
-      try {
-        await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-          mode: 'no-cors'
-        });
-        setRefresh(!refresh);
-      } catch (error) {
-        console.error('Error tagging the laptop:', error);
-      }
-   
+
+    const payload = {
+      type: "laptopLabeling",
+      id: laptopId,
+      working: !changeStatus ? (!isChecked ? "Working" : "Not Working") : rowIndex.Working,
+      donorCompanyName: rowIndex["Donor Company Name"],
+      ram: rowIndex.RAM,
+      rom: rowIndex.ROM,
+      manufacturerModel: rowIndex["Manufacturer Model"],
+      inventoryLocation: rowIndex["Inventory Location"],
+      macAddress: rowIndex["Mac address"],
+      processor: rowIndex["Processor"],
+      others: rowIndex["Others"],
+      status: rowIndex["Status"],
+      laptopWeight: rowIndex["laptop weight"],
+      conditionStatus: rowIndex["Condition Status"],
+      manufacturingDate: rowIndex["Manufacturing Date"],
+    };
+    try {
+      await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+        mode: 'no-cors'
+      });
+      setRefresh(!refresh);
+    } catch (error) {
+      console.error('Error tagging the laptop:', error);
+    }
+
     setOpen(false);
     setSelectedRowIndex(null);
     setIsChecked(false);
     setModelStatus(false);
-    
+
     handleSearch()
   };
 
@@ -326,12 +332,12 @@ function LaptopTagging() {
     setChangeStatus(true);
     setOpen(true);
     // setRefresh(!refresh);
-    
+
   };
 
   const columns = [
-    { 
-      name: "ID", 
+    {
+      name: "ID",
       label: "Serial No", //Serial No = ID  
       options: {
         setCellProps: () => ({
@@ -342,8 +348,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Donor Company Name", 
+    {
+      name: "Donor Company Name",
       label: "Company Name",
       options: {
         setCellProps: () => ({
@@ -354,8 +360,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "RAM", 
+    {
+      name: "RAM",
       label: "RAM",
       options: {
         setCellProps: () => ({
@@ -366,8 +372,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "ROM", 
+    {
+      name: "ROM",
       label: "ROM",
       options: {
         setCellProps: () => ({
@@ -378,8 +384,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Manufacturer Model", 
+    {
+      name: "Manufacturer Model",
       label: "Manufacturer Model",
       options: {
         setCellProps: () => ({
@@ -390,8 +396,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Minor Issues", 
+    {
+      name: "Minor Issues",
       label: "Minor Issues",
       options: {
         setCellProps: () => ({
@@ -402,8 +408,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Major Issues", 
+    {
+      name: "Major Issues",
       label: "Major Issues",
       options: {
         setCellProps: () => ({
@@ -414,8 +420,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Inventory Location", 
+    {
+      name: "Inventory Location",
       label: "Inventory Location",
       options: {
         setCellProps: () => ({
@@ -426,8 +432,8 @@ function LaptopTagging() {
         })
       }
     },
-    { 
-      name: "Mac address", 
+    {
+      name: "Mac address",
       label: "Mac Address",
       options: {
         setCellProps: () => ({
@@ -450,9 +456,9 @@ function LaptopTagging() {
               value={laptopData.Status}
               onChange={(event) => handleStatusChange(event, rowIndex)}
               displayEmpty
-              style={{borderRadius:"20px"}}
+              style={{ borderRadius: "20px" }}
             >
-              
+
               <MenuItem value="Laptop Received">Laptop Received</MenuItem>
               <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
             </Select>
@@ -474,18 +480,18 @@ function LaptopTagging() {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           const isChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : laptopData.Working === "Not Working";
-          
+
           return (
             <Checkbox
               checked={isChecked}
               onClick={(event) => handleTagClick(event, rowIndex)}
               color="primary"
               className="custom-body-cell"
-            /> 
-          
+            />
+
           )
-        
-       
+
+
         },
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -503,16 +509,16 @@ function LaptopTagging() {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex]; // Fetch the current row's laptop data
           return (
-            <EditButton 
-            laptopData={laptopData} 
-            rowIndex={rowIndex}
-            data={data}
-            setData={setData}
-            setOpen={setOpen}
-            setSelectedRowIndex={setSelectedRowIndex}
-            style={style}
-            setRefresh={setRefresh}
-            refresh={refresh}
+            <EditButton
+              laptopData={laptopData}
+              rowIndex={rowIndex}
+              data={data}
+              setData={setData}
+              setOpen={setOpen}
+              setSelectedRowIndex={setSelectedRowIndex}
+              style={style}
+              setRefresh={setRefresh}
+              refresh={refresh}
 
             />
           );
@@ -527,8 +533,8 @@ function LaptopTagging() {
     }
   ];
 
-  
-  
+
+
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2} style={{ marginBottom: '32px', marginTop: '80px' }}>
@@ -555,7 +561,7 @@ function LaptopTagging() {
           />
         </Grid>
       </Grid>
-      <Grid container spacing={2} style={{marginBottom:"32px"}}>
+      <Grid container spacing={2} style={{ marginBottom: "32px" }}>
         <Grid item>
           <Button
             variant="contained"
@@ -578,11 +584,11 @@ function LaptopTagging() {
         </Grid>
       </Grid>
 
+
       {/* Conditionally render the data table */}
-      
-      <div id="tableToPrint">
+
+      {/* <div id="tableToPrint">
         <MUIDataTable
-          
           title={"Laptop Data"}
           data={data}
           columns={columns}
@@ -610,8 +616,128 @@ function LaptopTagging() {
             sort: false,
           }}
         />
+      </div> */}
+      <div>
+        {isXsOrSm ? ( // Show data on xs and sm
+          <Card>
+            <Typography variant='h6'>Laptop Data</Typography>
+            <Grid container spacing={2} sx={{ mt: 2, px: 2 }} >
+              <Tooltip title="Download PDF">
+                <IconButton onClick={handleDownloadPDF}>
+                  <GetAppIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Print">
+                <IconButton onClick={handlePrint}>
+                  <PrintIcon />
+                </IconButton>
+              </Tooltip>
+              {data.map((item, index) => (
+                <Grid item xs={12} key={index}>
+                  <Grid container spacing={2}>
+                    {Object.keys(item).map((key) => (
+                      <React.Fragment key={key}>
+                        <Grid item xs={4}>
+                          <Typography variant="body2" style={{ fontWeight: 'bold' }}>
+                            {key}:
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={8}>
+                          <Typography variant="body2">
+                            {item[key]}
+                          </Typography>
+                        </Grid>
+                      </React.Fragment>
+                    ))}
+                  </Grid>
+
+                  <Grid container alignItems="center" spacing={2}>
+                    <Grid item xs={4}>
+                      <Typography variant="body2" style={{ fontWeight: 'bold' }}>Not Working</Typography>
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Checkbox
+                        checked={isChecked}
+                        onClick={(event) => handleTagClick(event, index)}
+                        color="primary"
+                        className="custom-body-cell"
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Grid container alignItems="center" spacing={5}>
+                    <Grid item xs={4}>
+                      <Typography variant="body2" style={{ fontWeight: 'bold' }}>Status</Typography>
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Select
+                        value={item.Status} // Use the current item's status
+                        onChange={(event) => handleStatusChange(event, index)}
+                        displayEmpty
+                        style={{ borderRadius: '20px' }}
+                      >
+                        <MenuItem value="Data Entered">Data Entered</MenuItem>
+                        <MenuItem value="Laptop Received">Laptop Received</MenuItem>
+                        <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
+                      </Select>
+                    </Grid>
+                  </Grid>
+
+                  <Grid container alignItems="center" spacing={2}>
+                    <Grid item xs={4}>
+                      <Typography variant="body2" style={{ fontWeight: 'bold' }}>Edit</Typography>
+                    </Grid>
+                    <Grid item xs={8}>
+                      <EditButton
+                        laptopData={item} // Pass the current item data
+                        rowIndex={index}
+                        data={data}
+                        setData={setData}
+                        setOpen={setOpen}
+                        setSelectedRowIndex={setSelectedRowIndex}
+                        style={style}
+                        setRefresh={setRefresh}
+                        refresh={refresh}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              ))}
+            </Grid>
+          </Card>
+        ) : (
+          isMdOrLg && (
+            <MUIDataTable
+              title="Laptop Data"
+              data={data}
+              columns={columns}
+              options={{
+                responsive: 'scrollMaxHeight', // Adjust table height dynamically
+                customToolbar: () => (
+                  <React.Fragment>
+                    <Tooltip title="Download PDF">
+                      <IconButton onClick={handleDownloadPDF}>
+                        <GetAppIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Print">
+                      <IconButton onClick={handlePrint}>
+                        <PrintIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </React.Fragment>
+                ),
+                filterType: 'checkbox',
+                selectableRows: 'none',
+                download: false, // Disable the default download button
+                print: false,    // Disable the default print button
+                sort: false,
+              }}
+            />
+          )
+        )}
       </div>
-     
+
       {/* Modal for checkbox click */}
       <Modal
         open={open}
@@ -621,16 +747,16 @@ function LaptopTagging() {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            
-            {modelStatus ? "Status" :!isChecked ? 'Working' : 'Not Working'}
+
+            {modelStatus ? "Status" : !isChecked ? 'Working' : 'Not Working'}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
 
-          
-         {modelStatus ?
-          "Are you sure you want to change the status for this laptop?"
-          : `Are you sure you want to mark this laptop as ${!isChecked ? 'Working' : 'Not Working'}?`
-         }
+
+            {modelStatus ?
+              "Are you sure you want to change the status for this laptop?"
+              : `Are you sure you want to mark this laptop as ${!isChecked ? 'Working' : 'Not Working'}?`
+            }
           </Typography>
           <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="outlined" color="secondary" onClick={handleModalClose} style={{ marginRight: 8 }}>
@@ -645,7 +771,7 @@ function LaptopTagging() {
 
       {/* Hidden div for printing */}
       <div ref={printRef} style={{ display: 'none' }}></div>
-    </Container>
+    </Container >
   );
 }
 
