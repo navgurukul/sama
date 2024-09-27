@@ -6,7 +6,6 @@ import Navbar from './components/Header/Navbar';
 import Footer from './components/Footer/Footer';
 import Home from './Pages/Home';
 import About from './Pages/About/About';
-import GiveToday from './Pages/GiveToday';
 import OurApproach from './Pages/OurApproach/OurApproach';
 import Donate from './Pages/Donate/Donate';
 import DashboardPage from './Dashboard';
@@ -17,26 +16,72 @@ import LaptopInventory from './Pages/LaptopData/index';
 import Ops from './components/OPS/index';
 import './App.css';
 import Userdata from ".././src/OppsFiles/UserDetails/Userdata"
+import Opslogin from './Pages/Login/OpsLogin/Opslogin';
+import PrivateRoute from './Privaterouts';
+import NgoForm from "../src/Pages/NGORegistration/RegistrationForm"
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
+
       <Router>
         <div className="layout">
           <Navbar />
           <div className="content">
             {" "}
             <Routes>
+
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
-              <Route path="/give-today" element={<GiveToday />} />
               <Route path="/our-approach" element={<OurApproach />} />
               <Route path="/donate" element={<Donate />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/laptop-tagging" element={<MacRearch />} />
-              <Route path="/data-assignment-form" element={<DataAssignmentForm />} />
-              <Route path="/user-details" element={<Userdata />} />
-              <Route path="/laptopinventory" element={<LaptopInventory />} />
-              <Route path='/ops' element={<Ops />} />
+              <Route path="/ngoregistration" element={ <NgoForm />} />
+              <Route path="/Opslogin" element={<Opslogin />} />
+              <Route path="/laptopinventory" 
+              element={
+                <PrivateRoute>
+                   <LaptopInventory />
+                </PrivateRoute>
+               }
+                />
+               <Route path="/user-details" 
+               element={
+                <PrivateRoute>
+                  <Userdata />
+                </PrivateRoute>}
+                />
+              <Route
+                path="/data-assignment-form"
+                element={
+                  <PrivateRoute>
+                    <DataAssignmentForm />
+                  </PrivateRoute> 
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  // <PrivateRoute>
+                    <DashboardPage />
+                  // {/* </PrivateRoute> */}
+                }
+              />
+              <Route
+                path="/ops"
+                element={
+                  <PrivateRoute>
+                    <Ops />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/laptop-tagging"
+                element={
+                  <PrivateRoute>
+                    <MacRearch />
+                  </PrivateRoute>
+                }
+              />
             </Routes>
             {" "}
           </div>

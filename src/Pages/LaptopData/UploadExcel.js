@@ -35,7 +35,8 @@ const Upload = () => {
     "Laptop Weight",
     "Mac Address",
     "Status",
-    "Working"
+    "Working",
+    "Battery Capacity"
   ];
 
   const handleFileChange = (e) => {
