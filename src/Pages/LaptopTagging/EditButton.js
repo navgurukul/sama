@@ -53,6 +53,7 @@ const EditButton = ({
             macAddress: laptopData["Mac address"] || "",
             status: laptopData.Status || "",
             working: laptopData.Working || "",
+            batteryCapacity: laptopData["Battery Capacity"] || "",
             inventoryLocation: laptopData["Inventory Location"] || "",
             laptopWeight: laptopData["laptop weight"] || "",
             conditionStatus: laptopData["Condition Status"] || "",
@@ -112,6 +113,7 @@ const EditButton = ({
                     macAddress: "",
                     status: "",
                     working: "",
+                    batteryCapacity:"",
                     inventoryLocation: "",
                     laptopWeight: "",
                     conditionStatus: "",
@@ -155,7 +157,7 @@ const EditButton = ({
         "Small Battery Capacity Loss",
         "Minor Software Issues",
         "Port Wear",
-        "Trackpad Sensitivity",
+        "Touchpad Sensitivity",
     ];
 
     return (
@@ -303,6 +305,16 @@ const EditButton = ({
                                     ))}
                                 </Select>
                             </FormControl>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Battery Capacity"
+                                name="batteryCapacity"
+                                value={editData?.batteryCapacity || ""}
+                                onChange={handleEditChange}
+                                fullWidth
+                                margin="normal"
+                            />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
