@@ -300,7 +300,7 @@ function NgoForm() {
           </RadioGroup>
         </FormControl>
 
-        {/* Jobs Created */}
+        {/* Jobs Created*/}
         <FormControl fullWidth margin="normal">
           <FormLabel>How many jobs do you anticipate creating in the next year through the use of the laptops?</FormLabel>
           <RadioGroup
@@ -358,7 +358,6 @@ function NgoForm() {
             onChange={handleFileUpload}
           />
         </Button>
-
         {/* Submit Button */}
         <Box sx={{ mt: 4 }}>
           <Button type="submit" variant="contained" color="primary" fullWidth>
