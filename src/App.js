@@ -19,7 +19,7 @@ import Userdata from ".././src/OppsFiles/UserDetails/Userdata"
 import Opslogin from './Pages/Login/OpsLogin/Opslogin';
 import PrivateRoute from './Privaterouts';
 import NgoForm from "../src/Pages/NGORegistration/RegistrationForm"
-
+import CompanySelection from './Pages/NGORegistration/CompanySelection';
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -35,7 +35,9 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/our-approach" element={<OurApproach />} />
               <Route path="/donate" element={<Donate />} />
-              <Route path="/ngoregistration" element={ <NgoForm />} />
+              <Route path="/company" element={<CompanySelection />} />
+              <Route path="/ngoregistration/:donorId" element={ <NgoForm />} />
+              <Route path='/ngoregistration' element={<NgoForm />} />
               <Route path="/Opslogin" element={<Opslogin />} />
               <Route path="/laptopinventory" 
               element={
