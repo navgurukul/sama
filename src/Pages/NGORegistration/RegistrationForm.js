@@ -112,7 +112,7 @@ function RegistrationForm() {
   }, []);
   const donorIDs = companies.find((company) => company.Donner === donorId)?.["Donor id"];
   
-  console.log(donorIDs);
+  
   
 
   // Fetch form fields from API

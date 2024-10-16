@@ -20,6 +20,7 @@ import Opslogin from './Pages/Login/OpsLogin/Opslogin';
 import PrivateRoute from './Privaterouts';
 import NgoForm from "../src/Pages/NGORegistration/RegistrationForm"
 import CompanySelection from './Pages/NGORegistration/CompanySelection';
+import DonorManager from './Pages/NGORegistration/DonorManager';
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -39,6 +40,7 @@ function App() {
               <Route path="/ngoregistration/:donorId" element={ <NgoForm />} />
               <Route path='/ngoregistration' element={<NgoForm />} />
               <Route path="/Opslogin" element={<Opslogin />} />
+              <Route path="/donormanager" element={<DonorManager />} />
               <Route path="/laptopinventory" 
               element={
                 <PrivateRoute>
