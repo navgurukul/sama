@@ -36,7 +36,7 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/our-approach" element={<OurApproach />} />
               <Route path="/donate" element={<Donate />} />
-              <Route path="/company" element={<CompanySelection />} />
+              <Route path="/ngo" element={<CompanySelection />} />
               <Route path="/ngoregistration/:donorId" element={ <NgoForm />} />
               <Route path='/ngoregistration' element={<NgoForm />} />
               <Route path="/Opslogin" element={<Opslogin />} />
