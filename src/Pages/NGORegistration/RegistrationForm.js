@@ -1,372 +1,406 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
   TextField,
   FormControl,
   FormLabel,
-  RadioGroup,
   FormControlLabel,
+  Checkbox,
+  RadioGroup,
   Radio,
-  Select,
-  MenuItem,
-  Typography
+  Typography,
+  CircularProgress,
+  Snackbar,
+  Alert,
 } from '@mui/material';
+import { useParams } from 'react-router-dom';
 
-function NgoForm() {
+const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
+  const handleRadioChange = (e) => {
+    const { value } = e.target;
+    onChange(e);
+  };
+
+  const handleOtherChange = (e) => {
+    const { value } = e.target;
+    onChange({ target: { name, value } });
+  };
+
+  return (
+    <FormControl fullWidth margin="normal" required error={!!error}>
+      <FormLabel>{label}</FormLabel>
+      <RadioGroup
+        name={name}
+        value={options.includes(value) ? value : 'Other'}
+        onChange={handleRadioChange}
+      >
+        {options.map((option) => (
+          <FormControlLabel key={option} value={option} control={<Radio />} label={option} />
+        ))}
+        <FormControlLabel value="Other" control={<Radio />} label="Other" />
+      </RadioGroup>
+      {value === 'Other' || !options.includes(value) ? (
+        <TextField
+          name={name}
+          label="Please specify"
+          value={value === 'Other' ? '' : value}
+          onChange={handleOtherChange}
+          fullWidth
+          margin="normal"
+          required
+          error={!!error}
+          helperText={error}
+        />
+      ) : null}
+      {error && <Typography color="error">{error}</Typography>}
+    </FormControl>
+  );
+};
+
+function RegistrationForm() {
+  const { donorId } = useParams();
+
+  const [formFields, setFormFields] = useState([]);  // Store fetched form fields here
   const [formData, setFormData] = useState({
+    
     organizationName: '',
     registrationNumber: '',
     primaryContactName: '',
     contactNumber: '',
     email: '',
     operatingState: '',
-    location: '',
+    location: [],
     yearsOperating: '',
     focusArea: '',
     worksWithWomen: '',
     infrastructure: '',
     beneficiarySelection: [],
-    beneficiariesCount: '',
+    beneficiarySelectionOther: '',
+    numberOfBeneficiaries: '',
     ageGroup: '',
     primaryUse: [],
+    primaryUseOther: '',
     expectedOutcome: '',
     laptopTracking: '',
     jobsCreated: '',
     previousProjects: '',
     sufficientStaff: '',
-    impactReport: null
+    impactReport: "",
+    
   });
+
+  const [errors, setErrors] = useState({});
+  const [fileName, setFileName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [companies, setCompanies] = useState([]);
+
+  useEffect(() => {
+    async function fetchCompanies() {
+      try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorID'); // Replace with your API URL
+        const data = await response.json();
+        setCompanies(data); // Assuming data is an array of company names
+      } catch (error) {
+        console.error('Error fetching company names:', error);
+      }
+    }
+    fetchCompanies();
+  }, []);
+  const donorIDs = companies.find((company) => company.Donner === donorId)?.["Donor id"];
+  
+  // console.log(donorIDs);
+  
+
+  // Fetch form fields from API
+  useEffect(() => {
+    const fetchFormFields = async () => {
+      try {
+        // Construct the API URL based on the presence of donorId
+        const baseURL = 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorQuestion';
+        const apiUrl = donorIDs ? `${baseURL}&donorId=${donorIDs}` : baseURL;
+        
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        setFormFields(data);  // Assuming the API response has a 'formFields' key
+      } catch (error) {
+        console.error('Error fetching form fields:', error);
+      }
+    };
+  
+    fetchFormFields();
+  }, [donorIDs]);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleMultiSelectChange = (e, field) => {
-    const { value } = e.target;
-    setFormData({ ...formData, [field]: typeof value === 'string' ? value.split(',') : value });
+  const handleCheckboxChange = (e, field) => {
+    const { value, checked } = e.target;
+    setFormData((prevState) => {
+      const newSelection = checked
+        ? [...prevState[field], value]
+        : prevState[field].filter((item) => item !== value);
+      return { ...prevState, [field]: newSelection };
+    });
   };
 
   const handleFileUpload = (e) => {
-    setFormData({ ...formData, impactReport: e.target.files[0] });
+    const file = e.target.files[0];
+    setFormData({ ...formData, impactReport: file });
+    setFileName(file ? file.name : '');
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };
+  const validate = () => {
+    const newErrors = {};
 
-  console.log(formData);
+    // General required field validation
+    // Object.keys(formData).forEach((key) => {
+    //   if (!formData[key] && key !== 'impactReport' && key !== 'beneficiarySelectionOther' && key !== 'primaryUseOther') {
+    //     newErrors[key] = 'This field is required';
+    //   }
+    // });
+
+    // Specific validation for contact number
+    if (formData.contactNumber && !/^\d{10}$/.test(formData.contactNumber)) {
+      newErrors.contactNumber = 'Contact number must be 10 digits (number)';
+    }
+
+    // Specific validation for email
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email address';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validate()) {
+      setLoading(true);
+      const updatedFormData = { ...formData };
+      if (updatedFormData.beneficiarySelectionOther) {
+        updatedFormData.beneficiarySelection = updatedFormData.beneficiarySelection.map(item =>
+          item === 'Other' ? updatedFormData.beneficiarySelectionOther : item
+        );
+      }
+      if (updatedFormData.primaryUseOther) {
+        updatedFormData.primaryUse = updatedFormData.primaryUse.map(item =>
+          item === 'Other' ? updatedFormData.primaryUseOther : item
+        );
+      }
+
+      // Remove beneficiarySelectionOther and primaryUseOther from the updated form data
+      delete updatedFormData.beneficiarySelectionOther;
+      delete updatedFormData.primaryUseOther;
+
+      let base64File = '';
+      if (updatedFormData.impactReport) {
+        // If a file is provided, convert it to base64
+        const reader = new FileReader();
+        reader.readAsDataURL(updatedFormData.impactReport);
+        base64File = await new Promise((resolve) => {
+          reader.onload = () => {
+            resolve(reader.result.split(",")[1]);
+          };
+        });
+      }
+      var formDataWithType = {
+        ...updatedFormData,
+        file: base64File || " ",
+        fileName: updatedFormData.impactReport.name || "",
+        mimeType: updatedFormData.impactReport.type || "",
+        type: "NGO",
+      };
+
+      try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          mode: "no-cors",
+          body: JSON.stringify(formDataWithType),
+        });
+        // Log the response for debugging
+        
+        setLoading(false);
+        setSnackbarMessage('Form submitted successfully!');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+          setFormData({
+            organizationName: '',
+            registrationNumber: '',
+            primaryContactName: '',
+            contactNumber: '',
+            email: '',
+            operatingState: '',
+            location: [],
+            yearsOperating: '',
+            focusArea: '',
+            worksWithWomen: '',
+            infrastructure: '',
+            beneficiarySelection: [],
+            beneficiarySelectionOther: '',
+            numberOfBeneficiaries: '',
+            ageGroup: '',
+            primaryUse: [],
+            primaryUseOther: '',
+            expectedOutcome: '',
+            laptopTracking: '',
+            jobsCreated: '',
+            previousProjects: '',
+            sufficientStaff: '',
+            impactReport: '',
+          });
+          setFileName('');
+          setErrors({});
+        } catch (error) {
+          console.error('Error submitting form:', error);
+        }
+    }
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
   return (
-    <Box sx={{ maxWidth: 600, margin: 'auto', padding: 3, }}>
-         <Typography variant="h4" gutterBottom>NGO Information Form</Typography>
-      <form onSubmit={handleSubmit}>
-        {/* Fields 1-13 */}
-        {/* Organization Name */}
-        <TextField
-          fullWidth
-          label="What is the name of the organization?"
-          name="organizationName"
-          value={formData.organizationName}
-          onChange={handleInputChange}
-          margin="normal"
-          required
-        />
+    <Box sx={{ maxWidth: 600, margin: 'auto', padding: 3 }}>
+      <Typography variant="h4" gutterBottom>NGO Information Form</Typography>
+      {formFields?.length == 0 ? (
+        <CircularProgress />
+      ) : (
+        
+        <form onSubmit={handleSubmit}>
+          {formFields?.map((field) => {
+           
+            if (field?.type === 'text') {
+              return (
+                <TextField
+                  key={field.name}
+                  fullWidth
+                  label={field.question}
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleInputChange}
+                  margin="normal"
+                  required
+                  error={!!errors[field.name]}
+                  helperText={errors[field.name]}
+                />
+              );
+            } 
+            else if (field?.type === 'radio') {
+              return (
+                <FormControl key={field.name}
+                 fullWidth margin="normal" required error={!!errors[field.name]}>
+                  <FormLabel>{field?.question}</FormLabel>
+                  <RadioGroup
+                    name={field.name}
+                    value={formData[field.name]}
+                    onChange={handleInputChange}
+                  >
+                    {field?.options?.map((option) => (
+                      <FormControlLabel key={option} value={option} control={<Radio />} label={option} />
+                    ))}
+                  </RadioGroup>
+                  {errors[field.name] && <Typography color="error">{errors[field.name]}</Typography>}
+                </FormControl>
+              );
+            } 
+            else if (field.type === 'radioWithOther') {
+              return (
+                <RadioWithOther
+                  key={field.name}
+                  label={field.question}
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleInputChange}
+                  options={field.options}
+                  error={errors[field.name]}
+                />
+              );
+            }
+            else if (field.type === 'fileUpload') {
+              return (
+                <>
+                {/* Impact Reports Upload here */}
+                <Typography variant="body1" gutterBottom>
+                  Please share any impact reports or documentation related to your previous projects.
+                </Typography>
+                <Button variant="contained" component="label">
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.xlsx"
+                    hidden
+                    onChange={handleFileUpload}
+                    required
+                  />
+                </Button>
+                {fileName ? (
+                  <Typography variant="subtitle1" gutterBottom>
+                    Selected file: {fileName}
+                  </Typography>
+                ) :
+                <Typography variant="subtitle1" gutterBottom color="red">
+                    No File Selected
+                  </Typography>}
+                </>
+              );
+            }
+            else if (field?.type === 'checkbox') {
+              return (
+                <FormControl key={field.name} fullWidth margin="normal">
+                  <FormLabel>{field.question}</FormLabel>
+                  {field?.options?.map((option) => (
+                    <FormControlLabel
+                      key={option}
+                      control={
+                        <Checkbox
+                          checked={formData[field.name].includes(option)}
+                          onChange={(e) => handleCheckboxChange(e, field.name)}
+                          value={option}
+                        />
+                      }
+                      label={option}
+                    />
+                  ))}
+                  {errors[field.name] && <Typography color="error">{errors[field.name]}</Typography>}
+                </FormControl>
+              );
+            } 
+            return null;
+          })}
 
-        {/* Registration Number */}
-        <TextField
-          fullWidth
-          label="What is the NGO's official registration number?"
-          name="registrationNumber"
-          value={formData.registrationNumber}
-          onChange={handleInputChange}
-          margin="normal"
-          required
-        />
+        { (formFields.length > 0) && 
+        <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ marginTop: 2 }}>
+        {loading ? <CircularProgress size={24} /> : 'Submit'}
+        </Button> 
+         }
+        </form>
+      )}
 
-        {/* Primary Contact Person */}
-        <TextField
-          fullWidth
-          label="Please provide the full name of the primary contact person for your organization."
-          name="primaryContactName"
-          value={formData.primaryContactName}
-          onChange={handleInputChange}
-          margin="normal"
-          required
-        />
-
-        {/* Contact Number */}
-        <TextField
-          fullWidth
-          label="Please provide the mobile number of the concerned person"
-          name="contactNumber"
-          value={formData.contactNumber}
-          onChange={handleInputChange}
-          margin="normal"
-          required
-        />
-
-        {/* Email */}
-        <TextField
-          fullWidth
-          label="Please provide an email address of your organization."
-          name="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          margin="normal"
-          required
-        />
-
-        {/* Operating State */}
-        <TextField
-          fullWidth
-          label="In which state is your organization currently operating?"
-          name="operatingState"
-          value={formData.operatingState}
-          onChange={handleInputChange}
-          margin="normal"
-          required
-        />
-
-        {/* Location */}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>What is your organization's location of operation?</FormLabel>
-          <RadioGroup
-            name="location"
-            value={formData.location}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="Urban" control={<Radio />} label="Urban" />
-            <FormControlLabel value="Rural" control={<Radio />} label="Rural" />
-            <FormControlLabel value="Semi-Urban" control={<Radio />} label="Semi-Urban" />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Years of Operation */}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>How many years has your organization been working?</FormLabel>
-          <RadioGroup
-            name="yearsOperating"
-            value={formData.yearsOperating}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="Less than 2 years" control={<Radio />} label="Less than 2 years" />
-            <FormControlLabel value="2 - 5 years" control={<Radio />} label="2 - 5 years" />
-            <FormControlLabel value="5 - 10 years" control={<Radio />} label="5 - 10 years" />
-            <FormControlLabel value="10+ years" control={<Radio />} label="10+ years" />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Focus Area */}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>What is the primary focus area of your organization?</FormLabel>
-          <RadioGroup
-            name="focusArea"
-            value={formData.focusArea}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="Education" control={<Radio />} label="Education" />
-            <FormControlLabel value="Employment/Job placement" control={<Radio />} label="Employment/Job placement" />
-            <FormControlLabel value="Digital literacy" control={<Radio />} label="Digital literacy" />
-            <FormControlLabel value="Women empowerment" control={<Radio />} label="Women empowerment" />
-            <FormControlLabel value="Other" control={<Radio />} label="Other" />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Working with Women */}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>Does your NGO primarily work with underprivileged women?</FormLabel>
-          <RadioGroup
-            name="worksWithWomen"
-            value={formData.worksWithWomen}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
-            <FormControlLabel value="No" control={<Radio />} label="No" />
-            <FormControlLabel value="Partially" control={<Radio />} label="Partially (Some projects focus on this)" />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Infrastructure */}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>What infrastructure is available for laptop use?</FormLabel>
-          <RadioGroup
-            name="infrastructure"
-            value={formData.infrastructure}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="Dedicated computer lab" control={<Radio />} label="Dedicated computer lab" />
-            <FormControlLabel value="Beneficiaries will use laptops at home" control={<Radio />} label="Beneficiaries will use laptops at home" />
-            <FormControlLabel value="Shared space with Wi-Fi" control={<Radio />} label="Shared space with Wi-Fi" />
-            <FormControlLabel value="No specific infrastructure in place" control={<Radio />} label="No specific infrastructure in place" />
-            <FormControlLabel value="Other" control={<Radio />} label="Other" />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Identifying Beneficiaries */}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>How does your NGO identify beneficiaries for laptop distribution?</FormLabel>
-          <Select
-            name="beneficiarySelection"
-            multiple
-            value={formData.beneficiarySelection}
-            onChange={(e) => handleMultiSelectChange(e, 'beneficiarySelection')}
-            renderValue={(selected) => selected.join(', ')}
-          >
-            <MenuItem value="Economic background">Based on economic background</MenuItem>
-            <MenuItem value="Educational background">Based on educational background</MenuItem>
-            <MenuItem value="Employment status">Based on employment status</MenuItem>
-            <MenuItem value="Other">Other</MenuItem>
-          </Select>
-        </FormControl>
-
-        {/* Number of Beneficiaries */}
-        <TextField
-          fullWidth
-          label="How many beneficiaries does your NGO plan to serve with the laptops?"
-          name="numberOfBeneficiaries"
-          value={formData.numberOfBeneficiaries}
-          onChange={handleInputChange}
-          margin="normal"
-          required
-        />
-
-        {/* Age Group */}
-        <FormControl component="fieldset" margin="normal">
-          <FormLabel component="legend">What is the age group of the beneficiaries?</FormLabel>
-          <RadioGroup
-            name="ageGroup"
-            value={formData.ageGroup}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="18-22 years" control={<Radio />} label="18-22 years (fresh graduates/college students)" />
-            <FormControlLabel value="22-30 years" control={<Radio />} label="22-30 years (seeking employment)" />
-            <FormControlLabel value="30+ years" control={<Radio />} label="30+ years (returning to education/employment)" />
-            <FormControlLabel value="Other" control={<Radio />} label="Other" />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Fields 14-20 */}
-        {/* Primary Use */}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>What will be the primary use of the laptops provided to your beneficiaries?</FormLabel>
-          <Select
-            name="primaryUse"
-            multiple
-            value={formData.primaryUse}
-            onChange={(e) => handleMultiSelectChange(e, 'primaryUse')}
-            renderValue={(selected) => selected.join(', ')}
-          >
-            <MenuItem value="Education">Education</MenuItem>
-            <MenuItem value="Employment">Employment</MenuItem>
-            <MenuItem value="Entrepreneurship">Entrepreneurship</MenuItem>
-            <MenuItem value="Other">Other</MenuItem>
-          </Select>
-        </FormControl>
-
-        {/* Expected Outcomes */}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>What are the expected outcomes from the use of the laptops?</FormLabel>
-          <RadioGroup
-            name="expectedOutcome"
-            value={formData.expectedOutcome}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="Securing full-time employment" control={<Radio />} label="Securing full-time employment" />
-            <FormControlLabel value="Securing part-time employment or freelance work" control={<Radio />} label="Securing part-time employment or freelance work" />
-            <FormControlLabel value="Completing education or certifications" control={<Radio />} label="Completing education or certifications" />
-            <FormControlLabel value="Starting a business" control={<Radio />} label="Starting a business" />
-            <FormControlLabel value="No specific outcome" control={<Radio />} label="No specific outcome" />
-            <FormControlLabel value="Other" control={<Radio />} label="Other" />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Laptop Tracking */}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>How do you plan to track the usage of the laptops?</FormLabel>
-          <RadioGroup
-            name="laptopTracking"
-            value={formData.laptopTracking}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="Regular beneficiary feedback" control={<Radio />} label="Regular beneficiary feedback" />
-            <FormControlLabel value="Progress reports from beneficiaries" control={<Radio />} label="Progress reports from beneficiaries" />
-            <FormControlLabel value="Monitoring online course completion" control={<Radio />} label="Monitoring online course completion" />
-            <FormControlLabel value="Employment verification" control={<Radio />} label="Employment verification" />
-            <FormControlLabel value="Other" control={<Radio />} label="Other" />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Jobs Created*/}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>How many jobs do you anticipate creating in the next year through the use of the laptops?</FormLabel>
-          <RadioGroup
-            name="jobsCreated"
-            value={formData.jobsCreated}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="1 - 10" control={<Radio />} label="1 - 10" />
-            <FormControlLabel value="10 - 20" control={<Radio />} label="10 - 20" />
-            <FormControlLabel value="20 - 30" control={<Radio />} label="20 - 30" />
-            <FormControlLabel value="30 - 50" control={<Radio />} label="30 - 50" />
-            <FormControlLabel value="50+" control={<Radio />} label="50+" />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Previous Projects */}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>Has your NGO previously undertaken similar projects?</FormLabel>
-          <RadioGroup
-            name="previousProjects"
-            value={formData.previousProjects}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="Yes, multiple similar projects" control={<Radio />} label="Yes, multiple similar projects" />
-            <FormControlLabel value="Yes, but on a smaller scale" control={<Radio />} label="Yes, but on a smaller scale" />
-            <FormControlLabel value="No, this is our first project of this kind" control={<Radio />} label="No, this is our first project of this kind" />
-            <FormControlLabel value="Other" control={<Radio />} label="Other" />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Sufficient Staff */}
-        <FormControl fullWidth margin="normal">
-          <FormLabel>Does your NGO have sufficient staff to support beneficiaries in utilizing the laptops?</FormLabel>
-          <RadioGroup
-            name="sufficientStaff"
-            value={formData.sufficientStaff}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="Yes, dedicated staff for digital literacy/employment" control={<Radio />} label="Yes, dedicated staff for digital literacy/employment" />
-            <FormControlLabel value="Yes, but shared staff with other projects" control={<Radio />} label="Yes, but shared staff with other projects" />
-            <FormControlLabel value="No, we will need external support" control={<Radio />} label="No, we will need external support" />
-            <FormControlLabel value="Other" control={<Radio />} label="Other" />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Impact Reports Upload */}
-        <Typography variant="body1" gutterBottom>
-          Please share any impact reports or documentation related to your previous projects.
-        </Typography>
-        <Button variant="contained" component="label">
-          Upload File
-          <input
-            type="file"
-            hidden
-            onChange={handleFileUpload}
-          />
-        </Button>
-        {/* Submit Button */}
-        <Box sx={{ mt: 4 }}>
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            Submit
-          </Button>
-        </Box>
-      </form>
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
 
-export default NgoForm;
+export default RegistrationForm;
+
+                   
