@@ -70,7 +70,7 @@ function RegistrationForm() {
     contactNumber: '',
     email: '',
     operatingState: '',
-    location: '',
+    location: [],
     yearsOperating: '',
     focusArea: '',
     worksWithWomen: '',
@@ -86,7 +86,7 @@ function RegistrationForm() {
     jobsCreated: '',
     previousProjects: '',
     sufficientStaff: '',
-    impactReport: null,
+    impactReport: "",
     
   });
 
@@ -112,7 +112,7 @@ function RegistrationForm() {
   }, []);
   const donorIDs = companies.find((company) => company.Donner === donorId)?.["Donor id"];
   
-  
+  // console.log(donorIDs);
   
 
   // Fetch form fields from API
@@ -160,11 +160,11 @@ function RegistrationForm() {
     const newErrors = {};
 
     // General required field validation
-    Object.keys(formData).forEach((key) => {
-      if (!formData[key] && key !== 'impactReport' && key !== 'beneficiarySelectionOther' && key !== 'primaryUseOther') {
-        newErrors[key] = 'This field is required';
-      }
-    });
+    // Object.keys(formData).forEach((key) => {
+    //   if (!formData[key] && key !== 'impactReport' && key !== 'beneficiarySelectionOther' && key !== 'primaryUseOther') {
+    //     newErrors[key] = 'This field is required';
+    //   }
+    // });
 
     // Specific validation for contact number
     if (formData.contactNumber && !/^\d{10}$/.test(formData.contactNumber)) {
@@ -180,9 +180,10 @@ function RegistrationForm() {
     return Object.keys(newErrors).length === 0;
   };
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (validate()) {
+    if (validate()) {
       setLoading(true);
       const updatedFormData = { ...formData };
       if (updatedFormData.beneficiarySelectionOther) {
@@ -198,18 +199,24 @@ function RegistrationForm() {
 
       // Remove beneficiarySelectionOther and primaryUseOther from the updated form data
       delete updatedFormData.beneficiarySelectionOther;
-    delete updatedFormData.primaryUseOther;
+      delete updatedFormData.primaryUseOther;
 
-    const reader = new FileReader();
-    reader.readAsDataURL(updatedFormData.impactReport);
-    reader.onload = async () => {
-      const base64File = reader.result.split(",")[1];
-
+      let base64File = '';
+      if (updatedFormData.impactReport) {
+        // If a file is provided, convert it to base64
+        const reader = new FileReader();
+        reader.readAsDataURL(updatedFormData.impactReport);
+        base64File = await new Promise((resolve) => {
+          reader.onload = () => {
+            resolve(reader.result.split(",")[1]);
+          };
+        });
+      }
       var formDataWithType = {
         ...updatedFormData,
-        file: base64File,
-        fileName: updatedFormData.impactReport.name,
-        mimeType: updatedFormData.impactReport.type,
+        file: base64File || " ",
+        fileName: updatedFormData.impactReport.name || "",
+        mimeType: updatedFormData.impactReport.type || "",
         type: "NGO",
       };
 
@@ -223,6 +230,7 @@ function RegistrationForm() {
           body: JSON.stringify(formDataWithType),
         });
         // Log the response for debugging
+        
         setLoading(false);
         setSnackbarMessage('Form submitted successfully!');
         setSnackbarSeverity('success');
@@ -234,7 +242,7 @@ function RegistrationForm() {
             contactNumber: '',
             email: '',
             operatingState: '',
-            location: '',
+            location: [],
             yearsOperating: '',
             focusArea: '',
             worksWithWomen: '',
@@ -250,15 +258,14 @@ function RegistrationForm() {
             jobsCreated: '',
             previousProjects: '',
             sufficientStaff: '',
-            impactReport: null
+            impactReport: '',
           });
           setFileName('');
           setErrors({});
         } catch (error) {
           console.error('Error submitting form:', error);
         }
-      }
-    // }
+    }
   };
 
   const handleCloseSnackbar = (event, reason) => {
@@ -325,6 +332,34 @@ function RegistrationForm() {
                 />
               );
             }
+            else if (field.type === 'fileUpload') {
+              return (
+                <>
+                {/* Impact Reports Upload here */}
+                <Typography variant="body1" gutterBottom>
+                  Please share any impact reports or documentation related to your previous projects.
+                </Typography>
+                <Button variant="contained" component="label">
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.xlsx"
+                    hidden
+                    onChange={handleFileUpload}
+                    required
+                  />
+                </Button>
+                {fileName ? (
+                  <Typography variant="subtitle1" gutterBottom>
+                    Selected file: {fileName}
+                  </Typography>
+                ) :
+                <Typography variant="subtitle1" gutterBottom color="red">
+                    No File Selected
+                  </Typography>}
+                </>
+              );
+            }
             else if (field?.type === 'checkbox') {
               return (
                 <FormControl key={field.name} fullWidth margin="normal">
@@ -346,44 +381,14 @@ function RegistrationForm() {
                 </FormControl>
               );
             } 
-            // else if (field.type === 'file') {
-            //   return (
-                
-            //   );
-            // }
             return null;
           })}
-         <Typography variant="body1" gutterBottom>
-           Please share any impact reports or documentation related to your previous projects.
-         </Typography>
-         <Button variant="contained" component="label">
-           Upload File
-           <input
-            type="file"
-            accept=".pdf,.doc,.docx,.xlsx"
-            hidden
-            onChange={handleFileUpload}
-            required
-          />
-        </Button>
-         {fileName ? (
-          <Typography variant="subtitle1" gutterBottom>
-            Selected file: {fileName}
-          </Typography>
-        ) :
-        <Typography variant="subtitle1" gutterBottom color="red">
-            No File Selected
-          </Typography>}
 
-
-
-
-
-
-          <Button type="submit" 
-          variant="contained" color="primary" fullWidth disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : 'Submit'}
-          </Button>
+        { (formFields.length > 0) && 
+        <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ marginTop: 2 }}>
+        {loading ? <CircularProgress size={24} /> : 'Submit'}
+        </Button> 
+         }
         </form>
       )}
 
