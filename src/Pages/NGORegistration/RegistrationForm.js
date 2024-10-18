@@ -29,7 +29,10 @@ const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
 
   return (
     <FormControl fullWidth margin="normal" required error={!!error}>
-      <FormLabel>{label}</FormLabel>
+      <FormLabel>
+      <Typography component="span" fontWeight="bold">{label}</Typography>
+        {/* {label} */}
+        </FormLabel>
       <RadioGroup
         name={name}
         value={options.includes(value) ? value : 'Other'}
@@ -298,7 +301,8 @@ function RegistrationForm() {
                 <TextField
                   key={field.name}
                   fullWidth
-                  label={field.question}
+                  label={<Typography component="span" fontWeight="bold">{field.question}</Typography>}
+                  // label={field.question}
                   name={field.name}
                   value={formData[field.name]}
                   onChange={handleInputChange}
@@ -313,7 +317,11 @@ function RegistrationForm() {
               return (
                 <FormControl key={field.name}
                  fullWidth margin="normal" required error={!!errors[field.name]}>
-                  <FormLabel>{field?.question}</FormLabel>
+                  <FormLabel>
+                    <Typography component="span" fontWeight="bold">{field.question}</Typography>
+          
+                    {/* {field?.question} */}
+                    </FormLabel>
                   <RadioGroup
                     name={field.name}
                     value={formData[field.name]}
@@ -331,7 +339,8 @@ function RegistrationForm() {
               return (
                 <RadioWithOther
                   key={field.name}
-                  label={field.question}
+                  label={<Typography component="span" fontWeight="bold">{field.question}</Typography>}
+                  // label={field.question}
                   name={field.name}
                   value={formData[field.name]}
                   onChange={handleInputChange}
@@ -344,8 +353,10 @@ function RegistrationForm() {
               return (
                 <>
                 {/* Impact Reports Upload here */}
-                <Typography variant="body1" gutterBottom>
-                  Please share any impact reports or documentation related to your previous projects.
+                <Typography variant="body1" gutterBottom fontWeight="bold" >
+                  {/* <strong> */}
+                    Please share any impact reports or documentation related to your previous projects.
+                    {/* </strong> */}
                 </Typography>
                 <Button variant="contained" component="label">
                   Upload File
@@ -371,7 +382,10 @@ function RegistrationForm() {
             else if (field?.type === 'checkbox') {
               return (
                 <FormControl key={field.name} fullWidth margin="normal">
-                  <FormLabel>{field.question}</FormLabel>
+                  <FormLabel>
+                  <Typography component="span" fontWeight="bold">{field.question}</Typography>
+                    {/* {field.question} */}
+                    </FormLabel>
                   {field?.options?.map((option) => (
                     <FormControlLabel
                       key={option}
