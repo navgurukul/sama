@@ -97,6 +97,7 @@ function RegistrationForm() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [companies, setCompanies] = useState([]);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     async function fetchCompanies() {
@@ -112,9 +113,6 @@ function RegistrationForm() {
   }, []);
   const donorIDs = companies.find((company) => company.Donner === donorId)?.["Donor id"];
   
-  // console.log(donorIDs);
-  
-
   // Fetch form fields from API
   useEffect(() => {
     const fetchFormFields = async () => {
@@ -166,6 +164,12 @@ function RegistrationForm() {
     //   }
     // });
 
+    // Specific validation for impact report file upload
+    const fileUploadField = formFields.find(field => field.type === 'fileUpload');
+    if (fileUploadField && !formData.impactReport) {
+      newErrors.impactReport = 'Impact report file is required';
+    }
+
     // Specific validation for contact number
     if (formData.contactNumber && !/^\d{10}$/.test(formData.contactNumber)) {
       newErrors.contactNumber = 'Contact number must be 10 digits (number)';
@@ -180,6 +184,10 @@ function RegistrationForm() {
     return Object.keys(newErrors).length === 0;
   };
 
+  
+  useEffect(() => {
+    setIsFormValid(validate());
+  }, [formData, formFields]);
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -214,7 +222,7 @@ function RegistrationForm() {
       }
       var formDataWithType = {
         ...updatedFormData,
-        file: base64File || " ",
+        file: base64File || "",
         fileName: updatedFormData.impactReport.name || "",
         mimeType: updatedFormData.impactReport.type || "",
         type: "NGO",
@@ -349,14 +357,14 @@ function RegistrationForm() {
                     required
                   />
                 </Button>
-                {fileName ? (
+                {fileName && 
+                (
                   <Typography variant="subtitle1" gutterBottom>
                     Selected file: {fileName}
                   </Typography>
-                ) :
-                <Typography variant="subtitle1" gutterBottom color="red">
-                    No File Selected
-                  </Typography>}
+                ) 
+               }
+                  <br></br>
                 </>
               );
             }
@@ -377,7 +385,17 @@ function RegistrationForm() {
                       label={option}
                     />
                   ))}
-                  {errors[field.name] && <Typography color="error">{errors[field.name]}</Typography>}
+                  {formData[field.name].includes('Other') && (
+                  <TextField
+                    name={`${field.name}Other`}
+                    label="Please specify"
+                    value={formData[`${field.name}Other`]}
+                    onChange={handleInputChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors[`${field.name}Other`]}
+                  />
+                )}
                 </FormControl>
               );
             } 
@@ -385,7 +403,7 @@ function RegistrationForm() {
           })}
 
         { (formFields.length > 0) && 
-        <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ marginTop: 2 }}>
+        <Button type="submit" variant="contained" color="primary" disabled={!isFormValid || loading} sx={{ marginTop: 2 }}>
         {loading ? <CircularProgress size={24} /> : 'Submit'}
         </Button> 
          }
