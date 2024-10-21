@@ -160,7 +160,7 @@ function NgoDashboard() {
                                                                     <circle cx="4" cy="4" r="4" fill="#FFAD33" />
                                                                 </svg>
                                                                 Request Submitted</span></InputLabel>
-                                                        <Select defaultValue="" id="grouped-select" label="Status">
+                                                        <Select defaultValue="" id="grouped-select" label=" Request Submitted">
                                                             <MenuItem value="">
                                                                 <em>None</em>
                                                             </MenuItem>

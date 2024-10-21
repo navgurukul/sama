@@ -54,7 +54,6 @@ export const classes = {
         color: "#5C785A",
         marginTop: "4px",
         fontWeight: "bold",
-        marginLeft: "13px"
     },
     mainContainer: {
         marginTop: "48px"
@@ -90,5 +89,16 @@ export const classes = {
         p: 3,
         background: "#F0F4EF",
         borderRadius: "8px"
+    },
+    subtitle1 : {
+        color: 'var(--text, #4A4A4A)', // CSS variable with fallback color
+        fontVariantNumeric: 'lining-nums proportional-nums',
+        fontFamily: 'Raleway',
+        fontSize: '18px',
+        fontStyle: 'normal',
+        fontWeight: 700,
+        marginTop:"16px",
+        lineHeight: '170%', // or '30.6px', depending on your preference
     }
+
 }

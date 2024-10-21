@@ -131,9 +131,9 @@ const NGODetails = () => {
                 <Grid item xs={12} lg={6} md={6} style={{ height: 'auto' }}>
                     <Card>
                         <List sx={classes.list}>
-                            <Typography variant="h6" sx={classes.title}>Give India Foundations</Typography>
+                            <Typography variant="h6" sx={classes.title} >Give India Foundations</Typography>
                             {messages.map((message) => (
-                                <ListItem key={message.id} alignItems="flex-start">
+                                <ListItem key={message.id} alignItems="flex-start"  style={{padding: 0, margin: 0}}>
                                     <ListItemText
                                         primary={message.primary}
                                         secondary={
@@ -160,7 +160,7 @@ const NGODetails = () => {
                 <Grid item xs={12} lg={6} md={6} >
                     <Card sx={{p:3}}>
                         <List sx={{ width: '100%', bgcolor: 'background.paper'}}>
-                            <Typography variant="h6" sx={classes.title}>Laptop Acquisition Plan</Typography>
+                            <Typography variant="h6" sx={{...classes.title,ml:2}}>Laptop Acquisition Plan</Typography>
                             {LaptopAcquisitionPlan.map((message) => (
                                 <ListItem key={message.id} alignItems="flex-start">
                                     <ListItemText
