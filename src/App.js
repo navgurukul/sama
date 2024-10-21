@@ -21,6 +21,8 @@ import PrivateRoute from './Privaterouts';
 import NgoForm from "../src/Pages/NGORegistration/RegistrationForm"
 import CompanySelection from './Pages/NGORegistration/CompanySelection';
 import DonorManager from './Pages/NGORegistration/DonorManager';
+import AdminNgo from './Dashboard/AdminNgo';
+import NgoDetails from './Dashboard/AdminNgo/NgoDetails';
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -41,6 +43,8 @@ function App() {
               <Route path='/ngoregistration' element={<NgoForm />} />
               <Route path="/Opslogin" element={<Opslogin />} />
               <Route path="/donormanager" element={<DonorManager />} />
+              <Route path='/allngo' element={<AdminNgo/>} />
+              <Route path="/ngo/:id" element={<NgoDetails />} />
               <Route path="/laptopinventory" 
               element={
                 <PrivateRoute>
@@ -48,6 +52,7 @@ function App() {
                 </PrivateRoute>
                }
                 />
+
                <Route path="/user-details" 
                element={
                 <PrivateRoute>
@@ -62,6 +67,7 @@ function App() {
                   </PrivateRoute> 
                 }
               />
+
               <Route
                 path="/dashboard"
                 element={
