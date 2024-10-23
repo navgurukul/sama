@@ -48,7 +48,7 @@ const AdminNgo = () => {
         const laptopsRequiredOptions = [...new Set(data.map(item => item.primaryContactName))];
         const purposeOptions = [...new Set(data.map(item => item.expectedOutcome))];
         const locationOptions = [...new Set(data.map(item => item.location))];
-        const statusOptions = ['Request Submitted', 'In Progress', 'Completed', 'Rejected']; // Set status options manually
+        const statusOptions = ['Submitted Request', 'In Progress', 'Completed', 'Rejected']; // Set status options manually
 
         setFilterOptions({
           laptopsRequired: laptopsRequiredOptions,
@@ -118,7 +118,7 @@ const AdminNgo = () => {
           type: "NGO",
         }),
       })
-
+      console.log(response);
       if (response.ok) {
         console.log("Status updated successfully");
       } else {

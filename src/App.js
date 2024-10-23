@@ -22,7 +22,8 @@ import NgoForm from "../src/Pages/NGORegistration/RegistrationForm"
 import CompanySelection from './Pages/NGORegistration/CompanySelection';
 import DonorManager from './Pages/NGORegistration/DonorManager';
 import AdminNgo from './Dashboard/AdminNgo';
-import NgoDetails from './Dashboard/AdminNgo/NgoDetails';
+// import NgoDetails from './Dashboard/AdminNgo/NgoDetails';
+import TabNavigation from './Dashboard/AdminNgo/TabNavigation';
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -44,7 +45,7 @@ function App() {
               <Route path="/Opslogin" element={<Opslogin />} />
               <Route path="/donormanager" element={<DonorManager />} />
               <Route path='/allngo' element={<AdminNgo/>} />
-              <Route path="/ngo/:id" element={<NgoDetails />} />
+              <Route path="/allngo/:id" element={<TabNavigation />} />
               <Route path="/laptopinventory" 
               element={
                 <PrivateRoute>
