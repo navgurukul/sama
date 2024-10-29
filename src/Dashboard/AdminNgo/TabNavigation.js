@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import NGODetails from './NgoDetails';
 import { Container } from '@mui/system';
+import BeneficiaryData from '../BeneficiaryData';
 
 
 const TabNavigation = () => {
@@ -36,11 +37,13 @@ const TabNavigation = () => {
         <Tab label="NGO Details" />
         <Tab label="Uploaded Documents" />
         <Tab label="Beneficiary Data" />
+        <Tab label="Manage Statuses" />
       </Tabs>
 
       {value === 0 && ngo && <NGODetails ngo={ngo} />}
       {value === 1 && <div>Uploaded Documents Section</div>}
-      {value === 2 && <div>Beneficiary Data Section</div>}
+      {value === 2 && <BeneficiaryData />}
+      {value === 3 && <div>Manage Statuses Section</div>}
     </Container>
   );
 };

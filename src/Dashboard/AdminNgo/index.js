@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container, Typography, Grid, TextField, MenuItem,
   Select, FormControl, InputLabel, Paper, Table,
@@ -45,6 +45,8 @@ const AdminNgo = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [ngoIdToChange, setNgoIdToChange] = useState(null);
 
+  const dialogRef = useRef(null);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -57,7 +59,7 @@ const AdminNgo = () => {
         const laptopsRequiredOptions = [...new Set(data.map(item => item.primaryContactName))];
         const purposeOptions = [...new Set(data.map(item => item.expectedOutcome))];
         const locationOptions = [...new Set(data.map(item => item.location))];
-        const statusOptions = ['Submitted Request', 'In Progress', 'Completed', 'Rejected']; // Set status options manually
+        const statusOptions = ['Submitted Request', 'In Progress', 'Approved', 'Rejected']; // Set status options manually
 
         setFilterOptions({
           laptopsRequired: laptopsRequiredOptions,
@@ -75,29 +77,45 @@ const AdminNgo = () => {
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
+  
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value.toLowerCase());
   };
 
   const handleRowClick = (id) => {
-    navigate(`/ngo/${id}`);
+    navigate(`/allngo/${id}`);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this entry?")) {
-      const updatedData = ngoData.filter((ngo) => ngo.Id !== id);
-      setNgoData(updatedData);
+      try {
+        // Update local state by filtering out the deleted entry
+        const updatedData = ngoData.filter((ngo) => ngo.Id !== id);
+        setNgoData(updatedData);
+        
+        // Await axios delete request
+        const response = await fetch(`https://script.google.com/macros/s/AKfycbxLTAObErYSPQGaZw7QLza8Ytw3_0_Jkf5zX0JhAhHEb-mY4NRkXaLfc7JzTDjO9el-/exec`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json',},
+          mode: 'no-cors',
+          body: JSON.stringify({
+            id: id,
+           
+          })
 
-      axios.delete(`https://your-api-endpoint/delete/${id}`)
-        .then(response => {
-          console.log('Row deleted successfully:', response);
-        })
-        .catch(error => {
-          console.error('Error deleting row:', error);
         });
+        
+        // Log success response
+        console.log('Row deleted successfully:', response);
+      } catch (error) {
+        // Log error if the request fails
+        console.error('Error deleting row:', error);
+      }
     }
   };
+  
+  
 
   const handleStatusChange = (id, newStatus) => {
     setSelectedStatus(newStatus);
@@ -106,6 +124,7 @@ const AdminNgo = () => {
   };
 
   const handleConfirmStatusChange = async (e) => {
+    e.stopPropagation();
     const updatedData = ngoData.map((ngo) =>
       ngo.Id === ngoIdToChange ? { ...ngo, status: selectedStatus } : ngo
     );
@@ -143,18 +162,22 @@ const AdminNgo = () => {
     setOpenDialog(false); // Close dialog without changing status
   };
 
-  const filteredData = ngoData.filter((ngo) =>
-    (ngo.organizationName?.toLowerCase().includes(searchTerm) ||
-      ngo.location?.toLowerCase().includes(searchTerm) ||
-      ngo.contactNumber?.toString().includes(searchTerm))
-    && (filters.laptopsRequired ? ngo.primaryContactName === filters.laptopsRequired : true)
-    && (filters.purpose ? ngo.expectedOutcome === filters.purpose : true)
-    && (filters.location ? ngo.location === filters.location : true)
-    && (filters.status ? ngo.status === filters.status : true)
-  );
+  const filteredData = ngoData.filter((ngo) => {
+    return (
+      (searchTerm === '' || 
+        ngo.organizationName?.toLowerCase().includes(searchTerm) ||
+        ngo.location?.toLowerCase().includes(searchTerm) ||
+        ngo.contactNumber?.toString().includes(searchTerm)) &&
+      (filters.laptopsRequired === '' || ngo.primaryContactName === filters.laptopsRequired) &&
+      (filters.purpose === '' || ngo.expectedOutcome === filters.purpose) &&
+      (filters.location === '' || ngo.location === filters.location) &&
+      (filters.status === '' || ngo.status === filters.status)
+    );
+  });
+  
 
   return (
-    <Container maxWidth="xxl">
+    <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
       <Typography variant="h6" gutterBottom>All NGOs (100)</Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
@@ -193,6 +216,9 @@ const AdminNgo = () => {
               labelId="demo-simple-select-required-label"
               id="demo-simple-select-required"
               label="Laptops Required"
+              value={filters.laptopsRequired}
+              onChange={handleFilterChange}
+              name="laptopsRequired"
             >
               <MenuItem value=""><em>None</em></MenuItem>
               {filterOptions.laptopsRequired.map(option => (
@@ -206,6 +232,9 @@ const AdminNgo = () => {
               labelId="demo-simple-select-required-label"
               id="demo-simple-select-required"
               label="Purpose"
+              value={filters.purpose}
+              onChange={handleFilterChange}
+              name="purpose"
             >
               <MenuItem value=""><em>None</em></MenuItem>
               {filterOptions.purpose.map(option => (
@@ -219,6 +248,9 @@ const AdminNgo = () => {
               label="Location of Operation"
               labelId="demo-simple-select-readonly-label"
               id="demo-simple-select-readonly"
+              value={filters.location}
+              onChange={handleFilterChange}
+              name="location"
             >
               <MenuItem value=""><em>None</em></MenuItem>
               {filterOptions.location.map(option => (
@@ -232,6 +264,9 @@ const AdminNgo = () => {
               labelId="demo-simple-select-required-label"
               id="demo-simple-select-required"
               label="Status"
+              value={filters.status}
+              onChange={handleFilterChange}
+              name="status"
             >
               <MenuItem value=""><em>None</em></MenuItem>
               {filterOptions.status.map(option => (
@@ -253,13 +288,15 @@ const AdminNgo = () => {
               <TableCell sx={classes.tableHeader}>Laptop Required</TableCell>
               <TableCell sx={classes.tableHeader}>Location of Operation</TableCell>
               <TableCell sx={{ ...classes.tableHeader, width: "220px" }}>Purpose</TableCell>
-              <TableCell sx={classes.tableHeader}>Status</TableCell>
               <TableCell sx={classes.tableHeader}>Delete</TableCell>
             </TableRow>
           </TableHead>
           <TableBody sx={classes.tablecell}>
             {filteredData.map((ngo) => (
-              <TableRow key={ngo.Id} hover sx={classes.tablecell}>
+              <TableRow key={ngo.Id} hover sx={classes.tablecell} 
+              onClick={(e) => {
+               
+              handleRowClick(ngo.Id)}}>
                 <TableCell sx={classes.tablecell}>{ngo.Id}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.organizationName}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.primaryContactName}</TableCell>
@@ -269,19 +306,31 @@ const AdminNgo = () => {
                 <TableCell sx={classes.tablecell}>
                   <FormControl fullWidth >
                     <InputLabel id="demo-simple-select-label">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" fill="none">
-                        <circle cx="4" cy="4" r="4" fill="#FFAD33" />
-                      </svg>
-                      Request Submitted</InputLabel>
+                     
+                      Status</InputLabel>
+                      
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       label="Request Submitted"
                       value={ngo.Status}
-                      onChange={(e) => handleStatusChange(ngo.Id, e.target.value)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleStatusChange(ngo.Id, e.target.value);
+                      }
+                    }
+                      MenuProps={{
+                        container: dialogRef.current
+                      }}
                     >
+                     
                       {filterOptions.status.map((option) => (
-                        <MenuItem key={option} value={option}>
+
+                        <MenuItem key={option} value={option} onClick={(e) => e.stopPropagation()}>
+                           <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" fill="none">
+                            <circle cx="4" cy="4" r="4" fill="#FFAD33" />
+                          </svg>
                           {option}
                         </MenuItem>
                       ))}
@@ -290,7 +339,9 @@ const AdminNgo = () => {
 
                 </TableCell >
                 <TableCell sx={{ border: "none" }}>
-                  <IconButton onClick={() => handleDelete(ngo.Id)}><DeleteIcon /></IconButton>
+                  <IconButton onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(ngo.Id)}}><DeleteIcon /></IconButton>
                 </TableCell>
               </TableRow>
             ))}
@@ -316,6 +367,7 @@ const AdminNgo = () => {
         onClose={handleCancelStatusChange}
         aria-labelledby="confirm-dialog-title"
         aria-describedby="confirm-dialog-description"
+        ref={dialogRef}
       >
         <DialogTitle id="confirm-dialog-title">Confirm Status Change</DialogTitle>
         <DialogContent>

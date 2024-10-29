@@ -24,6 +24,7 @@ import DonorManager from './Pages/NGORegistration/DonorManager';
 import AdminNgo from './Dashboard/AdminNgo';
 // import NgoDetails from './Dashboard/AdminNgo/NgoDetails';
 import TabNavigation from './Dashboard/AdminNgo/TabNavigation';
+import BeneficiaryData from './Dashboard/BeneficiaryData';
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -34,6 +35,7 @@ function App() {
           <div className="content">
             {" "}
             <Routes>
+
 
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
@@ -53,6 +55,7 @@ function App() {
                 </PrivateRoute>
                }
                 />
+                <Route path="/beneficiarydata" element={<BeneficiaryData />} />
 
                <Route path="/user-details" 
                element={
@@ -68,7 +71,7 @@ function App() {
                   </PrivateRoute> 
                 }
               />
-
+            
               <Route
                 path="/dashboard"
                 element={
