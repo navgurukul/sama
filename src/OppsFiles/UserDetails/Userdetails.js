@@ -80,7 +80,7 @@ const FormComponent = () => {
   ];
 
   const fields = [
-    { label: "Name", name: "name" },
+    { label: "Name", name: "name"},
     { label: "Email", name: "email" },
     { label: "Contact Number", name: "contactNumber" },
     { label: "Address", name: "address" },
@@ -92,6 +92,8 @@ const FormComponent = () => {
     { label: "Date Of Birth", name: "dateOfBirth" },
     { label: "Use Case", name: "useCase" },
     { label: "Number of Family Members", name: "familyMembers" },
+    { label: "Father/Mother/Guardian’s Occupation", name: "familyOccupation" },
+    { label: "Family Annual Income", name: "familyIncome" },
     { label: "Status", name: "status" },
     { label: "Laptop Assigned", name: "laptopAssigned" },
   ];
@@ -234,7 +236,10 @@ const FormComponent = () => {
                   onChange={handleChange}
                   label={field.label}
                   sx={{ textAlign: "left" }}
+                  required
+                  
                 >
+
                   {idProofOptions.map((option, index) => (
                     <MenuItem key={index} value={option}>
                       {option}

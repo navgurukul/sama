@@ -21,6 +21,11 @@ import PrivateRoute from './Privaterouts';
 import NgoForm from "../src/Pages/NGORegistration/RegistrationForm"
 import CompanySelection from './Pages/NGORegistration/CompanySelection';
 import DonorManager from './Pages/NGORegistration/DonorManager';
+import AdminNgo from './Dashboard/AdminNgo';
+// import NgoDetails from './Dashboard/AdminNgo/NgoDetails';
+import TabNavigation from './Dashboard/AdminNgo/TabNavigation';
+import BeneficiaryData from './Dashboard/BeneficiaryData';
+import BeneficiaryProfile from './Dashboard/BeneficiaryData/BeneficiaryProfile';
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -32,6 +37,7 @@ function App() {
             {" "}
             <Routes>
 
+
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/our-approach" element={<OurApproach />} />
@@ -41,6 +47,8 @@ function App() {
               <Route path='/ngoregistration' element={<NgoForm />} />
               <Route path="/Opslogin" element={<Opslogin />} />
               <Route path="/donormanager" element={<DonorManager />} />
+              <Route path='/allngo' element={<AdminNgo/>} />
+              <Route path="/allngo/:id" element={<TabNavigation />} />
               <Route path="/laptopinventory" 
               element={
                 <PrivateRoute>
@@ -48,9 +56,17 @@ function App() {
                 </PrivateRoute>
                }
                 />
+                <Route path="/beneficiarydata" element={<BeneficiaryData />} />
+                <Route path='/userdetails/:id' element={<BeneficiaryProfile />} />
+
                <Route path="/user-details" 
                element={
                 <PrivateRoute>
+
+
+
+
+                  
                   <Userdata />
                 </PrivateRoute>}
                 />
@@ -62,6 +78,7 @@ function App() {
                   </PrivateRoute> 
                 }
               />
+            
               <Route
                 path="/dashboard"
                 element={
