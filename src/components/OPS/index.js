@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 
 
-function Ops() {
+function Ops() {  
   return (
     <Container>
       {/* Centered OPS Management heading */}
