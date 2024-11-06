@@ -178,7 +178,7 @@ const AdminNgo = () => {
 
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-      <Typography variant="h6" gutterBottom>All NGOs (100)</Typography>
+      <Typography variant="h6" gutterBottom>All NGOs ({ngoData.length})</Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
           <TextField
@@ -288,6 +288,7 @@ const AdminNgo = () => {
               <TableCell sx={classes.tableHeader}>Laptop Required</TableCell>
               <TableCell sx={classes.tableHeader}>Location of Operation</TableCell>
               <TableCell sx={{ ...classes.tableHeader, width: "220px" }}>Purpose</TableCell>
+              <TableCell sx={classes.tableHeader}>Status</TableCell>
               <TableCell sx={classes.tableHeader}>Delete</TableCell>
             </TableRow>
           </TableHead>
@@ -301,8 +302,10 @@ const AdminNgo = () => {
                 <TableCell sx={classes.tablecell}>{ngo.organizationName}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.primaryContactName}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.contactNumber}</TableCell>
+                <TableCell sx={classes.tablecell}>{ngo.beneficiariesCount}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.location}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.expectedOutcome}</TableCell>
+                <TableCell sx={classes.tablecell}>{ngo.purpose}</TableCell>
                 <TableCell sx={classes.tablecell}>
                   <FormControl fullWidth >
                     <InputLabel id="demo-simple-select-label">
@@ -328,9 +331,9 @@ const AdminNgo = () => {
                       {filterOptions.status.map((option) => (
 
                         <MenuItem key={option} value={option} onClick={(e) => e.stopPropagation()}>
-                           <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" fill="none">
+                           {/* <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" fill="none">
                             <circle cx="4" cy="4" r="4" fill="#FFAD33" />
-                          </svg>
+                          </svg> */}
                           {option}
                         </MenuItem>
                       ))}

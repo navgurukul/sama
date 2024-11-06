@@ -8,7 +8,12 @@ import {
   Snackbar,
   Alert,
   CircularProgress,
-  Link
+  Link,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  Box
 } from "@mui/material";
 import { CloudUpload as CloudUploadIcon } from "@mui/icons-material";
 import * as XLSX from "xlsx";
@@ -19,6 +24,7 @@ function Userdatabulkupload() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [loading, setLoading] = useState(false);
+  const [uploadMode, setUploadMode] = useState("bulk");
 
   const expectedHeaders = [
     "name",
@@ -56,7 +62,7 @@ function Userdatabulkupload() {
   };
 
   const validateHeaders = (sheetData) => {
-    const fileHeaders = Object.keys(sheetData[0]); // Get headers from the first row
+    const fileHeaders = Object.keys(sheetData[0]);
     return expectedHeaders.every((header) => fileHeaders.includes(header));
   };
 
@@ -72,11 +78,9 @@ function Userdatabulkupload() {
       const binaryStr = event.target.result;
       const workbook = XLSX.read(binaryStr, { type: "binary" });
 
-      // Convert first sheet data to JSON
       const sheetName = workbook.SheetNames[0];
       const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-      // Validate the headers
       if (!validateHeaders(sheetData)) {
         setSnackbarMessage(
           "The uploaded file does not match the expected format. Please upload a valid file."
@@ -87,13 +91,11 @@ function Userdatabulkupload() {
         return;
       }
 
-      // Add the type to the data being sent to the backend
       const dataToSend = {
         type: "userdetailsbulkupload",
         data: sheetData,
       };
 
-      // Post data to Google Apps Script
       try {
         await fetch(
           "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
@@ -110,7 +112,7 @@ function Userdatabulkupload() {
         setSnackbarMessage("Data stored successfully!");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
-        setFile(null);  // Clear file after successful upload
+        setFile(null);  
       } catch (error) {
         setSnackbarMessage("Failed to upload data. Please try again.");
         setSnackbarSeverity("error");
@@ -124,11 +126,35 @@ function Userdatabulkupload() {
 
   return (
     <>
-      <Card sx={{ maxWidth: 600, margin: "auto", mt: 4, boxShadow: 3 }}>
-        <CardContent>
-          <Typography variant="h5" gutterBottom>
-            Bulk Data Upload
-          </Typography>
+   
+          
+         <Box mt={3} align="center">
+          <Alert backgroundColor="#F8F3F0" style={{ margin: "20px 0" }} >
+            Please upload an Excel file (.xlsx format). You can download the
+            sample file to understand the required format.
+          </Alert>
+          <Box
+            sx={{
+              border: "2px dashed",
+              borderRadius: 1,
+              padding: 6,
+              textAlign: "center",
+              backgroundColor: "#f9f9f9",
+              cursor: "pointer",
+
+            }}
+            onClick={() => document.getElementById("upload-file").click()}
+          >
+            <CloudUploadIcon sx={{ fontSize: 40, color: "#5C785A" }} />
+            <Typography variant="subtitle1" color="primary" sx={{fontWeight:"700"}}>
+              Upload or Drag File
+            </Typography>
+            {file && (
+              <Typography variant="body2" mt={1} >
+                Selected file: {file.name}
+              </Typography>
+            )}
+          </Box>
           <input
             type="file"
             accept=".xlsx"
@@ -136,45 +162,27 @@ function Userdatabulkupload() {
             style={{ display: "none" }}
             id="upload-file"
           />
-          <Alert severity="info" style={{ marginBottom: "20px" }}>
-            Please upload an Excel file (.xlsx format). You can download the
-            sample file to understand the required format.
-          </Alert>
           <Link
             href="/Example-Sheet.xlsx"
-            download="example.xlsx"
+            download="Sample_Beneficiary_Data.xlsx"
             target="_blank"
-            style={{ display: "block", marginBottom: "20px" }}
+            style={{ display: "block", marginTop: "10px", textAlign: "center" }}
           >
-            Download Sample File
+            Format for learner data: Sample_Beneficiary_Data.xlsx
           </Link>
-
-          <label htmlFor="upload-file">
-            <Button
-              variant="contained"
-              component="span"
-              startIcon={<CloudUploadIcon />}
-            >
-              Select .xlsx File
-            </Button>
-          </label>
-          {file && (
-            <Typography variant="body1" mt={2}>
-              {file.name}
-            </Typography>
-          )}
-        </CardContent>
-        <CardActions sx={{ justifyContent: "center" }}>
+       
+       
           <Button
             variant="contained"
             color="primary"
             onClick={handleUpload}
             disabled={!file || loading}
+            style={{ marginTop: "32px" }}
           >
             {loading ? <CircularProgress size={24} /> : "Upload"}
           </Button>
-        </CardActions>
-      </Card>
+        </Box>
+     
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

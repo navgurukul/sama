@@ -5,6 +5,7 @@ import axios from 'axios';
 import NGODetails from './NgoDetails';
 import { Container } from '@mui/system';
 import BeneficiaryData from '../BeneficiaryData';
+import DataUpload from './DataUpload';
 
 
 const TabNavigation = () => {
@@ -32,7 +33,7 @@ const TabNavigation = () => {
   console.log(ngo);
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Tabs value={value} onChange={handleChange} centered sx={{ my: 4 }}>
         <Tab label="NGO Details" />
         <Tab label="Uploaded Documents" />
@@ -41,7 +42,7 @@ const TabNavigation = () => {
       </Tabs>
 
       {value === 0 && ngo && <NGODetails ngo={ngo} />}
-      {value === 1 && <div>Uploaded Documents Section</div>}
+      {value === 1 && <DataUpload/>}
       {value === 2 && <BeneficiaryData />}
       {value === 3 && <div>Manage Statuses Section</div>}
     </Container>

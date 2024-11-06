@@ -61,10 +61,16 @@ function App() {
                }
                 />
                 <Route path="/beneficiarydata" element={<BeneficiaryData />} />
+                <Route path='/userdetails/:id' element={<BeneficiaryProfile />} />
 
                <Route path="/user-details" 
                element={
                 <PrivateRoute>
+
+
+
+
+                  
                   <Userdata />
                 </PrivateRoute>}
                 />

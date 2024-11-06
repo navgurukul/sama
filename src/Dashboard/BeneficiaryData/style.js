@@ -1,4 +1,5 @@
-import { border, fontSize, fontWeight } from "@mui/system";
+import { border, color, fontSize, fontWeight, margin } from "@mui/system";
+
 
 export const classes = {
     tableHeader: {
@@ -18,5 +19,10 @@ export const classes = {
         m: 1,
         minWidth: 208,
         width: { xs: "100%", sm: "100%", lg: 0, md: 0 }
+    },
+    BeneficiaryData:{
+        color: "gray",
+        fontWeight: "700",
+        marginBottom: "8px"
     }
 }
