@@ -23,6 +23,13 @@ import CompanySelection from './Pages/NGORegistration/CompanySelection';
 import DonorManager from './Pages/NGORegistration/DonorManager';
 import Ngodashboard from './components/NgoDashboard/ngodashboard';
 import Admin from './components/adminDashboard/Admin';
+import AdminNgo from './Dashboard/AdminNgo';
+// import NgoDetails from './Dashboard/AdminNgo/NgoDetails';
+import TabNavigation from './Dashboard/AdminNgo/TabNavigation';
+import BeneficiaryData from './Dashboard/BeneficiaryData';
+import MouUpload from "./Pages/MouUpload/MouUpload";
+import BeneficiaryProfileSub from "./Dashboard/BeneficiaryData/BeneficiaryProfile"
+import BeneficiaryProfile from "./Pages/BeneficiaryProfile/BeneficiaryProfile";
 
 function App() {
   return (
@@ -47,6 +54,12 @@ function App() {
                 <CompanySelection />
                 </PrivateRoute>
                 } />
+              <Route path='/allngo' element={<AdminNgo/>} />
+              <Route path='/mouUpload' element={<MouUpload/>} />
+              <Route path='/beneficiaryProfile' element={<BeneficiaryProfile/>} />
+              <Route path="/allngo/:id" element={<TabNavigation />} />
+              <Route path="/beneficiarydata" element={<BeneficiaryData />} />
+                <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
               <Route path="/laptopinventory" 
               element={
                 <PrivateRoute reqired={'ops'}>
@@ -62,11 +75,14 @@ function App() {
                 </PrivateRoute>
                }
                 />
+                
                <Route path="/user-details" 
                element={
-                <PrivateRoute reqired={'ops'} >
+                // <PrivateRoute reqired={'ops'} >
+                
                   <Userdata />
-                </PrivateRoute>}
+                // </PrivateRoute>
+              }
                 />
               {/* <Route
                 path="/data-assignment-form"
@@ -75,8 +91,8 @@ function App() {
                     <DataAssignmentForm />
                   </PrivateRoute> 
                 }
-              /> */}
-              {/* <Route
+              />
+              <Route
                 path="/dashboard"
                 element={
                   <PrivateRoute reqired={'ngo'}>
