@@ -21,6 +21,8 @@ import PrivateRoute from './Privaterouts';
 import NgoForm from "../src/Pages/NGORegistration/RegistrationForm"
 import CompanySelection from './Pages/NGORegistration/CompanySelection';
 import DonorManager from './Pages/NGORegistration/DonorManager';
+import Ngodashboard from './components/NgoDashboard/ngodashboard';
+import Admin from './components/adminDashboard/Admin';
 import AdminNgo from './Dashboard/AdminNgo';
 // import NgoDetails from './Dashboard/AdminNgo/NgoDetails';
 import TabNavigation from './Dashboard/AdminNgo/TabNavigation';
@@ -39,75 +41,88 @@ function App() {
           <div className="content">
             {" "}
             <Routes>
-
-
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/our-approach" element={<OurApproach />} />
               <Route path="/donate" element={<Donate />} />
-              <Route path="/ngo" element={<CompanySelection />} />
               <Route path="/ngoregistration/:donorId" element={ <NgoForm />} />
               <Route path='/ngoregistration' element={<NgoForm />} />
               <Route path="/Opslogin" element={<Opslogin />} />
               <Route path="/donormanager" element={<DonorManager />} />
+              <Route path="/ngo" element={
+                <PrivateRoute reqired={'ops'}>
+                <CompanySelection />
+                </PrivateRoute>
+                } />
               <Route path='/allngo' element={<AdminNgo/>} />
               <Route path='/mouUpload' element={<MouUpload/>} />
               <Route path='/beneficiaryProfile' element={<BeneficiaryProfile/>} />
               <Route path="/allngo/:id" element={<TabNavigation />} />
+              <Route path="/beneficiarydata" element={<BeneficiaryData />} />
+                <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
               <Route path="/laptopinventory" 
               element={
-                <PrivateRoute>
+                <PrivateRoute reqired={'ops'}>
                    <LaptopInventory />
                 </PrivateRoute>
                }
                 />
-                <Route path="/beneficiarydata" element={<BeneficiaryData />} />
-                <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
-
+                <Route 
+                path="/ngo-dashboard" 
+              element={
+                <PrivateRoute reqired={'ngo'}>
+                   <Ngodashboard />
+                </PrivateRoute>
+               }
+                />
+                
                <Route path="/user-details" 
                element={
-                <PrivateRoute>
-
-
-
-
-                  
+                // <PrivateRoute reqired={'ops'} >
+                
                   <Userdata />
-                </PrivateRoute>}
+                // </PrivateRoute>
+              }
                 />
-              <Route
+              {/* <Route
                 path="/data-assignment-form"
                 element={
-                  <PrivateRoute>
+                  <PrivateRoute reqired={'ops'}>
                     <DataAssignmentForm />
                   </PrivateRoute> 
                 }
               />
-            
               <Route
                 path="/dashboard"
                 element={
-                  // <PrivateRoute>
+                  <PrivateRoute reqired={'ngo'}>
                     <DashboardPage />
-                  // {/* </PrivateRoute> */}
+                  </PrivateRoute>
                 }
-              />
+              /> */}
+               <Route path="/admin-dashboard" 
+              element={
+                <PrivateRoute reqired={'admin'}>
+                   <Admin />
+                 </PrivateRoute>
+               }
+                />
               <Route
                 path="/ops"
                 element={
-                  <PrivateRoute>
+                  <PrivateRoute reqired={'ops'}> 
                     <Ops />
                   </PrivateRoute>
                 }
               />
-              <Route
+              {/* <Route
                 path="/laptop-tagging"
                 element={
-                  <PrivateRoute>
+                  <PrivateRoute reqired={'ops'}>
                     <MacRearch />
                   </PrivateRoute>
                 }
-              />
+              /> */}
             </Routes>
             {" "}
           </div>

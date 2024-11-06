@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Typography, Box } from '@mui/material';
-
+import { TextField, Button, Typography, Box, Container, Grid,Link, FormLabel } from '@mui/material';
+import login_ngo from "./assets/login_ngo.svg";
 function Opslogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,6 +26,7 @@ function Opslogin() {
     fetchData();
   }, []);
 
+  console.log(data);
   
   
   // Handle form submission
@@ -42,17 +43,24 @@ function Opslogin() {
         return user.Email === email && user.Password === password;
       });
 
+      
     if (user) {
-      localStorage.setItem('isLoggedIn', 'true'); 
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('role', JSON.stringify(user.Role)); // Store the role array in localStorage
       setError(''); 
 
       // Redirect based on role
-      if (user.Role === 'Partners') {
-        navigate('/dashboard');
-      } else if (user.Role === 'ops') {
-        navigate('/ops'); 
-      } else {
-        // navigate('/user');
+      if (user?.Role?.includes('admin')) {
+        navigate('/admin-dashboard'); // Admin gets access to all dashboards
+      } 
+      else if (user?.Role?.includes('ngo')) {
+        navigate('/ngo-dashboard'); // Redirect NGO users
+      }
+       else if (user?.Role?.includes('ops')) {
+        navigate('/ops'); // Redirect OPS users
+      } 
+      else {
+          console.log("no role found");
       }
     } else {
       setError('Invalid Email or password.');
@@ -60,48 +68,88 @@ function Opslogin() {
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Typography variant="h4" component="h2" gutterBottom>
-        Login
-      </Typography>
-      {error && (
+
+    <Container maxWidth="md" sx={{ my: 10 }}>
+      <Grid container spacing={10} alignItems="center">
+        <Grid item xs={12} md={4} sx={{ textAlign: 'center' }}>
+          <img 
+            src = {login_ngo}
+            alt="Small placeholder" 
+            style={{ maxWidth: '100%', borderRadius: '8px' }} 
+          />
+        </Grid>
+
+        <Grid item xs={12} md={8}>
+          <Box component="form" 
+           sx={{ 
+            display: 'flex',
+             flexDirection: 'column',
+              gap: 1 }}>
+            <Typography variant="h5" gutterBottom>
+              Login to Dashboard
+            </Typography>
+            {error && (
         <Typography color="error" sx={{ marginBottom: 2 }}>
           {error}
         </Typography>
       )}
-      <Box
-        component="form"
-        sx={{ display: 'flex', flexDirection: 'column', width: '300px' }}
-      >
-        <TextField
-          label="Email"
-          variant="outlined"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          sx={{ marginBottom: 2 }}
-        />
-        <TextField
-          label="Password"
-          variant="outlined"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          sx={{ marginBottom: 2 }}
-        />
-        <Button variant="contained" type="submit" sx={{ marginBottom: 2 }} 
-        onClick={handleSubmit}
-        >
-          Login
-        </Button>
-      </Box>
-    </Box>
+             <Typography sx = {{color : "dark.main", fontWeight : "bold"}} >User Email</Typography>
+             {/* <FormLabel >User Name</FormLabel> */}
+             <TextField 
+              // label="Username" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              variant="outlined" 
+              fullWidth 
+              // required 
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+
+            {/* Password Field with Label above */}
+            <FormLabel mt={1} >
+              <Typography sx = {{color : "dark.main", fontWeight : "bold"}}  >Password</Typography>
+
+              </FormLabel>
+            <TextField 
+              // label="Password" 
+              type="password" 
+              variant="outlined" 
+              // fullWidth 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required 
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+           
+            {/* Forgot Password Link */}
+            <Box sx={{ display: 'flex', flexDirection:"column", gap: 2
+              //  justifyContent: 'space-between', alignItems: 'center'
+                }}>
+            <Link href="#" 
+              // onClick={handleForgotPassword}
+               underline="hover">
+                Forgot Password?
+              </Link>
+              <Button 
+              onClick={handleSubmit}
+              type="submit" variant="contained" sx={{ 
+              width: 'auto', 
+              // borderRadius: '20%', 
+              alignSelf: 'start', 
+              mt: 2 
+              }} >
+                Login
+              </Button>
+            </Box>
+          </Box>
+        </Grid>
+
+      </Grid>
+    </Container>
   );
 }
 
