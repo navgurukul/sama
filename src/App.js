@@ -26,6 +26,7 @@ import AdminNgo from './Dashboard/AdminNgo';
 import TabNavigation from './Dashboard/AdminNgo/TabNavigation';
 import BeneficiaryData from './Dashboard/BeneficiaryData';
 import MouUpload from "./Pages/MouUpload/MouUpload";
+import BeneficiaryProfileSub from "./Dashboard/BeneficiaryData/BeneficiaryProfile"
 import BeneficiaryProfile from "./Pages/BeneficiaryProfile/BeneficiaryProfile";
 
 function App() {
@@ -61,7 +62,7 @@ function App() {
                }
                 />
                 <Route path="/beneficiarydata" element={<BeneficiaryData />} />
-                <Route path='/userdetails/:id' element={<BeneficiaryProfile />} />
+                <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
 
                <Route path="/user-details" 
                element={
