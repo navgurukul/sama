@@ -25,6 +25,7 @@ import AdminNgo from './Dashboard/AdminNgo';
 // import NgoDetails from './Dashboard/AdminNgo/NgoDetails';
 import TabNavigation from './Dashboard/AdminNgo/TabNavigation';
 import BeneficiaryData from './Dashboard/BeneficiaryData';
+import BeneficiaryProfile from './Dashboard/BeneficiaryData/BeneficiaryProfile';
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -56,10 +57,16 @@ function App() {
                }
                 />
                 <Route path="/beneficiarydata" element={<BeneficiaryData />} />
+                <Route path='/userdetails/:id' element={<BeneficiaryProfile />} />
 
                <Route path="/user-details" 
                element={
                 <PrivateRoute>
+
+
+
+
+                  
                   <Userdata />
                 </PrivateRoute>}
                 />
