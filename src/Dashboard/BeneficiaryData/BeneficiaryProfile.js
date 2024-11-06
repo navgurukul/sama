@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Button, Paper, CircularProgress } from '@mui/material';
+import { Box, Typography, Grid, Button, Paper, CircularProgress,Divider } from '@mui/material';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Container } from '@mui/system';
@@ -123,6 +123,27 @@ const BeneficiaryProfile = () => {
             <Typography variant="subtitle1" color="textSecondary">Income Certificate</Typography>
           </Paper>
         </Grid>
+      </Grid>
+
+      <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
+        Status History
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        {Array.from({ length: 12 }, (_, index) => (
+          <Grid item xs={3} key={index}>
+            <Paper elevation={3} sx={{ p: 2, textAlign: "center" }}>
+              <Typography variant="body1" gutterBottom>
+                {new Date(2024, index).toLocaleString("default", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </Typography>
+              <Typography variant="body1">Status {index + 1}</Typography>
+            </Paper>
+          </Grid>
+        ))}
       </Grid>
 
     </Container>

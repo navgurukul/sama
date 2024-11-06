@@ -25,7 +25,10 @@ import AdminNgo from './Dashboard/AdminNgo';
 // import NgoDetails from './Dashboard/AdminNgo/NgoDetails';
 import TabNavigation from './Dashboard/AdminNgo/TabNavigation';
 import BeneficiaryData from './Dashboard/BeneficiaryData';
-import BeneficiaryProfile from './Dashboard/BeneficiaryData/BeneficiaryProfile';
+import MouUpload from "./Pages/MouUpload/MouUpload";
+import BeneficiaryProfileSub from "./Dashboard/BeneficiaryData/BeneficiaryProfile"
+import BeneficiaryProfile from "./Pages/BeneficiaryProfile/BeneficiaryProfile";
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -48,6 +51,8 @@ function App() {
               <Route path="/Opslogin" element={<Opslogin />} />
               <Route path="/donormanager" element={<DonorManager />} />
               <Route path='/allngo' element={<AdminNgo/>} />
+              <Route path='/mouUpload' element={<MouUpload/>} />
+              <Route path='/beneficiaryProfile' element={<BeneficiaryProfile/>} />
               <Route path="/allngo/:id" element={<TabNavigation />} />
               <Route path="/laptopinventory" 
               element={
@@ -57,7 +62,7 @@ function App() {
                }
                 />
                 <Route path="/beneficiarydata" element={<BeneficiaryData />} />
-                <Route path='/userdetails/:id' element={<BeneficiaryProfile />} />
+                <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
 
                <Route path="/user-details" 
                element={
