@@ -32,7 +32,7 @@ const BeneficiaryProfile = () => {
   if (error) return <Typography color="error">{error}</Typography>;
 
   return (
-    <Container maxWidth="lg" sx={{ padding: '24px' }}>
+    <Container maxWidth="md" sx={{ padding: '24px' }}>
       {/* Header */}
       <Typography variant="h4" align="center" sx={{ marginBottom: 4 }}>
         Beneficiary Profile
@@ -70,7 +70,7 @@ const BeneficiaryProfile = () => {
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>Occupation</Typography>
             <Typography variant="body1" marginBottom="16px">{data.Occupation}</Typography>
 
-            <Button variant="outlined" color="primary" sx={{ marginTop: 2 }} >
+            <Button variant="outlined" color="primary" href={`/edit-user/${id}`} sx={{ marginTop: 2 }} >
               Edit Beneficiary Profile
             </Button>
           </Grid>
