@@ -10,6 +10,7 @@ import {
   MenuItem,
   Alert,
   Typography,
+  FormLabel,
 } from "@mui/material";
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -87,19 +88,20 @@ const FormComponent = () => {
     { label: "Name", name: "name"},
     { label: "Email", name: "email" },
     { label: "Contact Number", name: "contactNumber" },
-    { label: "Address", name: "address" },
-    { label: "Address State", name: "addressState" },
+    { label: "Date Of Birth", name: "dateOfBirth" },
+    { label: "Address (Number, Street, Locality etc.)", name: "address" },
+    { label: "State", name: "addressState" },
     { label: "ID Proof Type", name: "idProofType" },
     { label: "ID Number", name: "idNumber" },
     { label: "Qualification", name: "qualification" },
-    { label: "Occupation", name: "occupation" },
-    { label: "Date Of Birth", name: "dateOfBirth" },
+    { label: "Occupation Status", name: "occupation" },
     { label: "Use Case", name: "useCase" },
     { label: "Number of Family Members", name: "familyMembers" },
     { label: "Father/Mother/Guardian’s Occupation", name: "guardian" },
     { label: "Family Annual Income", name: "familyAnnualIncome" },
     { label: "Status", name: "status" },
     { label: "Laptop Assigned", name: "laptopAssigned" },
+    // { label: "Income Certificate", name: "incomeCertificate" },
   ];
 
 
@@ -108,9 +110,12 @@ const FormComponent = () => {
     useCase: "",
     addressState: "",
     status: "",
+    idProofFile: null,
+    incomeCertificateFile: null,
   });
 
   const [errors, setErrors] = useState({});
+  
   const [file, setFile] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState(""); // To store custom message
@@ -119,9 +124,16 @@ const FormComponent = () => {
 
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+
+  const handleFileChange = (event, fileType) => {
+    setFormData({
+      ...formData,
+      [fileType]: event.target.files[0],
+    });
   };
+  // const handleFileChange = (event) => {
+  //   setFile(event.target.files[0]);
+  // };
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -150,7 +162,7 @@ const FormComponent = () => {
         : "Aadhar Card number is required";
     }
 
-    tempErrors.file = file ? "" : "Please upload a valid ID proof image";
+    // tempErrors.file = file ? "" : "Please upload a valid ID proof image";
 
     setErrors(tempErrors);
 
@@ -164,69 +176,139 @@ const FormComponent = () => {
     });
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+    
+  //   if (validate()) {
+  //     setLoading(true);
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = async () => {
+  //       const base64File = reader.result.split(",")[1];
+  //       var withFile = {
+  //         ...formData,
+  //         file: base64File,
+  //         fileName: file.name,
+  //         mimeType: file.type,
+  //         type: "userdetails",
+  //       };
+  //       var withoutFile = {
+  //         ...formData,
+  //         type: "userdetails",
+  //       };
+  //       const finalData = file ? withFile : withoutFile;
+
+  //       try {
+  //         const response = await fetch(
+  //           "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
+  //           {
+  //             method: "POST",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //             },
+  //             mode: "no-cors",
+  //             body: JSON.stringify(finalData),
+  //           }
+  //         );
+
+  //         // Reset form after successful submission
+  //         setFormData({
+  //           idProofType: "",
+  //           useCase: "",
+  //           addressState: "",
+  //           status: "",
+  //         });
+  //         setLoading(false);
+  //         setFile(null); // Reset file input
+  //         setSnackbarMessage("Data updated successfully!");
+  //         setSnackbarSeverity("success");
+  //         setSnackbarOpen(true);
+  //       } catch (error) {
+  //         console.error("Error uploading file:", error);
+  //         setSnackbarMessage("Something went wrong!");
+  //         setSnackbarSeverity("error");
+  //         setSnackbarOpen(true);
+  //       }
+  //     };
+  //   } else {
+  //     // If validation fails, show error message
+  //     setSnackbarMessage("Please correct the number and ID fields.");
+  //     setSnackbarSeverity("error");    
+  //     setSnackbarOpen(true);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validate()) {
       setLoading(true);
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = async () => {
-        const base64File = reader.result.split(",")[1];
-        var withFile = {
+      const readFileAsBase64 = (file) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result.split(",")[1]);
+          reader.onerror = (error) => reject(error);
+          reader.readAsDataURL(file);
+        });
+
+      try {
+        const [idProofBase64, incomeCertificateBase64] = await Promise.all([
+          formData.idProofFile ? readFileAsBase64(formData.idProofFile) : null,
+          formData.incomeCertificateFile ? readFileAsBase64(formData.incomeCertificateFile) : null,
+        ]);
+
+        const finalData = {
           ...formData,
-          file: base64File,
-          fileName: file.name,
-          mimeType: file.type,
+          idProofFile: idProofBase64,
+          idProofFileName: formData.idProofFile?.name,
+          idProofMimeType: formData.idProofFile?.type,
+          incomeCertificateFile: incomeCertificateBase64,
+          incomeCertificateFileName: formData.incomeCertificateFile?.name,
+          incomeCertificateMimeType: formData.incomeCertificateFile?.type,
           type: "userdetails",
           ngoId : user[0].NgoId,
         };
-        var withoutFile = {
-          ...formData,
-          type: "userdetails",
-          ngoId : user[0].NgoId,
-        };
-        const finalData = file ? withFile : withoutFile;
 
-        try {
-          const response = await fetch(
-            "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              mode: "no-cors",
-              body: JSON.stringify(finalData),
-            }
-          );
+        const response = await fetch(
+          //test "https://script.google.com/macros/s/AKfycbxX4RHRWdYMxaW2uYB5rTgoGh3GDV3e8AudBWXj4027IzCwlsAC3QmqgJY-s7u9Je9V/exec",
+          "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            mode: "no-cors",
+            body: JSON.stringify(finalData),
+          }
+        );
+        console.log(finalData);
+        
 
-          // Reset form after successful submission
-          setFormData({
-            idProofType: "",
-            useCase: "",
-            addressState: "",
-            status: "",
-          });
-          setLoading(false);
-          setFile(null); // Reset file input
-          setSnackbarMessage("Data updated successfully!");
-          setSnackbarSeverity("success");
-          setSnackbarOpen(true);
-        } catch (error) {
-          console.error("Error uploading file:", error);
-          setSnackbarMessage("Something went wrong!");
-          setSnackbarSeverity("error");
-          setSnackbarOpen(true);
-        }
-      };
+        setFormData({
+          idProofType: "",
+          useCase: "",
+          addressState: "",
+          status: "",
+          idProofFile: null,
+          incomeCertificateFile: null,
+        });
+        setLoading(false);
+        setSnackbarMessage("Data updated successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error("Error uploading files:", error);
+        setSnackbarMessage("Something went wrong!");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      }
     } else {
-      // If validation fails, show error message
-      setSnackbarMessage("Please correct the number and ID fields.");
+      setSnackbarMessage("Please correct the fields.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
   };
+
 
   return (
     <Container maxWidth="sm" sx={{ mb: 2, pb: 2 }}>
@@ -235,29 +317,49 @@ const FormComponent = () => {
           if (field.name === "idProofType") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <InputLabel>{field.label}</InputLabel>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
                   value={formData[field.name] || ""}
                   onChange={handleChange}
-                  label={field.label}
+                  // label={field.label}
                   sx={{ textAlign: "left" }}
                   required
-                  
                 >
-
                   {idProofOptions.map((option, index) => (
                     <MenuItem key={index} value={option}>
                       {option}
                     </MenuItem>
                   ))}
                 </Select>
+                {formData[field.name] && (
+                  <FormControl fullWidth margin="normal">
+                  <Button variant="outlined" component="label">
+                     Upload ID Proof Image
+                     <input type="file" hidden 
+                     onChange={(e) => handleFileChange(e, "idProofFile")}
+                    //  onChange={handleFileChange}
+                      />
+                  </Button>
+                  {formData.idProofFile ? (
+                    <Typography sx={{ mt: 1 }}>Selected file: {formData.idProofFile.name}</Typography>
+                  ) : (
+                    errors.idProofFile && <Typography color="error">{errors.idProofFile}</Typography>
+                  )}
+       
+               </FormControl>
+                  // <Typography variant="body1" sx={{ mt: 2 }}>
+                  //   I am clicked
+                  // </Typography>
+                )}
               </FormControl>
             );
           } else if (field.name === "useCase") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <InputLabel>{field.label}</InputLabel>
+              <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
                   value={formData[field.name] || ""}
@@ -276,7 +378,8 @@ const FormComponent = () => {
           } else if (field.name === "status") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <InputLabel>{field.label}</InputLabel>
+               <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
                   value={formData[field.name] || ""}
@@ -294,10 +397,12 @@ const FormComponent = () => {
             );
           } else if (field.name === "dateOfBirth") {
             return (
+              <>
+              <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
               <TextField
                 fullWidth
                 key={field.name}
-                label={field.label}
+                // label={field.label}
                 name={field.name}
                 type="date"
                 InputLabelProps={{ shrink: true }}
@@ -306,16 +411,18 @@ const FormComponent = () => {
                 variant="outlined"
                 margin="normal"
               />
+              </>
             );
           } else if (field.name === "addressState") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <InputLabel>{field.label}</InputLabel>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
                   value={formData[field.name] || ""}
                   onChange={handleChange}
-                  label={field.label}
+                  // label={field.label}
                   sx={{ textAlign: "left" }}
                 >
                   {statesOptions.map((option, index) => (
@@ -328,28 +435,35 @@ const FormComponent = () => {
             );
           } else {
             return (
+              <>
+              <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
               <TextField
                 fullWidth
                 key={field.name}
-                label={field.label}
+                // label={field.label}
                 name={field.name}
                 value={formData[field.name] || ""}
                 onChange={handleChange}
                 variant="outlined"
                 margin="normal"
               />
+              </>
             );
           }
         })}
           <FormControl fullWidth margin="normal">
+            <Typography variant="subtitle1">Income Certificate</Typography>
            <Button variant="outlined" component="label">
-              Upload ID Proof Image
-              <input type="file" hidden onChange={handleFileChange} />
+             Upload Income Certificate
+              <input type="file" hidden 
+                onChange={(e) => handleFileChange(e, "incomeCertificateFile")}
+              // onChange={handleFileChange}
+               />
            </Button>
-           {file ? (
-            <Typography sx={{ mt: 1 }}>Selected file: {file.name}</Typography>
+            {formData.incomeCertificateFile ? (
+            <Typography sx={{ mt: 1 }}>Selected file: {formData.incomeCertificateFile.name}</Typography>
           ) : (
-            errors.file && <Typography color="error">{errors.file}</Typography>
+            errors.incomeCertificateFile && <Typography color="error">{errors.incomeCertificateFile}</Typography>
           )}
 
         </FormControl>
@@ -360,9 +474,14 @@ const FormComponent = () => {
           color="primary"
           sx={{ mt: 2 }}
           type="submit"
+          // disabled={loading}
         >
            {loading ? (
-            <CircularProgress size={24} color="white" sx={{ color: "white" }} />
+            <CircularProgress size={24} 
+            // color="white"
+            color="inherit"
+            //  sx={{ color: "white" }} 
+             />
           ) : (
             "Submit"
           )}

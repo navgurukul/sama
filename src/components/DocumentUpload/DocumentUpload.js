@@ -70,11 +70,14 @@ const DocumentUpload = () => {
       file: fileStates[label].base64,
     }));
 
-    const payload = { name: formData.name, files };
+    const payload = { name: formData.name, files, type: "MultipleDocsUpload" };
     console.log(payload, "PAYLOAD")
 
     try {
-      await fetch("https://script.google.com/macros/s/AKfycbyxrgFSvdxkC02T96WQ_44qPpiOGeEQi3Bj_d4T86WUbjTDp6v7aIANEztJp2zpnzD_/exec", {
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec"
+        // "https://script.google.com/macros/s/AKfycbyxrgFSvdxkC02T96WQ_44qPpiOGeEQi3Bj_d4T86WUbjTDp6v7aIANEztJp2zpnzD_/exec"
+        , {
         method: "POST",
         mode:"no-cors",
         body: JSON.stringify(payload),
