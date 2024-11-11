@@ -31,6 +31,10 @@ import MouUpload from "./Pages/MouUpload/MouUpload";
 import BeneficiaryProfileSub from "./Dashboard/BeneficiaryData/BeneficiaryProfile"
 import BeneficiaryProfile from "./Pages/BeneficiaryProfile/BeneficiaryProfile";
 import EditUserPage from './Dashboard/BeneficiaryData/EditUser/EditUserPage';
+import DocumentUpload from './components/DocumentUpload/DocumentUpload';
+import AttentionNeeded from './components/AttentionNeeded/AttentionNeeded';
+import DocumentReupload from './Pages/DocumentReupload/DocumentReupload';
+// import Ngodashboard from "./components/NgoDashboard/ngodashboard";
 
 function App() {
   return (
@@ -60,6 +64,10 @@ function App() {
               <Route path='/beneficiaryProfile' element={<BeneficiaryProfile/>} />
               <Route path="/allngo/:id" element={<TabNavigation />} />
               <Route path="/beneficiarydata" element={<BeneficiaryData />} />
+              <Route path="/fileuploadform" element={<Ngodashboard />} />
+              <Route path="/documentupload" element={<DocumentUpload />} />
+              <Route path="/documentreupload" element={<DocumentReupload />} />
+              <Route path="/attentionneeded" element={<AttentionNeeded />} />
                 <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
               <Route path="/laptopinventory" 
               element={

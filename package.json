@@ -20,6 +20,7 @@
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.3",
     "keen-slider": "^6.8.6",
+    "lucide-react": "^0.454.0",
     "mui-datatables": "^4.3.0",
     "papaparse": "^5.4.1",
     "react": "^18.3.1",
