@@ -30,6 +30,7 @@ import BeneficiaryData from './Dashboard/BeneficiaryData';
 import MouUpload from "./Pages/MouUpload/MouUpload";
 import BeneficiaryProfileSub from "./Dashboard/BeneficiaryData/BeneficiaryProfile"
 import BeneficiaryProfile from "./Pages/BeneficiaryProfile/BeneficiaryProfile";
+import EditUserPage from './Dashboard/BeneficiaryData/EditUser/EditUserPage';
 import DocumentUpload from './components/DocumentUpload/DocumentUpload';
 import AttentionNeeded from './components/AttentionNeeded/AttentionNeeded';
 import DocumentReupload from './Pages/DocumentReupload/DocumentReupload';
@@ -108,6 +109,7 @@ function App() {
                   </PrivateRoute>
                 }
               /> */}
+              <Route path="/edit-user/:id" element={<EditUserPage />} />
                <Route path="/admin-dashboard" 
               element={
                 <PrivateRoute reqired={'admin'}>

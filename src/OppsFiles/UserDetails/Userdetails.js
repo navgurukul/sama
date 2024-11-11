@@ -18,6 +18,10 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 
 const FormComponent = () => {
+  const AuthUser = localStorage.getItem("_AuthSama_");
+  const user = JSON.parse(AuthUser);
+  
+
   const statesOptions = [
     "Andhra Pradesh", 
     "Arunachal Pradesh",
@@ -93,8 +97,8 @@ const FormComponent = () => {
     { label: "Occupation Status", name: "occupation" },
     { label: "Use Case", name: "useCase" },
     { label: "Number of Family Members", name: "familyMembers" },
-    { label: "Father/Mother/Guardian’s Occupation", name: "familyOccupation" },
-    { label: "Family Annual Income", name: "familyIncome" },
+    { label: "Father/Mother/Guardian’s Occupation", name: "guardian" },
+    { label: "Family Annual Income", name: "familyAnnualIncome" },
     { label: "Status", name: "status" },
     { label: "Laptop Assigned", name: "laptopAssigned" },
     // { label: "Income Certificate", name: "incomeCertificate" },
@@ -262,6 +266,7 @@ const FormComponent = () => {
           incomeCertificateFileName: formData.incomeCertificateFile?.name,
           incomeCertificateMimeType: formData.incomeCertificateFile?.type,
           type: "userdetails",
+          ngoId : user[0].NgoId,
         };
 
         const response = await fetch(
