@@ -15,7 +15,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const BeneficiaryData = () => {
-  const NgoId= useParams()
+  const AuthUser = localStorage.getItem("_AuthSama_");
+  const user = JSON.parse(AuthUser);
  
   const navigate = useNavigate();
   const [ngoData, setNgoData] = useState([]);
@@ -67,7 +68,7 @@ const BeneficiaryData = () => {
     }
     fetchData();
   }, []); 
-  const FilterNgoData=ngoData?.filter((ngo) => ngo.Ngo == NgoId.id)
+  const FilterNgoData=ngoData?.filter((ngo) => ngo.Ngo == user[0].NgoId);
   
   
   const handleBulkStatusChange = async () => {
