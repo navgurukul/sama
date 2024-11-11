@@ -4,7 +4,8 @@ import {
   Select, FormControl, InputLabel, Paper, Table,
   TableBody, TableCell, TableContainer, TableHead,
   TableRow, Button, IconButton, Dialog, DialogActions,
-  DialogContent, DialogContentText, DialogTitle, Box
+  DialogContent, DialogContentText, DialogTitle, Box,
+  CircularProgress
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -18,11 +19,13 @@ import { useNavigate } from 'react-router-dom';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import { classes } from './style';
+import DeleteDialog from './deletDialog';
 
 const AdminNgo = () => {
   const navigate = useNavigate();
   const [ngoData, setNgoData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [ngoDeleteID, setNgoDeleteID] = useState('');
   const [filters, setFilters] = useState({
     laptopsRequired: '',
     purpose: '',
@@ -43,6 +46,7 @@ const AdminNgo = () => {
   const [editStatus, setEditStatus] = useState({});
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [ngoIdToChange, setNgoIdToChange] = useState(null);
 
   const dialogRef = useRef(null);
@@ -87,11 +91,11 @@ const AdminNgo = () => {
     navigate(`/allngo/${id}`);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this entry?")) {
+  const handleDelete = async () => {
+   
       try {
         // Update local state by filtering out the deleted entry
-        const updatedData = ngoData.filter((ngo) => ngo.Id !== id);
+        const updatedData = ngoData.filter((ngo) => ngo.Id !== ngoDeleteID);
         setNgoData(updatedData);
         
         // Await axios delete request
@@ -100,7 +104,7 @@ const AdminNgo = () => {
           headers: { 'Content-Type': 'application/json',},
           mode: 'no-cors',
           body: JSON.stringify({
-            id: id,
+            id: ngoDeleteID,
            
           })
 
@@ -112,9 +116,17 @@ const AdminNgo = () => {
         // Log error if the request fails
         console.error('Error deleting row:', error);
       }
-    }
+    
   };
-  
+  const handleDeleteRecord = (id) => {
+    setOpenDeleteDialog(true);
+    setNgoDeleteID(id);
+
+  }
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  };
+ 
   
 
   const handleStatusChange = (id, newStatus) => {
@@ -293,7 +305,9 @@ const AdminNgo = () => {
             </TableRow>
           </TableHead>
           <TableBody sx={classes.tablecell}>
-            {filteredData.map((ngo) => (
+            {loading ? <CircularProgress sx={{ mt: 10, ml: 2, mb: 10 }} size={40} /> : 
+            ngoData.length > 0 ?
+            filteredData.map((ngo) => (
               <TableRow key={ngo.Id} hover sx={classes.tablecell} 
               onClick={(e) => {
                
@@ -305,7 +319,6 @@ const AdminNgo = () => {
                 <TableCell sx={classes.tablecell}>{ngo.beneficiariesCount}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.location}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.expectedOutcome}</TableCell>
-                <TableCell sx={classes.tablecell}>{ngo.purpose}</TableCell>
                 <TableCell sx={classes.tablecell}>
                   <FormControl fullWidth >
                     <InputLabel id="demo-simple-select-label">
@@ -344,10 +357,16 @@ const AdminNgo = () => {
                 <TableCell sx={{ border: "none" }}>
                   <IconButton onClick={(e) => {
                     e.stopPropagation();
-                    handleDelete(ngo.Id)}}><DeleteIcon /></IconButton>
+                    handleDeleteRecord(ngo.Id)}}><DeleteIcon /></IconButton>
                 </TableCell>
               </TableRow>
-            ))}
+            )):
+            <TableRow>
+              <TableCell colSpan={9} sx={{ textAlign: "center" }}>
+                No data available
+              </TableCell>
+            </TableRow>
+          }
           </TableBody>
         </Table>
       </TableContainer>
@@ -383,7 +402,9 @@ const AdminNgo = () => {
           <Button onClick={handleConfirmStatusChange} color="primary" autoFocus>Confirm</Button>
         </DialogActions>
       </Dialog>
+      <DeleteDialog open={openDeleteDialog} handleClose={handleCloseDeleteDialog} handleDelete={handleDelete} />
     </Container >
+    
   );
 };
 

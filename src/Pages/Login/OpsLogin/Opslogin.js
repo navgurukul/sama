@@ -47,6 +47,12 @@ function Opslogin() {
     if (user) {
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('role', JSON.stringify(user.Role)); // Store the role array in localStorage
+      localStorage.setItem('_AuthSama_', JSON.stringify([{
+        name: user.Name,
+        email: user.Email,
+        role: user.Role,
+        NgoId:user["Ngo Id"]
+      }])); // Store the role array in localStorage
       setError(''); 
 
       // Redirect based on role

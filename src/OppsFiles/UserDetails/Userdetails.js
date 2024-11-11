@@ -17,6 +17,10 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 
 const FormComponent = () => {
+  const AuthUser = localStorage.getItem("_AuthSama_");
+  const user = JSON.parse(AuthUser);
+  
+
   const statesOptions = [
     "Andhra Pradesh", 
     "Arunachal Pradesh",
@@ -92,8 +96,8 @@ const FormComponent = () => {
     { label: "Date Of Birth", name: "dateOfBirth" },
     { label: "Use Case", name: "useCase" },
     { label: "Number of Family Members", name: "familyMembers" },
-    { label: "Father/Mother/Guardian’s Occupation", name: "familyOccupation" },
-    { label: "Family Annual Income", name: "familyIncome" },
+    { label: "Father/Mother/Guardian’s Occupation", name: "guardian" },
+    { label: "Family Annual Income", name: "familyAnnualIncome" },
     { label: "Status", name: "status" },
     { label: "Laptop Assigned", name: "laptopAssigned" },
   ];
@@ -175,16 +179,18 @@ const FormComponent = () => {
           fileName: file.name,
           mimeType: file.type,
           type: "userdetails",
+          ngoId : user[0].NgoId,
         };
         var withoutFile = {
           ...formData,
           type: "userdetails",
+          ngoId : user[0].NgoId,
         };
         const finalData = file ? withFile : withoutFile;
 
         try {
           const response = await fetch(
-            "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
+            "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
             {
               method: "POST",
               headers: {

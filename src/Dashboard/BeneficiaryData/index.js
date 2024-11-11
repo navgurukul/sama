@@ -9,11 +9,14 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import TablePagination from '@mui/material/TablePagination';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const BeneficiaryData = () => {
+  const NgoId= useParams()
+ 
   const navigate = useNavigate();
   const [ngoData, setNgoData] = useState([]);
   const [editStatus, setEditStatus] = useState([]);
@@ -63,10 +66,11 @@ const BeneficiaryData = () => {
   
     }
     fetchData();
-  }, []);
-  console.log(selectedRows,ngoIdToChange,bulkStatus);
+  }, []); 
+  const FilterNgoData=ngoData?.filter((ngo) => ngo.Ngo == NgoId.id)
+  
+  
   const handleBulkStatusChange = async () => {
-    console.log(selectedRows,ngoIdToChange,bulkStatus);
     // Map through `ngoData` and update status based on conditions
     const updatedData = ngoData.map((ngo) => {
       if (bulkStatus && selectedRows.has(ngo.Id)) {
@@ -78,7 +82,7 @@ const BeneficiaryData = () => {
       }
       return ngo;
     });
-
+    setOpenDialog(false);
     // Update state with modified data and reset selectedRows
     setNgoData(updatedData);
     setSelectedRows(new Set());
@@ -143,7 +147,7 @@ const BeneficiaryData = () => {
   };
 
 
-  const filteredData = ngoData.filter((ngo) => {
+  const filteredData = FilterNgoData.filter((ngo) => {
     return (
       (searchTerm === '' || 
         ngo.name?.toLowerCase().includes(searchTerm) ||
@@ -158,7 +162,8 @@ const BeneficiaryData = () => {
 
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-      {ngoData.length > 0 && !loading && (
+      {
+    (!loading && ngoData.length) > 0 && (
         <>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Typography variant="h6" gutterBottom>All NGOs ({filteredData.length})</Typography>
@@ -318,7 +323,7 @@ const BeneficiaryData = () => {
             }
           </TableHead>
           <TableBody>
-            {ngoData.length !== 0 ? (
+            { loading? <CircularProgress align="center" sx={{ mt: 10,mb: 10 }}/> :ngoData.length !== 0 ? (
               filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((ngo) => (
                 <TableRow key={ngo.Id} hover onClick={() => handleRowClick(ngo.ID)}>
                   <TableCell padding="checkbox" onClick={(e) => e.stopPropagation()}>
