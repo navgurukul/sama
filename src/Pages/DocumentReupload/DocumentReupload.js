@@ -66,35 +66,35 @@ const DocumentReupload = () => {
   useEffect(() => {
     // Static data simulating the API response
     const staticApiResponse = {
-      "User-Id": 2,
-      "NGO Name": "Komal_NGO",
-      subfolderId: "11jccPPIKeIRow-btS1EiynJmfH8uDtY_",
+      "User-Id": 1,
+      "NGO Name": "docs",
+      subfolderId: "1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
       "12A Registration": {
-        link: "https://drive.google.com/file/d/1lx44qxAVPDTMCNG4OMeqrO9oyzD2RL2R/view?usp=drivesdk",
+        link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
         status: "Failed",
       },
       "80G Certification": {
-        link: "https://drive.google.com/file/d/11ZVS83UJtvvRl3phLx3uT5n7qkcCtbid/view?usp=drivesdk",
+        link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
         status: "Failed",
       },
       "Certificate of Incorporation (COI)": {
-        link: "https://drive.google.com/file/d/1bTfib7yBGGC-gNk_I1MgoDRQjk6PKOts/view?usp=drivesdk",
+        link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
         status: "Success",
       },
       "FCRA Approval": {
-        link: "https://drive.google.com/file/d/1yrCMjesMkqbwTEzn4tB7u8ndWtxY53Av/view?usp=drivesdk",
+        link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
         status: "Success",
       },
       "Financial Report FY 2021-22": {
-        link: "https://drive.google.com/file/d/1Z8mbR1r6PMr8mOB6ZeVCgKhmNyp06bs5/view?usp=drivesdk",
+        link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
         status: "Success",
       },
       "Financial Report FY 2022-23": {
-        link: "https://drive.google.com/file/d/1UBdb5Q4qSEkX2G4SJRk6WvUScRsHjWgR/view?usp=drivesdk",
+        link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
         status: "Success",
       },
       "Financial Report FY 2023-24": {
-        link: "https://drive.google.com/file/d/1wcqxedPXKdYI75gbYAAztK1_srscgP1M/view?usp=drivesdk",
+        link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
         status: "Failed",
       },
     };
@@ -160,8 +160,11 @@ const DocumentReupload = () => {
       ngoName: ngoName,
       subfolderId: subfolderId,
       files,
+      type: "MultpleDocsUpdate"
     };
 
+    console.log(payload, "PAYLOAD");
+    
     try {
       const response = await fetch(
         "https://script.google.com/macros/s/AKfycbwCS2hthFkL5DInylFWpa2tufJVBumLkSSMfrXNdoSbicHUMenpD4qoN7uB-u5jKNl3/exec",
