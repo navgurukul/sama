@@ -88,7 +88,7 @@ const AdminNgo = () => {
   };
 
   const handleRowClick = (id) => {
-    navigate(`/allngo/${id}`);
+    navigate(`/ngo/${id}`);
   };
 
   const handleDelete = async () => {

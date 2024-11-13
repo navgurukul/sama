@@ -349,9 +349,6 @@ const FormComponent = () => {
                   )}
        
                </FormControl>
-                  // <Typography variant="body1" sx={{ mt: 2 }}>
-                  //   I am clicked
-                  // </Typography>
                 )}
               </FormControl>
             );
