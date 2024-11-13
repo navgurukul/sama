@@ -38,13 +38,13 @@ const TabNavigation = () => {
         <Tab label="NGO Details" />
         <Tab label="Uploaded Documents" />
         <Tab label="Beneficiary Data" />
-        <Tab label="Manage Statuses" />
+        {/* <Tab label="Manage Statuses" /> */}
       </Tabs>
 
       {value === 0 && ngo && <NGODetails ngo={ngo} />}
       {value === 1 && <DataUpload/>}
       {value === 2 && <BeneficiaryData />}
-      {value === 3 && <div>Manage Statuses Section</div>}
+      {/* {value === 3 && <div>Manage Statuses Section</div>} */}
     </Container>
   );
 };

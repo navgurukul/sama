@@ -13,14 +13,17 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import CircularProgress from '@mui/material/CircularProgress';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteDialog from '../AdminNgo/DeletDialog';
 
 const BeneficiaryData = () => {
-  const AuthUser = localStorage.getItem("_AuthSama_");
-  const user = JSON.parse(AuthUser);
- 
+  const AuthUser = JSON.parse(localStorage.getItem("_AuthSama_"));
+  
+  const { id } = useParams();
+  const user = id? id : AuthUser[0].NgoId;
   const navigate = useNavigate();
   const [ngoData, setNgoData] = useState([]);
-  const [editStatus, setEditStatus] = useState([]);
+  const [editStatus, setEditStatus] = useState(false);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     "ID Proof type": '',
@@ -42,6 +45,8 @@ const BeneficiaryData = () => {
   const [ngoIdToChange, setNgoIdToChange] = useState(null);
   const [selectedRows, setSelectedRows] = useState(new Set()); // Track selected rows
   const [bulkStatus, setBulkStatus] = useState('')
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [ngoIdToDelete, setNgoIdToDelete] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -50,6 +55,7 @@ const BeneficiaryData = () => {
         const data = response.data;
         setNgoData(data);
         setLoading(false);
+        setEditStatus(false);
 
         const idProofOptions = [...new Set(data.map(item => item["ID Proof type"]))];
         const useCaseOptions = [...new Set(data.map(item => item["Use case"]))];
@@ -67,8 +73,8 @@ const BeneficiaryData = () => {
   
     }
     fetchData();
-  }, []); 
-  const FilterNgoData=ngoData?.filter((ngo) => ngo.Ngo == user[0].NgoId);
+  }, [editStatus]); 
+  const FilterNgoData=ngoData?.filter((ngo) => ngo.Ngo == user);
   
   
   const handleBulkStatusChange = async () => {
@@ -147,6 +153,36 @@ const BeneficiaryData = () => {
     setSelectedRows(updatedSelectedRows);
   };
 
+  const handleDeleteDialog = (id) => {
+    setNgoIdToDelete(id);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleDelete = async () => {
+    const updatedData = ngoData.filter((ngo) => ngo.Id !== ngoIdToDelete);
+    setNgoData(updatedData);
+
+    try {
+      await fetch('https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      mode: 'no-cors',
+      body: JSON.stringify({
+        userId: ngoIdToDelete,
+        type: "deleteUser",
+      })
+    })
+    setOpenDeleteDialog(false);
+    setEditStatus(false)
+    
+    } catch (error) {
+      console.error('Error deleting row:', error);
+    }
+  };
 
   const filteredData = FilterNgoData.filter((ngo) => {
     return (
@@ -356,10 +392,19 @@ const BeneficiaryData = () => {
                         ))}
                       </Select>
                     </FormControl>
+                    
                   </TableCell>
                   <TableCell>
                     <EditIcon />
                   </TableCell>
+                  <TableCell>
+                      <DeleteIcon 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteDialog(ngo.ID);
+                        }}
+                      />
+                    </TableCell>
                 </TableRow>
               ))
             ) : (
@@ -400,6 +445,7 @@ const BeneficiaryData = () => {
           <Button onClick={handleBulkStatusChange} color="primary">Confirm</Button>
         </DialogActions>
       </Dialog>
+      <DeleteDialog open={openDeleteDialog} handleClose={handleCloseDeleteDialog} handleDelete={handleDelete} />
     </Container>
   );
 };
