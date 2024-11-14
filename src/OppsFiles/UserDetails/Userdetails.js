@@ -18,72 +18,94 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 import { useLocation } from 'react-router-dom';
 
-const FormComponent = ({user}) => {
+const FormComponent = ({ user }) => {
   console.log(user)
   const statesOptions = [
-    "Andhra Pradesh", 
+    "Andhra Pradesh",
     "Arunachal Pradesh",
     "Assam",
-    "Bihar", 
+    "Bihar",
     "Chhattisgarh",
-    "Goa", 
+    "Goa",
     "Gujarat",
-    "Haryana", 
+    "Haryana",
     "Himachal Pradesh",
-    "Jammu and Kashmir", 
-    "Jharkhand", 
-    "Karnataka", 
-    "Kerala", 
-    "Madhya Pradesh", 
+    "Jammu and Kashmir",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
     "Maharashtra",
-    "Manipur", 
+    "Manipur",
     "Meghalaya",
-    "Mizoram", 
-    "Nagaland", 
-    "Odisha", 
-    "Punjab", 
-    "Rajasthan", 
-    "Sikkim", 
-    "Tamil Nadu", 
-    "Telangana", 
-    "Tripura", 
-    "Uttarakhand", 
-    "Uttar Pradesh", 
-    "West Bengal", 
-    "Andaman and Nicobar Islands", 
-    "Chandigarh", 
-    "Dadra and Nagar Haveli", 
-    "Daman and Diu", 
-    "Delhi", 
-    "Lakshadweep", 
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttarakhand",
+    "Uttar Pradesh",
+    "West Bengal",
+    "Andaman and Nicobar Islands",
+    "Chandigarh",
+    "Dadra and Nagar Haveli",
+    "Daman and Diu",
+    "Delhi",
+    "Lakshadweep",
     "Puducherry"
   ];
 
   const idProofOptions = [
-    "Ration card", 
-    "Aadhar Card", 
-    "Voter ID card", 
-    "Driving License", 
-    "PAN Card", 
-    "Passport", 
-    "Domicile/Secondary/Senior Secondary Marksheet"
+    // "Ration card", 
+    "Aadhar Card",
+    "Voter ID card",
+    "Driving License",
+    "PAN Card",
+    "Passport",
+    // "Domicile/Secondary/Senior Secondary Marksheet"
   ];
   const useCaseOptions = [
-    "Income Increase/Job", 
-    "Entrepreneurship", 
-    "Internships", 
+    "Income Increase/Job",
+    "Entrepreneurship",
+    "Internships",
     "Skilling/Vocations"
   ];
   const statusOptions = [
-    "Laptop Received", 
-    "Employed", 
-    "Intern", 
-    "Entrepreneur/Freelancing", 
+    "Laptop Received",
+    "Employed",
+    "Intern",
+    "Entrepreneur/Freelancing",
     "Trainer"
   ];
-
+  const qualification = [
+    "Elementary School",
+    "Middle School",
+    "High School",
+    "Higher Secondary Education",
+    "Undergraduate Degree pursuing",
+    "Undergraduate Degree completed",
+    "Diploma Courses",
+    "Postgraduate Degree",
+  ];
+  const occupation=[
+    "Students", 
+    "Trainer", 
+    "Employed",
+  ]
+  const familyAnnualIncome=[
+    "0 to 50K",  
+    "50 to 1Lakh" ,  
+    "1 to 2lakh" , 
+    "2 to 3lakh",
+    "3 to 5lakh", 
+    "5+ lakh",
+  ]
   const fields = [
-    { label: "Name", name: "name"},
+    { label: "Name", name: "name" },
     { label: "Email", name: "email" },
     { label: "Contact Number", name: "contactNumber" },
     { label: "Date Of Birth", name: "dateOfBirth" },
@@ -108,17 +130,20 @@ const FormComponent = ({user}) => {
     useCase: "",
     addressState: "",
     status: "",
+    qualification: "",
+    occupation:"",
+    familyAnnualIncome:"",
     idProofFile: null,
     incomeCertificateFile: null,
   });
 
   const [errors, setErrors] = useState({});
-  
+
   const [file, setFile] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState(""); // To store custom message
   const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // Success or Error
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
@@ -176,7 +201,7 @@ const FormComponent = ({user}) => {
 
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
-    
+
   //   if (validate()) {
   //     setLoading(true);
   //     const reader = new FileReader();
@@ -264,7 +289,7 @@ const FormComponent = ({user}) => {
           incomeCertificateFileName: formData.incomeCertificateFile?.name,
           incomeCertificateMimeType: formData.incomeCertificateFile?.type,
           type: "userdetails",
-          ngoId : user,
+          ngoId: user,
         };
 
         const response = await fetch(
@@ -279,13 +304,16 @@ const FormComponent = ({user}) => {
             body: JSON.stringify(finalData),
           }
         );
-        
+
 
         setFormData({
           idProofType: "",
           useCase: "",
           addressState: "",
           status: "",
+          qualification:"",
+          occupation:"",
+          familyAnnualIncome:"",
           idProofFile: null,
           incomeCertificateFile: null,
         });
@@ -332,27 +360,27 @@ const FormComponent = ({user}) => {
                 </Select>
                 {formData[field.name] && (
                   <FormControl fullWidth margin="normal">
-                  <Button variant="outlined" component="label">
-                     Upload ID Proof Image
-                     <input type="file" hidden 
-                     onChange={(e) => handleFileChange(e, "idProofFile")}
-                    //  onChange={handleFileChange}
+                    <Button variant="outlined" component="label">
+                      Upload ID Proof Image
+                      <input type="file" hidden
+                        onChange={(e) => handleFileChange(e, "idProofFile")}
+                      //  onChange={handleFileChange}
                       />
-                  </Button>
-                  {formData.idProofFile ? (
-                    <Typography sx={{ mt: 1 }}>Selected file: {formData.idProofFile.name}</Typography>
-                  ) : (
-                    errors.idProofFile && <Typography color="error">{errors.idProofFile}</Typography>
-                  )}
-       
-               </FormControl>
+                    </Button>
+                    {formData.idProofFile ? (
+                      <Typography sx={{ mt: 1 }}>Selected file: {formData.idProofFile.name}</Typography>
+                    ) : (
+                      errors.idProofFile && <Typography color="error">{errors.idProofFile}</Typography>
+                    )}
+
+                  </FormControl>
                 )}
               </FormControl>
             );
           } else if (field.name === "useCase") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-              <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
@@ -372,7 +400,7 @@ const FormComponent = ({user}) => {
           } else if (field.name === "status") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-               <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
@@ -392,19 +420,19 @@ const FormComponent = ({user}) => {
           } else if (field.name === "dateOfBirth") {
             return (
               <>
-              <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
-              <TextField
-                fullWidth
-                key={field.name}
-                // label={field.label}
-                name={field.name}
-                type="date"
-                InputLabelProps={{ shrink: true }}
-                value={formData[field.name] || ""}
-                onChange={handleChange}
-                variant="outlined"
-                margin="normal"
-              />
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <TextField
+                  fullWidth
+                  key={field.name}
+                  // label={field.label}
+                  name={field.name}
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  variant="outlined"
+                  margin="normal"
+                />
               </>
             );
           } else if (field.name === "addressState") {
@@ -427,25 +455,89 @@ const FormComponent = ({user}) => {
                 </Select>
               </FormControl>
             );
-          } else {
+          } 
+          else if (field.name === "qualification") {
+            return (
+              <FormControl fullWidth margin="normal" key={field.name}>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
+                <Select
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  label={field.label}
+                  sx={{ textAlign: "left" }}
+                >
+                  {qualification.map((option, index) => (
+                    <MenuItem key={index} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          } 
+          else if (field.name === "occupation") {
+            return (
+              <FormControl fullWidth margin="normal" key={field.name}>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
+                <Select
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  label={field.label}
+                  sx={{ textAlign: "left" }}
+                >
+                  {occupation.map((option, index) => (
+                    <MenuItem key={index} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          } 
+          else if (field.name === "familyAnnualIncome") {
+            return (
+              <FormControl fullWidth margin="normal" key={field.name}>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
+                <Select
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  label={field.label}
+                  sx={{ textAlign: "left" }}
+                >
+                  {familyAnnualIncome.map((option, index) => (
+                    <MenuItem key={index} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          } 
+           else {
             return (
               <>
-              <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
-              <TextField
-                fullWidth
-                key={field.name}
-                // label={field.label}
-                name={field.name}
-                value={formData[field.name] || ""}
-                onChange={handleChange}
-                variant="outlined"
-                margin="normal"
-              />
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <TextField
+                  fullWidth
+                  key={field.name}
+                  // label={field.label}
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  variant="outlined"
+                  margin="normal"
+                />
               </>
             );
           }
         })}
-          {/* <FormControl fullWidth margin="normal">
+        {/* <FormControl fullWidth margin="normal">
             <Typography variant="subtitle1">Income Certificate</Typography>
            <Button variant="outlined" component="label">
              Upload Income Certificate
@@ -468,18 +560,18 @@ const FormComponent = ({user}) => {
           color="primary"
           sx={{ mt: 2 }}
           type="submit"
-          // disabled={loading}
+        // disabled={loading}
         >
-           {loading ? (
-            <CircularProgress size={24} 
-            // color="white"
-            color="inherit"
+          {loading ? (
+            <CircularProgress size={24}
+              // color="white"
+              color="inherit"
             //  sx={{ color: "white" }} 
-             />
+            />
           ) : (
             "Submit"
           )}
-          
+
         </Button>
       </form>
 
