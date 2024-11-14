@@ -281,7 +281,6 @@ const FormComponent = () => {
             body: JSON.stringify(finalData),
           }
         );
-        console.log(finalData);
         
 
         setFormData({

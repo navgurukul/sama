@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Grid, Typography, Box, Select, MenuItem, FormControl, InputLabel, Link } from '@mui/material';
-import { format, parseISO } from 'date-fns';
 
+import { format, parseISO } from 'date-fns';
 
 const EditUserForm = ({ userData, onSubmit }) => {
   const initialDate = userData["Date Of Birth"]
@@ -10,6 +10,7 @@ const EditUserForm = ({ userData, onSubmit }) => {
 
   const [formData, setFormData] = useState({
     userId: userData.ID || '',
+    ngoId: userData.Ngo || '',
     name: userData.name || '',
     email: userData.email || '',
     contactNumber: userData["contact number"] || '',
@@ -26,8 +27,18 @@ const EditUserForm = ({ userData, onSubmit }) => {
     familyAnnualIncome: userData["Family Annual Income"] || '',
     status: userData.status || '',
     laptopAssigned: userData["Laptop Assigned"] || '',
-    file: userData["ID Link"] || null,
+    idProofFileUrl: userData["ID Link"] || null,
+    incomeCertificateFileUrl: userData["Income Certificate Link"] || null,
   });
+
+  const [fileEdited, setFileEdited] = useState({
+    idProofFileEdited: false,
+    incomeCertificateFileEdited: false,
+  });
+
+  const handleDateChange = (e) => {
+    setFormData({ ...formData, dateOfBirth: e.target.value });
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,35 +46,65 @@ const EditUserForm = ({ userData, onSubmit }) => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, file: e.target.files[0] });
+    const { name, files } = e.target;
+  
+    // Map the input `name` to the correct `fileEdited` property
+    const editedKeyMap = {
+      idProofFileUrl: 'idProofFileEdited',
+      incomeCertificateFileUrl: 'incomeCertificateFileEdited',
+    };
+  
+    setFormData({ ...formData, [name]: files[0] });
+    
+    // Update only the correct key in `fileEdited`
+    const editedKey = editedKeyMap[name];
+    if (editedKey) {
+      setFileEdited((prevFileEdited) => ({
+        ...prevFileEdited,
+        [editedKey]: true,
+      }));
+    }
   };
-
-  const handleDateChange = (e) => {
-    setFormData({ ...formData, dateOfBirth: e.target.value });
-  };
+  
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const formDataToSubmit = { ...formData };
-
-    if (formData.file && typeof formData.file !== 'string') {
-      const file = formData.file;
-      const base64 = await convertToBase64(file);
-      formDataToSubmit.file = base64;
-      formDataToSubmit.mimeType = file.type;
-      formDataToSubmit.fileName = file.name;
+    
+    // Initialize formDataToSubmit with base form data
+    let formDataToSubmit = { ...formData };
+  
+    // Conditionally add idProofFile fields if edited
+    if (fileEdited.idProofFileEdited) {
+      formDataToSubmit = {
+        ...formDataToSubmit,
+        idProofFile: await convertToBase64(formData.idProofFileUrl),
+        idProofFileName: formData.idProofFileUrl.name,
+        idProofMimeType: formData.idProofFileUrl.type
+      };
     }
-
+  
+    // Conditionally add incomeCertificateFile fields if edited
+    if (fileEdited.incomeCertificateFileEdited) {
+      formDataToSubmit = {
+        ...formDataToSubmit,
+        incomeCertificateFile: await convertToBase64(formData.incomeCertificateFileUrl),
+        incomeCertificateFileName: formData.incomeCertificateFileUrl.name,
+        incomeCertificateMimeType: formData.incomeCertificateFileUrl.type
+      };
+    }
+  
+    // Call the onSubmit function with the final formDataToSubmit
     onSubmit(formDataToSubmit);
   };
+  
 
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
     });
   };
 
@@ -71,7 +112,7 @@ const EditUserForm = ({ userData, onSubmit }) => {
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, mb:6 }}>
       <Typography variant="h6" gutterBottom>Edit User Details</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+      <Grid item xs={12}>
           <Typography variant='subtitle1' sx={{ mb: 1, mt: 1}}>Name</Typography>
           <TextField
             name="name"
@@ -250,26 +291,39 @@ const EditUserForm = ({ userData, onSubmit }) => {
           onChange={handleChange}
           />
         </Grid>
-    
         
         <Grid item xs={12}>
-          <Typography variant='subtitle1' sx={{ mb: 1, mt: 1 }}>Upload ID Proof</Typography>
+          <Typography variant="subtitle1" sx={{ mb: 1, mt: 1 }}>Upload ID Proof</Typography>
           <TextField
+            name="idProofFileUrl"
             type="file"
             fullWidth
             InputLabelProps={{ shrink: true }}
             onChange={handleFileChange}
           />
-        </Grid>
-        {formData.file && typeof formData.file === 'string' && (
-          <Grid item xs={12}>
-            <Link href={formData.file} target="_blank" rel="noopener">
+          {formData.idProofFileUrl && typeof formData.idProofFileUrl === 'string' && (
+            <Link href={formData.idProofFileUrl} target="_blank" rel="noopener">
               View ID Proof
             </Link>
-          </Grid>
-        )}
-        
-        
+          )}
+        </Grid>
+
+        <Grid item xs={12}>
+          <Typography variant="subtitle1" sx={{ mb: 1, mt: 1 }}>Upload Income Certificate</Typography>
+          <TextField
+            name="incomeCertificateFileUrl"
+            type="file"
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+            onChange={handleFileChange}
+          />
+          {formData.incomeCertificateFileUrl && typeof formData.incomeCertificateFileUrl === 'string' && (
+            <Link href={formData.incomeCertificateFileUrl} target="_blank" rel="noopener">
+              View Income Certificate
+            </Link>
+          )}
+        </Grid>
+
         <Grid item xs={12}>
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Submit

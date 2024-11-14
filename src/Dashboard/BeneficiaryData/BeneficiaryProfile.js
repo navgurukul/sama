@@ -32,9 +32,9 @@ const BeneficiaryProfile = () => {
   if (error) return <Typography color="error">{error}</Typography>;
 
   return (
-    <Container maxWidth="md" sx={{ padding: '24px' }}>
+    <Container maxWidth="md" sx={{ padding: '24px', marginTop: '64px' , marginBottom: '64px'}}>
       {/* Header */}
-      <Typography variant="h4" align="center" sx={{ marginBottom: 4 }}>
+      <Typography variant="h5" align="center" sx={{ marginBottom: 4 }}>
         Beneficiary Profile
       </Typography>
 
@@ -42,7 +42,7 @@ const BeneficiaryProfile = () => {
       <Paper elevation={1} sx={{ padding: '32px', backgroundColor: "primary.light" }}>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6}>
-            <Typography variant="h6" gutterBottom>{data.name}</Typography>
+            <Typography variant="h6" mb={3}>{data.name}</Typography>
 
             {/* Beneficiary ID */}
             <Typography variant="subtitle1" sx={classes.BeneficiaryData} >Beneficiary ID</Typography>
@@ -75,7 +75,8 @@ const BeneficiaryProfile = () => {
             </Button>
           </Grid>
           
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6} mt={7}>
+          
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>Use Case</Typography>
             <Typography variant="body1" marginBottom="16px">{data["Use case"]}</Typography>
 
@@ -103,13 +104,16 @@ const BeneficiaryProfile = () => {
       {/* Additional Sections */}
       <Grid container spacing={4} sx={{ marginTop: 4 }}>
         <Grid item xs={12} sm={6}>
+        <Typography variant="h6" gutterBottom>ID Proof</Typography>
           <Paper elevation={1} sx={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 2 }}>
+            
             {data["ID Link"] ? (
-              <img 
-                src={data["ID Link"]} 
-                alt="ID Proof" 
-                style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: '4px' }} 
-              />
+              <img
+                src={data["ID Link"]}
+                alt="ID Proof"
+                style={{ border: "none", overflow: "hidden", width: "100%", height: "100%" }}
+               
+              ></img>
             ) : (
               <Typography variant="subtitle1" color="textSecondary">
                 ID Proof not available
@@ -119,13 +123,26 @@ const BeneficiaryProfile = () => {
         </Grid>
 
         <Grid item xs={12} sm={6}>
+        <Typography variant="h6" gutterBottom>Income Certificate</Typography>
           <Paper elevation={1} sx={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 2 }}>
-            <Typography variant="subtitle1" color="textSecondary">Income Certificate</Typography>
+            
+            {data["Income Certificate Link"] ? (
+              <img
+                src={data["Income Certificate Link"]}
+                alt="Address Proof"
+                style={{ border: "none", overflow: "hidden", width: "100%", height: "100%" }}
+              ></img>
+            ) : (
+              <Typography variant="subtitle1" color="textSecondary">
+                Address Proof not available
+              </Typography>
+            )
+            }
           </Paper>
         </Grid>
       </Grid>
 
-      <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
+      {/* <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
         Status History
       </Typography>
       <Divider sx={{ mb: 2 }} />
@@ -144,7 +161,7 @@ const BeneficiaryProfile = () => {
             </Paper>
           </Grid>
         ))}
-      </Grid>
+      </Grid> */}
 
     </Container>
   );

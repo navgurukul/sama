@@ -9,8 +9,6 @@ import {
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
 import axios from 'axios';
 import TablePagination from '@mui/material/TablePagination';
 import Divider from '@mui/material/Divider';
@@ -19,7 +17,8 @@ import { useNavigate } from 'react-router-dom';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import { classes } from './style';
-import DeleteDialog from './deletDialog';
+import DeleteDialog from './DeletDialog';
+import { set } from 'date-fns';
 
 const AdminNgo = () => {
   const navigate = useNavigate();
@@ -43,7 +42,7 @@ const AdminNgo = () => {
     status: [],
   });
 
-  const [editStatus, setEditStatus] = useState({});
+  const [editStatus, setEditStatus] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -59,6 +58,7 @@ const AdminNgo = () => {
 
         setNgoData(data);
         setLoading(false);
+        setEditStatus(false);
 
         const laptopsRequiredOptions = [...new Set(data.map(item => item.primaryContactName))];
         const purposeOptions = [...new Set(data.map(item => item.expectedOutcome))];
@@ -76,7 +76,7 @@ const AdminNgo = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [editStatus]);
 
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
@@ -109,9 +109,8 @@ const AdminNgo = () => {
           })
 
         });
-        
-        // Log success response
-        console.log('Row deleted successfully:', response);
+        setOpenDeleteDialog(false);
+        setEditStatus(true);
       } catch (error) {
         // Log error if the request fails
         console.error('Error deleting row:', error);
@@ -158,7 +157,7 @@ const AdminNgo = () => {
           type: "NGO",
         }),
       })
-      console.log(response);
+      setEditStatus(true);
       if (response.ok) {
         console.log("Status updated successfully");
       } else {
