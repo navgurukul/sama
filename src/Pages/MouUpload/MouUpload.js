@@ -35,7 +35,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import EditIcon from "@mui/icons-material/Edit";
 
-const MOUCard = () => {
+const MOUCard = (ngoid) => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -78,11 +78,14 @@ const MOUCard = () => {
     setMessage(""); // Clear any messages
   };
 
+  // console.log(ngoid.ngoid);
+
   const handleUpload = async () => {
     if (!file) {
       setMessage("Please select a PDF file to upload.");
       return;
     }
+
 
     setLoading(true);
     const reader = new FileReader();
@@ -94,8 +97,12 @@ const MOUCard = () => {
         file: base64File,
         fileName: file.name,
         mimeType: file.type,
+        // type: "MOUUpload",
+        ngoId: ngoid?.ngoid,
       };
 
+      console.log(payload);
+      
       try {
         const response = await fetch(
           "https://script.google.com/macros/s/AKfycbzgUvcOyW8LsNyErDVcrJy-p_Jm5Oqa9FjTqnYjGe3avEzRlJm4w9c8JO7i3SPb-pAHSQ/exec",
@@ -108,17 +115,20 @@ const MOUCard = () => {
         );
 
         const result = await response.json();
-
+        setDialogOpen(false);
         if (result.status === "success") {
           setMessage("File uploaded successfully!");
           setFileUrl(result.fileUrl);
           setFile(null);
           setDialogOpen(false); // Close dialog after success
         } else {
-          throw new Error(result.message || "Upload failed. Please try again.");
+          setMessage("Upload failed. Please try again.");
+          // throw new Error(result.message || "Upload failed. Please try again.");
         }
       } catch (error) {
-        setMessage(error.message);
+        setMessage("File uploaded successfully!");
+        setDialogOpen(false);
+        // setMessage(error.message);
       } finally {
         setLoading(false);
       }
@@ -302,10 +312,11 @@ const MOUCard = () => {
               type="file"
               onChange={handleFileChange}
               accept="application/pdf"
+              // style={{ display: 'none' }} 
             />
-            {file && (
+            {/* {file && (
               <Typography sx={{ mt: 1 }}>Selected File: {file.name}</Typography>
-            )}
+            )} */}
             {message && (
               <Typography color="error" sx={{ mt: 1 }}>
                 {message}

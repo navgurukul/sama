@@ -85,7 +85,7 @@ const FormComponent = ({user}) => {
   const fields = [
     { label: "Name", name: "name"},
     { label: "Email", name: "email" },
-    { label: "Contact Number", name: "contactNumber" },
+    // { label: "Contact Number", name: "contactNumber" },
     // { label: "Date Of Birth", name: "dateOfBirth" },
     // { label: "Address (Number, Street, Locality etc.)", name: "address" },
     // { label: "State", name: "addressState" },
@@ -97,7 +97,7 @@ const FormComponent = ({user}) => {
     // { label: "Number of Family Members", name: "familyMembers" },
     // { label: "Father/Mother/Guardian’s Occupation", name: "guardian" },
     // { label: "Family Annual Income", name: "familyAnnualIncome" },
-    { label: "Status", name: "status" },
+    // { label: "Status", name: "status" },
     // { label: "Laptop Assigned", name: "laptopAssigned" },
     // { label: "Income Certificate", name: "incomeCertificate" },
   ];
