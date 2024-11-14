@@ -93,6 +93,7 @@ const BeneficiaryData = () => {
     // Update state with modified data and reset selectedRows
     setNgoData(updatedData);
     setSelectedRows(new Set());
+    setEditStatus(true);
 
     // Convert Set to array for sending in request
     const selectedIdsArray = selectedRows.size > 0 ? Array.from(selectedRows) : Array.from([ngoIdToChange]);
@@ -165,6 +166,8 @@ const BeneficiaryData = () => {
   const handleDelete = async () => {
     const updatedData = ngoData.filter((ngo) => ngo.Id !== ngoIdToDelete);
     setNgoData(updatedData);
+    setOpenDeleteDialog(false);
+    setEditStatus(true);
 
     try {
       await fetch('https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec', {
@@ -176,8 +179,7 @@ const BeneficiaryData = () => {
         type: "deleteUser",
       })
     })
-    setOpenDeleteDialog(false);
-    setEditStatus(false)
+    
     
     } catch (error) {
       console.error('Error deleting row:', error);
@@ -207,7 +209,10 @@ const BeneficiaryData = () => {
           <Button 
             variant="contained"
             color="primary"
-            onClick={() => navigate('/user-details')}
+            onClick={() => {
+              
+              navigate('/user-details', { state: {userId:id} });
+            }}
             sx={{ mt: 2 ,mr: 2}}
           >
             Add Beneficiaries
@@ -394,15 +399,16 @@ const BeneficiaryData = () => {
                     </FormControl>
                     
                   </TableCell>
-                  <TableCell>
+                  <TableCell style={{ cursor: 'pointer' }}>
                     <EditIcon />
                   </TableCell>
-                  <TableCell>
+                  <TableCell style={{ cursor: 'pointer' }}>
                       <DeleteIcon 
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteDialog(ngo.ID);
                         }}
+
                       />
                     </TableCell>
                 </TableRow>

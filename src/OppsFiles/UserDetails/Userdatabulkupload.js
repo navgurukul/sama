@@ -222,7 +222,7 @@ import {
 import { CloudUpload as CloudUploadIcon } from "@mui/icons-material";
 import * as XLSX from "xlsx";
 
-function Userdatabulkupload() {
+function Userdatabulkupload({ user }) {
   const [file, setFile] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -295,10 +295,15 @@ function Userdatabulkupload() {
         setLoading(false);
         return;
       }
-
+    
+      const updatedSheetData = sheetData.map((entry) => ({
+        ...entry,
+        Ngo: "SAM-1"
+    }));
+    
       const dataToSend = {
         type: "userdetailsbulkupload",
-        data: sheetData,
+        data: updatedSheetData, 
       };
 
       // Simulate a progressive upload by updating the progress state

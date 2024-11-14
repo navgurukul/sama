@@ -10,8 +10,15 @@ import {
 import FormComponent from "./Userdetails";
 import Userdatabulkupload from "./Userdatabulkupload";
 import { Container } from "@mui/system";
+import { useLocation } from 'react-router-dom';
+
 function Userdata() {
   const [selectedName, setSelectedName] = useState("bulk");
+  const location = useLocation();
+  const { userId } = location.state || {};
+  const AuthUser = JSON.parse(localStorage.getItem("_AuthSama_"));
+
+  const user = AuthUser[0].role.includes("admin")?userId:AuthUser[0].NgoId;
 
   const handleChange = (event) => {
     setSelectedName(event.target.value);
@@ -44,8 +51,8 @@ function Userdata() {
         </RadioGroup>
 
         <Box mt={3}>
-        {selectedName === "bulk" && <Userdatabulkupload />}
-        {selectedName === "Single" && <FormComponent />}
+        {selectedName === "bulk" && <Userdatabulkupload user={user}/>}
+        {selectedName === "Single" && <FormComponent user={user}/>}
           
         </Box>
       </Container>

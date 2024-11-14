@@ -97,6 +97,8 @@ const AdminNgo = () => {
         // Update local state by filtering out the deleted entry
         const updatedData = ngoData.filter((ngo) => ngo.Id !== ngoDeleteID);
         setNgoData(updatedData);
+        setOpenDeleteDialog(false);
+        setEditStatus(true);
         
         // Await axios delete request
         const response = await fetch(`https://script.google.com/macros/s/AKfycbxLTAObErYSPQGaZw7QLza8Ytw3_0_Jkf5zX0JhAhHEb-mY4NRkXaLfc7JzTDjO9el-/exec`, {
@@ -109,8 +111,7 @@ const AdminNgo = () => {
           })
 
         });
-        setOpenDeleteDialog(false);
-        setEditStatus(true);
+        
       } catch (error) {
         // Log error if the request fails
         console.error('Error deleting row:', error);
@@ -141,6 +142,7 @@ const AdminNgo = () => {
     );
     setNgoData(updatedData);
     setOpenDialog(false); // Close dialog
+    setEditStatus(true);
 
     // Call API to save status
 
@@ -157,7 +159,7 @@ const AdminNgo = () => {
           type: "NGO",
         }),
       })
-      setEditStatus(true);
+      
       if (response.ok) {
         console.log("Status updated successfully");
       } else {
