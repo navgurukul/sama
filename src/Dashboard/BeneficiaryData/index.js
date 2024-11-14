@@ -208,7 +208,7 @@ const BeneficiaryData = () => {
   
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-      {NgoId[0]?.role[0] === "ngo" &&  <MOUCard />}
+      {NgoId[0]?.role[0] === "ngo" &&  <MOUCard ngoid = {user}/>}
       {
         (!loading && (ngoData.some(item => item.Ngo === NgoId[0].NgoId))) ? (
     // ((!loading && ngoData.length) > 0) ? (
@@ -417,18 +417,23 @@ const BeneficiaryData = () => {
                     </FormControl>
                     
                   </TableCell>
-                  <TableCell style={{ cursor: 'pointer' }}>
-                    <EditIcon />
-                  </TableCell>
-                  <TableCell style={{ cursor: 'pointer' }}>
-                      <DeleteIcon 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteDialog(ngo.ID);
-                        }}
+                {NgoId[0].role[0] === "ngo" ? "" : 
+                <>
+                <TableCell style={{ cursor: 'pointer' }}>
+                <EditIcon />
+              </TableCell>
+              <TableCell style={{ cursor: 'pointer' }}>
+                  <DeleteIcon 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteDialog(ngo.ID);
+                    }}
 
-                      />
-                    </TableCell>
+                  />
+                </TableCell>
+                </>
+                }
+                  
                 </TableRow>
               ))
             ) : 
