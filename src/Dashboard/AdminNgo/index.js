@@ -19,6 +19,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { classes } from './style';
 import DeleteDialog from './DeletDialog';
 import { set } from 'date-fns';
+import patientImg from "./assets/Being Patient 1.png"
 
 const AdminNgo = () => {
   const navigate = useNavigate();
@@ -189,6 +190,19 @@ const AdminNgo = () => {
 
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
+      {ngoData.length === 0 && (
+        <>
+        <Typography variant="h6" gutterBottom>All NGOs</Typography>
+        <Container maxWidth="sm" sx={{ mt: 10, textAlign: 'center' }}>
+            <Box component="img" src={patientImg} alt="No Data Illustration" sx={{ width: 200, mb: 2 }} />
+            <Typography variant="body1" color="textSecondary">
+              Hi! Details of NGOs interested in receiving laptops through Sama will appear here as they fill up the laptop request form.
+            </Typography>
+        </Container>
+        </>
+      )}
+       {ngoData.length > 0 && (
+        <>
       <Typography variant="h6" gutterBottom>All NGOs ({ngoData.length})</Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
@@ -383,6 +397,8 @@ const AdminNgo = () => {
           setPage(0);
         }}
       />
+      </>
+      )}
       <Dialog
         open={openDialog}
         onClose={handleCancelStatusChange}
