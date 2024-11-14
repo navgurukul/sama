@@ -16,12 +16,10 @@ import {
 import CircularProgress from "@mui/material/CircularProgress";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
+import { useLocation } from 'react-router-dom';
 
-const FormComponent = () => {
-  const AuthUser = localStorage.getItem("_AuthSama_");
-  const user = JSON.parse(AuthUser);
-  
-
+const FormComponent = ({user}) => {
+  console.log(user)
   const statesOptions = [
     "Andhra Pradesh", 
     "Arunachal Pradesh",
@@ -266,7 +264,7 @@ const FormComponent = () => {
           incomeCertificateFileName: formData.incomeCertificateFile?.name,
           incomeCertificateMimeType: formData.incomeCertificateFile?.type,
           type: "userdetails",
-          ngoId : user[0].NgoId,
+          ngoId : user,
         };
 
         const response = await fetch(
