@@ -259,7 +259,7 @@ const BeneficiaryData = () => {
                 onChange={handleFilterChange}
                 name="ID Proof type"
               >
-                <MenuItem value=""><em>None</em></MenuItem>
+                <MenuItem value="">All</MenuItem>
                 {filterOptions.idProof.map(option => (
                   <MenuItem key={option} value={option}>{option}</MenuItem>
                 ))}
@@ -273,7 +273,7 @@ const BeneficiaryData = () => {
                 onChange={handleFilterChange}
                 name="Use case"
               >
-                <MenuItem value=""><em>None</em></MenuItem>
+                <MenuItem value="">All</MenuItem>
                 {filterOptions.useCase.map(option => (
                   <MenuItem key={option} value={option}>{option}</MenuItem>
                 ))}
@@ -287,7 +287,7 @@ const BeneficiaryData = () => {
                 onChange={handleFilterChange}
                 name="Occupation Status"
               >
-                <MenuItem value=""><em>None</em></MenuItem>
+                <MenuItem value="">All</MenuItem>
                 {filterOptions.occupation.map(option => (
                   <MenuItem key={option} value={option}>{option}</MenuItem>
                 ))}
@@ -301,7 +301,7 @@ const BeneficiaryData = () => {
                 onChange={handleFilterChange}
                 name="status"
               >
-                <MenuItem value=""><em>None</em></MenuItem>
+                <MenuItem value="">All</MenuItem>
                 {filterOptions.status.map(option => (
                   <MenuItem key={option} value={option}>{option}</MenuItem>
                 ))}
