@@ -6,7 +6,7 @@ function PrivateRoute({ children, reqired }) {
   const roles = JSON.parse(localStorage.getItem('role')); // Retrieve the role array
 
   if (!isLoggedIn) {
-    return <Navigate to="/Opslogin" />;
+    return <Navigate to="/login" />;
   }
 
   // If the user has the 'admin' role, grant access to all pages

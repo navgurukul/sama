@@ -13,14 +13,18 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import CircularProgress from '@mui/material/CircularProgress';
+import MOUCard from '../../Pages/MouUpload/MouUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteDialog from '../AdminNgo/DeletDialog';
 
+
+
 const BeneficiaryData = () => {
-  const AuthUser = JSON.parse(localStorage.getItem("_AuthSama_"));
+  // const AuthUser = JSON.parse(localStorage.getItem("_AuthSama_"));
+  const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
   
   const { id } = useParams();
-  const user = id? id : AuthUser[0].NgoId;
+  const user = id? id : NgoId[0].NgoId;
   const navigate = useNavigate();
   const [ngoData, setNgoData] = useState([]);
   const [editStatus, setEditStatus] = useState(false);
@@ -73,6 +77,7 @@ const BeneficiaryData = () => {
   
     }
     fetchData();
+    
   }, [editStatus]); 
   const FilterNgoData=ngoData?.filter((ngo) => ngo.Ngo == user);
   
@@ -199,13 +204,17 @@ const BeneficiaryData = () => {
     );
   });
 
+  // console.log();
+  
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
+      {NgoId[0]?.role[0] === "ngo" &&  <MOUCard />}
       {
-    (!loading && ngoData.length) > 0 && (
+        (!loading && (ngoData.some(item => item.Ngo === NgoId[0].NgoId))) ? (
+    // ((!loading && ngoData.length) > 0) ? (
         <>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography variant="h6" gutterBottom>All NGOs ({filteredData.length})</Typography>
+          <Typography variant="h6" gutterBottom> All Beneficiaries({filteredData.length})</Typography>
           <Button 
             variant="contained"
             color="primary"
@@ -300,7 +309,12 @@ const BeneficiaryData = () => {
             </FormControl>
           </Grid>
         </>
-      )}
+      ) : (
+        <>
+        <Typography variant="h6" gutterBottom> All Beneficiaries </Typography>
+        </>
+      )
+      }
 
       <TableContainer style={{ border: "none" }} sx={{ backgroundColor: 'white', mt: 2 }}>
         <Table>
@@ -365,7 +379,11 @@ const BeneficiaryData = () => {
             }
           </TableHead>
           <TableBody>
-            { loading? <CircularProgress align="center" sx={{ mt: 10,mb: 10 }}/> :ngoData.length !== 0 ? (
+            { loading? <CircularProgress align="center" sx={{ mt: 10,mb: 10 }}/> 
+            :
+            (ngoData.some(item => item.Ngo === NgoId[0].NgoId))
+            // ngoData.length !== 0 
+            ? (
               filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((ngo) => (
                 <TableRow key={ngo.Id} hover onClick={() => handleRowClick(ngo.ID)}>
                   <TableCell padding="checkbox" onClick={(e) => e.stopPropagation()}>
@@ -413,11 +431,12 @@ const BeneficiaryData = () => {
                     </TableCell>
                 </TableRow>
               ))
-            ) : (
+            ) : 
+            (
               <TableRow>
                 <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
                   <img src={require("./assets/People.svg").default} alt="No Data" />
-                  <Typography variant="body1" sx={{ ml: 2 }}>No Beneficiaries have been added yet</Typography>
+                  <Typography variant="body1" sx={{ ml: 2 }}>Start by adding beneficiaries who you would like to<br/> receive laptops through Sama</Typography>
                   <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={() => navigate('/user-details')}>Add Beneficiary</Button>
                 </TableCell>
               </TableRow>

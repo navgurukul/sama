@@ -47,25 +47,38 @@ function App() {
             {" "}
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
+              {/* <Route path="/about" element={<About />} />
               <Route path="/our-approach" element={<OurApproach />} />
-              <Route path="/donate" element={<Donate />} />
+              <Route path="/donate" element={<Donate />} /> */}
               <Route path="/ngoregistration/:donorId" element={ <NgoForm />} />
-              <Route path='/ngoregistration' element={<NgoForm />} />
-              <Route path="/Opslogin" element={<Opslogin />} />
-              <Route path="/donormanager" element={<DonorManager />} />
-              <Route path="/ngo" element={
+              <Route path='/ngoregistration' element={<NgoForm />} />  {/* // this is for all the ngo's */}
+              <Route path="/login" element={<Opslogin />} /> {/* // need to rename this component */}
+              <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
+              <Route path="/question-selection" element={    
                 <PrivateRoute reqired={'ops'}>
                 <CompanySelection />
-                </PrivateRoute>
-                } />
-              <Route path='/allngo' element={<AdminNgo/>} />
+                </PrivateRoute> 
+                } />  {/* // this is to select the doner for the ngo Questions, need to rename the route */}
+
+
+              {/* <Route path='/allngo' element={<AdminNgo/>} /> */}
+              <Route 
+              path="/ngo" 
+              element={
+                <PrivateRoute reqired={'admin'}>
+                   {/* <Admin /> */}
+                   <AdminNgo/>
+                 </PrivateRoute>
+               }
+                />
+                <Route path="/ngo/:id" element={<TabNavigation />} />
               <Route path='/mouUpload' element={<MouUpload/>} />
               <Route path='/beneficiaryProfile' element={<BeneficiaryProfile/>} />
-              <Route path="/allngo/:id" element={<TabNavigation />} />
-              <Route path="/beneficiarydata" element={<BeneficiaryData />} />
-              <Route path="/fileuploadform" element={<Ngodashboard />} />
-              <Route path="/documentupload" element={<DocumentUpload />} />
+              {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
+              {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
+              {/* <Route path="/beneficiarydata" element={<BeneficiaryData />} /> */}
+              {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
+              {/* <Route path="/documentupload" element={<DocumentUpload />} /> */}
               <Route path="/documentreupload" element={<DocumentReupload />} />
               <Route path="/attentionneeded" element={<AttentionNeeded />} />
                 <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
@@ -76,11 +89,24 @@ function App() {
                 </PrivateRoute>
                }
                 />
+                {/* <Route path="/documentupload" element={<DocumentUpload />} /> */}
                 <Route 
-                path="/ngo-dashboard" 
+                // path="/ngo-dashboard" 
+                path="/documentupload"
               element={
                 <PrivateRoute reqired={'ngo'}>
-                   <Ngodashboard />
+                  <DocumentUpload />
+                   {/* <Ngodashboard /> */}
+                </PrivateRoute>
+               }
+                />
+                <Route 
+                // path="/ngo-dashboard" 
+                path="/beneficiarydata"
+              element={
+                <PrivateRoute reqired={'ngo'}>
+                  < BeneficiaryData/>
+                   {/* <Ngodashboard /> */}
                 </PrivateRoute>
                }
                 />
@@ -88,7 +114,6 @@ function App() {
                <Route path="/user-details" 
                element={
                 // <PrivateRoute reqired={'ops'} >
-                
                   <Userdata />
                 // </PrivateRoute>
               }
@@ -110,13 +135,7 @@ function App() {
                 }
               /> */}
               <Route path="/edit-user/:id" element={<EditUserPage />} />
-               <Route path="/admin-dashboard" 
-              element={
-                <PrivateRoute reqired={'admin'}>
-                   <Admin />
-                 </PrivateRoute>
-               }
-                />
+              
               <Route
                 path="/ops"
                 element={
@@ -124,7 +143,7 @@ function App() {
                     <Ops />
                   </PrivateRoute>
                 }
-              />
+              />  {/* // only ops team can access this to oprate the things */}
               {/* <Route
                 path="/laptop-tagging"
                 element={

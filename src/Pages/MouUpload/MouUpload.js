@@ -1,4 +1,3 @@
-// import React, { useState } from "react";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DownloadIcon from "@mui/icons-material/Download";
 
@@ -126,114 +125,120 @@ const MOUCard = () => {
     };
   };
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get(
-          "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData"
-        );
-        const data = response.data;
-        setNgoData(data);
-        setLoadingt(false);
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       const response = await axios.get(
+  //         "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData"
+  //       );
+  //       const data = response.data;
+  //       setNgoData(data);
+  //       setLoadingt(false);
 
-        const idProofOptions = [
-          ...new Set(data.map((item) => item["ID Proof type"])),
-        ];
-        const useCaseOptions = [
-          ...new Set(data.map((item) => item["Use case"])),
-        ];
-        const occupationOptions = [
-          ...new Set(data.map((item) => item["Occupation"])),
-        ];
+  //       const idProofOptions = [
+  //         ...new Set(data.map((item) => item["ID Proof type"])),
+  //       ];
+  //       const useCaseOptions = [
+  //         ...new Set(data.map((item) => item["Use case"])),
+  //       ];
+  //       const occupationOptions = [
+  //         ...new Set(data.map((item) => item["Occupation"])),
+  //       ];
 
-        setFilterOptions({
-          idProof: idProofOptions,
-          useCase: useCaseOptions,
-          occupation: occupationOptions,
-          status: filterOptions.status,
-        });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-    fetchData();
-  }, []);
+  //       setFilterOptions({
+  //         idProof: idProofOptions,
+  //         useCase: useCaseOptions,
+  //         occupation: occupationOptions,
+  //         status: filterOptions.status,
+  //       });
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   }
+  //   fetchData();
+  // }, []);
 
-  const handleFilterChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
-  };
+  // const handleFilterChange = (e) => {
+  //   setFilters({ ...filters, [e.target.name]: e.target.value });
+  // };
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value.toLowerCase());
-  };
+  // const handleSearchChange = (e) => {
+  //   setSearchTerm(e.target.value.toLowerCase());
+  // };
 
-  const handleRowClick = (id) => {
-    navigate(`/allngo/${id}`);
-  };
+  // const handleRowClick = (id) => {
+  //   navigate(`/ngo/${id}`);
+  // };
 
-  const handleStatusChange = (id, newStatus) => {
-    setSelectedStatus(newStatus);
-    setNgoIdToChange(id);
-    setOpenDialog(true);
-  };
+  // const handleStatusChange = (id, newStatus) => {
+  //   setSelectedStatus(newStatus);
+  //   setNgoIdToChange(id);
+  //   setOpenDialog(true);
+  // };
 
-  const handleConfirmStatusChange = async (e) => {
-    e.stopPropagation();
-    const updatedData = ngoData.map((ngo) =>
-      ngo.Id === ngoIdToChange ? { ...ngo, status: selectedStatus } : ngo
-    );
-    setNgoData(updatedData);
-    setOpenDialog(false);
+  // const handleConfirmStatusChange = async (e) => {
+  //   e.stopPropagation();
+  //   const updatedData = ngoData.map((ngo) =>
+  //     ngo.Id === ngoIdToChange ? { ...ngo, status: selectedStatus } : ngo
+  //   );
+  //   setNgoData(updatedData);
+  //   setOpenDialog(false);
 
-    try {
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          mode: "no-cors",
-          body: JSON.stringify({
-            id: ngoIdToChange,
-            status: selectedStatus,
-            type: "NGO",
-          }),
-        }
-      );
-      if (response.ok) {
-        console.log("Status updated successfully");
-      } else {
-        console.error("Error updating status:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error updating status:", error);
-    }
-  };
+  //   try {
+  //     const response = await fetch(
+  //       "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         mode: "no-cors",
+  //         body: JSON.stringify({
+  //           id: ngoIdToChange,
+  //           status: selectedStatus,
+  //           type: "NGO",
+  //         }),
+  //       }
+  //     );
+  //     if (response.ok) {
+  //       console.log("Status updated successfully");
+  //     } else {
+  //       console.error("Error updating status:", response.statusText);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating status:", error);
+  //   }
+  // };
 
-  const handleCancelStatusChange = () => {
-    setSelectedStatus(null);
-    setOpenDialog(false);
-  };
+  // const handleCancelStatusChange = () => {
+  //   setSelectedStatus(null);
+  //   setOpenDialog(false);
+  // };
 
-  const filteredData = ngoData.filter((ngo) => {
-    return (
-      (searchTerm === "" ||
-        ngo.name?.toLowerCase().includes(searchTerm) ||
-        ngo.email?.toLowerCase().includes(searchTerm) ||
-        ngo["contact number"]?.toString().includes(searchTerm)) &&
-      (filters["ID Proof type"] === "" ||
-        ngo["ID Proof type"] === filters["ID Proof type"]) &&
-      (filters["Use case"] === "" || ngo["Use case"] === filters["Use case"]) &&
-      (filters["Occupation Status"] === "" ||
-        ngo["Occupation"] === filters["Occupation Status"]) &&
-      (filters.status === "" || ngo.status === filters.status)
-    );
-  });
+  // const filteredData = ngoData.filter((ngo) => {
+  //   return (
+  //     (searchTerm === "" ||
+  //       ngo.name?.toLowerCase().includes(searchTerm) ||
+  //       ngo.email?.toLowerCase().includes(searchTerm) ||
+  //       ngo["contact number"]?.toString().includes(searchTerm)) &&
+  //     (filters["ID Proof type"] === "" ||
+  //       ngo["ID Proof type"] === filters["ID Proof type"]) &&
+  //     (filters["Use case"] === "" || ngo["Use case"] === filters["Use case"]) &&
+  //     (filters["Occupation Status"] === "" ||
+  //       ngo["Occupation"] === filters["Occupation Status"]) &&
+  //     (filters.status === "" || ngo.status === filters.status)
+  //   );
+  // });
 
   return (
     <>
-      <Container sx={{ my: 3, ml: "32px" }}>
+      <Container
+       sx={{
+         my: 3, 
+        //  padding: 0
+        ml: "0px" 
+      }}
+       >
         <Paper
           elevation={3}
           sx={{
@@ -261,7 +266,7 @@ const MOUCard = () => {
               sx={{ borderRadius: 5, textTransform: "none", px: 3 }}
               onClick={() =>
                 window.open(
-                  "https://drive.google.com/uc?export=download&id=1NCQ_OhhpB3wl7x_C2mTcOhoDmGut9ePl",
+                  "https://docs.google.com/document/d/1E7UzWAD1-OB-oi7Vcxb6iqCIy7CRmE6Z0dqu0IkkB9A/edit?tab=t.0",
                   "_blank"
                 )
               }
@@ -322,7 +327,8 @@ const MOUCard = () => {
           </DialogActions>
         </Dialog>
       </Container>
-      <Container maxWidth="xl" sx={{ mt: 6, mb: 6,}}>
+      
+      {/* <Container maxWidth="xl" sx={{ mt: 6, mb: 6,}}>
         <Typography variant="h6" gutterBottom>
         All Beneficiaries ({filteredData.length})
         </Typography>
@@ -419,7 +425,7 @@ const MOUCard = () => {
               ))}
             </Select>
           </FormControl>
-          {/* Repeat similar for other filters */}
+          Repeat similar for other filters
         </Grid>
 
         <TableContainer
@@ -507,7 +513,7 @@ const MOUCard = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      </Container>
+      </Container> */}
     </>
   );
 };

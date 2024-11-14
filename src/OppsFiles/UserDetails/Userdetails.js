@@ -86,19 +86,19 @@ const FormComponent = ({user}) => {
     { label: "Name", name: "name"},
     { label: "Email", name: "email" },
     { label: "Contact Number", name: "contactNumber" },
-    { label: "Date Of Birth", name: "dateOfBirth" },
-    { label: "Address (Number, Street, Locality etc.)", name: "address" },
-    { label: "State", name: "addressState" },
-    { label: "ID Proof Type", name: "idProofType" },
-    { label: "ID Number", name: "idNumber" },
-    { label: "Qualification", name: "qualification" },
-    { label: "Occupation Status", name: "occupation" },
-    { label: "Use Case", name: "useCase" },
-    { label: "Number of Family Members", name: "familyMembers" },
-    { label: "Father/Mother/Guardian’s Occupation", name: "guardian" },
-    { label: "Family Annual Income", name: "familyAnnualIncome" },
+    // { label: "Date Of Birth", name: "dateOfBirth" },
+    // { label: "Address (Number, Street, Locality etc.)", name: "address" },
+    // { label: "State", name: "addressState" },
+    // { label: "ID Proof Type", name: "idProofType" },
+    // { label: "ID Number", name: "idNumber" },
+    // { label: "Qualification", name: "qualification" },
+    // { label: "Occupation Status", name: "occupation" },
+    // { label: "Use Case", name: "useCase" },
+    // { label: "Number of Family Members", name: "familyMembers" },
+    // { label: "Father/Mother/Guardian’s Occupation", name: "guardian" },
+    // { label: "Family Annual Income", name: "familyAnnualIncome" },
     { label: "Status", name: "status" },
-    { label: "Laptop Assigned", name: "laptopAssigned" },
+    // { label: "Laptop Assigned", name: "laptopAssigned" },
     // { label: "Income Certificate", name: "incomeCertificate" },
   ];
 
@@ -346,9 +346,6 @@ const FormComponent = ({user}) => {
                   )}
        
                </FormControl>
-                  // <Typography variant="body1" sx={{ mt: 2 }}>
-                  //   I am clicked
-                  // </Typography>
                 )}
               </FormControl>
             );
@@ -448,7 +445,7 @@ const FormComponent = ({user}) => {
             );
           }
         })}
-          <FormControl fullWidth margin="normal">
+          {/* <FormControl fullWidth margin="normal">
             <Typography variant="subtitle1">Income Certificate</Typography>
            <Button variant="outlined" component="label">
              Upload Income Certificate
@@ -463,7 +460,7 @@ const FormComponent = ({user}) => {
             errors.incomeCertificateFile && <Typography color="error">{errors.incomeCertificateFile}</Typography>
           )}
 
-        </FormControl>
+        </FormControl> */}
 
         <Button
           fullWidth

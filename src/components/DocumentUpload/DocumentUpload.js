@@ -25,6 +25,7 @@ const DocumentUpload = () => {
   const [data, setData] = useState([]);
   const [submitted, setSubmitted] = useState(false);
 
+
   const fileLabels = [
     "12A Registration",
     "80G Certification",
@@ -93,22 +94,24 @@ const DocumentUpload = () => {
     }
   };
 
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const response = await fetch("https://script.google.com/macros/s/YOUR_API_EXEC_URL/exec");
-//         const result = await response.json();
-//         setData(result);
-//       } catch (error) {
-//         console.error("Error fetching data:", error);
-//       }
-//     };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch("https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec");
+  //       const result = await response.json();
+  //       setData(result);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+    
 
-//     fetchData();
-//   }, []);
+  //   fetchData();
+  // }, []);
 
+  
   const handleSkip = () => {
-    navigate('/next-page');
+    navigate('/beneficiarydata');
   };
 
   const dropZoneStyles = {
@@ -137,7 +140,7 @@ const DocumentUpload = () => {
   
           <form onSubmit={handleSubmit}>
             <Stack spacing={4}>
-              <Box>
+              {/* <Box>
                 <Typography variant="subtitle1" gutterBottom>
                   Name
                 </Typography>
@@ -153,7 +156,7 @@ const DocumentUpload = () => {
                     padding: "8px",
                   }}
                 />
-              </Box>
+              </Box> */}
   
               {fileLabels.map((label) => (
                 <Box key={label}>

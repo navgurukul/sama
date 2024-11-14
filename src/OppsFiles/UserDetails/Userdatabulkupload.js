@@ -298,15 +298,15 @@ function Userdatabulkupload({ user }) {
     
       const updatedSheetData = sheetData.map((entry) => ({
         ...entry,
-        Ngo: "SAM-1"
-    }));
+        Ngo: user
+          }));
     
       const dataToSend = {
         type: "userdetailsbulkupload",
         data: updatedSheetData, 
       };
 
-      // Simulate a progressive upload by updating the progress state
+      // Simulate a progressive upload by updating the progress
       const simulateUpload = setInterval(() => {
         setProgress((prev) => {
           if (prev >= 100) {
