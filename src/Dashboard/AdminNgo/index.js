@@ -40,7 +40,7 @@ const AdminNgo = () => {
     laptopsRequired: [],
     purpose: [],
     location: [],
-    status: [],
+    
   });
 
   const [editStatus, setEditStatus] = useState(false);
@@ -102,12 +102,13 @@ const AdminNgo = () => {
         setEditStatus(true);
         
         // Await axios delete request
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbxLTAObErYSPQGaZw7QLza8Ytw3_0_Jkf5zX0JhAhHEb-mY4NRkXaLfc7JzTDjO9el-/exec`, {
+        const response = await fetch(`https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json',},
           mode: 'no-cors',
           body: JSON.stringify({
             id: ngoDeleteID,
+            type:"deleteNgo"
            
           })
 
@@ -237,7 +238,7 @@ const AdminNgo = () => {
               onChange={handleFilterChange}
               name="laptopsRequired"
             >
-              <MenuItem value=""><em>None</em></MenuItem>
+              <MenuItem value="">All</MenuItem>
               {filterOptions.laptopsRequired.map(option => (
                 <MenuItem key={option} value={option}>{option}</MenuItem>
               ))}
@@ -253,7 +254,7 @@ const AdminNgo = () => {
               onChange={handleFilterChange}
               name="purpose"
             >
-              <MenuItem value=""><em>None</em></MenuItem>
+              <MenuItem value="">All</MenuItem>
               {filterOptions.purpose.map(option => (
                 <MenuItem key={option} value={option}>{option}</MenuItem>
               ))}
@@ -269,7 +270,7 @@ const AdminNgo = () => {
               onChange={handleFilterChange}
               name="location"
             >
-              <MenuItem value=""><em>None</em></MenuItem>
+              <MenuItem value="">All</MenuItem>
               {filterOptions.location.map(option => (
                 <MenuItem key={option} value={option}>{option}</MenuItem>
               ))}
@@ -285,7 +286,7 @@ const AdminNgo = () => {
               onChange={handleFilterChange}
               name="status"
             >
-              <MenuItem value=""><em>None</em></MenuItem>
+              <MenuItem value="">All</MenuItem>
               {filterOptions.status.map(option => (
                 <MenuItem key={option} value={option}>{option}</MenuItem>
               ))}
