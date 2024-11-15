@@ -92,20 +92,24 @@ const MOUCard = (ngoid) => {
     reader.readAsDataURL(file);
     reader.onload = async () => {
       const base64File = reader.result.split(",")[1];
+      const idToBeSent = ngoid?.ngoid;
+      console.log(idToBeSent);
+      
       const payload = {
-        name: "Signed MOU", // Hardcoded name for simplicity
+        status: "Signed MOU",
+        ngoId: idToBeSent,
         file: base64File,
         fileName: file.name,
         mimeType: file.type,
-        // type: "MOUUpload",
-        ngoId: ngoid?.ngoid,
+        type: "MouUpload"
       };
 
       console.log(payload);
       
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbzgUvcOyW8LsNyErDVcrJy-p_Jm5Oqa9FjTqnYjGe3avEzRlJm4w9c8JO7i3SPb-pAHSQ/exec",
+          // "https://script.google.com/macros/s/AKfycbzgUvcOyW8LsNyErDVcrJy-p_Jm5Oqa9FjTqnYjGe3avEzRlJm4w9c8JO7i3SPb-pAHSQ/exec",
+          "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

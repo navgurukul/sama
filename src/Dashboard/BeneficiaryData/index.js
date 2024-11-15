@@ -16,6 +16,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import MOUCard from '../../Pages/MouUpload/MouUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteDialog from '../AdminNgo/DeletDialog';
+import MouReviewd from '../../Pages/MouUpload/MouReviewd';
 
 
 
@@ -51,6 +52,26 @@ const BeneficiaryData = () => {
   const [bulkStatus, setBulkStatus] = useState('')
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [ngoIdToDelete, setNgoIdToDelete] = useState(null);
+  const [mouFound, setMouFound] = useState(false);
+
+
+  // this is to get the data from the mou tab of ngo data sheet
+  useEffect(() => {
+    async function fetchData() {
+      const id = NgoId[0].NgoId;
+      try {
+        const response = await axios.get(`https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=GetMou&id=${id}`);
+        const data = response.data;
+        setMouFound(data);
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+    fetchData();
+    
+  }, [NgoId]); 
+
 
   useEffect(() => {
     async function fetchData() {
@@ -208,7 +229,7 @@ const BeneficiaryData = () => {
   
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-      {NgoId[0]?.role[0] === "ngo" &&  <MOUCard ngoid = {user}/>}
+      {NgoId[0]?.role[0] === "ngo" && (!mouFound ? <MOUCard ngoid = {user}/> : <MouReviewd />)}
       {
         (!loading && (ngoData.some(item => item.Ngo === user))) ? (
     // ((!loading && ngoData.length) > 0) ? (

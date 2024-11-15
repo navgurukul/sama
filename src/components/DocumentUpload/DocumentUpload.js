@@ -18,6 +18,9 @@ import { useNavigate } from 'react-router-dom';
 import SubmissionSuccess from '../SubmissionSuccess/SubmissionSuccess'
 
 const DocumentUpload = () => {
+  const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
+  
+  const userid = NgoId[0].NgoId;
   const navigate = useNavigate();
   const [uploading, setUploading] = useState(false);
   const [fileStates, setFileStates] = useState({});
@@ -71,7 +74,7 @@ const DocumentUpload = () => {
       file: fileStates[label].base64,
     }));
 
-    const payload = { name: formData.name, files, type: "MultipleDocsUpload" };
+    const payload = { name: formData.name, files, type: "MultipleDocsUpload" , ngoId: userid,  };
     console.log(payload, "PAYLOAD")
 
     try {
