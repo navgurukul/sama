@@ -121,7 +121,7 @@ const FormComponent = ({ user }) => {
     { label: "Family Annual Income", name: "familyAnnualIncome" },
     { label: "Status", name: "status" },
     { label: "Laptop Assigned", name: "laptopAssigned" },
-    { label: "Income Certificate", name: "incomeCertificate" },
+    // { label: "Income Certificate", name: "incomeCertificate" },
   ];
 
 
@@ -537,7 +537,7 @@ const FormComponent = ({ user }) => {
             );
           }
         })}
-        {/* <FormControl fullWidth margin="normal">
+        <FormControl fullWidth margin="normal">
             <Typography variant="subtitle1">Income Certificate</Typography>
            <Button variant="outlined" component="label">
              Upload Income Certificate
@@ -552,7 +552,7 @@ const FormComponent = ({ user }) => {
             errors.incomeCertificateFile && <Typography color="error">{errors.incomeCertificateFile}</Typography>
           )}
 
-        </FormControl> */}
+        </FormControl>
 
         <Button
           fullWidth
