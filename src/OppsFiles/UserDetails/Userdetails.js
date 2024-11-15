@@ -19,7 +19,7 @@ import { breakpoints } from "../../theme/constant";
 import { useLocation } from 'react-router-dom';
 
 const FormComponent = ({ user }) => {
-  console.log(user)
+
   const statesOptions = [
     "Andhra Pradesh",
     "Arunachal Pradesh",
@@ -121,7 +121,7 @@ const FormComponent = ({ user }) => {
     { label: "Family Annual Income", name: "familyAnnualIncome" },
     { label: "Status", name: "status" },
     { label: "Laptop Assigned", name: "laptopAssigned" },
-    { label: "Income Certificate", name: "incomeCertificate" },
+    // { label: "Income Certificate", name: "incomeCertificate" },
   ];
 
 
@@ -191,75 +191,18 @@ const FormComponent = ({ user }) => {
 
     return Object.values(tempErrors).every((x) => x === "");
   };
+  
 
   const handleChange = (event) => {
+    
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
     });
+    
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (validate()) {
-  //     setLoading(true);
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file);
-  //     reader.onload = async () => {
-  //       const base64File = reader.result.split(",")[1];
-  //       var withFile = {
-  //         ...formData,
-  //         file: base64File,
-  //         fileName: file.name,
-  //         mimeType: file.type,
-  //         type: "userdetails",
-  //       };
-  //       var withoutFile = {
-  //         ...formData,
-  //         type: "userdetails",
-  //       };
-  //       const finalData = file ? withFile : withoutFile;
-
-  //       try {
-  //         const response = await fetch(
-  //           "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
-  //           {
-  //             method: "POST",
-  //             headers: {
-  //               "Content-Type": "application/json",
-  //             },
-  //             mode: "no-cors",
-  //             body: JSON.stringify(finalData),
-  //           }
-  //         );
-
-  //         // Reset form after successful submission
-  //         setFormData({
-  //           idProofType: "",
-  //           useCase: "",
-  //           addressState: "",
-  //           status: "",
-  //         });
-  //         setLoading(false);
-  //         setFile(null); // Reset file input
-  //         setSnackbarMessage("Data updated successfully!");
-  //         setSnackbarSeverity("success");
-  //         setSnackbarOpen(true);
-  //       } catch (error) {
-  //         console.error("Error uploading file:", error);
-  //         setSnackbarMessage("Something went wrong!");
-  //         setSnackbarSeverity("error");
-  //         setSnackbarOpen(true);
-  //       }
-  //     };
-  //   } else {
-  //     // If validation fails, show error message
-  //     setSnackbarMessage("Please correct the number and ID fields.");
-  //     setSnackbarSeverity("error");    
-  //     setSnackbarOpen(true);
-  //   }
-  // };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -537,7 +480,7 @@ const FormComponent = ({ user }) => {
             );
           }
         })}
-        {/* <FormControl fullWidth margin="normal">
+        <FormControl fullWidth margin="normal">
             <Typography variant="subtitle1">Income Certificate</Typography>
            <Button variant="outlined" component="label">
              Upload Income Certificate
@@ -552,7 +495,7 @@ const FormComponent = ({ user }) => {
             errors.incomeCertificateFile && <Typography color="error">{errors.incomeCertificateFile}</Typography>
           )}
 
-        </FormControl> */}
+        </FormControl>
 
         <Button
           fullWidth

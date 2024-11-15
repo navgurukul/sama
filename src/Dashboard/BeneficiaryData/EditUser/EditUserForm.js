@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { TextField, Button, Grid, Typography, Box, Select, MenuItem, FormControl, InputLabel, Link } from '@mui/material';
+import { TextField, Button, Grid, Typography, Box, Select, MenuItem, FormControl, InputLabel, Link, Paper } from '@mui/material';
 
 import { format, parseISO } from 'date-fns';
 
-const EditUserForm = ({ userData, onSubmit }) => {
+const EditUserForm = ({ userData, onSubmit, statesOptions, idProofOptions, useCaseOptions, statusOptions, qualification, occupation, familyAnnualIncome}) => {
   const initialDate = userData["Date Of Birth"]
     ? format(parseISO(userData["Date Of Birth"]), 'yyyy-MM-dd')
     : '';
@@ -110,7 +110,7 @@ const EditUserForm = ({ userData, onSubmit }) => {
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, mb:6 }}>
-      <Typography variant="h6" gutterBottom>Edit User Details</Typography>
+      <Typography variant="h6" align='left' gutterBottom>Edit Beneficiary Profile</Typography>
       <Grid container spacing={2}>
       <Grid item xs={12}>
           <Typography variant='subtitle1' sx={{ mb: 1, mt: 1}}>Name</Typography>
@@ -163,10 +163,11 @@ const EditUserForm = ({ userData, onSubmit }) => {
               value={formData.addressState}
               onChange={handleChange}
             >
-              <MenuItem value="Gujarat">Gujarat</MenuItem>
-              <MenuItem value="Maharashtra">Maharashtra</MenuItem>
-              <MenuItem value="Rajasthan">Rajasthan</MenuItem>
-              {/* Add more states as needed */}
+              {statesOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Grid>
@@ -180,11 +181,34 @@ const EditUserForm = ({ userData, onSubmit }) => {
               value={formData.idProofType}
               onChange={handleChange}
             >
-              <MenuItem value="Aadhar Card">Aadhar Card</MenuItem>
-              <MenuItem value="PAN Card">PAN Card</MenuItem>
-              <MenuItem value="Passport">Passport</MenuItem>
+             {idProofOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="subtitle1" sx={{ mb: 1, mt: 1 }}>Upload ID Proof</Typography>
+          <Button variant="outlined" component="label" fullWidth>
+            Upload File
+            <input
+              type="file"
+              name="idProofFile"
+              hidden
+              onChange={handleFileChange}
+            />
+          </Button>
+          {formData.idProofFileUrl && typeof formData.idProofFileUrl === 'string' && (
+          <Paper sx={{ mt: 1, p: 2 }}>
+            <Typography variant="subtitle2" sx={{ mt: 1}}>
+              <Link href={formData.idProofFileUrl} target="_blank" rel="noopener noreferrer" sx={{ textDecoration: "none"}}>
+                View Uploaded File  
+              </Link>
+            </Typography>
+          </Paper>
+          )}
         </Grid>
 
         <Grid item xs={12}>
@@ -220,34 +244,51 @@ const EditUserForm = ({ userData, onSubmit }) => {
               value={formData.useCase}
               onChange={handleChange}
             >
-              <MenuItem value="Education">Education</MenuItem>
-              <MenuItem value="Entrepreneurship">Entrepreneurship</MenuItem>
-              <MenuItem value="Job Search">Job Search</MenuItem>
+              {useCaseOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Grid>
 
         <Grid item xs={12}>
           <Typography variant='subtitle1' sx={{ mb: 1, mt: 2 }}>Qualification</Typography>
-          <TextField
-            name="qualification"
-            // label="Qualification"
-            fullWidth
-            value={formData.qualification}
-            onChange={handleChange}
-          />
+         <FormControl fullWidth>
+            {/* <InputLabel>Qualification</InputLabel> */}
+            <Select
+              name="qualification"
+              value={formData.qualification}
+              onChange={handleChange}
+            >
+              {qualification.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
 
         <Grid item xs={12}>
           <Typography variant='subtitle1' sx={{ mb: 1, mt: 1 }}>Occupation</Typography>
-          <TextField
-            name="occupation"
-            // label="Occupation"
-            fullWidth
-            value={formData.occupation}
-            onChange={handleChange}
-          />
+          <FormControl fullWidth>
+            {/* <InputLabel>Occupation</InputLabel> */}
+            <Select
+              name="occupation"
+              value={formData.occupation}
+              onChange={handleChange}
+            >
+              {occupation.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
+           
 
         <Grid item xs={12}>
           <Typography variant='subtitle1' sx={{ mb: 1, mt: 1 }}>Number of Family Members</Typography>
@@ -272,56 +313,51 @@ const EditUserForm = ({ userData, onSubmit }) => {
         </Grid>
         <Grid item xs={12}>
           <Typography variant='subtitle1' sx={{ mb: 1, mt: 1 }}>Family Annual Income</Typography>
-          <TextField
-            name="familyAnnualIncome"
-            // label="Family Annual Income"
-            type="number"
-            fullWidth
-            value={formData.familyAnnualIncome}
-            onChange={handleChange}
-          />
+          <FormControl fullWidth>
+            {/* <InputLabel>Family Annual Income</InputLabel> */}
+            <Select
+              name="familyAnnualIncome"
+              value={formData.familyAnnualIncome}
+              onChange={handleChange}
+            >
+              {familyAnnualIncome.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant='subtitle1' sx={{ mb: 1, mt: 1 }}>Laptop Assigned</Typography>
-          <TextField
-          name="Laptop Assigned"
-          
-          fullWidth
-          value={formData.laptopAssigned}
-          onChange={handleChange}
-          />
-        </Grid>
-        
-        <Grid item xs={12}>
-          <Typography variant="subtitle1" sx={{ mb: 1, mt: 1 }}>Upload ID Proof</Typography>
-          <TextField
-            name="idProofFileUrl"
-            type="file"
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-            onChange={handleFileChange}
-          />
-          {formData.idProofFileUrl && typeof formData.idProofFileUrl === 'string' && (
-            <Link href={formData.idProofFileUrl} target="_blank" rel="noopener">
-              View ID Proof
-            </Link>
-          )}
-        </Grid>
-
         <Grid item xs={12}>
           <Typography variant="subtitle1" sx={{ mb: 1, mt: 1 }}>Upload Income Certificate</Typography>
-          <TextField
-            name="incomeCertificateFileUrl"
-            type="file"
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-            onChange={handleFileChange}
-          />
+          <Button variant="outlined" component="label" fullWidth>
+            Upload File
+            <input
+              type="file"
+              name="incomeCertificateFileUrl"
+              hidden
+              onChange={handleFileChange}
+            />
+            </Button>
           {formData.incomeCertificateFileUrl && typeof formData.incomeCertificateFileUrl === 'string' && (
-            <Link href={formData.incomeCertificateFileUrl} target="_blank" rel="noopener">
-              View Income Certificate
-            </Link>
+          <Paper sx={{ mt: 2, p: 2 }}>
+            <Typography variant="subtitle2" sx={{ mt: 1}}>
+              <Link href={formData.incomeCertificateFileUrl} target="_blank" rel="noopener noreferrer" sx={{ textDecoration: "none"}}>
+                View Uploaded File
+              </Link>
+            </Typography>
+          </Paper>
           )}
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant='subtitle1' sx={{ mb: 1, mt:1 }}>Laptop Assigned</Typography>
+          <TextField
+            name="laptopAssigned"
+            // label="Laptop Assigned"
+            fullWidth
+            value={formData.laptopAssigned}
+            onChange={handleChange}
+          />
         </Grid>
 
         <Grid item xs={12}>
