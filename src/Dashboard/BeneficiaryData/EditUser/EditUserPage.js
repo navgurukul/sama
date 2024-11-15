@@ -12,6 +12,90 @@ const EditUserPage = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const statesOptions = [
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jammu and Kashmir",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttarakhand",
+    "Uttar Pradesh",
+    "West Bengal",
+    "Andaman and Nicobar Islands",
+    "Chandigarh",
+    "Dadra and Nagar Haveli",
+    "Daman and Diu",
+    "Delhi",
+    "Lakshadweep",
+    "Puducherry"
+  ];
+
+  const idProofOptions = [
+    // "Ration card", 
+    "Aadhar Card",
+    "Voter ID card",
+    "Driving License",
+    "PAN Card",
+    "Passport",
+    // "Domicile/Secondary/Senior Secondary Marksheet"
+  ];
+  const useCaseOptions = [
+    "Income Increase/Job",
+    "Entrepreneurship",
+    "Internships",
+    "Skilling/Vocations"
+  ];
+  const statusOptions = [
+    "Laptop Received",
+    "Employed",
+    "Intern",
+    "Entrepreneur/Freelancing",
+    "Trainer"
+  ];
+  const qualification = [
+    "Elementary School",
+    "Middle School",
+    "High School",
+    "Higher Secondary Education",
+    "Undergraduate Degree pursuing",
+    "Undergraduate Degree completed",
+    "Diploma Courses",
+    "Postgraduate Degree",
+  ];
+  const occupation=[
+    "Students", 
+    "Trainer", 
+    "Employed",
+  ]
+  const familyAnnualIncome=[
+    "0 to 50K",  
+    "50 to 1Lakh" ,  
+    "1 to 2lakh" , 
+    "2 to 3lakh",
+    "3 to 5lakh", 
+    "5+ lakh",
+  ]
 
 
   useEffect(() => {
@@ -64,12 +148,14 @@ const EditUserPage = () => {
   }
 
   return (
-    <Container maxWidth="sm">
-      <Typography variant="h4" align="center" gutterBottom>
-        Edit User
-      </Typography>
+    <Container maxWidth="sm" sx={{mt:5,mb:5}}>
+     
       {userData ? (
-        <EditUserForm userData={userData} onSubmit={handleSubmit} />
+        <EditUserForm userData={userData} onSubmit={handleSubmit}
+         statesOptions={statesOptions} idProofOptions={idProofOptions} 
+         useCaseOptions={useCaseOptions} statusOptions={statusOptions} 
+         qualification={qualification} occupation={occupation} 
+         familyAnnualIncome={familyAnnualIncome} />
       ) : (
         <Typography variant="body1" align="center">
           User data not found.

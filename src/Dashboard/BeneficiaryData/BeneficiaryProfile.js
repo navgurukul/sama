@@ -6,10 +6,12 @@ import { Container } from '@mui/system';
 import { classes } from './style';
 
 const BeneficiaryProfile = () => {
+  const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { id } = useParams();
+
 
   const API_URL = `https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${id}`;
 
@@ -69,10 +71,11 @@ const BeneficiaryProfile = () => {
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>Occupation</Typography>
             <Typography variant="body1" marginBottom="16px">{data.Occupation}</Typography>
-
+            {NgoId[0].role.includes("admin") &&
             <Button variant="outlined" color="primary" href={`/edit-user/${id}`} sx={{ marginTop: 2 }} >
               Edit Beneficiary Profile
             </Button>
+            }
           </Grid>
           
           <Grid item xs={12} sm={6} mt={7}>

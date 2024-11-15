@@ -117,7 +117,7 @@ const BeneficiaryData = () => {
           type: "editUser",
         }),
       });
-      console.log("Status updated successfully for selected users");
+
     } catch (error) {
       console.error("Error updating status in bulk:", error);
     }
@@ -210,7 +210,7 @@ const BeneficiaryData = () => {
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
       {NgoId[0]?.role[0] === "ngo" &&  <MOUCard ngoid = {user}/>}
       {
-        (!loading && (ngoData.some(item => item.Ngo === NgoId[0].NgoId))) ? (
+        (!loading && (ngoData.some(item => item.Ngo === user))) ? (
     // ((!loading && ngoData.length) > 0) ? (
         <>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -224,7 +224,7 @@ const BeneficiaryData = () => {
             }}
             sx={{ mt: 2 ,mr: 2}}
           >
-            Add Beneficiaries
+            Add Beneficiaries()
           </Button>
         </Box>
           <Grid container spacing={2}>
@@ -381,8 +381,8 @@ const BeneficiaryData = () => {
           <TableBody>
             { loading? <CircularProgress align="center" sx={{ mt: 10,mb: 10 }}/> 
             :
-            (ngoData.some(item => item.Ngo === NgoId[0].NgoId))
-            // ngoData.length !== 0 
+            (ngoData.some(item => item.Ngo === user))
+  
             ? (
               filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((ngo) => (
                 <TableRow key={ngo.Id} hover onClick={() => handleRowClick(ngo.ID)}>
