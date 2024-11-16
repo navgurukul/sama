@@ -79,8 +79,8 @@ function App() {
               {/* <Route path="/beneficiarydata" element={<BeneficiaryData />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
               {/* <Route path="/documentupload" element={<DocumentUpload />} /> */}
-              <Route path="/documentreupload" element={<DocumentReupload />} />
-              <Route path="/attentionneeded" element={<AttentionNeeded />} />
+              {/* <Route path="/documentreupload" element={<DocumentReupload />} /> */}
+              {/* <Route path="/attentionneeded" element={<AttentionNeeded />} /> */}
                 <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
               <Route path="/laptopinventory" 
               element={
@@ -144,14 +144,14 @@ function App() {
                   </PrivateRoute>
                 }
               />  {/* // only ops team can access this to oprate the things */}
-              {/* <Route
+              <Route
                 path="/laptop-tagging"
                 element={
                   <PrivateRoute reqired={'ops'}>
                     <MacRearch />
                   </PrivateRoute>
                 }
-              /> */}
+              />
             </Routes>
             {" "}
           </div>
