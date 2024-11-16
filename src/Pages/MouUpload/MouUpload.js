@@ -94,7 +94,7 @@ const MOUCard = (ngoid) => {
       const base64File = reader.result.split(",")[1];
       const idToBeSent = ngoid?.ngoid;
       console.log(idToBeSent);
-      
+
       const payload = {
         status: "Signed MOU",
         ngoId: idToBeSent,
@@ -105,7 +105,7 @@ const MOUCard = (ngoid) => {
       };
 
       console.log(payload);
-      
+
       try {
         const response = await fetch(
           // "https://script.google.com/macros/s/AKfycbzgUvcOyW8LsNyErDVcrJy-p_Jm5Oqa9FjTqnYjGe3avEzRlJm4w9c8JO7i3SPb-pAHSQ/exec",
@@ -247,12 +247,12 @@ const MOUCard = (ngoid) => {
   return (
     <>
       <Container
-       sx={{
-         my: 3, 
-        //  padding: 0
-        ml: "0px" 
-      }}
-       >
+        sx={{
+          my: 3,
+          //  padding: 0
+          ml: "0px"
+        }}
+      >
         <Paper
           elevation={3}
           sx={{
@@ -309,14 +309,32 @@ const MOUCard = (ngoid) => {
         </Paper>
 
         {/* Upload Dialog */}
-        <Dialog open={dialogOpen} onClose={handleDialogClose}>
-          <DialogTitle>Upload Signed MOU</DialogTitle>
+        <Dialog open={dialogOpen} onClose={handleDialogClose}
+          sx={{
+            "& .MuiPaper-root": {
+              borderRadius: "10px", // Rounded corners
+              padding: 3, // Inner padding
+              backgroundColor: "#ffffff", // Clean white background
+              boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)", // Soft shadow
+              overflow: "hidden", // Removed scrollbar
+            },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              fontSize: "20px",
+              fontWeight: "bold",
+              color: "#2e7d32", // Green color
+              textAlign: "center",
+              marginBottom: 2,
+            }}
+          >Upload Signed MOU</DialogTitle>
           <DialogContent>
             <input
               type="file"
               onChange={handleFileChange}
               accept="application/pdf"
-              // style={{ display: 'none' }} 
+            // style={{ display: 'none' }} 
             />
             {/* {file && (
               <Typography sx={{ mt: 1 }}>Selected File: {file.name}</Typography>
@@ -328,7 +346,7 @@ const MOUCard = (ngoid) => {
             )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleDialogClose} color="secondary">
+            <Button onClick={handleDialogClose} color="secondary" variant="outlined" >
               Cancel
             </Button>
             <Button
@@ -342,7 +360,7 @@ const MOUCard = (ngoid) => {
           </DialogActions>
         </Dialog>
       </Container>
-      
+
       {/* <Container maxWidth="xl" sx={{ mt: 6, mb: 6,}}>
         <Typography variant="h6" gutterBottom>
         All Beneficiaries ({filteredData.length})

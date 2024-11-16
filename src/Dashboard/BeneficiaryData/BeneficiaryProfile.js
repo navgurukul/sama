@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Button, Paper, CircularProgress,Divider } from '@mui/material';
+import { Box, Typography, Grid, Button, Paper, CircularProgress, Divider } from '@mui/material';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Container } from '@mui/system';
 import { classes } from './style';
+import { useNavigate } from "react-router-dom";
 
 const BeneficiaryProfile = () => {
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
@@ -12,6 +13,11 @@ const BeneficiaryProfile = () => {
   const [error, setError] = useState(null);
   const { id } = useParams();
 
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate("/beneficiarydata");
+  };
 
   const API_URL = `https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${id}`;
 
@@ -34,7 +40,7 @@ const BeneficiaryProfile = () => {
   if (error) return <Typography color="error">{error}</Typography>;
 
   return (
-    <Container maxWidth="md" sx={{ padding: '24px', marginTop: '64px' , marginBottom: '64px'}}>
+    <Container maxWidth="md" sx={{ padding: '24px', marginTop: '64px', marginBottom: '64px' }}>
       {/* Header */}
       <Typography variant="h5" align="center" sx={{ marginBottom: 4 }}>
         Beneficiary Profile
@@ -49,7 +55,7 @@ const BeneficiaryProfile = () => {
             {/* Beneficiary ID */}
             <Typography variant="subtitle1" sx={classes.BeneficiaryData} >Beneficiary ID</Typography>
             <Typography variant="body1" marginBottom="16px">{data.ID}</Typography>
-            
+
             {/* Additional Fields */}
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>Email</Typography>
             <Typography variant="body1" marginBottom="16px">{data.email}</Typography>
@@ -71,15 +77,10 @@ const BeneficiaryProfile = () => {
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>Occupation</Typography>
             <Typography variant="body1" marginBottom="16px">{data.Occupation}</Typography>
-            {NgoId[0].role.includes("admin") &&
-            <Button variant="outlined" color="primary" href={`/edit-user/${id}`} sx={{ marginTop: 2 }} >
-              Edit Beneficiary Profile
-            </Button>
-            }
           </Grid>
-          
+
           <Grid item xs={12} sm={6} mt={7}>
-          
+
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>Use Case</Typography>
             <Typography variant="body1" marginBottom="16px">{data["Use case"]}</Typography>
 
@@ -101,21 +102,37 @@ const BeneficiaryProfile = () => {
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>Family Annual Income</Typography>
             <Typography variant="body1" marginBottom="16px">{data["Family Annual Income"]}</Typography>
           </Grid>
+          <Box sx={{ display: 'flex', ml: "20px" }}>
+            {NgoId[0].role.includes("admin") &&
+              <Button variant="outlined" color="primary" href={`/edit-user/${id}`}  >
+                Edit Beneficiary Profile
+              </Button>
+            }
+
+            <Button
+              onClick={handleBack}
+              variant="outlined"
+              color="primary"
+              sx={{ ml: "20px" }}
+            >
+              Return to Dashboard
+            </Button>
+          </Box>
         </Grid>
       </Paper>
 
       {/* Additional Sections */}
       <Grid container spacing={4} sx={{ marginTop: 4 }}>
         <Grid item xs={12} sm={6}>
-        <Typography variant="h6" gutterBottom>ID Proof</Typography>
+          <Typography variant="h6" gutterBottom>ID Proof</Typography>
           <Paper elevation={1} sx={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 2 }}>
-            
+
             {data["ID Link"] ? (
               <img
                 src={data["ID Link"]}
                 alt="ID Proof"
                 style={{ border: "none", overflow: "hidden", width: "100%", height: "100%" }}
-               
+
               ></img>
             ) : (
               <Typography variant="subtitle1" color="textSecondary">
@@ -126,9 +143,9 @@ const BeneficiaryProfile = () => {
         </Grid>
 
         <Grid item xs={12} sm={6}>
-        <Typography variant="h6" gutterBottom>Income Certificate</Typography>
+          <Typography variant="h6" gutterBottom>Income Certificate</Typography>
           <Paper elevation={1} sx={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 2 }}>
-            
+
             {data["Income Certificate Link"] ? (
               <img
                 src={data["Income Certificate Link"]}
