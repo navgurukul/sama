@@ -23,7 +23,7 @@ import MouReviewd from '../../Pages/MouUpload/MouReviewd';
 const BeneficiaryData = () => {
   // const AuthUser = JSON.parse(localStorage.getItem("_AuthSama_"));
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
-  
+  const gettingStoredData = NgoId[0].NgoId ;
   const { id } = useParams();
   const user = id? id : NgoId[0].NgoId;
   const navigate = useNavigate();
@@ -52,13 +52,13 @@ const BeneficiaryData = () => {
   const [bulkStatus, setBulkStatus] = useState('')
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [ngoIdToDelete, setNgoIdToDelete] = useState(null);
-  const [mouFound, setMouFound] = useState(false);
+  const [mouFound, setMouFound] = useState(true);
 
 
   // this is to get the data from the mou tab of ngo data sheet
   useEffect(() => {
     async function fetchData() {
-      const id = NgoId[0].NgoId;
+      const id = gettingStoredData;      
       try {
         const response = await axios.get(`https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=GetMou&id=${id}`);
         const data = response.data;
@@ -68,9 +68,9 @@ const BeneficiaryData = () => {
         console.error('Error fetching data:', error);
       }
     }
-    fetchData();
+    gettingStoredData && fetchData();
     
-  }, [NgoId]); 
+  }, [gettingStoredData]); 
 
 
   useEffect(() => {
@@ -225,11 +225,11 @@ const BeneficiaryData = () => {
     );
   });
 
-  // console.log();
+  console.log(mouFound.data);
   
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-      {NgoId[0]?.role[0] === "ngo" && (!mouFound ? <MOUCard ngoid = {user}/> : <MouReviewd />)}
+      {NgoId[0]?.role[0] === "ngo" && (mouFound?.data ?  <MouReviewd /> : <MOUCard ngoid = {user}/> )}
       {
         (!loading && (ngoData.some(item => item.Ngo === user))) ? (
     // ((!loading && ngoData.length) > 0) ? (
