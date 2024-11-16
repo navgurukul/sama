@@ -10,8 +10,15 @@ import {
 import FormComponent from "./Userdetails";
 import Userdatabulkupload from "./Userdatabulkupload";
 import { Container } from "@mui/system";
+import { useLocation } from 'react-router-dom';
+
 function Userdata() {
-  const [selectedName, setSelectedName] = useState("Single");
+  const [selectedName, setSelectedName] = useState("bulk");
+  const location = useLocation();
+  const { userId } = location.state || {};
+  const AuthUser = JSON.parse(localStorage.getItem("_AuthSama_"));
+
+  const user = AuthUser[0].role.includes("admin")?userId:AuthUser[0].NgoId;
 
   const handleChange = (event) => {
     setSelectedName(event.target.value);
@@ -19,32 +26,34 @@ function Userdata() {
 
   return (
     <div>
-      <Container maxWidth="sm" align="center" sx={{ my: 5 }}>
+      <Container maxWidth="sm"  sx={{ my: 5 }}>
         <Typography variant="h6" gutterBottom>
-          User Details Form
+         Add Beneficiaries
         </Typography>
 
         <RadioGroup
           row
           value={selectedName}
           onChange={handleChange}
-          sx={{ justifyContent: "center" }}
+          
         >
-          <FormControlLabel
-            value="Single"
-            control={<Radio />}
-            label="Single Data Upload"
-          />
           <FormControlLabel
             value="bulk"
             control={<Radio />}
             label="Bulk Upload"
           />
+          <FormControlLabel
+            value="Single"
+            control={<Radio />}
+            label="One at a time"
+          />
+          
         </RadioGroup>
 
         <Box mt={3}>
-          {selectedName === "Single" && <FormComponent />}
-          {selectedName === "bulk" && <Userdatabulkupload />}
+        {selectedName === "bulk" && <Userdatabulkupload user={user}/>}
+        {selectedName === "Single" && <FormComponent user={user}/>}
+          
         </Box>
       </Container>
     </div>

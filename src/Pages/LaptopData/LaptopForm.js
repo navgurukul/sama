@@ -30,6 +30,7 @@ function LaptopForm() {
     laptopWeight: "",
     others: "",
     macAddress: "",
+    batteryCapacity: "",
   });
 
   // State to manage loading state for the loader
@@ -90,6 +91,7 @@ function LaptopForm() {
         laptopWeight: "",
         others: "",
         macAddress: "",
+        batteryCapacity:"",
       });
     } catch (error) {
       console.error("Error:", error); // Log error to the console
@@ -125,7 +127,7 @@ function LaptopForm() {
     "Small Battery Capacity Loss",
     "Minor Software Issues",
     "Port Wear",
-    "Trackpad Sensitivity",
+    "Touchpad Sensitivity",
   ];
 
   return (
@@ -269,6 +271,15 @@ function LaptopForm() {
                 label="Other Laptop Issues optional"
                 name="others"
                 value={formData.others}
+                onChange={handleChange}
+                variant="outlined"
+                sx={{ mt: 2 }}
+              />
+              <TextField
+                fullWidth
+                label="Battery Capacity"
+                name="batteryCapacity"
+                value={formData.batteryCapacity}
                 onChange={handleChange}
                 variant="outlined"
                 sx={{ mt: 2 }}
