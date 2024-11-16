@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 
 
-function Ops() {
+function Ops() {  
   return (
     <Container>
       {/* Centered OPS Management heading */}
@@ -93,27 +93,48 @@ function Ops() {
               </CardContent>
             </Card>
           </Grid>
-          {/* <Grid item xs={12} sm={6} md={6}>
+          <Grid item xs={12} sm={6} md={6}>
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6" component="h2" gutterBottom>
-                  Laptop Assignment
+                  NGO Form 
                 </Typography>
                 <Typography variant="body1" color="textSecondary" gutterBottom>
-                  Use this for Assign laptops to user.
+                  Use this form for Registration for Specific NGO.
                 </Typography>
                 <Box mt={2}>
                   <Button
                     variant="contained"
                     color="primary"
-                    href="/data-assignment-form"
+                    href="/ngo"
                   >
-                    Laptop Assignment
+                    NGO Forms
                   </Button>
                 </Box>
               </CardContent>
             </Card>
-          </Grid> */}
+          </Grid>
+          <Grid item xs={12} sm={6} md={6}>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h6" component="h2" gutterBottom>
+                  Edit Questions for NGO Registration
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  use this button to edit the questions for NGO Registration and add new NGO for Registration Form.
+                </Typography>
+                <Box mt={2}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="/donormanager"
+                  >
+                    Edit Button
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       </Box>
     </Container>

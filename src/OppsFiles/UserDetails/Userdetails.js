@@ -10,90 +10,118 @@ import {
   MenuItem,
   Alert,
   Typography,
+  FormLabel,
 } from "@mui/material";
 
 import CircularProgress from "@mui/material/CircularProgress";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
+import { useLocation } from 'react-router-dom';
 
-const FormComponent = () => {
+const FormComponent = ({ user }) => {
+
   const statesOptions = [
-    "Andhra Pradesh", 
+    "Andhra Pradesh",
     "Arunachal Pradesh",
     "Assam",
-    "Bihar", 
+    "Bihar",
     "Chhattisgarh",
-    "Goa", 
+    "Goa",
     "Gujarat",
-    "Haryana", 
+    "Haryana",
     "Himachal Pradesh",
-    "Jammu and Kashmir", 
-    "Jharkhand", 
-    "Karnataka", 
-    "Kerala", 
-    "Madhya Pradesh", 
+    "Jammu and Kashmir",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
     "Maharashtra",
-    "Manipur", 
+    "Manipur",
     "Meghalaya",
-    "Mizoram", 
-    "Nagaland", 
-    "Odisha", 
-    "Punjab", 
-    "Rajasthan", 
-    "Sikkim", 
-    "Tamil Nadu", 
-    "Telangana", 
-    "Tripura", 
-    "Uttarakhand", 
-    "Uttar Pradesh", 
-    "West Bengal", 
-    "Andaman and Nicobar Islands", 
-    "Chandigarh", 
-    "Dadra and Nagar Haveli", 
-    "Daman and Diu", 
-    "Delhi", 
-    "Lakshadweep", 
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttarakhand",
+    "Uttar Pradesh",
+    "West Bengal",
+    "Andaman and Nicobar Islands",
+    "Chandigarh",
+    "Dadra and Nagar Haveli",
+    "Daman and Diu",
+    "Delhi",
+    "Lakshadweep",
     "Puducherry"
   ];
 
   const idProofOptions = [
-    "Ration card", 
-    "Aadhar Card", 
-    "Voter ID card", 
-    "Driving License", 
-    "PAN Card", 
-    "Passport", 
-    "Domicile/Secondary/Senior Secondary Marksheet"
+    // "Ration card", 
+    "Aadhar Card",
+    "Voter ID card",
+    "Driving License",
+    "PAN Card",
+    "Passport",
+    // "Domicile/Secondary/Senior Secondary Marksheet"
   ];
   const useCaseOptions = [
-    "Income Increase/Job", 
-    "Entrepreneurship", 
-    "Internships", 
+    "Income Increase/Job",
+    "Entrepreneurship",
+    "Internships",
     "Skilling/Vocations"
   ];
   const statusOptions = [
-    "Laptop Received", 
-    "Employed", 
-    "Intern", 
-    "Entrepreneur/Freelancing", 
+    "Laptop Received",
+    "Employed",
+    "Intern",
+    "Entrepreneur/Freelancing",
     "Trainer"
   ];
-
+  const qualification = [
+    "Elementary School",
+    "Middle School",
+    "High School",
+    "Higher Secondary Education",
+    "Undergraduate Degree pursuing",
+    "Undergraduate Degree completed",
+    "Diploma Courses",
+    "Postgraduate Degree",
+  ];
+  const occupation=[
+    "Students", 
+    "Trainer", 
+    "Employed",
+  ]
+  const familyAnnualIncome=[
+    "0 to 50K",  
+    "50 to 1Lakh" ,  
+    "1 to 2lakh" , 
+    "2 to 3lakh",
+    "3 to 5lakh", 
+    "5+ lakh",
+  ]
   const fields = [
     { label: "Name", name: "name" },
     { label: "Email", name: "email" },
     { label: "Contact Number", name: "contactNumber" },
-    { label: "Address", name: "address" },
-    { label: "Address State", name: "addressState" },
+    { label: "Date Of Birth", name: "dateOfBirth" },
+    { label: "Address (Number, Street, Locality etc.)", name: "address" },
+    { label: "State", name: "addressState" },
     { label: "ID Proof Type", name: "idProofType" },
     { label: "ID Number", name: "idNumber" },
     { label: "Qualification", name: "qualification" },
-    { label: "Occupation", name: "occupation" },
-    { label: "Date Of Birth", name: "dateOfBirth" },
+    { label: "Occupation Status", name: "occupation" },
     { label: "Use Case", name: "useCase" },
     { label: "Number of Family Members", name: "familyMembers" },
+    { label: "Father/Mother/Guardian’s Occupation", name: "guardian" },
+    { label: "Family Annual Income", name: "familyAnnualIncome" },
     { label: "Status", name: "status" },
     { label: "Laptop Assigned", name: "laptopAssigned" },
+    // { label: "Income Certificate", name: "incomeCertificate" },
   ];
 
 
@@ -102,20 +130,33 @@ const FormComponent = () => {
     useCase: "",
     addressState: "",
     status: "",
+    qualification: "",
+    occupation:"",
+    familyAnnualIncome:"",
+    idProofFile: null,
+    incomeCertificateFile: null,
   });
 
   const [errors, setErrors] = useState({});
+
   const [file, setFile] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState(""); // To store custom message
   const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // Success or Error
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+
+  const handleFileChange = (event, fileType) => {
+    setFormData({
+      ...formData,
+      [fileType]: event.target.files[0],
+    });
   };
+  // const handleFileChange = (event) => {
+  //   setFile(event.target.files[0]);
+  // };
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -144,81 +185,100 @@ const FormComponent = () => {
         : "Aadhar Card number is required";
     }
 
-    tempErrors.file = file ? "" : "Please upload a valid ID proof image";
+    // tempErrors.file = file ? "" : "Please upload a valid ID proof image";
 
     setErrors(tempErrors);
 
     return Object.values(tempErrors).every((x) => x === "");
   };
+  
 
+  console.log(errors);
+  
   const handleChange = (event) => {
+    
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
     });
+    
   };
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validate()) {
       setLoading(true);
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = async () => {
-        const base64File = reader.result.split(",")[1];
-        var withFile = {
-          ...formData,
-          file: base64File,
-          fileName: file.name,
-          mimeType: file.type,
-          type: "userdetails",
-        };
-        var withoutFile = {
-          ...formData,
-          type: "userdetails",
-        };
-        const finalData = file ? withFile : withoutFile;
+      const readFileAsBase64 = (file) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result.split(",")[1]);
+          reader.onerror = (error) => reject(error);
+          reader.readAsDataURL(file);
+        });
 
-        try {
-          const response = await fetch(
-            "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              mode: "no-cors",
-              body: JSON.stringify(finalData),
-            }
-          );
+      try {
+        const [idProofBase64, incomeCertificateBase64] = await Promise.all([
+          formData.idProofFile ? readFileAsBase64(formData.idProofFile) : null,
+          formData.incomeCertificateFile ? readFileAsBase64(formData.incomeCertificateFile) : null,
+        ]);
 
-          // Reset form after successful submission
-          setFormData({
-            idProofType: "",
-            useCase: "",
-            addressState: "",
-            status: "",
-          });
-          setLoading(false);
-          setFile(null); // Reset file input
-          setSnackbarMessage("Data updated successfully!");
-          setSnackbarSeverity("success");
-          setSnackbarOpen(true);
-        } catch (error) {
-          console.error("Error uploading file:", error);
-          setSnackbarMessage("Something went wrong!");
-          setSnackbarSeverity("error");
-          setSnackbarOpen(true);
-        }
-      };
+        const finalData = {
+          ...formData,
+          idProofFile: idProofBase64,
+          idProofFileName: formData.idProofFile?.name,
+          idProofMimeType: formData.idProofFile?.type,
+          incomeCertificateFile: incomeCertificateBase64,
+          incomeCertificateFileName: formData.incomeCertificateFile?.name,
+          incomeCertificateMimeType: formData.incomeCertificateFile?.type,
+          type: "userdetails",
+          ngoId: user,
+        };
+
+        const response = await fetch(
+          //test "https://script.google.com/macros/s/AKfycbxX4RHRWdYMxaW2uYB5rTgoGh3GDV3e8AudBWXj4027IzCwlsAC3QmqgJY-s7u9Je9V/exec",
+          "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            mode: "no-cors",
+            body: JSON.stringify(finalData),
+          }
+        );
+
+
+        setFormData({
+          idProofType: "",
+          useCase: "",
+          addressState: "",
+          status: "",
+          qualification:"",
+          occupation:"",
+          familyAnnualIncome:"",
+          idProofFile: null,
+          incomeCertificateFile: null,
+        });
+        setLoading(false);
+        setSnackbarMessage("Data updated successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error("Error uploading files:", error);
+        setSnackbarMessage("Something went wrong!");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      }
     } else {
-      // If validation fails, show error message
-      setSnackbarMessage("Please correct the number and ID fields.");
+      setSnackbarMessage("Please correct the fields.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
   };
+
 
   return (
     <Container maxWidth="sm" sx={{ mb: 2, pb: 2 }}>
@@ -227,13 +287,15 @@ const FormComponent = () => {
           if (field.name === "idProofType") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <InputLabel>{field.label}</InputLabel>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
                   value={formData[field.name] || ""}
                   onChange={handleChange}
-                  label={field.label}
+                  // label={field.label}
                   sx={{ textAlign: "left" }}
+                  required
                 >
                   {idProofOptions.map((option, index) => (
                     <MenuItem key={index} value={option}>
@@ -241,12 +303,30 @@ const FormComponent = () => {
                     </MenuItem>
                   ))}
                 </Select>
+                {formData[field.name] && (
+                  <FormControl fullWidth margin="normal">
+                    <Button variant="outlined" component="label">
+                      Upload ID Proof Image
+                      <input type="file" hidden
+                        onChange={(e) => handleFileChange(e, "idProofFile")}
+                      //  onChange={handleFileChange}
+                      />
+                    </Button>
+                    {formData.idProofFile ? (
+                      <Typography sx={{ mt: 1 }}>Selected file: {formData.idProofFile.name}</Typography>
+                    ) : (
+                      errors.idProofFile && <Typography color="error">{errors.idProofFile}</Typography>
+                    )}
+
+                  </FormControl>
+                )}
               </FormControl>
             );
           } else if (field.name === "useCase") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <InputLabel>{field.label}</InputLabel>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
                   value={formData[field.name] || ""}
@@ -265,7 +345,8 @@ const FormComponent = () => {
           } else if (field.name === "status") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <InputLabel>{field.label}</InputLabel>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
                   value={formData[field.name] || ""}
@@ -283,28 +364,31 @@ const FormComponent = () => {
             );
           } else if (field.name === "dateOfBirth") {
             return (
-              <TextField
-                fullWidth
-                key={field.name}
-                label={field.label}
-                name={field.name}
-                type="date"
-                InputLabelProps={{ shrink: true }}
-                value={formData[field.name] || ""}
-                onChange={handleChange}
-                variant="outlined"
-                margin="normal"
-              />
+              <>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <TextField
+                  fullWidth
+                  key={field.name}
+                  // label={field.label}
+                  name={field.name}
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  variant="outlined"
+                  margin="normal"
+                />
+              </>
             );
           } else if (field.name === "addressState") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <InputLabel>{field.label}</InputLabel>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
                   value={formData[field.name] || ""}
                   onChange={handleChange}
-                  label={field.label}
                   sx={{ textAlign: "left" }}
                 >
                   {statesOptions.map((option, index) => (
@@ -315,30 +399,104 @@ const FormComponent = () => {
                 </Select>
               </FormControl>
             );
-          } else {
+          } 
+          else if (field.name === "qualification") {
             return (
-              <TextField
-                fullWidth
-                key={field.name}
-                label={field.label}
-                name={field.name}
-                value={formData[field.name] || ""}
-                onChange={handleChange}
-                variant="outlined"
-                margin="normal"
-              />
+              <FormControl fullWidth margin="normal" key={field.name}>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
+                <Select
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  label={field.label}
+                  sx={{ textAlign: "left" }}
+                >
+                  {qualification.map((option, index) => (
+                    <MenuItem key={index} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          } 
+          else if (field.name === "occupation") {
+            return (
+              <FormControl fullWidth margin="normal" key={field.name}>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
+                <Select
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  label={field.label}
+                  sx={{ textAlign: "left" }}
+                >
+                  {occupation.map((option, index) => (
+                    <MenuItem key={index} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          } 
+          else if (field.name === "familyAnnualIncome") {
+            return (
+              <FormControl fullWidth margin="normal" key={field.name}>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
+                <Select
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  label={field.label}
+                  sx={{ textAlign: "left" }}
+                >
+                  {familyAnnualIncome.map((option, index) => (
+                    <MenuItem key={index} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          } 
+           else {
+            return (
+              <>
+                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <TextField
+                  fullWidth
+                  required
+                  key={field.name}
+                  // label={field.label}
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  variant="outlined"
+                  margin="normal"
+                  error={!!errors[field.name]} // MUI will show a red border if error is true
+                  helperText={errors[field.name]}
+                />
+              </>
             );
           }
         })}
-          <FormControl fullWidth margin="normal">
+        <FormControl fullWidth margin="normal">
+            <Typography variant="subtitle1">Income Certificate</Typography>
            <Button variant="outlined" component="label">
-              Upload ID Proof Image
-              <input type="file" hidden onChange={handleFileChange} />
+             Upload Income Certificate
+              <input type="file" hidden 
+                onChange={(e) => handleFileChange(e, "incomeCertificateFile")}
+              // onChange={handleFileChange}
+               />
            </Button>
-           {file ? (
-            <Typography sx={{ mt: 1 }}>Selected file: {file.name}</Typography>
+            {formData.incomeCertificateFile ? (
+            <Typography sx={{ mt: 1 }}>Selected file: {formData.incomeCertificateFile.name}</Typography>
           ) : (
-            errors.file && <Typography color="error">{errors.file}</Typography>
+            errors.incomeCertificateFile && <Typography color="error">{errors.incomeCertificateFile}</Typography>
           )}
 
         </FormControl>
@@ -349,13 +507,18 @@ const FormComponent = () => {
           color="primary"
           sx={{ mt: 2 }}
           type="submit"
+        // disabled={loading}
         >
-           {loading ? (
-            <CircularProgress size={24} color="white" sx={{ color: "white" }} />
+          {loading ? (
+            <CircularProgress size={24}
+              // color="white"
+              color="inherit"
+            //  sx={{ color: "white" }} 
+            />
           ) : (
             "Submit"
           )}
-          
+
         </Button>
       </form>
 
