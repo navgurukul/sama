@@ -33,17 +33,6 @@ function Userdata() {
   };
   return (
     <div>
-      <Box>
-        <Button
-        sx={{  top: 16, left: 16 }}
-          onClick={handleBack}
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
-          color="primary"
-        >
-          Go to Dashboard
-        </Button>
-      </Box>
       <Container maxWidth="sm"  sx={{ my: 5 }}>
         <Typography variant="h6" gutterBottom>
          Add Beneficiaries
@@ -73,6 +62,16 @@ function Userdata() {
         {selectedName === "Single" && <FormComponent user={user}/>}
           
         </Box>
+        <Box  sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+        <Button
+          onClick={handleBack}
+          variant="outlined"
+          // startIcon={<ArrowBackIcon />}
+          color="primary"
+        >
+          Return to Dashboard
+        </Button>
+      </Box>
       </Container>
     </div>
   );
