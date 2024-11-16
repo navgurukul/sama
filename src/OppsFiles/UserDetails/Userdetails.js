@@ -193,6 +193,8 @@ const FormComponent = ({ user }) => {
   };
   
 
+  console.log(errors);
+  
   const handleChange = (event) => {
     
     setFormData({
@@ -468,6 +470,7 @@ const FormComponent = ({ user }) => {
                 <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
                 <TextField
                   fullWidth
+                  required
                   key={field.name}
                   // label={field.label}
                   name={field.name}
@@ -475,6 +478,8 @@ const FormComponent = ({ user }) => {
                   onChange={handleChange}
                   variant="outlined"
                   margin="normal"
+                  error={!!errors[field.name]} // MUI will show a red border if error is true
+                  helperText={errors[field.name]}
                 />
               </>
             );
