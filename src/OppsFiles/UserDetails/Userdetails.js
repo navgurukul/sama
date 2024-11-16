@@ -389,7 +389,6 @@ const FormComponent = ({ user }) => {
                   name={field.name}
                   value={formData[field.name] || ""}
                   onChange={handleChange}
-                  // label={field.label}
                   sx={{ textAlign: "left" }}
                 >
                   {statesOptions.map((option, index) => (
