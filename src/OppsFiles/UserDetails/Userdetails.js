@@ -527,8 +527,8 @@ const FormComponent = ({ user }) => {
                 <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
                 <TextField
                   fullWidth
-                  key={field.name}
                   required
+                  key={field.name}
                   // label={field.label}
                   name={field.name}
                   value={formData[field.name] || ""}
