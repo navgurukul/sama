@@ -192,6 +192,8 @@ const FormComponent = ({ user }) => {
     return Object.values(tempErrors).every((x) => x === "");
   };
 
+  console.log(errors);
+  
   const handleChange = (event) => {
     setFormData({
       ...formData,
@@ -526,12 +528,15 @@ const FormComponent = ({ user }) => {
                 <TextField
                   fullWidth
                   key={field.name}
+                  required
                   // label={field.label}
                   name={field.name}
                   value={formData[field.name] || ""}
                   onChange={handleChange}
                   variant="outlined"
                   margin="normal"
+                  error={!!errors[field.name]} // MUI will show a red border if error is true
+                  helperText={errors[field.name]}
                 />
               </>
             );
