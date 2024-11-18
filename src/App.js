@@ -39,17 +39,16 @@ import DocumentReupload from './Pages/DocumentReupload/DocumentReupload';
 function App() {
   return (
     <ThemeProvider theme={theme}>
-
-      <Router>
+     <Router>
         <div className="layout">
           <Navbar />
           <div className="content">
             {" "}
             <Routes>
               <Route path="/" element={<Home />} />
-              {/* <Route path="/about" element={<About />} />
+              <Route path="/about" element={<About />} />
               <Route path="/our-approach" element={<OurApproach />} />
-              <Route path="/donate" element={<Donate />} /> */}
+              <Route path="/donate" element={<Donate />} /> 
               <Route path="/ngoregistration/:donorId" element={ <NgoForm />} />
               <Route path='/ngoregistration' element={<NgoForm />} />  {/* // this is for all the ngo's */}
               <Route path="/login" element={<Opslogin />} /> {/* // need to rename this component */}
