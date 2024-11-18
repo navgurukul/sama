@@ -35,6 +35,7 @@ import DocumentUpload from './components/DocumentUpload/DocumentUpload';
 import AttentionNeeded from './components/AttentionNeeded/AttentionNeeded';
 import DocumentReupload from './Pages/DocumentReupload/DocumentReupload';
 // import Ngodashboard from "./components/NgoDashboard/ngodashboard";
+import MonthlyReportForm from './Dashboard/Report/index';
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
               <Route path='/ngoregistration' element={<NgoForm />} />  {/* // this is for all the ngo's */}
               <Route path="/login" element={<Opslogin />} /> {/* // need to rename this component */}
               <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
+              <Route path='/monthlyreport' element={<MonthlyReportForm/>} />
               <Route path="/question-selection" element={    
                 <PrivateRoute reqired={'ops'}>
                 <CompanySelection />
