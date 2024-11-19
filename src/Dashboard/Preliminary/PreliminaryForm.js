@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Select,
@@ -13,7 +13,9 @@ import {
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 
-const PreliminaryForm = () => {
+const PreliminaryForm = ({userId}) => {
+
+  console.log(userId);
   const [formData, setFormData] = useState({
     numberOfSchools: "",
     numberOfTeachers: "",
@@ -23,8 +25,10 @@ const PreliminaryForm = () => {
     numberOfCourses: "",
     courses: [{ duration: "", unit: "Hours" }], // Default: one course
     type: "preliminary",
-    ngoId:"SAM-1"
+    ngoId:userId
   })
+
+ 
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -63,26 +67,10 @@ const PreliminaryForm = () => {
     });
   };
 
-  // Add a new course manually
-  // const addCourse = () => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     courses: [...prev.courses, { duration: "", unit: "Hours" }],
-  //   }));
-  // };
 
-  // // Remove a course manually
-  // const removeCourse = (index) => {
-  //   setFormData((prev) => {
-  //     const updatedCourses = prev.courses.filter((_, i) => i !== index);
-  //     return { ...prev, courses: updatedCourses };
-  //   });
-  // };
-
-  // Submit form
   const handleSubmit = async () => {
     const transformedCourses = formData.courses.map(
-      (course, index) => `course${index + 1}: ${course.duration} ${course.unit.toLowerCase()}`
+      (course, index) => ` ${course.duration} ${course.unit.toLowerCase()}`
     );
   
     // Prepare the final payload

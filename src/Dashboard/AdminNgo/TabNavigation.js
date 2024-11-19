@@ -1,56 +1,92 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchNgoDetails } from '../Redux/ngoSlice';
 import NGODetails from './NgoDetails';
-import { Container } from '@mui/system';
 import BeneficiaryData from '../BeneficiaryData';
 import DataUpload from './DataUpload';
 import Preliminary from '../Preliminary';
-
+import { Container } from '@mui/system';
 
 const TabNavigation = () => {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = React.useState(0);
   const { id } = useParams();
-  const [ngo, setNgo] = useState(null);
+  const dispatch = useDispatch();
 
+  // Access Redux state
+  const { ngoDetails, status, error } = useSelector((state) => state.ngo);
+
+  // Dispatch the action to fetch data
   useEffect(() => {
-    async function fetchNgoDetails() {
-      try {
-        const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration&orgName=${id}`
-        );
-        setNgo(response.data.data);
-      } catch (error) {
-        console.error('Error fetching NGO details:', error);
-      }
+    if (id) {
+      dispatch(fetchNgoDetails(id));
     }
-    fetchNgoDetails();
-  }, [id]);
+  }, [id, dispatch]);
 
+  // Handle tab change
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  console.log(ngo);
+
+  
+  // Render tabs dynamically
+  const renderTabs = () => {
+    const tabs = [
+      <Tab key="ngo-details" label="NGO Details" />,
+      <Tab key="uploaded-documents" label="Uploaded Documents" />,
+    ];
+
+    if (ngoDetails && ngoDetails[0]?.['Ngo Type'] === 'beneficiary') {
+      tabs.push(<Tab key="beneficiary-data" label="Beneficiary Data" />);
+    } else {
+      tabs.push(
+        <Tab key="pre-distribution" label="Pre-Distribution Metrics" />,
+        <Tab key="monthly-metrics" label="Monthly Metrics" />
+      );
+    }
+
+    return tabs;
+  };
+
+  // Render tab content dynamically
+  const renderTabContent = () => {
+    if (status === 'loading') {
+      return <Box>Loading NGO details...</Box>;
+    }
+
+    if (status === 'failed') {
+      return <Box>Error: {error}</Box>;
+    }
+
+    if (status === 'succeeded' && ngoDetails) {
+      switch (value) {
+        case 0:
+          return <NGODetails ngo={ngoDetails} />;
+        case 1:
+          return <DataUpload />;
+        case 2:
+          return ngoDetails[0]?.['Ngo Type'] === 'beneficiary' ? (
+            <BeneficiaryData />
+          ) : (
+            <Preliminary />
+          );
+        case 3:
+          return <div>Monthly Metrics Section</div>;
+        default:
+          return null;
+      }
+    }
+
+    return null;
+  };
 
   return (
     <Container maxWidth="xl">
       <Tabs value={value} onChange={handleChange} centered sx={{ my: 4 }}>
-        <Tab label="NGO Details" />
-        <Tab label="Uploaded Documents" />
-        <Tab label="Beneficiary Data" />
-        <Tab label="Pre-Distribution Metrics" />
-        <Tab label="Monthly Metrics" />
-        {/* <Tab label="Manage Statuses" /> */}
+        {renderTabs()}
       </Tabs>
-
-      {value === 0 && ngo && <NGODetails ngo={ngo} />}
-      {value === 1 && <DataUpload/>}
-      {value === 2 && <BeneficiaryData />}
-      {/* {value === 3 && <div>Manage Statuses Section</div>} */}
-      {value === 3 && <Preliminary />}
-      {value === 4 && <div>Manage Statuses Section</div>}
-
+      <Box sx={{ mt: 2 }}>{renderTabContent()}</Box>
     </Container>
   );
 };

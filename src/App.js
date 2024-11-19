@@ -65,6 +65,7 @@ function App() {
 
                 <Route path="/preliminary-distribution" element={<PreliminaryForm />} />
                 <Route path="/preliminary" element={<Preliminary />} />
+                <Route path="/monthly-reporting" element={<MonthlyReportingForm />} />
 
 
               {/* <Route path='/allngo' element={<AdminNgo/>} /> */}
@@ -141,7 +142,7 @@ function App() {
                 }
               /> */}
               <Route path="/edit-user/:id" element={<EditUserPage />} />
-              <Route path="/monthly-reporting" element={<MonthlyReportingForm />} />
+              
               
               <Route
                 path="/ops"
