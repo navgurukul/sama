@@ -35,6 +35,9 @@ import DocumentUpload from './components/DocumentUpload/DocumentUpload';
 import AttentionNeeded from './components/AttentionNeeded/AttentionNeeded';
 import DocumentReupload from './Pages/DocumentReupload/DocumentReupload';
 // import Ngodashboard from "./components/NgoDashboard/ngodashboard";
+import PreliminaryForm from './Dashboard/Preliminary/PreliminaryForm';
+import Preliminary from './Dashboard/Preliminary';
+import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
 
 function App() {
   return (
@@ -59,6 +62,9 @@ function App() {
                 <CompanySelection />
                 </PrivateRoute> 
                 } />  {/* // this is to select the doner for the ngo Questions, need to rename the route */}
+
+                <Route path="/preliminary-distribution" element={<PreliminaryForm />} />
+                <Route path="/preliminary" element={<Preliminary />} />
 
 
               {/* <Route path='/allngo' element={<AdminNgo/>} /> */}
@@ -135,6 +141,7 @@ function App() {
                 }
               /> */}
               <Route path="/edit-user/:id" element={<EditUserPage />} />
+              <Route path="/monthly-reporting" element={<MonthlyReportingForm />} />
               
               <Route
                 path="/ops"

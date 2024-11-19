@@ -6,6 +6,7 @@ import NGODetails from './NgoDetails';
 import { Container } from '@mui/system';
 import BeneficiaryData from '../BeneficiaryData';
 import DataUpload from './DataUpload';
+import Preliminary from '../Preliminary';
 
 
 const TabNavigation = () => {
@@ -38,6 +39,8 @@ const TabNavigation = () => {
         <Tab label="NGO Details" />
         <Tab label="Uploaded Documents" />
         <Tab label="Beneficiary Data" />
+        <Tab label="Pre-Distribution Metrics" />
+        <Tab label="Monthly Metrics" />
         {/* <Tab label="Manage Statuses" /> */}
       </Tabs>
 
@@ -45,6 +48,9 @@ const TabNavigation = () => {
       {value === 1 && <DataUpload/>}
       {value === 2 && <BeneficiaryData />}
       {/* {value === 3 && <div>Manage Statuses Section</div>} */}
+      {value === 3 && <Preliminary />}
+      {value === 4 && <div>Manage Statuses Section</div>}
+
     </Container>
   );
 };
