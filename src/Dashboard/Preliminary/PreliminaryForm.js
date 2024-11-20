@@ -9,6 +9,7 @@ import {
   IconButton,
   FormControl,
   InputLabel,
+  Grid,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
@@ -21,10 +22,11 @@ const PreliminaryForm = () => {
     numberOfFemaleStudents: "",
     states: [],
     numberOfCourses: "",
-    courses: [{ duration: "", unit: "Hours" }], // Default: one course
+    courses: [], // Default: one course
     type: "preliminary",
-    ngoId:"SAM-1"
+    ngoId: "SAM-1"
   })
+  const [messageShown, setMessageShown] = useState(false); // State to track if the message has been shown
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -52,6 +54,9 @@ const PreliminaryForm = () => {
       );
       return { ...prev, numberOfCourses: numCourses, courses: updatedCourses };
     });
+    if (!messageShown && numCourses > 0) {
+      setMessageShown(true);
+    }
   };
 
   // Handle changes to individual course fields
@@ -84,13 +89,13 @@ const PreliminaryForm = () => {
     const transformedCourses = formData.courses.map(
       (course, index) => `course${index + 1}: ${course.duration} ${course.unit.toLowerCase()}`
     );
-  
+
     // Prepare the final payload
     const payload = {
       ...formData,
       courses: transformedCourses, // Replace the courses array with the transformed format
     };
-  
+
     console.log(formData);
     try {
       const response = await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
@@ -112,116 +117,139 @@ const PreliminaryForm = () => {
       alert("An error occurred.");
     }
   };
-
   return (
-    <Box sx={{ maxWidth: 600, margin: "auto", padding: 2 }}>
-      <Typography variant="h5" gutterBottom>
+    <Box sx={{ maxWidth: 592, margin: "auto", padding: 2 }}>
+      <Typography variant="h6" gutterBottom sx={{ color: "#4A4A4A" }}>
         Preliminary Distribution Data
       </Typography>
-      <Typography variant="body2" gutterBottom>
+      <Typography variant="body1" mb={3} gutterBottom sx={{ color: "#4A4A4A" }}>
         Short Description for Preliminary Distribution data
       </Typography>
-      <Box sx={{ display: "grid", gap: 2 }}>
-        <TextField
-          label="Number of Schools"
-          name="numberOfSchools"
-          type="number"
-          value={formData.numberOfSchools}
-          onChange={handleChange}
-          fullWidth
-        />
-        <TextField
-          label="Number of Teachers"
-          name="numberOfTeachers"
-          type="number"
-          value={formData.numberOfTeachers}
-          onChange={handleChange}
-          fullWidth
-        />
-        <TextField
-          label="Number of Students"
-          name="numberOfStudents"
-          type="number"
-          value={formData.numberOfStudents}
-          onChange={handleChange}
-          fullWidth
-        />
-        <TextField
-          label="Number of Female Students"
-          name="numberOfFemaleStudents"
-          type="number"
-          value={formData.numberOfFemaleStudents}
-          onChange={handleChange}
-          fullWidth
-        />
-        <FormControl fullWidth>
-          <InputLabel id="states-label">Name of States</InputLabel>
-          <Select
-            labelId="states-label"
-            name="states"
-            multiple
-            value={formData.states}
-            onChange={handleStatesChange}
-          >
-            {["Karnataka", "Uttar Pradesh", "Gujarat", "Maharashtra"].map(
-              (state) => (
-                <MenuItem key={state} value={state}>
-                  {state}
-                </MenuItem>
-              )
-            )}
-          </Select>
-        </FormControl>
-        <TextField
-          label="Number of Courses"
-          type="number"
-          name="numberOfCourses"
-          value={formData.numberOfCourses}
-          onChange={handleCourseNumberChange}
-          fullWidth
-        />
-
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          <Typography mb={1}>Number of Schools</Typography>
+          <TextField
+            name="numberOfSchools"
+            type="number"
+            value={formData.numberOfSchools}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <Typography mb={1}>Number of Teachers</Typography>
+          <TextField
+            // label="Number of Teachers"
+            name="numberOfTeachers"
+            type="number"
+            value={formData.numberOfTeachers}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <Typography mb={1}>Number of Students</Typography>
+          <TextField
+            // label="Number of Students"
+            name="numberOfStudents"
+            type="number"
+            value={formData.numberOfStudents}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <Typography mb={1}>Number of Female Students</Typography>
+          <TextField
+            // label="Number of Female Students"
+            name="numberOfFemaleStudents"
+            type="number"
+            value={formData.numberOfFemaleStudents}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <FormControl fullWidth>
+            <Typography mb={1}>Name of States</Typography>
+            <Select
+              labelId="states-label"
+              name="states"
+              multiple
+              value={formData.states}
+              onChange={handleStatesChange}
+            >
+              {["Karnataka", "Uttar Pradesh", "Gujarat", "Maharashtra"].map(
+                (state) => (
+                  <MenuItem key={state} value={state}>
+                    {state}
+                  </MenuItem>
+                )
+              )}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography mb={1}>Total Number of Courses</Typography>
+          <TextField
+            // label="Number of Courses"
+            type="number"
+            name="numberOfCourses"
+            value={formData.numberOfCourses}
+            onChange={handleCourseNumberChange}
+            fullWidth
+          />
+        </Grid>
+        {messageShown && (
+        <Typography
+          sx={{ mt:3,pl:2, fontWeight: "bold" }}
+        >
+          Duration of Course
+        </Typography>
+      )}
         {formData.courses.map((course, index) => (
-          <Box
-            key={index}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              marginBottom: 2,
-            }}
-          >
-            <TextField
-              label={`Duration of Course ${index + 1}`}
-              type="number"
-              value={course.duration}
-              onChange={(e) =>
-                handleCourseChange(index, "duration", e.target.value)
-              }
-              fullWidth
-            />
-            <FormControl>
-              <InputLabel>Unit</InputLabel>
-              <Select
-                value={course.unit}
+          <Grid container spacing={2} key={index} sx={{ marginBottom: 2, p: 2 }}>
+            <Grid item xs={12}>
+              <Typography variant="body1" sx={{ marginBottom: 1}}>
+                Course {index + 1}
+              </Typography>
+            </Grid>
+            <Grid item xs={2}  >
+              <TextField
+                placeholder={index + 1}
+                type="number"
+                value={course.duration}
                 onChange={(e) =>
-                  handleCourseChange(index, "unit", e.target.value)
+                  handleCourseChange(index, "duration", e.target.value)
                 }
-              >
-                <MenuItem value="Hours">Hours</MenuItem>
-                <MenuItem value="Months">Months</MenuItem>
-                <MenuItem value="Week">Week</MenuItem>
-              </Select>
-            </FormControl>
-           
-          </Box>
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <FormControl>
+                <Select
+                  value={course.unit}
+                  onChange={(e) =>
+                    handleCourseChange(index, "unit", e.target.value)
+                  }
+                >
+                  <MenuItem value="Hours">Hours</MenuItem>
+                  <MenuItem value="Months">Months</MenuItem>
+                  <MenuItem value="Week">Week</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
         ))}
-       
+      </Grid>
+
+      <Box textAlign="center" sx={{ margin: "auto", mt: 5 }}>
         <Button
           variant="contained"
           color="primary"
           onClick={handleSubmit}
           fullWidth
+          sx={{ width: "126px" }}
         >
           Submit
         </Button>

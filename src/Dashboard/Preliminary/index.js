@@ -49,7 +49,17 @@ const Preliminary = () => {
   return (
     <Container maxWidth="lg" mt="10" >
       {/* Main Content */}
-      <Box sx={{ mt: 5 , backgroundColor: '#f5f7f4', borderRadius: 2,p: 4}}>
+      <Box sx={{ mt: 5, textAlign: 'center', background:"#f8f3f0",borderRadius: 2,p:4}}>
+        <img
+          src={require('../assets/Waiting 2 1.svg').default}
+          alt="Illustration"
+          style={{ width: 120, marginBottom:14}}
+        />
+        <Typography variant="body1" color="textSecondary">
+          Thanks for submitting the data. Allocation and distribution of laptops will start shortly.
+        </Typography>
+      </Box>
+      <Box sx={{ mt: 5 , backgroundColor: '#f0f4ef', borderRadius: 2,p: 4, mb:5}}>
         <Typography variant="h6" color="primary" sx={{ mb: 3}}>
           Pre-Distribution Metrics
         </Typography>
@@ -62,39 +72,39 @@ const Preliminary = () => {
                   <Typography variant="h6">{metric.ngoId}</Typography>
                 </Grid> */}
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle1" sx={{color:"gray"}}>Number of Schools</Typography>
-                  <Typography variant="body1" mb={2} >{metric["Number of school"]}</Typography>
+                  <Typography variant="subtitle1" sx={{color:"#828282"}}>Number of Schools</Typography>
+                  <Typography variant="body1" mb={2} color="textSecondary">{metric["Number of school"]}</Typography>
                 
                 
-                  <Typography variant="subtitle1" sx={{color:"gray"}}>Number of Teachers</Typography>
-                  <Typography variant="body1" mb={2}>{metric["Number of teacher"]}</Typography>
+                  <Typography variant="subtitle1" sx={{color:"#828282"}}>Number of Teachers</Typography>
+                  <Typography variant="body1" mb={2} color="textSecondary">{metric["Number of teacher"]}</Typography>
                 
                 
-                  <Typography variant="subtitle1" sx={{color:"gray"}}>Number of Students</Typography>
-                  <Typography variant="body1" mb={2}>{metric["Number of student"]}</Typography>
+                  <Typography variant="subtitle1" sx={{color:"#828282"}}>Number of Students</Typography>
+                  <Typography variant="body1" mb={2} color="textSecondary">{metric["Number of student"]}</Typography>
                 </Grid>
 
 
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle1" sx={{color:"gray"}}>Number of Female Students</Typography>
-                  <Typography variant="body1" mb={2}>{metric["Number of Female student"]}</Typography>
+                  <Typography variant="subtitle1" sx={{color:"#828282"}}>Number of Female Students</Typography>
+                  <Typography variant="body1" mb={2} color="textSecondary">{metric["Number of Female student"]}</Typography>
                
                  
                 
-                  <Typography variant="subtitle1" sx={{color:"gray"}}>Number of States</Typography>
-                  <Typography variant="body1" mb={2}>{metric.States.length}</Typography>
+                  <Typography variant="subtitle1" sx={{color:"#828282"}}>Number of States</Typography>
+                  <Typography variant="body1" mb={2} color="textSecondary">{metric.States.length}</Typography>
 
-                  <Typography variant="subtitle1" sx={{color:"gray"}}>Name of States</Typography>
-                  <Typography variant="body1" mb={2}>{metric.States.join(', ')}</Typography>
+                  <Typography variant="subtitle1" sx={{color:"#828282"}}>Name of States</Typography>
+                  <Typography variant="body1" mb={2} color="textSecondary">{metric.States.join(', ')}</Typography>
 
 
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle1" sx={{color:"gray"}}>Number of Courses</Typography>
-                  <Typography variant="body1" mb={2}>{metric.Courses.length}</Typography>
+                  <Typography variant="subtitle1" sx={{color:"#828282"}}>Number of Courses</Typography>
+                  <Typography variant="body1" mb={2} color="textSecondary">{metric.Courses.length}</Typography>
 
-                  <Typography variant="subtitle1" sx={{color:"gray"}}>Duration of Each Course</Typography>
-                  <Typography variant="body1" mb={2}>
+                  <Typography variant="subtitle1" sx={{color:"#828282"}}>Duration of Each Course</Typography>
+                  <Typography variant="body1" mb={2} color="textSecondary">
                     {metric.Courses.map((course, idx) => (
                       <div key={idx}>{course.name}: {course.duration}</div>
                     ))}
@@ -102,24 +112,12 @@ const Preliminary = () => {
                 </Grid>
                 
                 <Grid item xs={12} sm={6} md={4}>
-                  
+
                 </Grid>
               </React.Fragment>
             ))}
           </Grid>
        
-      </Box>
-
-      
-      <Box sx={{ mt: 4, textAlign: 'center' }}>
-        <img
-          src={require('../assets/Waiting 2 1.svg').default}
-          alt="Illustration"
-          style={{ width: 100, marginBottom: 16 }}
-        />
-        <Typography variant="body1" color="textSecondary">
-          Thanks for submitting the data. Allocation and distribution of laptops will start shortly.
-        </Typography>
       </Box>
     </Container>
   );
