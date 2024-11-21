@@ -21,6 +21,7 @@ const Preliminary = () => {
       } catch (err) {
         console.error(err);
         setError(true);
+
         setLoading(false);
       }
     };
@@ -114,6 +115,7 @@ const Preliminary = () => {
                 <Grid item xs={12} sm={6} md={4}>
 
                 </Grid>
+                
               </React.Fragment>
             ))}
           </Grid>
