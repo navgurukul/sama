@@ -91,8 +91,8 @@ function App() {
               {/* <Route path="/beneficiarydata" element={<BeneficiaryData />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
               {/* <Route path="/documentupload" element={<DocumentUpload />} /> */}
-              <Route path="/documentreupload" element={<DocumentReupload />} />
-              <Route path="/attentionneeded" element={<AttentionNeeded />} />
+              {/* <Route path="/documentreupload" element={<DocumentReupload />} /> */}
+              {/* <Route path="/attentionneeded" element={<AttentionNeeded />} /> */}
                 <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
               <Route path="/laptopinventory" 
               element={
