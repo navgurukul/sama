@@ -35,6 +35,9 @@ import DocumentUpload from './components/DocumentUpload/DocumentUpload';
 import AttentionNeeded from './components/AttentionNeeded/AttentionNeeded';
 import DocumentReupload from './Pages/DocumentReupload/DocumentReupload';
 // import Ngodashboard from "./components/NgoDashboard/ngodashboard";
+import PreliminaryForm from './Dashboard/Preliminary/PreliminaryForm';
+import Preliminary from './Dashboard/Preliminary';
+import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
 
 function App() {
   return (
@@ -48,7 +51,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/our-approach" element={<OurApproach />} />
-              <Route path="/donate" element={<Donate />} /> 
+              <Route path="/donate" element={<Donate />} />
               <Route path="/ngoregistration/:donorId" element={ <NgoForm />} />
               <Route path='/ngoregistration' element={<NgoForm />} />  {/* // this is for all the ngo's */}
               <Route path="/login" element={<Opslogin />} /> {/* // need to rename this component */}
@@ -59,13 +62,22 @@ function App() {
                 </PrivateRoute> 
                 } />  {/* // this is to select the doner for the ngo Questions, need to rename the route */}
 
-
+                {/* <Route path="/preliminary-distribution" element={<PreliminaryForm />} /> */}
+              <Route path="/preliminary" element={<Preliminary />} />
+              {/* <Route path="/monthly-reporting" element={<MonthlyReportingForm />} /> */}
+              <Route 
+              path="/preliminary-distribution" 
+              element={
+                <PrivateRoute reqired={'ngo'}>
+                   <PreliminaryForm/>
+                 </PrivateRoute>
+               }
+                />                
               {/* <Route path='/allngo' element={<AdminNgo/>} /> */}
               <Route 
               path="/ngo" 
               element={
                 <PrivateRoute reqired={'admin'}>
-                   {/* <Admin /> */}
                    <AdminNgo/>
                  </PrivateRoute>
                }
@@ -117,7 +129,7 @@ function App() {
                 // </PrivateRoute>
               }
                 />
-              {/* <Route
+              <Route
                 path="/data-assignment-form"
                 element={
                   <PrivateRoute reqired={'ops'}>
@@ -132,8 +144,9 @@ function App() {
                     <DashboardPage />
                   </PrivateRoute>
                 }
-              /> */}
+              />
               <Route path="/edit-user/:id" element={<EditUserPage />} />
+              
               
               <Route
                 path="/ops"

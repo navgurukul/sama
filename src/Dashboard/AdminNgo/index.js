@@ -48,8 +48,10 @@ const AdminNgo = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [ngoIdToChange, setNgoIdToChange] = useState(null);
+  const [type, setType] = useState("1 to one");
 
   const dialogRef = useRef(null);
+  const NgoType=["1 to one", "1 to many"]
 
   useEffect(() => {
     async function fetchData() {
@@ -109,6 +111,7 @@ const AdminNgo = () => {
           body: JSON.stringify({
             id: ngoDeleteID,
             type:"deleteNgo"
+            
            
           })
 
@@ -159,6 +162,7 @@ const AdminNgo = () => {
           id: ngoIdToChange,
           status: selectedStatus,
           type: "NGO",
+          ngoType: type
         }),
       })
       
@@ -306,6 +310,7 @@ const AdminNgo = () => {
               <TableCell sx={classes.tableHeader}>Laptop Required</TableCell>
               <TableCell sx={classes.tableHeader}>Location of Operation</TableCell>
               <TableCell sx={{ ...classes.tableHeader, width: "220px" }}>Purpose</TableCell>
+              <TableCell sx={classes.tableHeader}>Type</TableCell>
               <TableCell sx={classes.tableHeader}>Status</TableCell>
               <TableCell sx={classes.tableHeader}>Delete</TableCell>
             </TableRow>
@@ -324,7 +329,32 @@ const AdminNgo = () => {
                 <TableCell sx={classes.tablecell}>{ngo.contactNumber}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.beneficiariesCount}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.location}</TableCell>
-                <TableCell sx={classes.tablecell}>{ngo.expectedOutcome}</TableCell>
+                <TableCell sx={classes.tablecell}>{ngo.expectedOutcome}</TableCell><TableCell sx={classes.tablecell}>
+                  <FormControl fullWidth >
+                    <InputLabel id="demo-simple-select-label"> type</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      label="Request Submitted"
+                      value={ngo["Ngo Type"]}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setType(e.target.value);
+                      }
+                    }
+                      MenuProps={{
+                        container: dialogRef.current
+                      }}
+                    >
+                      {NgoType.map((option) => (
+                        <MenuItem key={option} value={option} onClick={(e) => e.stopPropagation()}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </TableCell>
                 <TableCell sx={classes.tablecell}>
                   <FormControl fullWidth >
                     <InputLabel id="demo-simple-select-label">
@@ -360,6 +390,7 @@ const AdminNgo = () => {
                   </FormControl>
 
                 </TableCell >
+                
                 <TableCell sx={{ border: "none" }}>
                   <IconButton onClick={(e) => {
                     e.stopPropagation();
