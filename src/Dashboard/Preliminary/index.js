@@ -3,12 +3,18 @@ import { Box, Typography, Grid, Paper, CircularProgress,Container } from '@mui/m
 import axios from 'axios';
 import PreDestibution from './PreDestibution';
 import PreliminaryForm from './PreliminaryForm';
+import { useNavigate, useParams } from 'react-router-dom';
+
 
 
 const Preliminary = () => {
   // State for API data
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
-  const Id= NgoId[0].NgoId;
+  // const Id= NgoId[0].NgoId;
+   
+  const { id } = useParams();
+  const user = id? id : NgoId[0].NgoId;
+
   const [metrics, setMetrics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -32,12 +38,12 @@ const Preliminary = () => {
     fetchData();
   }, []);
 
-  const NgoData= metrics.filter((data) => data.NgoId === Id);
+  const NgoData= metrics.filter((data) => data.NgoId === user);
 
   // Determine if the user is found
   const isUserFound = NgoData.length > 0;
 
-
+  const preliminaryId = NgoData && NgoData[0] && NgoData[0].Id;
   
 
 
@@ -62,9 +68,16 @@ const Preliminary = () => {
   return (
     <Container maxWidth="lg" mt="10" >
       {isUserFound ? 
-      <PreDestibution />:
-      <PreliminaryForm userId={Id}/>
+      <PreDestibution userId={user} preliminaryId = {preliminaryId}/>:
+      <PreliminaryForm userId={user} preliminaryId = {preliminaryId}/>
       }
+
+{/* {isUserFound ? 
+      <PreDestibution userId={Id} preliminaryId = {preliminaryId}/>
+      : (NgoId[0]?.role[0] === "admin") ? ""
+      :
+      <PreliminaryForm userId={Id} preliminaryId = {preliminaryId}/>
+      } */}
 
       
     </Container>

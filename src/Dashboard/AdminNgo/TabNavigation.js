@@ -42,7 +42,7 @@ const TabNavigation = () => {
     } else {
       tabs.push(
         <Tab key="pre-distribution" label="Pre-Distribution Metrics" />,
-        <Tab key="monthly-metrics" label="Monthly Metrics" />
+        // <Tab key="monthly-metrics" label="Monthly Metrics" />
       );
     }
 
@@ -71,8 +71,8 @@ const TabNavigation = () => {
           ) : (
             <Preliminary />
           );
-        case 3:
-          return <div>Monthly Metrics Section</div>;
+        // case 3:
+        //   return <div>Monthly Metrics Section</div>;
         default:
           return null;
       }
