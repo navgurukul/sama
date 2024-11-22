@@ -245,7 +245,7 @@ const BeneficiaryData = () => {
             }}
             sx={{ mt: 2 ,mr: 2}}
           >
-            Add Beneficiaries()
+            Add Beneficiaries
           </Button>
         </Box>
           <Grid container spacing={2}>

@@ -43,8 +43,7 @@ const Preliminary = () => {
   // Determine if the user is found
   const isUserFound = NgoData.length > 0;
 
-  const preliminaryId = NgoData && NgoData[0] && NgoData[0].Id;
-  
+  const preliminaryId = NgoData && NgoData[0] && NgoData[0].Id;  
 
 
   if (loading) {

@@ -66,7 +66,7 @@ const TabNavigation = () => {
         case 1:
           return <DataUpload />;
         case 2:
-          return ngoDetails[0]?.['Ngo Type'] === 'beneficiary' ? (
+          return ngoDetails[0]?.['Ngo Type'] === '1 to one' ? (
             <BeneficiaryData />
           ) : (
             <Preliminary />

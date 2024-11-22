@@ -165,11 +165,14 @@ const PreliminaryForm = ({userId}) => {
         mode: "no-cors",
         body: JSON.stringify(payload),
       });
-      // if (response.ok) {
+
         alert("Form submitted successfully!");
-      // } else {
-        navigate('/preliminary');
         setFormData(initialFormData);
+
+        setTimeout(() => {
+          window.location.reload(); // Reloads the current route
+        }, 2000);
+
         setMessageShown(false);
       // }
     } catch (error) {
@@ -235,7 +238,7 @@ const PreliminaryForm = ({userId}) => {
         </Grid>
         <Grid item xs={12}>
           <FormControl fullWidth>
-            <Typography mb={1}>Name of States</Typography>
+            <Typography mb={1}>States Operating In</Typography>
             <Select
               labelId="states-label"
               name="states"
