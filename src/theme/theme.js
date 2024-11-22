@@ -76,7 +76,7 @@ theme = createTheme(theme, {
       fontSize: "18px ",
       lineHeight: "170%",
       fontStyle: "normal",
-      fontWeight: 400,
+      fontWeight: 700,
       fontFamily: "Raleway",
     },
     subtitle2: {

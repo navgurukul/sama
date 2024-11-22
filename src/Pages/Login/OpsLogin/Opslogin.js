@@ -244,22 +244,52 @@ function Opslogin() {
       // Redirect based on role
       if (user?.Role?.includes('admin')) {
         navigate('/ngo');
-      } else if (user?.Role?.includes('ngo')) {
+      } 
+      else if (user?.Role?.includes('ngo')) {
         try {
           const response = await fetch(
-            `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
+            'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
           );
           const result = await response.json();
-          console.log(result, "result");
-  
-          if (result.isDataAvailable) {
-            navigate('/beneficiarydata');
+          const finduser = result.data.find(item => item.Id === user["Ngo Id"]);
+
+          console.log(finduser, "result");
+          if (finduser) {
+            // Check the Ngo Type and log accordingly
+            if (finduser["Ngo Type"] === "beneficiary") {
+              try {
+                const response = await fetch(
+                  `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
+                );
+                const result = await response.json();
+                console.log(result, "result");
+        
+                if (result.isDataAvailable) {
+                  navigate('/beneficiarydata');
+                } else {
+                  navigate('/documentupload');
+                }
+              } catch (error) {
+                console.error('Error fetching document data:', error);
+              }
+            } else {
+              navigate('/preliminary');
+            }
           } else {
-            navigate('/documentupload');
+            console.log("User not found");
           }
+  
+          // if (result.type === "benificiary") {
+          //   console.log("a");
+            
+          // } else {
+          //   console.log("b");
+          // }
         } catch (error) {
           console.error('Error fetching document data:', error);
         }
+        // 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
+        // navigate('/preliminary');
       } else if (user?.Role?.includes('ops')) {
         navigate('/ops');
       } else {
