@@ -48,10 +48,10 @@ const AdminNgo = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [ngoIdToChange, setNgoIdToChange] = useState(null);
-  const [type, setType] = useState("beneficiary");
+  const [type, setType] = useState("1 to one");
 
   const dialogRef = useRef(null);
-  const NgoType=["beneficiary", "1 to many"]
+  const NgoType=["1 to one", "1 to many"]
 
   useEffect(() => {
     async function fetchData() {

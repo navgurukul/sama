@@ -256,7 +256,7 @@ function Opslogin() {
           console.log(finduser, "result");
           if (finduser) {
             // Check the Ngo Type and log accordingly
-            if (finduser["Ngo Type"] === "beneficiary") {
+            if (finduser["Ngo Type"] === "1 to one") {
               try {
                 const response = await fetch(
                   `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
