@@ -166,7 +166,7 @@ const PreliminaryForm = ({userId}) => {
         body: JSON.stringify(payload),
       });
 
-        alert("Form submitted successfully!");
+        alert("Form submited successfully!");
         setFormData(initialFormData);
 
         setTimeout(() => {
@@ -190,7 +190,7 @@ const PreliminaryForm = ({userId}) => {
         Preliminary Distribution Data
       </Typography>
       <Typography variant="body1" mb={3} gutterBottom sx={{ color: "#4A4A4A" }}>
-        Short Description for Preliminary Distribution data
+      Please fill in the below required details for us to proceed with the distribution process.
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={6}>
