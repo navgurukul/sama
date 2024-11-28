@@ -8,6 +8,8 @@ import BeneficiaryData from '../BeneficiaryData';
 import DataUpload from './DataUpload';
 import Preliminary from '../Preliminary';
 import { Container } from '@mui/system';
+import MonthlyForm from '../MontlyReport/MothlyForm';
+import MonthlyReport from '../MontlyReport';
 
 const TabNavigation = () => {
   const [value, setValue] = React.useState(0);
@@ -42,7 +44,7 @@ const TabNavigation = () => {
     } else {
       tabs.push(
         <Tab key="pre-distribution" label="Pre-Distribution Metrics" />,
-        // <Tab key="monthly-metrics" label="Monthly Metrics" />
+        <Tab key="monthly-metrics" label="Monthly Metrics" />
       );
     }
 
@@ -71,8 +73,8 @@ const TabNavigation = () => {
           ) : (
             <Preliminary />
           );
-        // case 3:
-        //   return <div>Monthly Metrics Section</div>;
+        case 3:
+          return <MonthlyReport/>
         default:
           return null;
       }
