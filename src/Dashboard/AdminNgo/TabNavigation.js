@@ -37,7 +37,7 @@ const TabNavigation = () => {
       <Tab key="uploaded-documents" label="Uploaded Documents" />,
     ];
 
-    if (ngoDetails && ngoDetails[0]?.['Ngo Type'] === 'beneficiary') {
+    if (ngoDetails && ngoDetails[0]?.['Ngo Type'] === '1 to one') {
       tabs.push(<Tab key="beneficiary-data" label="Beneficiary Data" />);
     } else {
       tabs.push(
