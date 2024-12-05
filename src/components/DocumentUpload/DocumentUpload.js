@@ -14,11 +14,16 @@ import {
   Description as FileIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import SubmissionSuccess from '../SubmissionSuccess/SubmissionSuccess'
 
 const DocumentUpload = () => {
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
+  const location = useLocation();
+
+  const { pendingStatuses } = location.state || {}; // Default to an empty object if state is undefined
+
+  console.log(pendingStatuses, "pendingStatuses");
   
   const userid = NgoId[0].NgoId;
   const navigate = useNavigate();
@@ -126,7 +131,7 @@ const DocumentUpload = () => {
   };
 
   return  (
-    submitted ? (
+    submitted || pendingStatuses ? (
       <SubmissionSuccess />
     ) : (
       <Container maxWidth="md" sx={{ py: 4 }}>

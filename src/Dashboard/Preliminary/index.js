@@ -70,17 +70,7 @@ const Preliminary = () => {
       <PreDestibution userId={user} preliminaryId = {preliminaryId}/>:
       <PreliminaryForm userId={user} preliminaryId = {preliminaryId}/>
       }
-
-{/* {isUserFound ? 
-      <PreDestibution userId={Id} preliminaryId = {preliminaryId}/>
-      : (NgoId[0]?.role[0] === "admin") ? ""
-      :
-      <PreliminaryForm userId={Id} preliminaryId = {preliminaryId}/>
-      } */}
-
-      
     </Container>
-
   );
 };
 

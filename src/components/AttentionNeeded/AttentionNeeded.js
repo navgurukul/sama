@@ -1,18 +1,72 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Box, Typography, Button, Paper, Stack } from '@mui/material';
 import { ReportProblem as WarningIcon } from '@mui/icons-material';
 import ErrorImagePng from '../../assets/Error1.png'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+// import { useEffect, useState } from 'react';
+// import { useLocation } from 'react-router-dom';
 
 
 const AttentionNeeded = () => {
+    const [documentsToReupload, setDocumentsToReupload] = React.useState([]);
     const navigate = useNavigate();
 
-  const documentsToReupload = [
-    "12A Registration",
-    "FCRA",
-    "Financial Report (FY 2023-24)"
-  ];
+    const location = useLocation();
+    const { failedStatuses } = location.state || {}; // Default to an empty object if state is undefined
+
+    console.log(failedStatuses, "failedStatuses");
+    
+    const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
+    const storedUserId= NgoId[0].NgoId;
+  
+
+
+
+  // Static data representing the failed documents for re-upload
+  //   below useeffect is full working
+    useEffect(() => {
+      
+      // Fetch data from the API
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=MultipleDocsGet&userId=${storedUserId}`);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const apiResponse = await response.json();
+          // setUserId(apiResponse['User-Id']);
+          // setSubfolderId(apiResponse.subfolderId);
+          // setNgoName(apiResponse['NGO Name']);
+          // Extract failed documents
+          console.log(apiResponse, "apiResponse");
+          
+          const failedDocuments = Object.keys(apiResponse)
+            .filter(
+              (key) =>
+                apiResponse[key]?.status !== "Success" &&
+                key !== "User-Id" &&
+                key !== "NGO Name" &&
+                key !== "isDataAvailable" &&
+                key !== "subfolderId"
+            )
+            .map((key) => ([key]));
+
+          console.log(failedDocuments, "failedDocuments");
+            
+          setDocumentsToReupload(failedDocuments);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+
+      fetchData();
+    }, [storedUserId]);
+
+    const documents = failedStatuses || documentsToReupload;
+    
+    console.log(documentsToReupload, "documentsToReupload");
+
+    console.log(documents, "documentsToReupload");
 
   return (
     <Box
@@ -40,7 +94,7 @@ const AttentionNeeded = () => {
       </Typography>
 
       <Stack spacing={3} sx={{ width: '100%', maxWidth: '650px', mb: 4 }}>
-        {documentsToReupload.map((doc, index) => (
+        {documents.map((doc, index) => (
           <Paper
             key={index}
             elevation={1}

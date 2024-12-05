@@ -198,6 +198,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Typography, Box, Container, Grid, FormLabel, CircularProgress } from '@mui/material';
 import login_ngo from "./assets/login_ngo.svg";
+import AttentionNeeded from "../../../components/AttentionNeeded/AttentionNeeded"
 
 function Opslogin() {
   const [email, setEmail] = useState('');
@@ -206,6 +207,8 @@ function Opslogin() {
   const [data, setData] = useState([]);
   const [documentAvailable, setDocumentAvailable] = useState(false);
   const [loder, setLoder] = useState(false);
+  const [failedStatuses, setFailedStatuses] = useState([]);
+  const [pendingStatuses, setPendingStatuses] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -245,52 +248,171 @@ function Opslogin() {
       if (user?.Role?.includes('admin')) {
         navigate('/ngo');
       } 
-      else if (user?.Role?.includes('ngo')) {
+      else 
+      if (user?.Role?.includes('ngo')) {
         try {
+          // First API call to fetch registration data
           const response = await fetch(
             'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
           );
           const result = await response.json();
           const finduser = result.data.find(item => item.Id === user["Ngo Id"]);
-
-          console.log(finduser, "result");
+      
           if (finduser) {
-            // Check the Ngo Type and log accordingly
-            if (finduser["Ngo Type"] === "1 to one") {
-              try {
-                const response = await fetch(
-                  `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
-                );
-                const result = await response.json();
-                console.log(result, "result");
-        
-                if (result.isDataAvailable) {
-                  navigate('/beneficiarydata');
-                } else {
-                  navigate('/documentupload');
-                }
-              } catch (error) {
-                console.error('Error fetching document data:', error);
+            console.log(finduser, "finduser");
+      
+            try {
+              // Second API call to check document status
+              const documentResponse = await fetch(
+                `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
+              );
+              const documentResult = await documentResponse.json();
+              console.log(documentResult, "Document API Result");
+      
+              if (!documentResult.isDataAvailable) {
+                // Navigate to document upload if data is not available
+                navigate('/documentupload');
+                return;
               }
-            } else {
-              navigate('/preliminary');
+      
+              // Check for unsuccessful statuses in submitted documents
+              // const failed = [];
+              // for (const [key, value] of Object.entries(documentResult)) {
+              //   if (value && typeof value === "object" && "status" in value) {
+              //     if (value.status !== "Success") {
+              //       failed.push(key); // Collect keys with failed statuses
+              //     }
+              //   }
+              // }
+      
+              // if (failed.length > 0) {
+              //   // If there are failed statuses, pass them to <AttentionNeeded />
+              //   console.log("The following statuses are not 'Success':", failed);
+              //   setFailedStatuses(failed); // Update state to show AttentionNeeded
+              //   // setLoder(false);
+              //   navigate('/attentionneeded', { state: { failedStatuses: failed } });
+              //   return;
+              //   // return <AttentionNeeded failedStatuses={failedStatuses} />;
+              // }
+      
+              // // If all documents are successful, check NGO type
+              // if (finduser["Ngo Type"] === "1 to one") {
+              //   // Navigate to beneficiary data for type "1 to one"
+              //   navigate('/beneficiarydata');
+              // } else {
+              //   // Navigate to preliminary for other types
+              //   navigate('/preliminary');
+              // }
+
+              // Check for unsuccessful statuses in submitted documents
+              const failed = [];
+              const pending = [];
+              for (const [key, value] of Object.entries(documentResult)) {
+                if (value && typeof value === "object" && "status" in value) {
+                  if (value.status !== "Success" && value.status !== "Pending Verification") {
+                    failed.push(key); // Collect keys with failed statuses
+                  } else if (value.status === "Pending Verification") {
+                    pending.push(key); // Collect keys with pending verification statuses
+                  }
+                }
+              }
+
+              if (failed.length > 0) {
+                // If there are failed statuses, navigate to /attentionneeded
+                console.log("The following statuses are not 'Success':", failed);
+                setFailedStatuses(failed); // Update state to show AttentionNeeded
+                navigate('/attentionneeded', { state: { failedStatuses: failed } });
+                return;
+              }
+
+              if (pending.length > 0) {
+                // If there are pending statuses, navigate to /documentupload
+                console.log("The following statuses are pending verification:", pending);
+                setPendingStatuses(pending); // Update state to handle pending statuses
+                // navigate('/documentupload', { state: { pendingStatuses: pending } });
+                navigate('/submission-success');
+                
+                return;
+              }
+
+              // If no failed or pending statuses, check if all statuses are 'Success'
+              const allSuccess = Object.values(documentResult).every(
+                (value) =>
+                  value &&
+                  typeof value === "object" &&
+                  "status" in value &&
+                  value.status === "Success"
+              );
+
+              if (allSuccess) {
+                // Check the Ngo Type and navigate accordingly
+                if (finduser["Ngo Type"] === "1 to one") {
+                  navigate('/beneficiarydata'); // Navigate to beneficiary data
+                } else {
+                  navigate('/preliminary'); // Navigate to preliminary for other types
+                }
+              } else {
+                console.log("Unexpected condition: Some statuses are neither 'Success', 'Failed', nor 'Pending Verification'.");
+              }
+
+            } catch (error) {
+              console.error('Error fetching document data:', error);
             }
           } else {
             console.log("User not found");
           }
-  
-          // if (result.type === "benificiary") {
-          //   console.log("a");
-            
-          // } else {
-          //   console.log("b");
-          // }
         } catch (error) {
-          console.error('Error fetching document data:', error);
+          console.error('Error fetching registration data:', error);
         }
-        // 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
-        // navigate('/preliminary');
-      } else if (user?.Role?.includes('ops')) {
+      }
+      
+      // if (user?.Role?.includes('ngo')) {
+      //   try {
+      //     const response = await fetch(
+      //       'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
+      //     );
+      //     const result = await response.json();
+      //     const finduser = result.data.find(item => item.Id === user["Ngo Id"]);
+
+      //     console.log(finduser, "result");
+      //     if (finduser) {
+      //       // Check the Ngo Type and log accordingly
+      //       if (finduser["Ngo Type"] === "1 to one") {
+      //         try {
+      //           const response = await fetch(
+      //             `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
+      //           );
+      //           const result = await response.json();
+      //           console.log(result, "result");
+        
+      //           if (result.isDataAvailable) {
+      //             navigate('/beneficiarydata');
+      //           } else {
+      //             navigate('/documentupload');
+      //           }
+      //         } catch (error) {
+      //           console.error('Error fetching document data:', error);
+      //         }
+      //       } else {
+      //         navigate('/preliminary');
+      //       }
+      //     } else {
+      //       console.log("User not found");
+      //     }
+  
+      //     // if (result.type === "benificiary") {
+      //     //   console.log("a");
+            
+      //     // } else {
+      //     //   console.log("b");
+      //     // }
+      //   } catch (error) {
+      //     console.error('Error fetching document data:', error);
+      //   }
+      //   // 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
+      //   // navigate('/preliminary');
+      // } 
+      else if (user?.Role?.includes('ops')) {
         navigate('/ops');
       } else {
         console.log("/");
@@ -301,6 +423,10 @@ function Opslogin() {
 
     setLoder(false);
   };
+
+  // if (failedStatuses.length > 0) {
+  //   return <AttentionNeeded failedStatuses={failedStatuses} />;
+  // }
 
   return (
     <Container maxWidth="md" sx={{ my: 10 }}>
