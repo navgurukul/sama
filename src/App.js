@@ -38,6 +38,8 @@ import DocumentReupload from './Pages/DocumentReupload/DocumentReupload';
 import PreliminaryForm from './Dashboard/Preliminary/PreliminaryForm';
 import Preliminary from './Dashboard/Preliminary';
 import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
+import MonthlyForm from './Dashboard/MontlyReport/MothlyForm';
+import MonthlyEditForm from './Dashboard/MontlyReport/MonthlyEditForm';
 
 function App() {
   return (
@@ -86,6 +88,8 @@ function App() {
                 <Route path="/ngo/:id" element={<TabNavigation />} />
               <Route path='/mouUpload' element={<MouUpload/>} />
               <Route path='/beneficiaryProfile' element={<BeneficiaryProfile/>} />
+              <Route path="/monthly-reporting/:id" element={<MonthlyForm />} />
+              <Route path="/edit-form/:id" element={<MonthlyEditForm />} />
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/beneficiarydata" element={<BeneficiaryData />} /> */}
