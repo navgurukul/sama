@@ -7,6 +7,8 @@ import NGODetails from './NgoDetails';
 import BeneficiaryData from '../BeneficiaryData';
 import DataUpload from './DataUpload';
 import Preliminary from '../Preliminary';
+import ManageStatuses from '../ManageStatuses';
+// import ManageStatuses from './ManageStatuses'; // Import the ManageStatuses component
 import { Container } from '@mui/system';
 
 const TabNavigation = () => {
@@ -29,7 +31,6 @@ const TabNavigation = () => {
     setValue(newValue);
   };
 
-  
   // Render tabs dynamically
   const renderTabs = () => {
     const tabs = [
@@ -41,10 +42,12 @@ const TabNavigation = () => {
       tabs.push(<Tab key="beneficiary-data" label="Beneficiary Data" />);
     } else {
       tabs.push(
-        <Tab key="pre-distribution" label="Pre-Distribution Metrics" />,
-        // <Tab key="monthly-metrics" label="Monthly Metrics" />
+        <Tab key="pre-distribution" label="Pre-Distribution Metrics" />
       );
     }
+
+    // Add the new tab for Manage Statuses
+    tabs.push(<Tab key="manage-statuses" label="Manage Statuses" />);
 
     return tabs;
   };
@@ -71,8 +74,8 @@ const TabNavigation = () => {
           ) : (
             <Preliminary />
           );
-        // case 3:
-        //   return <div>Monthly Metrics Section</div>;
+        case 3:
+          return <ManageStatuses />; // New tab content
         default:
           return null;
       }
@@ -82,7 +85,7 @@ const TabNavigation = () => {
   };
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="lg">
       <Tabs value={value} onChange={handleChange} centered sx={{ my: 4 }}>
         {renderTabs()}
       </Tabs>
