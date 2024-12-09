@@ -12,6 +12,8 @@ import DataUpload from './DataUpload';
 import Preliminary from '../Preliminary';
 import ManageStatuses from '../ManageStatuses'; // Ensure correct import
 import { Container } from '@mui/system';
+import MonthlyForm from '../MontlyReport/MothlyForm';
+import MonthlyReport from '../MontlyReport';
 
 const TabNavigation = () => {
   const [value, setValue] = React.useState(0);
@@ -45,7 +47,10 @@ const TabNavigation = () => {
       tabs.push(<Tab key="beneficiary-data" label="Beneficiary Data" />);
       tabs.push(<Tab key="manage-statuses" label="Manage Statuses" />);
     } else {
-      tabs.push(<Tab key="pre-distribution" label="Pre-Distribution Metrics" />);
+      tabs.push(
+        <Tab key="pre-distribution" label="Pre-Distribution Metrics" />,
+        <Tab key="monthly-metrics" label="Monthly Metrics" />
+      );
     }
 
     return tabs;
@@ -76,7 +81,7 @@ const TabNavigation = () => {
           if (ngoDetails[0]?.['Ngo Type'] === '1 to one') {
             return <ManageStatuses />;
           }
-          return null; // Fallback if accessed incorrectly
+          return <MonthlyReport/>; // Fallback if accessed incorrectly
         default:
           return null;
       }
