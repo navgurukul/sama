@@ -1,3 +1,6 @@
+
+
+
 import React, { useEffect } from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
@@ -7,6 +10,7 @@ import NGODetails from './NgoDetails';
 import BeneficiaryData from '../BeneficiaryData';
 import DataUpload from './DataUpload';
 import Preliminary from '../Preliminary';
+import ManageStatuses from '../ManageStatuses'; // Ensure correct import
 import { Container } from '@mui/system';
 import MonthlyForm from '../MontlyReport/MothlyForm';
 import MonthlyReport from '../MontlyReport';
@@ -31,7 +35,6 @@ const TabNavigation = () => {
     setValue(newValue);
   };
 
-  
   // Render tabs dynamically
   const renderTabs = () => {
     const tabs = [
@@ -39,8 +42,10 @@ const TabNavigation = () => {
       <Tab key="uploaded-documents" label="Uploaded Documents" />,
     ];
 
-    if (ngoDetails && ngoDetails[0]?.['Ngo Type'] === 'beneficiary') {
+    // Add Beneficiary Data and ManageStatuses tabs for "1 to one"
+    if (ngoDetails && ngoDetails[0]?.['Ngo Type'] === '1 to one') {
       tabs.push(<Tab key="beneficiary-data" label="Beneficiary Data" />);
+      tabs.push(<Tab key="manage-statuses" label="Manage Statuses" />);
     } else {
       tabs.push(
         <Tab key="pre-distribution" label="Pre-Distribution Metrics" />,
@@ -68,13 +73,15 @@ const TabNavigation = () => {
         case 1:
           return <DataUpload />;
         case 2:
-          return ngoDetails[0]?.['Ngo Type'] === '1 to one' ? (
-            <BeneficiaryData />
-          ) : (
-            <Preliminary />
-          );
+          if (ngoDetails[0]?.['Ngo Type'] === '1 to one') {
+            return <BeneficiaryData />;
+          }
+          return <Preliminary />;
         case 3:
-          return <MonthlyReport/>
+          if (ngoDetails[0]?.['Ngo Type'] === '1 to one') {
+            return <ManageStatuses />;
+          }
+          return <MonthlyReport/>; // Fallback if accessed incorrectly
         default:
           return null;
       }
@@ -84,7 +91,7 @@ const TabNavigation = () => {
   };
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="lg">
       <Tabs value={value} onChange={handleChange} centered sx={{ my: 4 }}>
         {renderTabs()}
       </Tabs>
@@ -94,3 +101,4 @@ const TabNavigation = () => {
 };
 
 export default TabNavigation;
+

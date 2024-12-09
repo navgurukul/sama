@@ -44,8 +44,7 @@ import MonthlyEditForm from './Dashboard/MontlyReport/MonthlyEditForm';
 function App() {
   return (
     <ThemeProvider theme={theme}>
-
-      <Router>
+     <Router>
         <div className="layout">
           <Navbar />
           <div className="content">
