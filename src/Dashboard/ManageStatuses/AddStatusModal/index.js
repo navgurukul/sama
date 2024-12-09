@@ -1,4 +1,3 @@
-// 
 
 import React, { useState, useEffect } from "react";
 import {
@@ -21,7 +20,7 @@ const AddStatusModal = ({ open, onClose, onAdd }) => {
 
   useEffect(() => {
     const urlParts = window.location.pathname.split("/");
-    const id = urlParts[urlParts.length - 1]; // Get the last part of the URL
+    const id = urlParts[urlParts.length - 1];
     setFormData((prevData) => ({ ...prevData, id }));
   }, []);
 
@@ -42,8 +41,7 @@ const AddStatusModal = ({ open, onClose, onAdd }) => {
         }
       );
 
-      alert("Status added successfully!");
-      onAdd(formData); // Pass new status to parent
+      onAdd(formData);
       setFormData({ name: "", description: "", id: formData.id });
       onClose();
     } catch (error) {

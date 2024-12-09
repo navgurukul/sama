@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -23,37 +24,44 @@ const EditStatusModal = ({ open, onClose, status, onUpdate }) => {
     }
   }, [status]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+ 
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    try {
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbwk05eP16t1cIr5tmu3OXRGnqP0ZJ_0JqdLGW-XNsQSzNa5--5eIkKIKEp7UJwFZR63_Q/exec?type=editManageStatus",
-        {
-          method: "POST",
-          mode: "no-cors",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            oldName: status.name,
-            id: status.id,
-            ...formData,
-          }),
-        }
-      );
+  try {
+    // Save the oldName for comparison
+    const updatedData = {
+      oldName: status.name,
+      id: status.id,
+      name: formData.name,
+      description: formData.description
+    };
 
-      // Pass complete updated data back to parent
-      onUpdate(formData);
-      onClose();
-    } catch (error) {
-      console.error("Error updating status:", error);
-      alert("Failed to update status. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    await fetch(
+      "https://script.google.com/macros/s/AKfycbwk05eP16t1cIr5tmu3OXRGnqP0ZJ_0JqdLGW-XNsQSzNa5--5eIkKIKEp7UJwFZR63_Q/exec?type=editManageStatus",
+      {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      }
+    );
+
+    // Pass both old and new data to parent
+    onUpdate({
+      ...formData,
+      oldName: status.name
+    });
+    onClose();
+  } catch (error) {
+    console.error("Error updating status:", error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -100,5 +108,6 @@ const EditStatusModal = ({ open, onClose, status, onUpdate }) => {
     </Dialog>
   );
 };
+
 
 export default EditStatusModal;

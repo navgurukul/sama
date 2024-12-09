@@ -1,3 +1,6 @@
+
+
+
 import React, { useEffect } from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
@@ -7,8 +10,7 @@ import NGODetails from './NgoDetails';
 import BeneficiaryData from '../BeneficiaryData';
 import DataUpload from './DataUpload';
 import Preliminary from '../Preliminary';
-import ManageStatuses from '../ManageStatuses';
-// import ManageStatuses from './ManageStatuses'; // Import the ManageStatuses component
+import ManageStatuses from '../ManageStatuses'; // Ensure correct import
 import { Container } from '@mui/system';
 
 const TabNavigation = () => {
@@ -38,16 +40,13 @@ const TabNavigation = () => {
       <Tab key="uploaded-documents" label="Uploaded Documents" />,
     ];
 
+    // Add Beneficiary Data and ManageStatuses tabs for "1 to one"
     if (ngoDetails && ngoDetails[0]?.['Ngo Type'] === '1 to one') {
       tabs.push(<Tab key="beneficiary-data" label="Beneficiary Data" />);
+      tabs.push(<Tab key="manage-statuses" label="Manage Statuses" />);
     } else {
-      tabs.push(
-        <Tab key="pre-distribution" label="Pre-Distribution Metrics" />
-      );
+      tabs.push(<Tab key="pre-distribution" label="Pre-Distribution Metrics" />);
     }
-
-    // Add the new tab for Manage Statuses
-    tabs.push(<Tab key="manage-statuses" label="Manage Statuses" />);
 
     return tabs;
   };
@@ -69,13 +68,15 @@ const TabNavigation = () => {
         case 1:
           return <DataUpload />;
         case 2:
-          return ngoDetails[0]?.['Ngo Type'] === '1 to one' ? (
-            <BeneficiaryData />
-          ) : (
-            <Preliminary />
-          );
+          if (ngoDetails[0]?.['Ngo Type'] === '1 to one') {
+            return <BeneficiaryData />;
+          }
+          return <Preliminary />;
         case 3:
-          return <ManageStatuses />; // New tab content
+          if (ngoDetails[0]?.['Ngo Type'] === '1 to one') {
+            return <ManageStatuses />;
+          }
+          return null; // Fallback if accessed incorrectly
         default:
           return null;
       }
@@ -95,3 +96,4 @@ const TabNavigation = () => {
 };
 
 export default TabNavigation;
+
