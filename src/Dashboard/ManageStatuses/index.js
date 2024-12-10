@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -35,7 +34,7 @@ const ManageStatuses = () => {
     severity: "success",
   });
 
-  const API_URL = `https://script.google.com/macros/s/AKfycbwder-oDDWFNnY6JL4DuBvuPSwOXVgchkgyHxCWwe2rgfcDrF6g5xwaIt63BYGPBakylA/exec?type=manageStatus`;
+  const API_URL = `https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=manageStatus`;
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") return;
@@ -72,8 +71,6 @@ const ManageStatuses = () => {
       severity: "success",
     });
   };
-
-
 
   const handleEditStatus = (updatedStatus) => {
     setStatuses((prevStatuses) =>
@@ -220,10 +217,10 @@ const ManageStatuses = () => {
                     {status.name}
                   </Typography> */}
                   <Typography
-                  variant="subtitle2"
+                    variant="subtitle2"
                     sx={{
                       // color: "#4CAF50",
-                     // Smaller font size to match the example
+                      // Smaller font size to match the example
                       mb: 1,
                       backgroundColor: "#CED7CE",
                       padding: "4px 8px",
@@ -238,9 +235,9 @@ const ManageStatuses = () => {
                     variant="body1"
                     sx={{
                       color: "#555",
-                   
+
                       mb: 2,
-                      mt:1
+                      mt: 1,
                     }}
                   >
                     {status.description}
