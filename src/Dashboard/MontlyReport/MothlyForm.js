@@ -3,10 +3,11 @@ import { Container, Typography, Button, TextField, Radio, RadioGroup, FormContro
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const MonthlyForm = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [fields, setFields] = useState([
     { id: 1, type: 'text', label: '' },
   ]);
@@ -24,6 +25,7 @@ const MonthlyForm = () => {
   };
 
   const handleSubmit = async () => {
+    
     // Prepare the payload
     const payload = {
       Id: id, // You can replace this with a dynamic ID if required
@@ -39,6 +41,7 @@ const MonthlyForm = () => {
         body: JSON.stringify(payload),
         mode: 'no-cors',
       });
+      navigate(`/ngo/${id}`);
 
       const data = await response.json();
       if (data.success) {

@@ -40,11 +40,11 @@ import Preliminary from './Dashboard/Preliminary';
 import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
 import MonthlyForm from './Dashboard/MontlyReport/MothlyForm';
 import SubmissionSuccess from './components/SubmissionSuccess/SubmissionSuccess';
+import MonthlyEditForm from './Dashboard/MontlyReport/MonthlyEditForm';
 function App() {
   return (
     <ThemeProvider theme={theme}>
-
-      <Router>
+     <Router>
         <div className="layout">
           <Navbar />
           <div className="content">
@@ -89,6 +89,7 @@ function App() {
               <Route path='/mouUpload' element={<MouUpload/>} />
               <Route path='/beneficiaryProfile' element={<BeneficiaryProfile/>} />
               <Route path="/monthly-reporting/:id" element={<MonthlyForm />} />
+              <Route path="/edit-form/:id" element={<MonthlyEditForm />} />
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/beneficiarydata" element={<BeneficiaryData />} /> */}
