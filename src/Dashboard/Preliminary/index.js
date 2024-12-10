@@ -46,8 +46,7 @@ const Preliminary = () => {
 
   // Determine if the user is found
   const isUserFound = NgoData.length > 0;
-
-  const preliminaryId = NgoData && NgoData[0] && NgoData[0].Id;
+  const preliminaryId = NgoData && NgoData[0] && NgoData[0].Id;  
 
   if (loading) {
     return (
@@ -82,19 +81,13 @@ const Preliminary = () => {
   }
 
   return (
+    
     <Container maxWidth="lg" mt="10">
       {isUserFound ? (
         <PreDestibution userId={user} preliminaryId={preliminaryId} />
       ) : (
         <PreliminaryForm userId={user} preliminaryId={preliminaryId} />
       )}
-
-      {/* {isUserFound ? 
-      <PreDestibution userId={Id} preliminaryId = {preliminaryId}/>
-      : (NgoId[0]?.role[0] === "admin") ? ""
-      :
-      <PreliminaryForm userId={Id} preliminaryId = {preliminaryId}/>
-      } */}
     </Container>
   );
 };

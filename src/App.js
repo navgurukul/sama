@@ -39,8 +39,8 @@ import PreliminaryForm from './Dashboard/Preliminary/PreliminaryForm';
 import Preliminary from './Dashboard/Preliminary';
 import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
 import MonthlyForm from './Dashboard/MontlyReport/MothlyForm';
+import SubmissionSuccess from './components/SubmissionSuccess/SubmissionSuccess';
 import MonthlyEditForm from './Dashboard/MontlyReport/MonthlyEditForm';
-
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -62,8 +62,9 @@ function App() {
                 <PrivateRoute reqired={'ops'}>
                 <CompanySelection />
                 </PrivateRoute> 
+                 
                 } />  {/* // this is to select the doner for the ngo Questions, need to rename the route */}
-
+              <Route path="/submission-success" element={<SubmissionSuccess />} />
                 {/* <Route path="/preliminary-distribution" element={<PreliminaryForm />} /> */}
               <Route path="/preliminary" element={<Preliminary />} />
               {/* <Route path="/monthly-reporting" element={<MonthlyReportingForm />} /> */}
@@ -94,8 +95,11 @@ function App() {
               {/* <Route path="/beneficiarydata" element={<BeneficiaryData />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
               {/* <Route path="/documentupload" element={<DocumentUpload />} /> */}
-              {/* <Route path="/documentreupload" element={<DocumentReupload />} /> */}
-              {/* <Route path="/attentionneeded" element={<AttentionNeeded />} /> */}
+
+              <Route path="/documentreupload" element={<DocumentReupload />} />
+              <Route path="/attentionneeded" element={<AttentionNeeded />} />
+
+
                 <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
               <Route path="/laptopinventory" 
               element={
