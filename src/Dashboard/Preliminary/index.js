@@ -20,6 +20,7 @@ const Preliminary = () => {
   const [error, setError] = useState(false);
 
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,7 +45,6 @@ const Preliminary = () => {
   const isUserFound = NgoData.length > 0;
 
   const preliminaryId = NgoData && NgoData[0] && NgoData[0].Id;  
-
 
   if (loading) {
     return (

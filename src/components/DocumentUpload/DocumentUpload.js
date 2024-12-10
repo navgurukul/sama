@@ -23,7 +23,6 @@ const DocumentUpload = () => {
 
   const { pendingStatuses } = location.state || {}; // Default to an empty object if state is undefined
 
-  console.log(pendingStatuses, "pendingStatuses");
   
   const userid = NgoId[0].NgoId;
   const navigate = useNavigate();
@@ -80,7 +79,6 @@ const DocumentUpload = () => {
     }));
 
     const payload = { name: formData.name, files, type: "MultipleDocsUpload" , ngoId: userid,  };
-    console.log(payload, "PAYLOAD")
 
     try {
       await fetch(
@@ -91,13 +89,14 @@ const DocumentUpload = () => {
         mode:"no-cors",
         body: JSON.stringify(payload),
       });
-
+      setUploading(false);
       alert("Documents uploaded successfully!");
+      navigate('/submission-success');
     } catch (error) {
       console.error("Error uploading documents:", error);
       alert("Failed to upload documents. Please try again.");
     } finally {
-      setUploading(false);
+      
       setSubmitted(true);
     }
   };
@@ -131,7 +130,7 @@ const DocumentUpload = () => {
   };
 
   return  (
-    submitted || pendingStatuses ? (
+    submitted ? (
       <SubmissionSuccess />
     ) : (
       <Container maxWidth="md" sx={{ py: 4 }}>
@@ -148,24 +147,7 @@ const DocumentUpload = () => {
   
           <form onSubmit={handleSubmit}>
             <Stack spacing={4}>
-              {/* <Box>
-                <Typography variant="subtitle1" gutterBottom>
-                  Name
-                </Typography>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                  style={{
-                    display: "block",
-                    marginTop: "10px",
-                    width: "100%",
-                    padding: "8px",
-                  }}
-                />
-              </Box> */}
-  
+          
               {fileLabels.map((label) => (
                 <Box key={label}>
                   <Typography variant="subtitle1" gutterBottom>

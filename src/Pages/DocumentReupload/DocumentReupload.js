@@ -50,7 +50,6 @@ const DocumentReupload = () => {
           setSubfolderId(apiResponse.subfolderId);
           setNgoName(apiResponse['NGO Name']);
           // Extract failed documents
-          console.log(apiResponse, "apiResponse");
           
           const failedDocuments = Object.keys(apiResponse)
             .filter(
@@ -67,7 +66,6 @@ const DocumentReupload = () => {
               link: apiResponse[key]?.link,
             }));
 
-          console.log(failedDocuments, "failedDocuments");
             
           setDocumentsToReupload(failedDocuments);
         } catch (error) {
@@ -79,64 +77,6 @@ const DocumentReupload = () => {
       fetchData();
     }, [storedUserId]);
 
-  console.log(documentsToReupload, "documentsToReupload");
-
-    
-  // useEffect(() => {
-  //   // Static data simulating the API response
-  //   const staticApiResponse = {
-  //     "User-Id": 1,
-  //     "NGO Name": "docs",
-  //     subfolderId: "1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
-  //     "12A Registration": {
-  //       link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
-  //       status: "Failed",
-  //     },
-  //     "80G Certification": {
-  //       link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
-  //       status: "Failed",
-  //     },
-  //     "Certificate of Incorporation (COI)": {
-  //       link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
-  //       status: "Success",
-  //     },
-  //     "FCRA Approval": {
-  //       link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
-  //       status: "Success",
-  //     },
-  //     "Financial Report FY 2021-22": {
-  //       link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
-  //       status: "Success",
-  //     },
-  //     "Financial Report FY 2022-23": {
-  //       link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
-  //       status: "Success",
-  //     },
-  //     "Financial Report FY 2023-24": {
-  //       link: "https://drive.google.com/drive/folders/1WH5j7A_RECPz13SLiKXj4X09lj6RfP6c",
-  //       status: "Failed",
-  //     },
-  //   };
-
-  //   setUserId(staticApiResponse["User-Id"]);
-  //   setSubfolderId(staticApiResponse.subfolderId);
-  //   setNgoName(staticApiResponse["NGO Name"]);
-  //   // Extract failed documents
-  //   const failedDocuments = Object.keys(staticApiResponse)
-  //     .filter(
-  //       (key) =>
-  //         staticApiResponse[key]?.status === "Failed" &&
-  //         key !== "User-Id" &&
-  //         key !== "NGO Name"
-  //     )
-  //     .map((key) => ({
-  //       name: key,
-  //       reason: "Document failed verification",
-  //       link: staticApiResponse[key].link,
-  //     }));
-
-  //   setDocumentsToReupload(failedDocuments);
-  // }, []);
 
   const handleFileChange = (event, document) => {
     const file = event.target.files[0];
@@ -166,7 +106,7 @@ const DocumentReupload = () => {
 
   const handleSubmit = async () => {
     if (uploading) return;
-    // setUploading(true);
+    setUploading(true);
 
     const files = Object.keys(fileStates).map((key) => ({
       name: key,
@@ -182,29 +122,29 @@ const DocumentReupload = () => {
       type: "MultpleDocsUpdate"
     };
 
-    console.log(payload, "PAYLOAD");
     
     try {
       const response = await fetch(
         "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec",
         {
           method: "POST",
-          mode: "no-cors",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
+          mode: "no-cors",
         }
       );
 
-      if (response.ok) {
-        alert("Documents re-uploaded successfully!");
+      // if (response.ok) {
+      //   alert("Documents re-uploaded successfully!");
 
-      } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.message}`);
-      }
+      // } else {
+      //   const errorData = await response.json();
+      //   alert(`Error: ${errorData.message}`);
+      // }
       
       setReSubmited(true);
       navigate('/submission-success');
+      setUploading(false)
     } catch (error) {
       console.error("Error during re-upload:", error);
       // alert("An error occurred. Please try again.");

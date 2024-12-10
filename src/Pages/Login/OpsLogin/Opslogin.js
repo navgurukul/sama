@@ -226,6 +226,7 @@ function Opslogin() {
     fetchData();
   }, []);
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -238,6 +239,7 @@ function Opslogin() {
 
     const user = data.find((user) => user.Email === email && user.Password === password);
 
+    console.log(user, "user");
     if (user) {
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('role', JSON.stringify(user.Role));
@@ -274,36 +276,7 @@ function Opslogin() {
                 navigate('/documentupload');
                 return;
               }
-      
-              // Check for unsuccessful statuses in submitted documents
-              // const failed = [];
-              // for (const [key, value] of Object.entries(documentResult)) {
-              //   if (value && typeof value === "object" && "status" in value) {
-              //     if (value.status !== "Success") {
-              //       failed.push(key); // Collect keys with failed statuses
-              //     }
-              //   }
-              // }
-      
-              // if (failed.length > 0) {
-              //   // If there are failed statuses, pass them to <AttentionNeeded />
-              //   console.log("The following statuses are not 'Success':", failed);
-              //   setFailedStatuses(failed); // Update state to show AttentionNeeded
-              //   // setLoder(false);
-              //   navigate('/attentionneeded', { state: { failedStatuses: failed } });
-              //   return;
-              //   // return <AttentionNeeded failedStatuses={failedStatuses} />;
-              // }
-      
-              // // If all documents are successful, check NGO type
-              // if (finduser["Ngo Type"] === "1 to one") {
-              //   // Navigate to beneficiary data for type "1 to one"
-              //   navigate('/beneficiarydata');
-              // } else {
-              //   // Navigate to preliminary for other types
-              //   navigate('/preliminary');
-              // }
-
+    
               // Check for unsuccessful statuses in submitted documents
               const failed = [];
               const pending = [];

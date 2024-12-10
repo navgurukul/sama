@@ -9,7 +9,6 @@ const SubmissionSuccess = () => {
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
   const storedUserId= NgoId[0].NgoId;
   // const [fetchedDocs,setFetchedDocs] = useState(null); 
-
   const navigate = useNavigate();
 
   // Static data representing the failed documents for re-upload
@@ -25,7 +24,6 @@ const SubmissionSuccess = () => {
         }
         const apiResponse = await response.json();
         // setFetchedDocs(apiResponse); // Set API data in state
-
         // Classify documents by status
         const statuses = Object.entries(apiResponse).reduce(
           (acc, [key, value]) => {
@@ -42,14 +40,28 @@ const SubmissionSuccess = () => {
 
         // Log based on priority
         if (statuses.failed.length > 0) {
-          // console.log("Failed Documents:", statuses.failed);
           navigate('/attentionneeded');
         } else if (statuses.pending.length > 0) {
-          
           navigate('');
         }
         else {
-          navigate("/preliminary");
+          try {
+            const response = await fetch("https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration")
+            const result = await response.json();
+            const finduser = result.data.find(item => item.Id === storedUserId);
+            if (finduser.type === "1 to one") {
+              navigate("/banificiarydata");
+            }
+            else {
+              navigate("/preliminary");
+            }
+
+            
+          }
+          catch (error) {
+            console.error('Error fetching data:', error);
+          }
+          // navigate("/preliminary");
         }
       } catch (error) {
         console.error('Error fetching data:', error);
