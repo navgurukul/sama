@@ -50,7 +50,7 @@ const SubmissionSuccess = () => {
             const result = await response.json();
             const finduser = result.data.find(item => item.Id === storedUserId);
             if (finduser.type === "1 to one") {
-              navigate("/banificiarydata");
+              navigate("/beneficiarydata");
             }
             else {
               navigate("/preliminary");
