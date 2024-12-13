@@ -82,40 +82,22 @@ const DocumentUpload = () => {
 
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec"
-        // "https://script.google.com/macros/s/AKfycbyxrgFSvdxkC02T96WQ_44qPpiOGeEQi3Bj_d4T86WUbjTDp6v7aIANEztJp2zpnzD_/exec"
+        "https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec"
         , {
         method: "POST",
         mode:"no-cors",
         body: JSON.stringify(payload),
       });
       setUploading(false);
-      alert("Documents uploaded successfully!");
+      alert("Documents uploaded successfully!");      
       navigate('/submission-success');
     } catch (error) {
       console.error("Error uploading documents:", error);
       alert("Failed to upload documents. Please try again.");
     } finally {
-      
       setSubmitted(true);
     }
   };
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch("https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec");
-  //       const result = await response.json();
-  //       setData(result);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-    
-
-  //   fetchData();
-  // }, []);
-
   
   const handleSkip = () => {
     navigate('/beneficiarydata');

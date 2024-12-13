@@ -167,7 +167,6 @@ const AdminNgo = () => {
       })
       
       if (response.ok) {
-        console.log("Status updated successfully");
       } else {
         console.error("Error updating status:", response.statusText);
       }

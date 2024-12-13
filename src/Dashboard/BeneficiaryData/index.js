@@ -218,6 +218,13 @@ const BeneficiaryData = () => {
     navigate(`/userdetails/${id}`);
   };
 
+  const handleStatusChange = (id, newStatus) => {
+    setBulkStatus(newStatus);
+    setSelectedStatus(newStatus);
+    setNgoIdToChange(id);
+    setOpenDialog(true);
+  };
+
   const handleCancelStatusChange = () => {
     setSelectedStatus(null);
     setOpenDialog(false);
@@ -257,20 +264,17 @@ const BeneficiaryData = () => {
     setNgoData(updatedData);
     setOpenDeleteDialog(false);
     setEditStatus(true);
-
     try {
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          mode: "no-cors",
-          body: JSON.stringify({
-            userId: ngoIdToDelete,
-            type: "deleteUser",
-          }),
-        }
-      );
+      await fetch('https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      mode: 'no-cors',
+      body: JSON.stringify({
+        userId: ngoIdToDelete,
+        type: "deleteUser",
+      })
+    })
+
     } catch (error) {
       console.error("Error deleting row:", error);
     }
@@ -292,24 +296,25 @@ const BeneficiaryData = () => {
       (filters.status === "" || ngo.status === filters.status)
     );
   });
-
+  
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-      {NgoId[0]?.role[0] === "ngo" &&
-        (mouFound?.data ? <MouReviewd /> : <MOUCard ngoid={user} />)}
-
-      {!loading && ngoData.some((item) => item.Ngo === user) ? (
+      {
+        (!loading && (ngoData.some(item => item.Ngo === user))) ? (
         <>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+        {NgoId[0]?.role[0] === "ngo" && (mouFound?.data ?  <MouReviewd /> : <MOUCard ngoid = {user}/> )}
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Typography variant="h6" gutterBottom> All Beneficiaries({filteredData.length})</Typography>
+          {/* <Button 
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              navigate('/user-details', { state: {userId:id} });
             }}
-          >
-            <Typography variant="h6" gutterBottom>
+          > */}
+            {/* <Typography variant="h6" gutterBottom>
               All Beneficiaries({filteredData.length})
-            </Typography>
+            </Typography> */}
             <Button
               variant="contained"
               color="primary"

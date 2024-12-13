@@ -96,10 +96,6 @@ const FileUploadForm = () => {
       setError(`Please upload all required files: ${missingFiles.join(', ')}`);
       return;
     }
-
-    // Log the state before API call
-    console.log('Files to be uploaded:', fileStates);
-
     setUploading(true);
     // Your API call logic here
     setUploading(false);

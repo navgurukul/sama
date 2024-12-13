@@ -15,8 +15,6 @@ import { useNavigate, useParams } from "react-router-dom";
 const Preliminary = () => {
   // State for API data
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
-  // const Id= NgoId[0].NgoId;
-
   const { id } = useParams();
   const user = id ? id : NgoId[0].NgoId;
 

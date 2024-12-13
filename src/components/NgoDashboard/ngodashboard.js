@@ -158,10 +158,7 @@ const Ngodashboard = () => {
           ngoId,
           files,
           type
-        };
-    
-        console.log('Payload:', payload);
-        
+        };        
         
         // Send the payload to the Google Apps Script API
         const response = await fetch('https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec', {
@@ -176,7 +173,6 @@ const Ngodashboard = () => {
         });
     
         if (response.ok) {
-          console.log('Files uploaded successfully');
           setError('');
           setFileStates(
             fileLabels.reduce((acc, label) => ({

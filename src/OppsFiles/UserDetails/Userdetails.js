@@ -193,7 +193,6 @@ const FormComponent = ({ user }) => {
   };
   
 
-  console.log(errors);
   
   const handleChange = (event) => {
     
@@ -201,10 +200,7 @@ const FormComponent = ({ user }) => {
       ...formData,
       [event.target.name]: event.target.value,
     });
-    
   };
-
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -309,7 +305,6 @@ const FormComponent = ({ user }) => {
                       Upload ID Proof Image
                       <input type="file" hidden
                         onChange={(e) => handleFileChange(e, "idProofFile")}
-                      //  onChange={handleFileChange}
                       />
                     </Button>
                     {formData.idProofFile ? (
@@ -498,9 +493,7 @@ const FormComponent = ({ user }) => {
           ) : (
             errors.incomeCertificateFile && <Typography color="error">{errors.incomeCertificateFile}</Typography>
           )}
-
         </FormControl>
-
         <Button
           fullWidth
           variant="contained"

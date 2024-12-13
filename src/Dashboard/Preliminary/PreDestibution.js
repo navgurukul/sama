@@ -1,26 +1,90 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Grid,Card,Button,CardContent, Paper, CircularProgress,Container } from '@mui/material';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import MOUCard from '../../Pages/MouUpload/MouUpload';
+import MouReviewd from '../../Pages/MouUpload/MouReviewd';
+import { set } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
+
+
+// // Generate 12 monthly dates starting from a given date
+
+const generateMonthlyDates = (startDate) => {
+  const dates = [];
+  for (let i = 0; i < 12; i++) {
+    const newDate = new Date(startDate);
+    newDate.setMonth(newDate.getMonth() + i);
+    dates.push(newDate);
+  }
+  return dates;
+};
+
+// Helper function to format the date
+const formatDate = (date) => {
+  const day = "10th"; // Fixed day
+  const month = date.toLocaleString("default", { month: "long" }); // Get full month name
+  const year = date.getFullYear();
+  return `Due by ${day} ${month} ${year}`;
+};
+
 const PreDestibution = ({userId, preliminaryId}) => {
   // State for API data
+
   const [metrics, setMetrics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const monthlyReports = [
-    { month: "January 2024", dueDate: "10th January 2024" },
-    { month: "February 2024", dueDate: "10th February 2024" },
-    { month: "March 2024", dueDate: "10th March 2024" },
-    { month: "April 2024", dueDate: "10th April 2024" },
-    { month: "May 2024", dueDate: "10th May 2024" },
-    { month: "June 2024", dueDate: "10th June 2024" },
-    { month: "July 2024", dueDate: "10th July 2024" },
-    { month: "August 2024", dueDate: "10th August 2024" },
-    { month: "September 2024", dueDate: "10th September 2024" },
-    { month: "October 2024", dueDate: "10th October 2024" },
-    { month: "November 2024", dueDate: "10th November 2024" },
-    { month: "December 2024", dueDate: "10th December 2024" },
-  ];
+  const [showComponentA, setShowComponentA] = useState(true); // Start with Component A
+  const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
+  const gettingStoredData = NgoId[0].NgoId ;
+  const { id } = useParams();
+  const user = id? id : NgoId[0].NgoId;
+  const navigate = useNavigate();
+  const [monthlyReportingDate, setMonthlyReportingDate] = useState(("")); // Set your start date here
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const monthlyDates = generateMonthlyDates(monthlyReportingDate);
+
+    useEffect(() => {
+      // Update current date every second for live status
+      const interval = setInterval(() => {
+        setCurrentDate(new Date());
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, []);
+
+
   const yearlyReport = { title: "Jan 2024 - Dec 2024", dueDate: "10th January 2025" };
+
+  const [mouFound, setMouFound] = useState(true);
+
+
+  // this is to get the data from the mou tab of ngo data sheet
+  useEffect(() => {
+    async function fetchData() {
+      const id = gettingStoredData;      
+      try {
+        const response = await axios.get(`https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=GetMou&id=${id}`);
+        const data = response.data;
+        setMouFound(data);
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+    gettingStoredData && fetchData();
+    
+  }, [gettingStoredData]); 
+
+  useEffect(() => {
+    // Set a timer to switch to Component B after 10 seconds
+    const timer = setTimeout(() => {
+      setShowComponentA(false);
+    }, 10000);
+
+    // Cleanup the timer when the component unmounts
+    return () => clearTimeout(timer);
+  }, []); 
 
   // Fetch data from API
   useEffect(() => {
@@ -37,10 +101,11 @@ const PreDestibution = ({userId, preliminaryId}) => {
           return { ...metric, disabled: diffInMinutes <= 10 }; // Add disabled flag
         });
         setMetrics(dateComparedData);
-        
         // setMetrics(response.data); // Update according to API response structure
         setLoading(false);
-        
+        if (!monthlyReportingDate && dateComparedData.length > 0) {
+          setMonthlyReportingDate(dateComparedData[0]?.Unit);
+        }
       } catch (err) {
         console.error(err);
         setError(true);
@@ -48,7 +113,10 @@ const PreDestibution = ({userId, preliminaryId}) => {
       }
     };
     fetchData();
+    setMonthlyReportingDate(metrics[0]?.Unit);
   }, [preliminaryId]);
+
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
@@ -70,7 +138,9 @@ const PreDestibution = ({userId, preliminaryId}) => {
   return (
     <Container maxWidth="lg" mt="10" >
       {/* Main Content */}
-      <Box sx={{ mt: 5, textAlign: 'center', background:"#F8F3F0",borderRadius: 2,p:4}}>
+      {(NgoId[0]?.role[0] === "ngo") ? showComponentA 
+      ?
+      (<Box sx={{ mt: 5, textAlign: 'center', background:"#F8F3F0",borderRadius: 2,p:4}}>
         <img
           src={require('../assets/Waiting 2 1.svg').default}
           alt="Illustration"
@@ -79,7 +149,9 @@ const PreDestibution = ({userId, preliminaryId}) => {
         <Typography variant="body1" color="textSecondary">
           Thanks for submitting the data. Allocation and distribution of laptops will start shortly.
         </Typography>
-      </Box>
+      </Box>) 
+       : (mouFound?.data ?  <MouReviewd /> : <MOUCard ngoid = {user}/>) 
+       : "" }
       <Box sx={{ mt: 5 , backgroundColor: '#F0F4EF', borderRadius: 2,p: 4, mb:5}}>
         <Typography variant="h6" color="primary" sx={{ mb: 3}}>
           Pre-Distribution Metrics
@@ -87,10 +159,6 @@ const PreDestibution = ({userId, preliminaryId}) => {
           <Grid container spacing={2}>
             {metrics.map((metric, index) => (
               <React.Fragment key={index}>
-                {/* <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle1">NGO ID</Typography>
-                  <Typography variant="h6">{metric.ngoId}</Typography>
-                </Grid> */}
                 <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1" sx={{color:"#828282"}}>Number of Schools</Typography>
                   <Typography variant="body1" mb={2} color="textSecondary">{metric["Number of school"]}</Typography>
@@ -123,27 +191,45 @@ const PreDestibution = ({userId, preliminaryId}) => {
             ))}
           </Grid>
       </Box> 
-      <Typography variant="h6" gutterBottom sx={{color:"#4A4A4A"}}>
-        Monthly Report
-      </Typography>
-      <Grid container spacing={3}>
-        {monthlyReports.map((report, index) => (
+      {/* {(NgoId[0]?.role[0] === "ngo") && 
+      <>
+        <Typography variant="h6" gutterBottom sx={{color:"#4A4A4A"}}>
+          Monthly Report
+        </Typography>
+        <Grid container spacing={3} mb = {8}>
+        {monthlyDates.map((report, index) => {
+          const isEnabled = currentDate >= report; // Check if current date has passed the card's date
+          const monthName = report.toLocaleString("default", { month: "long" }); // Get full month name
+          const year = report.getFullYear(); // Get the year
+
+          return (
           <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card  style={{ height: "100%" }} sx={{backgroundColor:"#E0E0E0"}}>
+            <Card  style={{ height: "100%" }} 
+            sx={{backgroundColor: !isEnabled && "#E0E0E0"}}
+            >
               <CardContent>
-                <Typography variant="subtitle1" mt={1} ml={2} sx={{color:"#828282"}}>{report.month}</Typography>
-                <Typography color="textSecondary" variant="body1" mt={1} ml={2}>Due by {report.dueDate}</Typography>
+                <Typography variant="subtitle1" mt={1} ml={2} sx={{color:"#828282"}}>
+                {monthName} {year}
+                  </Typography>
+                <Typography color="textSecondary" variant="body1" mt={1} ml={2}>
+                {formatDate(report)}
+                  </Typography>
                 <Button variant="subtitle1" 
-                 sx={{ marginTop: "25px", marginLeft:"29%", color:"#828282"}} 
-                // disabled
+                 sx={{ marginTop: "25px", marginLeft:"29%",
+                  }} 
+                 color={isEnabled ? "primary" : "default"}
+                disabled={!isEnabled}
+                onClick={() => navigate('/monthly-reporting')}
                 >
                   Submit Report &rarr;
                 </Button>
               </CardContent>
             </Card>
           </Grid>
-        ))}
+          )
+          })}
       </Grid>
+
       <Typography variant="h6" gutterBottom style={{ marginTop: "40px",color:"#4A4A4A" }}>
         Yearly Report
       </Typography>
@@ -159,7 +245,9 @@ const PreDestibution = ({userId, preliminaryId}) => {
             </CardContent>
           </Card>
         </Grid>
-      </Grid>
+      </Grid> 
+      </>
+      } */}
     </Container>
   );
 };
