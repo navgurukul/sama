@@ -58,7 +58,7 @@ const BeneficiaryData = () => {
     idProof: [],
     useCase: [],
     occupation: [],
-    status: ["Laptop Assigned", "Data Uploaded", "Approved", "Rejected"],
+    status: [],
   });
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -68,6 +68,25 @@ const BeneficiaryData = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [ngoIdToDelete, setNgoIdToDelete] = useState(null);
   const [mouFound, setMouFound] = useState(true);
+
+  useEffect(() => {
+    async function fetchStatusData() {
+      try {
+        const response = await axios.get(
+          "https://script.googleusercontent.com/macros/echo?user_content_key=wv8VgYNObxKOXzwh7eYpr7WRm84TtrCHR7zoWSfmZw2KNkt--9Rxkf3HTwOYt_8cvsYsJ7w8dl_hZvskwAfXU4KE1GXBo2xROJmA1Yb3SEsKFZqtv3DaNYcMrmhZHmUMWojr9NvTBuBLhyHCd5hHa_xWSu8paSCnPnaAM16cnG-kggZ3WOGCpaClMcmKPzyT2alPYERGSlYOY2xBKzUS12dhwjPmtw4aVs9yjGKgHZOFxkGhWQqq2sJyjT23HAXrpnNe1hZwoqUj0XHTI1iIww&lib=MM8bm_jOfbRbuGHeV6mIUCZ0pnl9Mx4Z2"
+        );
+
+        // Set status options from API response
+        setFilterOptions((prevOptions) => ({
+          ...prevOptions,
+          status: response.data.map((status) => status.name),
+        }));
+      } catch (error) {
+        console.error("Error fetching status data:", error);
+      }
+    }
+    fetchStatusData();
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -153,6 +172,40 @@ const BeneficiaryData = () => {
     }
   };
 
+  const handleIndividualStatusChange = async (id, newStatus, event) => {
+    event.stopPropagation();
+
+    const updatedData = ngoData.map((ngo) => {
+      if (ngo.ID === id) {
+        return { ...ngo, status: newStatus };
+      }
+      return ngo;
+    });
+
+    setNgoData(updatedData);
+    setEditStatus(true);
+
+    try {
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          mode: "no-cors",
+          body: JSON.stringify({
+            id: [id],
+            status: newStatus,
+            type: "editUser",
+          }),
+        }
+      );
+    } catch (error) {
+      console.error("Error updating individual status:", error);
+    }
+  };
+
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
@@ -163,13 +216,6 @@ const BeneficiaryData = () => {
 
   const handleRowClick = (id) => {
     navigate(`/userdetails/${id}`);
-  };
-
-  const handleStatusChange = (id, newStatus) => {
-    setBulkStatus(newStatus);
-    setSelectedStatus(newStatus);
-    setNgoIdToChange(id);
-    setOpenDialog(true);
   };
 
   const handleCancelStatusChange = () => {
@@ -262,7 +308,7 @@ const BeneficiaryData = () => {
             }}
           >
             <Typography variant="h6" gutterBottom>
-              ({filteredData.length}) Beneficiaries Selected
+              All Beneficiaries({filteredData.length})
             </Typography>
             <Button
               variant="contained"
@@ -555,12 +601,14 @@ const BeneficiaryData = () => {
                     </TableCell>
                     <TableCell>
                       <FormControl fullWidth>
-                        <InputLabel>Status</InputLabel>
                         <Select
                           value={ngo.status || ""}
                           onChange={(e) => {
-                            e.stopPropagation();
-                            handleStatusChange(ngo.ID, e.target.value);
+                            handleIndividualStatusChange(
+                              ngo.ID,
+                              e.target.value,
+                              e
+                            );
                           }}
                           onClick={(e) => e.stopPropagation()}
                         >
