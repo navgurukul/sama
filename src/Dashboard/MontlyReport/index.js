@@ -18,7 +18,6 @@ const MonthlyReport = () => {
                 const response = await axios.get(API_URL);
 
                 // Assuming the API returns { success: true, exists: true/false }
-                console.log(response.data);
                 if (response.data) {
                     setIsFormCreated(response.data.success);
                     

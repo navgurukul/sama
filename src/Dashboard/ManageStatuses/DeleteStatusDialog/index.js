@@ -26,9 +26,6 @@ const DeleteStatusDialog = ({ open, onClose, onDeleteSuccess, status }) => {
       const deleteData = {
         statusName: status.name // Send only the status name
       };
-
-      console.log("Sending delete request with data:", deleteData);
-
       const response = await fetch(
         "https://script.google.com/macros/s/AKfycbxEG3vNWj_vjl__Rw5h3lwqgkPxh8fQXKoMPqu2_Bd4Na_JtOiU6IczBAOJVz_FwL6Jyw/exec?type=deleteManageStatus",
         {

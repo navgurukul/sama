@@ -8,13 +8,11 @@ const SubmissionSuccess = () => {
 
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
   const storedUserId= NgoId[0].NgoId;
-  // const [fetchedDocs,setFetchedDocs] = useState(null); 
   const navigate = useNavigate();
 
   // Static data representing the failed documents for re-upload
   //   below useeffect is full working
   useEffect(() => {
-    
     // Fetch data from the API
     const fetchData = async () => {
       try {
@@ -23,8 +21,7 @@ const SubmissionSuccess = () => {
           throw new Error('Network response was not ok');
         }
         const apiResponse = await response.json();
-        // setFetchedDocs(apiResponse); // Set API data in state
-        // Classify documents by status
+        
         const statuses = Object.entries(apiResponse).reduce(
           (acc, [key, value]) => {
             if (value?.status) {
@@ -49,19 +46,16 @@ const SubmissionSuccess = () => {
             const response = await fetch("https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration")
             const result = await response.json();
             const finduser = result.data.find(item => item.Id === storedUserId);
-            if (finduser.type === "1 to one") {
-              navigate("/banificiarydata");
+            if (finduser["Ngo Type"] === "1 to one") {
+              navigate("/beneficiarydata");
             }
             else {
               navigate("/preliminary");
             }
-
-            
           }
           catch (error) {
             console.error('Error fetching data:', error);
           }
-          // navigate("/preliminary");
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -70,8 +64,6 @@ const SubmissionSuccess = () => {
     };
 
     fetchData();
-    // const intervalId = setInterval(fetchData, 5000); 
-    // return () => clearInterval(intervalId);
   }, [storedUserId, navigate]);
 
 

@@ -41,6 +41,7 @@ import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
 import MonthlyForm from './Dashboard/MontlyReport/MothlyForm';
 import SubmissionSuccess from './components/SubmissionSuccess/SubmissionSuccess';
 import MonthlyEditForm from './Dashboard/MontlyReport/MonthlyEditForm';
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -62,21 +63,18 @@ function App() {
                 <PrivateRoute reqired={'ops'}>
                 <CompanySelection />
                 </PrivateRoute> 
-                 
                 } />  {/* // this is to select the doner for the ngo Questions, need to rename the route */}
               <Route path="/submission-success" element={<SubmissionSuccess />} />
-                {/* <Route path="/preliminary-distribution" element={<PreliminaryForm />} /> */}
               <Route path="/preliminary" element={<Preliminary />} />
-              {/* <Route path="/monthly-reporting" element={<MonthlyReportingForm />} /> */}
+              <Route path="/monthly-reporting" element={<MonthlyReportingForm />} />
               <Route 
-              path="/preliminary-distribution" 
+              path="/preliminary-distribution"
               element={
                 <PrivateRoute reqired={'ngo'}>
                    <PreliminaryForm/>
                  </PrivateRoute>
                }
                 />                
-              {/* <Route path='/allngo' element={<AdminNgo/>} /> */}
               <Route 
               path="/ngo" 
               element={
@@ -92,14 +90,10 @@ function App() {
               <Route path="/edit-form/:id" element={<MonthlyEditForm />} />
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
-              {/* <Route path="/beneficiarydata" element={<BeneficiaryData />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
-              {/* <Route path="/documentupload" element={<DocumentUpload />} /> */}
 
               <Route path="/documentreupload" element={<DocumentReupload />} />
               <Route path="/attentionneeded" element={<AttentionNeeded />} />
-
-
                 <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
               <Route path="/laptopinventory" 
               element={
@@ -108,24 +102,19 @@ function App() {
                 </PrivateRoute>
                }
                 />
-                {/* <Route path="/documentupload" element={<DocumentUpload />} /> */}
                 <Route 
-                // path="/ngo-dashboard" 
                 path="/documentupload"
               element={
                 <PrivateRoute reqired={'ngo'}>
                   <DocumentUpload />
-                   {/* <Ngodashboard /> */}
                 </PrivateRoute>
                }
                 />
                 <Route 
-                // path="/ngo-dashboard" 
                 path="/beneficiarydata"
               element={
                 <PrivateRoute reqired={'ngo'}>
                   < BeneficiaryData/>
-                   {/* <Ngodashboard /> */}
                 </PrivateRoute>
                }
                 />

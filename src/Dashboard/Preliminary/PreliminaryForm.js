@@ -17,7 +17,6 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useNavigate } from 'react-router-dom';
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 const PreliminaryForm = ({userId}) => {
-  console.log(userId);
   const navigate = useNavigate();
 
   const initialFormData = {
@@ -177,7 +176,6 @@ const PreliminaryForm = ({userId}) => {
       // }
     } catch (error) {
       console.error("Error:", error);
-      // alert("An error occurred.");
       alert("Failed to submit the form.");
     }
   };
@@ -206,7 +204,6 @@ const PreliminaryForm = ({userId}) => {
         <Grid item xs={6}>
           <Typography mb={1}>Number of Teachers</Typography>
           <TextField
-            // label="Number of Teachers"
             name="numberOfTeachers"
             type="number"
             value={formData.numberOfTeachers}
@@ -217,7 +214,6 @@ const PreliminaryForm = ({userId}) => {
         <Grid item xs={6}>
           <Typography mb={1}>Number of Students</Typography>
           <TextField
-            // label="Number of Students"
             name="numberOfStudents"
             type="number"
             value={formData.numberOfStudents}
@@ -228,7 +224,6 @@ const PreliminaryForm = ({userId}) => {
         <Grid item xs={6}>
           <Typography mb={1}>Number of Female Students</Typography>
           <TextField
-            // label="Number of Female Students"
             name="numberOfFemaleStudents"
             type="number"
             value={formData.numberOfFemaleStudents}

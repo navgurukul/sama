@@ -78,7 +78,6 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
         method: 'GET',
       });
       const result = await response.json(); 
-      console.log(result);
            
       if (result.length === 0 ||result.length > 1) {
         setSnackbarMessage('No Tagged data available for the given Laptop ID or MAC Address');

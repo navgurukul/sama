@@ -55,6 +55,7 @@ const DocumentReupload = () => {
             .filter(
               (key) =>
                 apiResponse[key]?.status !== "Success" &&
+                apiResponse[key]?.status !== "Pending Verification" &&
                 key !== "User-Id" &&
                 key !== "NGO Name" &&
                 key !== "isDataAvailable" &&
@@ -62,7 +63,7 @@ const DocumentReupload = () => {
             )
             .map((key) => ({
               name: key,
-              reason: "Document failed verification",
+              reason: "Some other documents has been upload",
               link: apiResponse[key]?.link,
             }));
 
@@ -121,7 +122,6 @@ const DocumentReupload = () => {
       files,
       type: "MultpleDocsUpdate"
     };
-
     
     try {
       const response = await fetch(
@@ -133,21 +133,12 @@ const DocumentReupload = () => {
           mode: "no-cors",
         }
       );
-
-      // if (response.ok) {
-      //   alert("Documents re-uploaded successfully!");
-
-      // } else {
-      //   const errorData = await response.json();
-      //   alert(`Error: ${errorData.message}`);
-      // }
       
       setReSubmited(true);
       navigate('/submission-success');
       setUploading(false)
     } catch (error) {
       console.error("Error during re-upload:", error);
-      // alert("An error occurred. Please try again.");
     } finally {
       setUploading(false);
     }

@@ -18,8 +18,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteDialog from '../AdminNgo/DeletDialog';
 import MouReviewd from '../../Pages/MouUpload/MouReviewd';
 
-
-
 const BeneficiaryData = () => {
   // const AuthUser = JSON.parse(localStorage.getItem("_AuthSama_"));
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
@@ -54,7 +52,6 @@ const BeneficiaryData = () => {
   const [ngoIdToDelete, setNgoIdToDelete] = useState(null);
   const [mouFound, setMouFound] = useState(true);
 
-
   // this is to get the data from the mou tab of ngo data sheet
   useEffect(() => {
     async function fetchData() {
@@ -71,7 +68,6 @@ const BeneficiaryData = () => {
     gettingStoredData && fetchData();
     
   }, [gettingStoredData]); 
-
 
   useEffect(() => {
     async function fetchData() {
@@ -163,8 +159,6 @@ const BeneficiaryData = () => {
     setOpenDialog(true);
   };
 
-  
-
   const handleCancelStatusChange = () => {
     setSelectedStatus(null);
     setOpenDialog(false);
@@ -194,7 +188,6 @@ const BeneficiaryData = () => {
     setNgoData(updatedData);
     setOpenDeleteDialog(false);
     setEditStatus(true);
-
     try {
       await fetch('https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec', {
       method: 'POST',
@@ -205,8 +198,7 @@ const BeneficiaryData = () => {
         type: "deleteUser",
       })
     })
-    
-    
+
     } catch (error) {
       console.error('Error deleting row:', error);
     }
@@ -224,16 +216,13 @@ const BeneficiaryData = () => {
       (filters.status === '' || ngo.status === filters.status)
     );
   });
-
-  console.log(mouFound.data);
   
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-      {NgoId[0]?.role[0] === "ngo" && (mouFound?.data ?  <MouReviewd /> : <MOUCard ngoid = {user}/> )}
       {
         (!loading && (ngoData.some(item => item.Ngo === user))) ? (
-    // ((!loading && ngoData.length) > 0) ? (
         <>
+        {NgoId[0]?.role[0] === "ngo" && (mouFound?.data ?  <MouReviewd /> : <MOUCard ngoid = {user}/> )}
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Typography variant="h6" gutterBottom> All Beneficiaries({filteredData.length})</Typography>
           <Button 

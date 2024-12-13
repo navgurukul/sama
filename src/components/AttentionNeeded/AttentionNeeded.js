@@ -3,24 +3,14 @@ import { Box, Typography, Button, Paper, Stack } from '@mui/material';
 import { ReportProblem as WarningIcon } from '@mui/icons-material';
 import ErrorImagePng from '../../assets/Error1.png'
 import { useNavigate, useLocation } from 'react-router-dom';
-// import { useEffect, useState } from 'react';
-// import { useLocation } from 'react-router-dom';
-
 
 const AttentionNeeded = () => {
     const [documentsToReupload, setDocumentsToReupload] = React.useState([]);
     const navigate = useNavigate();
-
     const location = useLocation();
-    const { failedStatuses } = location.state || {}; // Default to an empty object if state is undefined
-
-    console.log(failedStatuses, "failedStatuses");
-    
+    const { failedStatuses } = location.state || {}; // Default to an empty object if state is undefined    
     const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
     const storedUserId= NgoId[0].NgoId;
-  
-
-
 
   // Static data representing the failed documents for re-upload
   //   below useeffect is full working
@@ -38,21 +28,18 @@ const AttentionNeeded = () => {
           // setSubfolderId(apiResponse.subfolderId);
           // setNgoName(apiResponse['NGO Name']);
           // Extract failed documents
-          console.log(apiResponse, "apiResponse");
           
           const failedDocuments = Object.keys(apiResponse)
             .filter(
               (key) =>
                 apiResponse[key]?.status !== "Success" &&
+                apiResponse[key]?.status !== "Pending Verification" &&
                 key !== "User-Id" &&
                 key !== "NGO Name" &&
                 key !== "isDataAvailable" &&
                 key !== "subfolderId"
             )
-            .map((key) => ([key]));
-
-          console.log(failedDocuments, "failedDocuments");
-            
+            .map((key) => ([key]));            
           setDocumentsToReupload(failedDocuments);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -63,10 +50,6 @@ const AttentionNeeded = () => {
     }, [storedUserId]);
 
     const documents = failedStatuses || documentsToReupload;
-    
-    console.log(documentsToReupload, "documentsToReupload");
-
-    console.log(documents, "documentsToReupload");
 
   return (
     <Box
@@ -134,3 +117,5 @@ const AttentionNeeded = () => {
 };
 
 export default AttentionNeeded;
+
+
