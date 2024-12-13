@@ -30,7 +30,7 @@ const AddStatusModal = ({ open, onClose, onAdd }) => {
 
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbwIvfoEwaaqz4p0ysgvWxndIp8BZoBQSdvCoOW8KNJ3rAWFMPi2YteLJyPstvdb_sX7FA/exec?type=addManageStatus",
+        "https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=addManageStatus",
         {
           method: "POST",
           body: JSON.stringify(formData),

@@ -27,7 +27,7 @@ const DeleteStatusDialog = ({ open, onClose, onDeleteSuccess, status }) => {
         statusName: status.name // Send only the status name
       };
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxEG3vNWj_vjl__Rw5h3lwqgkPxh8fQXKoMPqu2_Bd4Na_JtOiU6IczBAOJVz_FwL6Jyw/exec?type=deleteManageStatus",
+        "https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=deleteManageStatus",
         {
           method: "POST",
           headers: {
