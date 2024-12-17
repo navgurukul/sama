@@ -17,8 +17,21 @@ const Footer = () => {
           </Grid>
           <hr />
           <Grid container alignItems="center" mt={5}>
-            <Grid item xs={12} md={4}>
-              <Typography variant="body1" color="text.secondary">
+            <Grid 
+              item 
+              xs={12} 
+              md={4}
+              sx={{ 
+                mb: { xs: -2, md: 0 } 
+              }}
+            >
+              <Typography 
+                variant="body1" 
+                color="text.secondary"
+                sx={{
+                  textAlign: { xs: 'center', md: 'left' }
+                }}
+              >
                 <Link
                   href="/privacy-policy"
                   color="inherit"
@@ -30,7 +43,14 @@ const Footer = () => {
               </Typography>
             </Grid>
             <Grid item xs={12} md={4}>
-              <Typography variant="body1" color="text.secondary" align="center">
+              <Typography 
+                variant="body1" 
+                color="text.secondary" 
+                align="center"
+                sx={{
+                  mt: { xs: 4, md: 0 }  // Add top margin only on mobile
+                }}
+              >
                 Copyright © 2024 reserved
               </Typography>
             </Grid>
