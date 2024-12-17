@@ -5,25 +5,39 @@ import samalogo from "../../assets/samalogo.png";
 const Footer = () => {
   return (
     <footer>
-      <Box maxWidth="false" bgcolor="primary.light"
-        py={5}
-      >
-        <Container maxWidth="lg" >
+      <Box maxWidth="false" bgcolor="primary.light" py={5}>
+        <Container maxWidth="lg">
           <Grid container my={1}>
             <Grid item xs={4} sm={6} md={6}>
               <Link href="/">
                 <img src={samalogo} alt="Logo" width={100} />
               </Link>
             </Grid>
-            <Grid item xs={4} sm={6} md={6}>
-            </Grid>
+            <Grid item xs={4} sm={6} md={6}></Grid>
           </Grid>
           <hr />
-          <Box textAlign="center" mt={5}>
-            <Typography variant="body1" color="text.secondary">
-              Copyright © 2024 reserved
-            </Typography>
-          </Box>
+          <Grid container alignItems="center" mt={5}>
+            <Grid item xs={12} md={4}>
+              <Typography variant="body1" color="text.secondary">
+                <Link
+                  href="/privacy-policy"
+                  color="inherit"
+                  underline="none"
+                  sx={{ cursor: "pointer" }}
+                >
+                  Legal & Privacy Policy
+                </Link>
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="body1" color="text.secondary" align="center">
+                Copyright © 2024 reserved
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              {/* Empty grid item for balance */}
+            </Grid>
+          </Grid>
         </Container>
       </Box>
     </footer>
