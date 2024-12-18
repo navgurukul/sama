@@ -39,6 +39,7 @@ import PreliminaryForm from './Dashboard/Preliminary/PreliminaryForm';
 import Preliminary from './Dashboard/Preliminary';
 import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
 import PrivacyPolicy from './Pages/PrivacyPolicy';
+import LandingPage from './Pages/LandingPage';
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
               <Route path='/ngoregistration' element={<NgoForm />} />  {/* // this is for all the ngo's */}
               <Route path="/login" element={<Opslogin />} /> {/* // need to rename this component */}
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/about-initiative" element={<LandingPage />} />
               <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
               <Route path="/question-selection" element={    
                 <PrivateRoute reqired={'ops'}>
