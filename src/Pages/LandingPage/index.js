@@ -2,8 +2,6 @@ import React from "react";
 import {
   Box,
   Container,
-  TextField,
-  Button,
   Typography,
   Paper,
   Grid,
@@ -46,7 +44,6 @@ const LandingPage = () => {
           >
             {/* Left Section - Text Content */}
 
-            
             <Box
               sx={{
                 flex: 1,
@@ -76,13 +73,28 @@ const LandingPage = () => {
             </Box>
 
             {/* Right Section - Form */}
+         
+        
             <Box
               sx={{
                 flex: 1,
-                width: "100%",
-                maxWidth: { xs: "100%", md: "400px" },
-                bgcolor: "white",
-                borderRadius: "8px",
+                width: "110%", 
+                maxWidth: { xs: "110%", md: "400px" },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                transform: { xs: "scale(1.1)", md: "none" },
+                "& > div": {
+                  // Form container
+                  width: "100%",
+                  bgcolor: "white",
+                  borderRadius: "12px",
+
+                  pb: 3,
+                  "& .MuiButton-root": {
+                    whiteSpace: "nowrap",
+                  },
+                },
               }}
             >
               <FormSection />
@@ -118,7 +130,7 @@ const LandingPage = () => {
         sx={{
           backgroundColor: "#F1F3EE",
           py: 6,
-          //   textAlign: "center",
+
         }}
       >
         <Typography
@@ -220,7 +232,7 @@ const LandingPage = () => {
             item
             xs={12}
             md={6}
-            sx={{ display: "flex", justifyContent: "center",mt:2 }}
+            sx={{ display: "flex", justifyContent: "center", mt: 2 }}
           >
             <Box
               component="img"
@@ -260,8 +272,8 @@ const LandingPage = () => {
                   <ListItemText
                     primary={text}
                     sx={{
-                      margin: 0, // Remove default margin
-                      padding: 0, // Remove padding
+                      margin: 0,
+                      padding: 0,
                     }}
                   />
                 </ListItem>
@@ -294,7 +306,6 @@ const LandingPage = () => {
                 bgcolor: "white",
                 borderRadius: "12px",
                 pb: 3,
-
               }}
             >
               <FormSection />
