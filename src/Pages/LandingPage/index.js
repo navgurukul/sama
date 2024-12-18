@@ -130,7 +130,7 @@ const LandingPage = () => {
         sx={{
           backgroundColor: "#F1F3EE",
           py: 6,
-          //   textAlign: "center",
+
         }}
       >
         <Typography
