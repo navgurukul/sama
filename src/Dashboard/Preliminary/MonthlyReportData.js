@@ -11,7 +11,7 @@ function MonthlyReportData() {
     const user = id? id : NgoId[0].NgoId;    
     const location = useLocation();
     const navigate = useNavigate();
-    const { monthlyReportData } = location.state || {};
+    const { monthlyReportData, monthName, yearName } = location.state || {};
     
     if (!monthlyReportData) {
         return (
@@ -42,7 +42,7 @@ function MonthlyReportData() {
           }}
         >
           <Typography variant="h6" fontWeight="bold" color="#2e523c" mb={2}>
-            Monthly Report
+          {monthName && monthName} {yearName && yearName} Monthly Report
           </Typography>
           {Object.entries(monthlyReportData).map(([question, answer], index) => (
             <Box key={index} mb={2}>

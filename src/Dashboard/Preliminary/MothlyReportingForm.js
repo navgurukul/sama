@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Typography, Button, Paper, Container, FormLabel } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const MonthlyReportingForm = () => {
@@ -8,6 +8,10 @@ const MonthlyReportingForm = () => {
   const [error, setError] = useState(""); // For error handling
   const [formData, setFormData] = useState({}); // For storing answers
   const [submittedData, setSubmittedData] = useState(null); // For storing submitted questions and answers
+  
+  const location = useLocation();
+  const { month, year } = location.state || {};
+
   
   const navigate = useNavigate();
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
@@ -73,7 +77,7 @@ const MonthlyReportingForm = () => {
         }}
       >
         <Typography variant="h5" align="center" gutterBottom>
-          Monthly Report
+         {month && month} {year && year} Monthly Report
         </Typography>
 
         {questions.length > 0 ? (

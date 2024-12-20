@@ -106,13 +106,10 @@ function Opslogin() {
                 return;
               }
               // If no failed or pending statuses, check if all statuses are 'Success'
-              const allSuccess = Object.values(documentResult).every(
-                (value) =>
-                  value &&
-                  typeof value === "object" &&
-                  "status" in value &&
-                  value.status === "Success"
-              );
+
+              const allSuccess = Object.values(documentResult)
+              .filter((value) => typeof value === "object" && "status" in value) // Filter only objects with a `status`
+              .every((value) => value.status === "Success"); // Check if all `status` are "Success"
 
               if (allSuccess) {
                 // Check the Ngo Type and navigate accordingly

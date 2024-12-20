@@ -15,6 +15,8 @@ const generateMonthlyDates = (startDate) => {
     console.error("Invalid date format");
     return [];
   }
+
+  validDate.setMonth(validDate.getMonth() + 1);
   
   const dates = [];
   for (let i = 0; i < 12; i++) {
@@ -159,18 +161,16 @@ const PreDestibution = ({userId, preliminaryId}) => {
       }
     };
     fetchData();
-    // setMonthlyReportingDate(metrics[0]?.Unit);
   }, [preliminaryId]);
 
-  const monthlyReportClickHandler = (month) => {
-    const dataForMonth = monthlyMetrixGet.find((data) => new Date(data.date).getMonth() === month);
-    if (dataForMonth) {
-      navigate(`/monthly-reporting/${month}`);
-    }
+
+  const handleCardClick = (monthData, monthName , yearName) => {
+    navigate('/monthly-report', { state: { monthlyReportData: monthData , monthName, yearName } });
   };
-  const handleCardClick = (monthData) => {
-    navigate('/monthly-report', { state: { monthlyReportData: monthData } });
-    // setSelectedData(monthData); // Set the selected data to display
+  const monthlyReportingFormHandler = (monthName, yearN) => {
+    const month = monthName;
+    const year = yearN;
+    navigate('/monthly-reporting', { state: { month, year } });
   };
 
   if (loading) {
@@ -279,7 +279,7 @@ const PreDestibution = ({userId, preliminaryId}) => {
                   }}
                   color = "primary"
                 disabled={!isEnabled}
-                onClick={() => handleCardClick(monthlyMetrixGet[index])}
+                onClick={() => handleCardClick(monthlyMetrixGet[index], monthName, year)}
                 >
                   View Report &rarr;
                 </Button>
@@ -303,7 +303,8 @@ const PreDestibution = ({userId, preliminaryId}) => {
                   color = "primary"
                 //  color={isEnabled ? "primary" : "default"}
                 disabled={!isEnabled}
-                onClick={() => navigate('/monthly-reporting')}
+                  onClick={() => monthlyReportingFormHandler(monthName, year)}
+                // onClick={() => navigate('/monthly-reporting')}
                 >
                   Submit Report &rarr;
                 </Button>

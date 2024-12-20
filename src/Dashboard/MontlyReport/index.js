@@ -6,7 +6,7 @@ import PreDestibution from '../Preliminary/PreDestibution';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 
-// // Generate 12 monthly dates starting from a given date
+//  Generate 12 monthly dates starting from a given date
 
 const generateMonthlyDates = (startDate) => {
     console.log(startDate);
@@ -59,8 +59,6 @@ const MonthlyReport = () => {
 
 // this is to get the preliminary data from the sheet
 const [metrics, setMetrics] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -113,7 +111,6 @@ useEffect(() => {
       }
     };
     fetchData();
-    // setMonthlyReportingDate(metrics[0]?.Unit);
   }, [preliminaryId]);
 
   useEffect(() => {
@@ -153,9 +150,8 @@ useEffect(() => {
           .catch((error) => console.error('API error:', error));
       }, [user]);  
 
-      const handleCardClick = (monthData) => {
-        navigate('/monthly-report', { state: { monthlyReportData: monthData } });
-        // setSelectedData(monthData); // Set the selected data to display
+      const handleCardClick = (monthData, monthName , yearName) => {
+        navigate('/monthly-report', { state: { monthlyReportData: monthData , monthName, yearName } });
       };
       
     const API_URL = `https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=Monthly&&id=${id}`;
@@ -209,7 +205,7 @@ useEffect(() => {
             {monthlyMetrixGet[index] ? 
             <Card  style={{ height: "100%" }} 
             sx={{backgroundColor: !isEnabled && "#E0E0E0" , cursor: "pointer"}}
-            onClick={() => handleCardClick(monthlyMetrixGet[index])}
+            onClick={() => handleCardClick(monthlyMetrixGet[index], monthName, year)}
             >
               <CardContent>
                 <Typography variant="subtitle1" mt={1} ml={2} sx={{color:"#828282"}}>
