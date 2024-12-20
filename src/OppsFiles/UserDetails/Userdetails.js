@@ -17,6 +17,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 import { useLocation } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
 const FormComponent = ({ user }) => {
 
@@ -144,6 +145,7 @@ const FormComponent = ({ user }) => {
   const [snackbarMessage, setSnackbarMessage] = useState(""); // To store custom message
   const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // Success or Error
   const [loading, setLoading] = useState(false);
+  const { id } = useParams();
 
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
@@ -230,7 +232,7 @@ const FormComponent = ({ user }) => {
           incomeCertificateFileName: formData.incomeCertificateFile?.name,
           incomeCertificateMimeType: formData.incomeCertificateFile?.type,
           type: "userdetails",
-          ngoId: user,
+          ngoId: user || id,
         };
 
         const response = await fetch(

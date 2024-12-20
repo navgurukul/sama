@@ -1,31 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Grid,Card,Button,CardContent, Paper, CircularProgress,Container } from '@mui/material';
+import { Box, Typography, Grid,Card,Button,CardContent, Paper, CircularProgress,Container, } from '@mui/material';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import MOUCard from '../../Pages/MouUpload/MouUpload';
 import MouReviewd from '../../Pages/MouUpload/MouReviewd';
 import { set } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-
-
-// // Generate 12 monthly dates starting from a given date
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import MonthlyReportData from './MonthlyReportData';
 
 const generateMonthlyDates = (startDate) => {
+  const validDate = convertToValidDate(startDate);
+  if (isNaN(validDate)) {
+    console.error("Invalid date format");
+    return [];
+  }
+  
   const dates = [];
   for (let i = 0; i < 12; i++) {
-    const newDate = new Date(startDate);
+    const newDate = new Date(validDate);
     newDate.setMonth(newDate.getMonth() + i);
     dates.push(newDate);
   }
   return dates;
 };
 
+const convertToValidDate = (input) => {
+  const [date, time] = input.split(", ");
+  const [day, month, year] = date.split("/");
+  return new Date(`${year}-${month}-${day}T${time}`);
+};
+
+
 // Helper function to format the date
 const formatDate = (date) => {
-  const day = "10th"; // Fixed day
+  // const day = "10th"; // Fixed day
+  const day = date.getDate();
   const month = date.toLocaleString("default", { month: "long" }); // Get full month name
   const year = date.getFullYear();
-  return `Due by ${day} ${month} ${year}`;
+  return `${day} ${month} ${year}`;
 };
 
 const PreDestibution = ({userId, preliminaryId}) => {
@@ -34,23 +47,54 @@ const PreDestibution = ({userId, preliminaryId}) => {
   const [metrics, setMetrics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [monthlyMetrixGet, setMonthlyMetrixGet] = useState([]);
   const [showComponentA, setShowComponentA] = useState(true); // Start with Component A
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
   const gettingStoredData = NgoId[0].NgoId ;
   const { id } = useParams();
   const user = id? id : NgoId[0].NgoId;
   const navigate = useNavigate();
-  const [monthlyReportingDate, setMonthlyReportingDate] = useState(("")); // Set your start date here
+  const [monthlyReportingDate, setMonthlyReportingDate] = useState(""); // Set your start date here
   const [currentDate, setCurrentDate] = useState(new Date());
-  const monthlyDates = generateMonthlyDates(monthlyReportingDate);
+  const monthlyDates = monthlyReportingDate && generateMonthlyDates(monthlyReportingDate);
+  const [selectedData, setSelectedData] = useState(null);
+  
+  
+  // this is to fetch monthly report 
+  useEffect(() => {
+    // Fetch data when the component mounts
+    fetch(`https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec?type=GetMonthlyReport&id=${gettingStoredData}`)
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.status === 'success') {
 
+          const rawData = result.data;
+          const parsedData = Array.isArray(rawData)
+            ? rawData
+            : JSON.parse(rawData);
+
+          // Filter out empty values and transform strings into objects
+          const transformedData = parsedData
+            .filter((item) => item.trim() !== '')
+            .map((item) => {
+              return item.split(',').reduce((acc, pair) => {
+                const [key, value] = pair.split(':').map((str) => str.trim());
+                acc[key] = value; // Create key-value pairs
+                return acc;
+              }, {});
+            });
+          setMonthlyMetrixGet(transformedData);
+
+        } else {
+          console.error('Error fetching data:', result.message);
+        }
+      })
+      .catch((error) => console.error('API error:', error));
+  }, [gettingStoredData]);  
+  
     useEffect(() => {
-      // Update current date every second for live status
-      const interval = setInterval(() => {
-        setCurrentDate(new Date());
-      }, 1000);
-
-      return () => clearInterval(interval);
+      // Set the date once
+      setCurrentDate(new Date());
     }, []);
 
 
@@ -86,7 +130,7 @@ const PreDestibution = ({userId, preliminaryId}) => {
     return () => clearTimeout(timer);
   }, []); 
 
-  // Fetch data from API
+  // Fetch data from API for the stored preliminary.
   useEffect(() => {
     const fetchData = async () => {
       
@@ -96,26 +140,38 @@ const PreDestibution = ({userId, preliminaryId}) => {
         ); // Replace with your API endpoint
         const dateComparedData = response.data.map(metric => {
           const unitDate = new Date(metric.Unit); // Parse unit as date
+          
           const currentDate = new Date(); // Current date and time
+          
           const diffInMinutes = (currentDate - unitDate) / 60000; // Difference in minutes
           return { ...metric, disabled: diffInMinutes <= 10 }; // Add disabled flag
         });
         setMetrics(dateComparedData);
+        
         // setMetrics(response.data); // Update according to API response structure
         setLoading(false);
-        if (!monthlyReportingDate && dateComparedData.length > 0) {
+        if (!monthlyReportingDate && dateComparedData.length > 0) {          
           setMonthlyReportingDate(dateComparedData[0]?.Unit);
         }
       } catch (err) {
-        console.error(err);
         setError(true);
         setLoading(false);
       }
     };
     fetchData();
-    setMonthlyReportingDate(metrics[0]?.Unit);
+    // setMonthlyReportingDate(metrics[0]?.Unit);
   }, [preliminaryId]);
 
+  const monthlyReportClickHandler = (month) => {
+    const dataForMonth = monthlyMetrixGet.find((data) => new Date(data.date).getMonth() === month);
+    if (dataForMonth) {
+      navigate(`/monthly-reporting/${month}`);
+    }
+  };
+  const handleCardClick = (monthData) => {
+    navigate('/monthly-report', { state: { monthlyReportData: monthData } });
+    // setSelectedData(monthData); // Set the selected data to display
+  };
 
   if (loading) {
     return (
@@ -133,7 +189,7 @@ const PreDestibution = ({userId, preliminaryId}) => {
       </Box>
     );
   }
-
+  
   
   return (
     <Container maxWidth="lg" mt="10" >
@@ -151,7 +207,7 @@ const PreDestibution = ({userId, preliminaryId}) => {
         </Typography>
       </Box>) 
        : (mouFound?.data ?  <MouReviewd /> : <MOUCard ngoid = {user}/>) 
-       : "" }
+       : ""}
       <Box sx={{ mt: 5 , backgroundColor: '#F0F4EF', borderRadius: 2,p: 4, mb:5}}>
         <Typography variant="h6" color="primary" sx={{ mb: 3}}>
           Pre-Distribution Metrics
@@ -191,7 +247,7 @@ const PreDestibution = ({userId, preliminaryId}) => {
             ))}
           </Grid>
       </Box> 
-      {/* {(NgoId[0]?.role[0] === "ngo") && 
+      {(NgoId[0]?.role[0] === "ngo") && 
       <>
         <Typography variant="h6" gutterBottom sx={{color:"#4A4A4A"}}>
           Monthly Report
@@ -201,9 +257,35 @@ const PreDestibution = ({userId, preliminaryId}) => {
           const isEnabled = currentDate >= report; // Check if current date has passed the card's date
           const monthName = report.toLocaleString("default", { month: "long" }); // Get full month name
           const year = report.getFullYear(); // Get the year
-
+          
           return (
           <Grid item xs={12} sm={6} md={4} key={index}>
+            {monthlyMetrixGet[index] ? 
+            <Card  style={{ height: "100%" }} 
+            sx={{backgroundColor: !isEnabled && "#E0E0E0"}}
+            >
+              <CardContent>
+                <Typography variant="subtitle1" mt={1} ml={2} sx={{color:"#828282"}}>
+                {monthName} {year}
+                  </Typography>
+                  <Box display="flex" alignItems="center" mt={1} ml={2}>
+                    <CheckCircleIcon color="success" />
+                    <Typography color="#48A145" variant="subtitle1" ml={1}>
+                      Submitted
+                    </Typography>
+                  </Box>                  
+                <Button variant="subtitle1" 
+                 sx={{ marginTop: "25px", marginLeft:"29%",
+                  }}
+                  color = "primary"
+                disabled={!isEnabled}
+                onClick={() => handleCardClick(monthlyMetrixGet[index])}
+                >
+                  View Report &rarr;
+                </Button>
+              </CardContent>
+            </Card>
+          : 
             <Card  style={{ height: "100%" }} 
             sx={{backgroundColor: !isEnabled && "#E0E0E0"}}
             >
@@ -212,12 +294,14 @@ const PreDestibution = ({userId, preliminaryId}) => {
                 {monthName} {year}
                   </Typography>
                 <Typography color="textSecondary" variant="body1" mt={1} ml={2}>
-                {formatDate(report)}
+                {"Due by " + formatDate(report)}
                   </Typography>
-                <Button variant="subtitle1" 
+                <Button 
+                variant="subtitle1" 
                  sx={{ marginTop: "25px", marginLeft:"29%",
-                  }} 
-                 color={isEnabled ? "primary" : "default"}
+                  }}
+                  color = "primary"
+                //  color={isEnabled ? "primary" : "default"}
                 disabled={!isEnabled}
                 onClick={() => navigate('/monthly-reporting')}
                 >
@@ -225,12 +309,15 @@ const PreDestibution = ({userId, preliminaryId}) => {
                 </Button>
               </CardContent>
             </Card>
+        }
           </Grid>
           )
           })}
       </Grid>
 
-      <Typography variant="h6" gutterBottom style={{ marginTop: "40px",color:"#4A4A4A" }}>
+      {/* {selectedData && <MonthlyReportData monthlyReportData={selectedData} />} */}
+
+      {/* <Typography variant="h6" gutterBottom style={{ marginTop: "40px",color:"#4A4A4A" }}>
         Yearly Report
       </Typography>
       <Grid container spacing={3} mb={5}>
@@ -245,9 +332,9 @@ const PreDestibution = ({userId, preliminaryId}) => {
             </CardContent>
           </Card>
         </Grid>
-      </Grid> 
+      </Grid>  */}
       </>
-      } */}
+      }
     </Container>
   );
 };
