@@ -30,7 +30,7 @@ const AddStatusModal = ({ open, onClose, onAdd }) => {
 
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=addManageStatus",
+        "https://script.google.com/macros/s/AKfycbywiddDzBjgYDbNEz_O27XoJFq6d1AtYzggk8qdt_7YziUl7xaVS0K65Hyb_8vfKs4j/exec?type=addManageStatus",
         {
           method: "POST",
           body: JSON.stringify(formData),
@@ -40,6 +40,8 @@ const AddStatusModal = ({ open, onClose, onAdd }) => {
           },
         }
       );
+
+      //  "https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=addManageStatus",
 
       onAdd(formData);
       setFormData({ name: "", description: "", id: formData.id });
