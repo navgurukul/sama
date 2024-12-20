@@ -41,6 +41,8 @@ import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
 import MonthlyForm from './Dashboard/MontlyReport/MothlyForm';
 import SubmissionSuccess from './components/SubmissionSuccess/SubmissionSuccess';
 import MonthlyEditForm from './Dashboard/MontlyReport/MonthlyEditForm';
+import MonthlyReportData from './Dashboard/Preliminary/MonthlyReportData';
+
 
 function App() {
   return (
@@ -67,6 +69,7 @@ function App() {
               <Route path="/submission-success" element={<SubmissionSuccess />} />
               <Route path="/preliminary" element={<Preliminary />} />
               <Route path="/monthly-reporting" element={<MonthlyReportingForm />} />
+              <Route path="monthly-report" element={<MonthlyReportData />} />
               <Route 
               path="/preliminary-distribution"
               element={
