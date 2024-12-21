@@ -54,10 +54,27 @@ function LaptopForm() {
     });
   };
 
+  const validateForm = () => {
+    const requiredFields = [
+      "donorCompanyName",
+      "conditionStatus",
+    ];
+    for (let field of requiredFields) {
+      if (!formData[field].trim()) {
+        alert(`${field} is required.`);
+        return false;
+      }
+    }
+    return true;
+  };
+  
+
   // Function to handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-    setLoading(true); // Show the loader when form submission starts
+
+    e.preventDefault();
+    if (!validateForm()) return;
+    setLoading(true);
     try {
       await fetch(
         "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
