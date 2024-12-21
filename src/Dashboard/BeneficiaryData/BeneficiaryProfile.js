@@ -37,8 +37,20 @@ const BeneficiaryProfile = () => {
     fetchData();
   }, [id]);
 
+  if (loading)
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
 
-  if (loading) return <CircularProgress />;
   if (error) return <Typography color="error">{error}</Typography>;
 
   return (
@@ -58,7 +70,7 @@ const BeneficiaryProfile = () => {
       >
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6}>
-            <Typography variant="h6" mb={3}>
+            <Typography variant="h6" mb={3} color="primary.main">
               {data.name}
             </Typography>
 
@@ -66,7 +78,7 @@ const BeneficiaryProfile = () => {
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Beneficiary ID
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data.ID}
             </Typography>
 
@@ -74,49 +86,49 @@ const BeneficiaryProfile = () => {
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Email
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data.email}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Contact Number
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data["contact number"]}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Date of Birth
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {new Date(data["Date Of Birth"]).toLocaleDateString()}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               ID Proof Type
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data["ID Proof type"]}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               ID Proof Number
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data["ID Proof number"]}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Qualification
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data.Qualification}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Occupation
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data.Occupation}
             </Typography>
             {NgoId[0].role.includes("admin") && (
@@ -124,7 +136,7 @@ const BeneficiaryProfile = () => {
                 variant="outlined"
                 color="primary"
                 href={`/edit-user/${id}`}
-                sx={{ marginTop: 2 }}
+                sx={{ marginTop: 2, borderRadius: "100px" }}
               >
                 Edit Beneficiary Profile
               </Button>
@@ -135,49 +147,49 @@ const BeneficiaryProfile = () => {
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Use Case
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data["Use case"]}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Number of Family Members
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data["Number of Family members(who might use the laptop)"]}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Status
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data.status}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Laptop Assigned
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data["Laptop Assigned"] ? "Yes" : "No"}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Family Address
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data.Address}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Address State
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data["Address State"]}
             </Typography>
 
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Family Annual Income
             </Typography>
-            <Typography variant="body1" marginBottom="16px">
+            <Typography variant="body1" marginBottom="16px" color="#4A4A4A">
               {data["Family Annual Income"]}
             </Typography>
           </Grid>

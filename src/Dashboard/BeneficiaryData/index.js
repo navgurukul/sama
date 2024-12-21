@@ -265,16 +265,18 @@ const BeneficiaryData = () => {
     setOpenDeleteDialog(false);
     setEditStatus(true);
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      mode: 'no-cors',
-      body: JSON.stringify({
-        userId: ngoIdToDelete,
-        type: "deleteUser",
-      })
-    })
-
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          mode: "no-cors",
+          body: JSON.stringify({
+            userId: ngoIdToDelete,
+            type: "deleteUser",
+          }),
+        }
+      );
     } catch (error) {
       console.error("Error deleting row:", error);
     }
@@ -296,16 +298,25 @@ const BeneficiaryData = () => {
       (filters.status === "" || ngo.status === filters.status)
     );
   });
-  
+
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-      {
-        (!loading && (ngoData.some(item => item.Ngo === user))) ? (
+      {!loading && ngoData.some((item) => item.Ngo === user) ? (
         <>
-        {NgoId[0]?.role[0] === "ngo" && (mouFound?.data ?  <MouReviewd /> : <MOUCard ngoid = {user}/> )}
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography variant="h6" gutterBottom> All Beneficiaries({filteredData.length})</Typography>
-          {/* <Button 
+          {NgoId[0]?.role[0] === "ngo" &&
+            (mouFound?.data ? <MouReviewd /> : <MOUCard ngoid={user} />)}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              {" "}
+              All Beneficiaries({filteredData.length})
+            </Typography>
+            {/* <Button 
             variant="contained"
             color="primary"
             onClick={() => {
@@ -315,23 +326,18 @@ const BeneficiaryData = () => {
             {/* <Typography variant="h6" gutterBottom>
               All Beneficiaries({filteredData.length})
             </Typography> */}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() =>
-                navigate("/user-details", { state: { userId: id } })
-              }
-              sx={{ mt: 2, mr: 2 }}
-            >
-              Add Beneficiaries
-            </Button>
           </Box>
 
-          <Grid container spacing={2}>
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="space-between"
+            spacing={2}
+          >
             <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
               <TextField
                 sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
-                label="Search by Name, Location, Contact"
+                placeholder="Search by Name, Location, Contact"
                 variant="outlined"
                 value={searchTerm}
                 onChange={handleSearchChange}
@@ -343,6 +349,26 @@ const BeneficiaryData = () => {
                   ),
                 }}
               />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md="auto"
+              sx={{
+                display: "flex",
+                justifyContent: { xs: "flex-start", md: "flex-end" },
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() =>
+                  navigate("/user-details", { state: { userId: id } })
+                }
+                sx={{ mt: 2, mr: 2, borderRadius: "100px" }}
+              >
+                Add Beneficiaries
+              </Button>
             </Grid>
           </Grid>
 
@@ -555,7 +581,7 @@ const BeneficiaryData = () => {
             {loading ? (
               <TableRow>
                 <TableCell colSpan={9} align="center">
-                  <CircularProgress sx={{ mt: 10, mb: 10 }} />
+                    <CircularProgress sx={{ mt: 10, mb: 10 }} />
                 </TableCell>
               </TableRow>
             ) : ngoData.some((item) => item.Ngo === user) ? (
@@ -630,10 +656,11 @@ const BeneficiaryData = () => {
                     ) : (
                       <>
                         <TableCell style={{ cursor: "pointer" }}>
-                          <EditIcon />
+                          <EditIcon sx={{ color: "#BDBDBD" }} />
                         </TableCell>
                         <TableCell style={{ cursor: "pointer" }}>
                           <DeleteIcon
+                            sx={{ color: "#BDBDBD" }}
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeleteDialog(ngo.ID);
