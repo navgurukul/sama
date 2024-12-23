@@ -42,6 +42,9 @@ import MonthlyForm from './Dashboard/MontlyReport/MothlyForm';
 import SubmissionSuccess from './components/SubmissionSuccess/SubmissionSuccess';
 import MonthlyEditForm from './Dashboard/MontlyReport/MonthlyEditForm';
 import NgoProfile from './Dashboard/AdminNgo/NgoProfile';
+import PrivacyPolicy from './Pages/PrivacyPolicy';
+import LandingPage from './Pages/LandingPage';
+
 
 function App() {
   return (
@@ -59,6 +62,8 @@ function App() {
               <Route path="/ngoregistration/:donorId" element={ <NgoForm />} />
               <Route path='/ngoregistration' element={<NgoForm />} />  {/* // this is for all the ngo's */}
               <Route path="/login" element={<Opslogin />} /> {/* // need to rename this component */}
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/about-initiative" element={<LandingPage />} />
               <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
               <Route path="/question-selection" element={    
                 <PrivateRoute reqired={'ops'}>
