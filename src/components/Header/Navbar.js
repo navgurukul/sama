@@ -244,7 +244,6 @@ const Navbar = () => {
           </Link>
           <Box className={`nav-links ${menuVisible ? "visible" : ""}`}>
             {!isLoggedIn && (
-              // Show regular menu items when not logged in
               menuItems.map((item, index) => (
                 <MuiLink
                   sx={{
