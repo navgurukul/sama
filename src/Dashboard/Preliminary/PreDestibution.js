@@ -252,11 +252,11 @@ const PreDestibution = ({userId, preliminaryId}) => {
         <Typography variant="h6" gutterBottom sx={{color:"#4A4A4A"}}>
           Monthly Report
         </Typography>
-        <Grid container spacing={3} mb = {8}>
+        <Grid container spacing={3} mb = {8}> 
         {monthlyDates.map((report, index) => {
-          const isEnabled = currentDate >= report; // Check if current date has passed the card's date
-          const monthName = report.toLocaleString("default", { month: "long" }); // Get full month name
-          const year = report.getFullYear(); // Get the year
+          const isEnabled = currentDate >= report; // Check if current date has passed the card's date 
+          const monthName = report.toLocaleString("default", { month: "long" }); // Get full month name 
+          const year = report.getFullYear(); // Get the year 
           
           return (
           <Grid item xs={12} sm={6} md={4} key={index}>
@@ -276,8 +276,9 @@ const PreDestibution = ({userId, preliminaryId}) => {
                   </Box>                  
                 <Button variant="subtitle1" 
                  sx={{ marginTop: "25px", marginLeft:"29%",
+                  color:"primary.main"
                   }}
-                  color = "primary"
+                 
                 disabled={!isEnabled}
                 onClick={() => handleCardClick(monthlyMetrixGet[index], monthName, year)}
                 >
@@ -293,14 +294,15 @@ const PreDestibution = ({userId, preliminaryId}) => {
                 <Typography variant="subtitle1" mt={1} ml={2} sx={{color:"#828282"}}>
                 {monthName} {year}
                   </Typography>
-                <Typography color="textSecondary" variant="body1" mt={1} ml={2}>
+                <Typography color="#828282" variant="body1" mt={1} ml={2}>
                 {"Due by " + formatDate(report)}
                   </Typography>
                 <Button 
                 variant="subtitle1" 
                  sx={{ marginTop: "25px", marginLeft:"29%",
+                  color:"primary.main"
                   }}
-                  color = "primary"
+                 
                 //  color={isEnabled ? "primary" : "default"}
                 disabled={!isEnabled}
                   onClick={() => monthlyReportingFormHandler(monthName, year)}

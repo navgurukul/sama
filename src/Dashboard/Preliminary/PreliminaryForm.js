@@ -275,7 +275,7 @@ const PreliminaryForm = ({userId}) => {
                 Course {index + 1}
               </Typography>
             </Grid>
-            <Grid item xs={2}  >
+            <Grid item xs={2}>
               <TextField
                 type="number"
                 value={course.duration}
