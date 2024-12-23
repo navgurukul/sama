@@ -55,6 +55,7 @@ function Opslogin() {
       } 
       else 
       if (user?.Role?.includes('ngo')) {
+        navigate('/beneficiarydata');
         try {
           // First API call to fetch registration data
           const response = await fetch(

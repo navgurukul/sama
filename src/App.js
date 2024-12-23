@@ -41,6 +41,7 @@ import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
 import MonthlyForm from './Dashboard/MontlyReport/MothlyForm';
 import SubmissionSuccess from './components/SubmissionSuccess/SubmissionSuccess';
 import MonthlyEditForm from './Dashboard/MontlyReport/MonthlyEditForm';
+import NgoProfile from './Dashboard/AdminNgo/NgoProfile';
 
 function App() {
   return (
@@ -91,6 +92,7 @@ function App() {
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
+               <Route path = "/ngoprofile" element= {<NgoProfile/>} />
 
               <Route path="/documentreupload" element={<DocumentReupload />} />
               <Route path="/attentionneeded" element={<AttentionNeeded />} />
@@ -165,6 +167,7 @@ function App() {
             {" "}
           </div>
           <Footer />
+
         </div>
       </Router>
       
