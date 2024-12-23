@@ -13,6 +13,10 @@ theme = createTheme(theme, {
     default: {
       contrastText: "#4A4A4A",
     },
+    succes: {
+      contrastText: "#48A145",
+
+    },
     primary: {
       main: "#5C785A",
       light: "#F0F4EF",

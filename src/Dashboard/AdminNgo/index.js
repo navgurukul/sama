@@ -63,7 +63,7 @@ const AdminNgo = () => {
         setLoading(false);
         setEditStatus(false);
 
-        const laptopsRequiredOptions = [...new Set(data.map(item => item.primaryContactName))];
+        const laptopsRequiredOptions = [...new Set(data.map(item => item.beneficiariesCount))];
         const purposeOptions = [...new Set(data.map(item => item.expectedOutcome))];
         const locationOptions = [...new Set(data.map(item => item.location))];
         const statusOptions = ['Submitted Request', 'In Progress', 'Approved', 'Rejected']; // Set status options manually
@@ -186,10 +186,10 @@ const AdminNgo = () => {
         ngo.organizationName?.toLowerCase().includes(searchTerm) ||
         ngo.location?.toLowerCase().includes(searchTerm) ||
         ngo.contactNumber?.toString().includes(searchTerm)) &&
-      (filters.laptopsRequired === '' || ngo.primaryContactName === filters.laptopsRequired) &&
+      (filters.laptopsRequired === '' || ngo.beneficiariesCount === filters.laptopsRequired) &&
       (filters.purpose === '' || ngo.expectedOutcome === filters.purpose) &&
       (filters.location === '' || ngo.location === filters.location) &&
-      (filters.status === '' || ngo.status === filters.status)
+      (filters.status === '' || ngo.Status === filters.status)
     );
   });
   
@@ -210,7 +210,7 @@ const AdminNgo = () => {
                 xs:"100%"
               }
             }}
-            label="Search by Name, Location, Contact"
+            label="Search by Name, Location, Contact Number..."
             variant="outlined"
             maxWidth="lg"
             value={searchTerm}
@@ -307,7 +307,7 @@ const AdminNgo = () => {
               <TableCell sx={classes.tableHeader}>Point of Contact</TableCell>
               <TableCell sx={classes.tableHeader}>Contact Number</TableCell>
               <TableCell sx={classes.tableHeader}>Laptop Required</TableCell>
-              <TableCell sx={classes.tableHeader}>Location of Operation</TableCell>
+              <TableCell sx={classes.tableHeader}>Location</TableCell>
               <TableCell sx={{ ...classes.tableHeader, width: "220px" }}>Purpose</TableCell>
               <TableCell sx={classes.tableHeader}>Type</TableCell>
               <TableCell sx={classes.tableHeader}>Status</TableCell>
