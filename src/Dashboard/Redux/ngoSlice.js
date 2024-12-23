@@ -15,10 +15,11 @@ export const fetchNgoDetails = createAsyncThunk(
       }
       return rejectWithValue('Invalid response format');
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
+
 
 const ngoSlice = createSlice({
   name: 'ngo',

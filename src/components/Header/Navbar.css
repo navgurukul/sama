@@ -21,10 +21,12 @@
 }
 
 .nav-link:hover,
-.nav-link.active {
+.nav-link.active,.LoginMobile {
   color: rgba(92, 120, 90, 1) !important; 
 }
-
+.LoginMobile{
+  display: none;
+}
 .mobile-nav {
   display: none;
 }
@@ -49,18 +51,50 @@
 .mobile-menu .MuiListItemText-root {
   flex-grow: 1;
 }
-
+.drop{
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+  width: 100%;
+  position: relative;
+  margin-left: 1100px;
+}
+.dropMob{
+  display: none;
+}
 @media (max-width: 960px) {
   .nav-links {
     display: none; 
     border-bottom:1px solid #549B79;
   }
+  .Login{
+    display: none; 
+  }
   .nav-link {
     border-bottom:1px solid #549B79;
+  }
+  .LoginMobile{
+    display: flex;
+    border-bottom:1px solid #549B79;
+    position: relative;
+    bottom: 10px;
+    color: #4A4A4A;
+    text-decoration: none;
   }
   .mobile-nav {
     display: flex;
   }
+  .drop{
+    display: flex;
+    margin-left: 0px;
+  }
+  /* .dropMob{
+    display: flex ;
+    justify-content: flex-end;
+    padding: 10px;
+    width: 100%;
+    position: relative;
+  } */
 }
 
 .MuiIconButton-root {
