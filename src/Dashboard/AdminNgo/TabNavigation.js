@@ -14,6 +14,7 @@ import ManageStatuses from '../ManageStatuses'; // Ensure correct import
 import { Container } from '@mui/system';
 import MonthlyForm from '../MontlyReport/MothlyForm';
 import MonthlyReport from '../MontlyReport';
+import YearlyReport from '../YearlyNgo/YearlyReport';
 
 const TabNavigation = () => {
   const [value, setValue] = React.useState(0);
@@ -49,8 +50,9 @@ const TabNavigation = () => {
     } else {
       tabs.push(
         <Tab key="pre-distribution" label="Pre-Distribution Metrics" />,
-        <Tab key="monthly-metrics" label="Monthly Metrics" />
-      );
+        <Tab key="monthly-metrics" label="Monthly Metrics" />,
+        <Tab key="yearly-metrics" label="Yearly Metrics" />,
+      )
     }
 
     return tabs;
@@ -82,6 +84,11 @@ const TabNavigation = () => {
             return <ManageStatuses />;
           }
           return <MonthlyReport/>; // Fallback if accessed incorrectly
+        case 4:
+          if (ngoDetails[0]?.['Ngo Type'] === '1 to many') {
+            return <YearlyReport/>;
+          }
+
         default:
           return null;
       }
