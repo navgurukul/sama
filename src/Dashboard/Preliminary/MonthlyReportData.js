@@ -59,7 +59,7 @@ function MonthlyReportData() {
         </Paper>
        
       </Box> 
-       <Box display="flex" justifyContent="center" mt={2}>
+       <Box display="flex" justifyContent="center" mt="32PX">
             <Button
               variant="contained"
               // sx={{

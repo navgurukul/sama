@@ -644,4 +644,3 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
 export default AdminTable;
 
 
-

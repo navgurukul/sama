@@ -70,26 +70,23 @@ const DocumentUpload = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
-
     const files = Object.keys(fileStates).map((label) => ({
       category: label,
       fileName: fileStates[label].file.name,
       mimeType: fileStates[label].file.type,
       file: fileStates[label].base64,
     }));
-
     const payload = { name: formData.name, files, type: "MultipleDocsUpload" , ngoId: userid,  };
-
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec"
+        "https://script.google.com/macros/s/AKfycbyXgpBdyC423mHLQ-hm5vh9yRCHxzAD03Opk3Pc6x4Nik865xH6GJCVt-LYI_7i4UPA/exec?type=MultipleDocsUpload"
         , {
         method: "POST",
         mode:"no-cors",
         body: JSON.stringify(payload),
       });
       setUploading(false);
-      alert("Documents uploaded successfully!");      
+      alert("Documents uploaded successfully!");
       navigate('/submission-success');
     } catch (error) {
       console.error("Error uploading documents:", error);
