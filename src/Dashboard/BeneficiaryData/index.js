@@ -1,82 +1,34 @@
 import React, { useState, useEffect } from "react";
-import {
-  Container,
-  Typography,
-  Grid,
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Box,
-  Checkbox,
-} from "@mui/material";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import InputAdornment from "@mui/material/InputAdornment";
-import SearchIcon from "@mui/icons-material/Search";
-import TablePagination from "@mui/material/TablePagination";
-import { useNavigate, useParams } from "react-router-dom";
+import { Container, CircularProgress } from "@mui/material";
 import axios from "axios";
-import EditIcon from "@mui/icons-material/Edit";
-import CircularProgress from "@mui/material/CircularProgress";
-import MOUCard from "../../Pages/MouUpload/MouUpload";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DeleteDialog from "../AdminNgo/DeletDialog";
-import MouReviewd from "../../Pages/MouUpload/MouReviewd";
+import AdminTable from "./AdminTable";
+import NGOTable from "./NGOTable";
 
 const BeneficiaryData = () => {
+  // Authentication and role management
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
   const gettingStoredData = NgoId[0].NgoId;
-  const { id } = useParams();
-  const user = id ? id : NgoId[0].NgoId;
-  const navigate = useNavigate();
+  const isAdmin = NgoId[0]?.role[0] !== "ngo";
+
+  // State management for API data
   const [ngoData, setNgoData] = useState([]);
-  const [editStatus, setEditStatus] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    "ID Proof type": "",
-    "Use case": "",
-    "Occupation Status": "",
-    status: "",
-  });
-  const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [editStatus, setEditStatus] = useState(false);
+  const [mouFound, setMouFound] = useState(true);
   const [filterOptions, setFilterOptions] = useState({
     idProof: [],
     useCase: [],
     occupation: [],
     status: [],
   });
-  const [selectedStatus, setSelectedStatus] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [ngoIdToChange, setNgoIdToChange] = useState(null);
-  const [selectedRows, setSelectedRows] = useState(new Set());
-  const [bulkStatus, setBulkStatus] = useState("");
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [ngoIdToDelete, setNgoIdToDelete] = useState(null);
-  const [mouFound, setMouFound] = useState(true);
 
+  // Fetch status data
   useEffect(() => {
     async function fetchStatusData() {
       try {
         const response = await axios.get(
           "https://script.googleusercontent.com/macros/echo?user_content_key=wv8VgYNObxKOXzwh7eYpr7WRm84TtrCHR7zoWSfmZw2KNkt--9Rxkf3HTwOYt_8cvsYsJ7w8dl_hZvskwAfXU4KE1GXBo2xROJmA1Yb3SEsKFZqtv3DaNYcMrmhZHmUMWojr9NvTBuBLhyHCd5hHa_xWSu8paSCnPnaAM16cnG-kggZ3WOGCpaClMcmKPzyT2alPYERGSlYOY2xBKzUS12dhwjPmtw4aVs9yjGKgHZOFxkGhWQqq2sJyjT23HAXrpnNe1hZwoqUj0XHTI1iIww&lib=MM8bm_jOfbRbuGHeV6mIUCZ0pnl9Mx4Z2"
         );
-
-        // Set status options from API response
         setFilterOptions((prevOptions) => ({
           ...prevOptions,
           status: response.data.map((status) => status.name),
@@ -88,33 +40,35 @@ const BeneficiaryData = () => {
     fetchStatusData();
   }, []);
 
+  // Check MOU status for NGO
   useEffect(() => {
-    async function fetchData() {
-      const id = gettingStoredData;
+    async function fetchMouData() {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=GetMou&id=${id}`
+          `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=GetMou&id=${gettingStoredData}`
         );
-        const data = response.data;
-        setMouFound(data);
+        setMouFound(response.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching MOU data:", error);
       }
     }
-    gettingStoredData && fetchData();
-  }, [gettingStoredData]);
+    !isAdmin && gettingStoredData && fetchMouData();
+  }, [gettingStoredData, isAdmin]);
 
+  // Fetch beneficiary data
   useEffect(() => {
     async function fetchData() {
       try {
         const response = await axios.get(
-          "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData"
+          "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec?type=getUserData"
         );
         const data = response.data;
+
         setNgoData(data);
         setLoading(false);
         setEditStatus(false);
 
+        // Set filter options from fetched data
         const idProofOptions = [
           ...new Set(data.map((item) => item["ID Proof type"])),
         ];
@@ -124,12 +78,15 @@ const BeneficiaryData = () => {
         const occupationOptions = [
           ...new Set(data.map((item) => item["Occupation"])),
         ];
+        const statusOfBenificiary = [
+          ...new Set(data.map((item) => item["status"])),
+        ];
 
         setFilterOptions({
           idProof: idProofOptions,
           useCase: useCaseOptions,
           occupation: occupationOptions,
-          status: filterOptions.status,
+          status: statusOfBenificiary,
         });
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -138,601 +95,32 @@ const BeneficiaryData = () => {
     fetchData();
   }, [editStatus]);
 
-  const handleBulkStatusChange = async () => {
-    const updatedData = ngoData.map((ngo) => {
-      if (selectedRows.has(ngo.ID)) {
-        return { ...ngo, status: bulkStatus };
-      }
-      return ngo;
-    });
-
-    setOpenDialog(false);
-    setNgoData(updatedData);
-    setSelectedRows(new Set());
-    setEditStatus(true);
-
-    try {
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          mode: "no-cors",
-          body: JSON.stringify({
-            id: Array.from(selectedRows),
-            status: bulkStatus,
-            type: "editUser",
-          }),
-        }
-      );
-    } catch (error) {
-      console.error("Error updating status in bulk:", error);
-    }
-  };
-
-  const handleIndividualStatusChange = async (id, newStatus, event) => {
-    event.stopPropagation();
-
-    const updatedData = ngoData.map((ngo) => {
-      if (ngo.ID === id) {
-        return { ...ngo, status: newStatus };
-      }
-      return ngo;
-    });
-
-    setNgoData(updatedData);
-    setEditStatus(true);
-
-    try {
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          mode: "no-cors",
-          body: JSON.stringify({
-            id: [id],
-            status: newStatus,
-            type: "editUser",
-          }),
-        }
-      );
-    } catch (error) {
-      console.error("Error updating individual status:", error);
-    }
-  };
-
-  const handleFilterChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value.toLowerCase());
-  };
-
-  const handleRowClick = (id) => {
-    navigate(`/userdetails/${id}`);
-  };
-
-  const handleStatusChange = (id, newStatus) => {
-    setBulkStatus(newStatus);
-    setSelectedStatus(newStatus);
-    setNgoIdToChange(id);
-    setOpenDialog(true);
-  };
-
-  const handleCancelStatusChange = () => {
-    setSelectedStatus(null);
-    setOpenDialog(false);
-  };
-
-  const handleCheckboxChange = (id, event) => {
-    event.stopPropagation();
-    const newSelectedRows = new Set(selectedRows);
-    if (newSelectedRows.has(id)) {
-      newSelectedRows.delete(id);
-    } else {
-      newSelectedRows.add(id);
-    }
-    setSelectedRows(newSelectedRows);
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelectedRows = new Set(filteredData.map((row) => row.ID));
-      setSelectedRows(newSelectedRows);
-    } else {
-      setSelectedRows(new Set());
-    }
-  };
-
-  const handleDeleteDialog = (id) => {
-    setNgoIdToDelete(id);
-    setOpenDeleteDialog(true);
-  };
-
-  const handleCloseDeleteDialog = () => {
-    setOpenDeleteDialog(false);
-  };
-
-  const handleDelete = async () => {
-    const updatedData = ngoData.filter((ngo) => ngo.Id !== ngoIdToDelete);
-    setNgoData(updatedData);
-    setOpenDeleteDialog(false);
-    setEditStatus(true);
-    try {
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          mode: "no-cors",
-          body: JSON.stringify({
-            userId: ngoIdToDelete,
-            type: "deleteUser",
-          }),
-        }
-      );
-    } catch (error) {
-      console.error("Error deleting row:", error);
-    }
-  };
-
-  const FilterNgoData = ngoData?.filter((ngo) => ngo.Ngo == user);
-
-  const filteredData = FilterNgoData.filter((ngo) => {
+  if (loading) {
     return (
-      (searchTerm === "" ||
-        ngo.name?.toLowerCase().includes(searchTerm) ||
-        ngo.email?.toLowerCase().includes(searchTerm) ||
-        ngo["contact number"]?.toString().includes(searchTerm)) &&
-      (filters["ID Proof type"] === "" ||
-        ngo["ID Proof type"] === filters["ID Proof type"]) &&
-      (filters["Use case"] === "" || ngo["Use case"] === filters["Use case"]) &&
-      (filters["Occupation Status"] === "" ||
-        ngo["Occupation"] === filters["Occupation Status"]) &&
-      (filters.status === "" || ngo.status === filters.status)
+      <Container sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+        <CircularProgress />
+      </Container>
     );
-  });
+  }
 
+  // Common props for both tables
+  const commonProps = {
+    ngoData,
+    setNgoData,
+    setEditStatus,
+    filterOptions,
+    NgoId,
+  };
+
+  // Render appropriate component based on role
   return (
-    <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-      {!loading && ngoData.some((item) => item.Ngo === user) ? (
-        <>
-          {NgoId[0]?.role[0] === "ngo" &&
-            (mouFound?.data ? <MouReviewd /> : <MOUCard ngoid={user} />)}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              {" "}
-              All Beneficiaries({filteredData.length})
-            </Typography>
-            {/* <Button 
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              navigate('/user-details', { state: {userId:id} });
-            }}
-          > */}
-            {/* <Typography variant="h6" gutterBottom>
-              All Beneficiaries({filteredData.length})
-            </Typography> */}
-          </Box>
-
-          <Grid
-            container
-            alignItems="center"
-            justifyContent="space-between"
-            spacing={2}
-          >
-            <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
-              <TextField
-                sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
-                placeholder="Search by Name, Location, Contact"
-                variant="outlined"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              md="auto"
-              sx={{
-                display: "flex",
-                justifyContent: { xs: "flex-start", md: "flex-end" },
-              }}
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() =>
-                  navigate("/user-details", { state: { userId: id } })
-                }
-                sx={{ mt: 2, mr: 2, borderRadius: "100px" }}
-              >
-                Add Beneficiaries
-              </Button>
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mt: 3 }}>
-              <FilterListIcon />
-              <Typography variant="subtitle1" sx={{ ml: 1 }}>
-                Filters
-              </Typography>
-            </Box>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>ID Proof Type</InputLabel>
-              <Select
-                value={filters["ID Proof type"]}
-                onChange={handleFilterChange}
-                name="ID Proof type"
-              >
-                <MenuItem value="">All</MenuItem>
-                {filterOptions.idProof.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Use Case</InputLabel>
-              <Select
-                value={filters["Use case"]}
-                onChange={handleFilterChange}
-                name="Use case"
-              >
-                <MenuItem value="">All</MenuItem>
-                {filterOptions.useCase.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Occupation Status</InputLabel>
-              <Select
-                value={filters["Occupation Status"]}
-                onChange={handleFilterChange}
-                name="Occupation Status"
-              >
-                <MenuItem value="">All</MenuItem>
-                {filterOptions.occupation.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={filters["status"]}
-                onChange={handleFilterChange}
-                name="status"
-              >
-                <MenuItem value="">All</MenuItem>
-                {filterOptions.status.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-        </>
+    <>
+      {isAdmin ? (
+        <AdminTable {...commonProps} />
       ) : (
-        <>
-          <Typography variant="h6" gutterBottom>
-            All Beneficiaries
-          </Typography>
-        </>
+        <NGOTable {...commonProps} mouFound={mouFound} />
       )}
-
-      <TableContainer
-        style={{ border: "none" }}
-        sx={{ backgroundColor: "white", mt: 2 }}
-      >
-        <Table>
-          <TableHead>
-            {selectedRows.size > 0 ? (
-              <TableRow>
-                <TableCell colSpan={9}>
-                  <Box
-                    sx={{
-                      mb: 2,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 2,
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setSelectedRows(new Set())}
-                    >
-                      <Typography
-                        variant="body1"
-                        component="span"
-                        sx={{
-                          bgcolor: "#f5f5f5",
-                          p: 0.5,
-                          borderRadius: "4px",
-                          fontWeight: "medium",
-                          cursor: "pointer",
-                        }}
-                      >
-                        ✕
-                      </Typography>
-                    </Box>
-                    <Typography variant="body1" sx={{ color: "#666" }}>
-                      Change status for {selectedRows.size} selected items
-                    </Typography>
-                    <FormControl sx={{ width: 300 }}>
-                      <Select
-                        value={bulkStatus}
-                        onChange={(e) => setBulkStatus(e.target.value)}
-                        displayEmpty
-                        sx={{
-                          bgcolor: "white",
-                          "& .MuiSelect-select": {
-                            py: 1.5,
-                          },
-                        }}
-                      >
-                        <MenuItem value="" disabled>
-                          Change Status for Selected
-                        </MenuItem>
-                        {filterOptions.status.map((option) => (
-                          <MenuItem key={option} value={option}>
-                            {option}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    <Button
-                      variant="contained"
-                      onClick={handleBulkStatusChange}
-                      disabled={!bulkStatus}
-                      sx={{
-                        bgcolor: "#4B6455",
-                        "&:hover": {
-                          bgcolor: "#3d503f",
-                        },
-                        py: 1.5,
-                        px: 4,
-                      }}
-                    >
-                      Update Status
-                    </Button>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            ) : (
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    indeterminate={
-                      selectedRows.size > 0 &&
-                      selectedRows.size < filteredData.length
-                    }
-                    checked={
-                      filteredData.length > 0 &&
-                      selectedRows.size === filteredData.length
-                    }
-                    onChange={handleSelectAllClick}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">ID</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Name</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Email</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Contact Number</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">ID Proof Type</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Use Case</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Occupation Status</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Status</Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={9} align="center">
-                    <CircularProgress sx={{ mt: 10, mb: 10 }} />
-                </TableCell>
-              </TableRow>
-            ) : ngoData.some((item) => item.Ngo === user) ? (
-              filteredData
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((ngo) => (
-                  <TableRow
-                    key={ngo.ID}
-                    hover
-                    onClick={() => handleRowClick(ngo.ID)}
-                    selected={selectedRows.has(ngo.ID)}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={selectedRows.has(ngo.ID)}
-                        onChange={(event) =>
-                          handleCheckboxChange(ngo.ID, event)
-                        }
-                        onClick={(event) => event.stopPropagation()}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">{ngo.ID}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">{ngo.name}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">{ngo.email}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {ngo["contact number"]}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {ngo["ID Proof type"]}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">{ngo["Use case"]}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {ngo["Occupation"]}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <FormControl fullWidth>
-                        <Select
-                          value={ngo.status || ""}
-                          onChange={(e) => {
-                            handleIndividualStatusChange(
-                              ngo.ID,
-                              e.target.value,
-                              e
-                            );
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {filterOptions.status.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </TableCell>
-                    {NgoId[0].role[0] === "ngo" ? (
-                      ""
-                    ) : (
-                      <>
-                        <TableCell style={{ cursor: "pointer" }}>
-                          <EditIcon sx={{ color: "#BDBDBD" }} />
-                        </TableCell>
-                        <TableCell style={{ cursor: "pointer" }}>
-                          <DeleteIcon
-                            sx={{ color: "#BDBDBD" }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteDialog(ngo.ID);
-                            }}
-                          />
-                        </TableCell>
-                      </>
-                    )}
-                  </TableRow>
-                ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
-                  <img
-                    src={require("./assets/People.svg").default}
-                    alt="No Data"
-                  />
-                  <Typography variant="body1" sx={{ ml: 2 }}>
-                    Start by adding beneficiaries who you would like to
-                    <br /> receive laptops through Sama
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ mt: 2 }}
-                    onClick={() => navigate("/user-details")}
-                  >
-                    Add Beneficiary
-                  </Button>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 50]}
-        component="div"
-        count={filteredData.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(event, newPage) => setPage(newPage)}
-        onRowsPerPageChange={(event) => {
-          setRowsPerPage(parseInt(event.target.value, 10));
-          setPage(0);
-        }}
-      />
-
-      <Dialog open={openDialog} onClose={handleCancelStatusChange}>
-        <DialogTitle>Change Status</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to change the status?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelStatusChange} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleBulkStatusChange} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <DeleteDialog
-        open={openDeleteDialog}
-        handleClose={handleCloseDeleteDialog}
-        handleDelete={handleDelete}
-      />
-    </Container>
+    </>
   );
 };
 
