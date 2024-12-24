@@ -20,7 +20,7 @@ function NgoProfile() {
 
   // Handle loading and error states
   if (status === 'loading') {
-    return <div>Loading...</div>;
+    return <div style={{textAlign:"center"}}>Loading...</div>;
   }
 
   if (status === 'failed') {

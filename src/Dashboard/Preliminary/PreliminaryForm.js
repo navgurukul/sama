@@ -12,11 +12,12 @@ import {
   Grid,
   Snackbar,
   Alert,
+  Chip,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-const PreliminaryForm = ({userId}) => {
+const PreliminaryForm = ({ userId }) => {
   const navigate = useNavigate();
 
   const initialFormData = {
@@ -30,7 +31,7 @@ const PreliminaryForm = ({userId}) => {
     type: "preliminary",
     ngoId: userId,
   };
-  
+
   const statesOptions = [
     "Andhra Pradesh",
     "Arunachal Pradesh",
@@ -67,14 +68,10 @@ const PreliminaryForm = ({userId}) => {
     "Daman and Diu",
     "Delhi",
     "Lakshadweep",
-    "Puducherry"
+    "Puducherry",
   ];
 
-
-  const [formData, setFormData] = useState(
-    
-    initialFormData
-  )
+  const [formData, setFormData] = useState(initialFormData);
   const [messageShown, setMessageShown] = useState(false); // State to track if the message has been shown
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -107,7 +104,7 @@ const PreliminaryForm = ({userId}) => {
   useEffect(() => {
     setIsSubmitDisabled(!validateForm());
   }, [formData]);
- 
+
   // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -156,23 +153,26 @@ const PreliminaryForm = ({userId}) => {
       courses: transformedCourses, // Replace the courses array with the transformed format
     };
     try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        mode: "no-cors",
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          mode: "no-cors",
+          body: JSON.stringify(payload),
+        }
+      );
 
-        alert("Form submited successfully!");
-        setFormData(initialFormData);
+      alert("Form submited successfully!");
+      setFormData(initialFormData);
 
-        setTimeout(() => {
-          window.location.reload(); // Reloads the current route
-        }, 2000);
+      setTimeout(() => {
+        window.location.reload(); // Reloads the current route
+      }, 2000);
 
-        setMessageShown(false);
+      setMessageShown(false);
       // }
     } catch (error) {
       console.error("Error:", error);
@@ -182,17 +182,29 @@ const PreliminaryForm = ({userId}) => {
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
+
+  const handleDeleteState = (stateToDelete, event) => {
+    event.stopPropagation();
+    setFormData((prev) => ({
+      ...prev,
+      states: prev.states.filter((state) => state !== stateToDelete),
+    }));
+  };
+
   return (
     <Box sx={{ maxWidth: 592, margin: "auto", padding: 2 }}>
       <Typography variant="h6" gutterBottom sx={{ color: "#4A4A4A" }}>
         Preliminary Distribution Data
       </Typography>
       <Typography variant="body1" mb={3} gutterBottom sx={{ color: "#4A4A4A" }}>
-      Please fill in the below required details for us to proceed with the distribution process.
+        Please fill in the below required details for us to proceed with the
+        distribution process.
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <Typography mb={1}>Number of Schools</Typography>
+          <Typography variant="subtitle1" mb={1}>
+            Number of Schools
+          </Typography>
           <TextField
             name="numberOfSchools"
             type="number"
@@ -202,7 +214,9 @@ const PreliminaryForm = ({userId}) => {
           />
         </Grid>
         <Grid item xs={6}>
-          <Typography mb={1}>Number of Teachers</Typography>
+          <Typography variant="subtitle1" mb={1}>
+            Number of Teachers
+          </Typography>
           <TextField
             name="numberOfTeachers"
             type="number"
@@ -212,7 +226,9 @@ const PreliminaryForm = ({userId}) => {
           />
         </Grid>
         <Grid item xs={6}>
-          <Typography mb={1}>Number of Students</Typography>
+          <Typography variant="subtitle1" mb={1}>
+            Number of Students
+          </Typography>
           <TextField
             name="numberOfStudents"
             type="number"
@@ -222,7 +238,9 @@ const PreliminaryForm = ({userId}) => {
           />
         </Grid>
         <Grid item xs={6}>
-          <Typography mb={1}>Number of Female Students</Typography>
+          <Typography variant="subtitle1" mb={1}>
+            Number of Female Students
+          </Typography>
           <TextField
             name="numberOfFemaleStudents"
             type="number"
@@ -233,26 +251,83 @@ const PreliminaryForm = ({userId}) => {
         </Grid>
         <Grid item xs={12}>
           <FormControl fullWidth>
-            <Typography mb={1}>States Operating In</Typography>
+            <Typography variant="subtitle1" mb={1}>
+              States Operating In
+            </Typography>
             <Select
               labelId="states-label"
               name="states"
               multiple
               value={formData.states}
-              onChange={handleStatesChange}
-            >
-              {statesOptions.map(
-                (state) => (
-                  <MenuItem key={state} value={state}>
-                    {state}
-                  </MenuItem>
-                )
+              onChange={(event) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  states: event.target.value,
+                }))
+              }
+              renderValue={(selected) => (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 1, 
+                  }}
+                >
+                  {selected.map((value) => (
+                    <Chip
+                      key={value}
+                      label={value}
+                      onDelete={(event) => handleDeleteState(value, event)} 
+                      onMouseDown={(event) => {
+                        // Prevent Select from opening when clicking the delete icon
+                        event.stopPropagation();
+                      }}
+                      sx={{
+                        backgroundColor: "#e0e0e0",
+                        borderRadius: "4px",
+                        color: "#4A4A4A",
+                        height: "32px",
+                        display: "flex",
+                        alignItems: "center",
+                        ".MuiChip-deleteIcon": {
+                          fontSize: "16px",
+                          marginLeft: "8px",
+                          marginRight: "8px",
+                        },
+                      }}
+                      deleteIcon={
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            fontSize: "16px",
+                            color: "#4A4A4A",
+                          }}
+                        >
+                          X
+                        </span>
+                      } 
+                    />
+                  ))}
+                </Box>
               )}
+              sx={{
+                ".MuiSelect-select": {
+                  padding: "8px",
+                },
+              }}
+            >
+              {statesOptions.map((state) => (
+                <MenuItem key={state} value={state}>
+                  {state}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <Typography mb={1}>Total Number of Courses</Typography>
+          <Typography variant="subtitle1" mb={1}>
+            Total Number of Courses
+          </Typography>
           <TextField
             type="number"
             name="numberOfCourses"
@@ -262,20 +337,23 @@ const PreliminaryForm = ({userId}) => {
           />
         </Grid>
         {messageShown && (
-        <Typography
-          sx={{ mt:3,pl:2, fontWeight: "bold" }}
-        >
-          Duration of Course
-        </Typography>
-      )}
+          <Typography variant="subtitle1" sx={{ mt: 3, pl: 2, fontWeight: "bold" }}>
+            Duration of Each Course
+          </Typography>
+        )}
         {formData.courses.map((course, index) => (
-          <Grid container spacing={2} key={index} sx={{ marginBottom: 2, p: 2 }}>
+          <Grid
+            container
+            spacing={2}
+            key={index}
+            sx={{ marginBottom: "8px", p: 2 }}
+          >
             <Grid item xs={12}>
-              <Typography variant="body1" sx={{ marginBottom: 1}}>
+              <Typography variant="subtitle1" sx={{ marginBottom: 1 }}>
                 Course {index + 1}
               </Typography>
             </Grid>
-            <Grid item xs={2}  >
+            <Grid item xs={2}>
               <TextField
                 type="number"
                 value={course.duration}

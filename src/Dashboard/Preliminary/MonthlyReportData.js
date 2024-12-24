@@ -35,9 +35,9 @@ function MonthlyReportData() {
       >
         <Paper
           sx={{
-            width: '592px',
+            width: '528px',
             padding: '32px',
-            backgroundColor: '#F0F4EF',
+            backgroundColor: 'primary.light',
             textAlign: 'left',
           }}
         >
@@ -46,12 +46,12 @@ function MonthlyReportData() {
           </Typography>
           {Object.entries(monthlyReportData).map(([question, answer], index) => (
             <Box key={index} mb={2}>
-              <Typography variant="body1" 
+              <Typography variant="subtitle1" 
               color="#828282"
               >
                 {question}
               </Typography>
-              <Typography variant="body2" color="#4A4A4A">{answer}</Typography>
+              <Typography variant="body1" color="#4A4A4A">{answer}</Typography>
             </Box>
           ))}
   
@@ -62,13 +62,11 @@ function MonthlyReportData() {
        <Box display="flex" justifyContent="center" mt="32PX">
             <Button
               variant="contained"
-              color="primary"
-              sx={{
-                backgroundColor: '#5C785A',
-                borderRadius:"100px",
-                color: '#ffffff',
-                '&:hover': { backgroundColor: '#5C785A' },
-              }}
+              // sx={{
+              //   backgroundColor: '#2e523c',
+              //   color: '#ffffff',
+              //   '&:hover': { backgroundColor: '#3a6e4b' },
+              // }}
              onClick={() =>  (gettingStored === "admin") ? navigate(`/ngo`) : navigate('/preliminary')} 
             >
               Go to Dashboard
