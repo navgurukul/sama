@@ -39,13 +39,13 @@ const StatusCell = ({
   statusDisabled,
   defaultStatus,
   dateTime,
-  additionalStatuses = []
+  additionalStatuses = [],
 }) => {
   const [isEnabled, setIsEnabled] = useState(false);
 
   useEffect(() => {
     const checkTimeElapsed = () => {
-      if (status === 'Laptop Assigned' && dateTime) {
+      if (status === "Laptop Assigned" && dateTime) {
         const assignedTime = new Date(dateTime).getTime();
         const currentTime = new Date().getTime();
         const minutesDiff = (currentTime - assignedTime) / (1000 * 60);
@@ -59,7 +59,7 @@ const StatusCell = ({
   }, [status, dateTime]);
 
   // Extract names from filtered additional statuses
-  const additionalStatusNames = additionalStatuses.map(status => status.name);
+  const additionalStatusNames = additionalStatuses.map((status) => status.name);
 
   // Show different status options based on current status and time condition
   const getAvailableStatuses = () => {
@@ -67,14 +67,17 @@ const StatusCell = ({
     if (status === "Data Uploaded") {
       return defaultStatus;
     }
-    
+
     // If status is "Laptop Assigned" and within first minute
     if (status === "Laptop Assigned" && !isEnabled) {
       return ["Laptop Assigned"];
     }
-    
+
     // If status is "Laptop Assigned" and after one minute, or if it's any additionalStatus
-    if ((status === "Laptop Assigned" && isEnabled) || additionalStatusNames.includes(status)) {
+    if (
+      (status === "Laptop Assigned" && isEnabled) ||
+      additionalStatusNames.includes(status)
+    ) {
       return additionalStatusNames;
     }
 
@@ -82,7 +85,7 @@ const StatusCell = ({
     if (!status) {
       return defaultStatus;
     }
-    
+
     return additionalStatusNames;
   };
 
@@ -125,8 +128,8 @@ const StatusCell = ({
             borderRadius: "8px",
             "&.Mui-disabled": {
               backgroundColor: "rgb(243, 243, 243)",
-            }
-          }
+            },
+          },
         }}
       />
     );
@@ -144,7 +147,7 @@ const StatusCell = ({
           "& .MuiSelect-select": {
             backgroundColor: "rgb(243, 243, 243)",
             padding: "4px 8px",
-          }
+          },
         }}
       >
         {availableStatuses.map((option) => (
@@ -195,16 +198,20 @@ const NGOTable = ({
           "https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=manageStatus"
         );
         const data = await response.json();
-        
+
         // Get the current NGO ID
         const currentNgoId = id ? id : NgoId[0].NgoId;
-        
+
         // Filter statuses based on matching ID
         if (Array.isArray(data)) {
-          const filteredStatuses = data.filter(status => status.id === currentNgoId);
+          const filteredStatuses = data.filter(
+            (status) => status.id === currentNgoId
+          );
           setAdditionalStatuses(filteredStatuses);
         } else if (data.data && Array.isArray(data.data)) {
-          const filteredStatuses = data.data.filter(status => status.id === currentNgoId);
+          const filteredStatuses = data.data.filter(
+            (status) => status.id === currentNgoId
+          );
           setAdditionalStatuses(filteredStatuses);
         }
       } catch (error) {
@@ -217,64 +224,86 @@ const NGOTable = ({
   }, [id, NgoId]);
 
   // Handlers
-  const handleBulkStatusChange = async () => {
-    const updatedData = ngoData.map((ngo) => {
-      if (selectedRows.has(ngo.ID)) {
-        const newNgo = { ...ngo, status: bulkStatus };
-        if (ngo.status === 'Data Uploaded' && bulkStatus === 'Laptop Assigned') {
-          newNgo['Date-time'] = new Date().toISOString();
-        }
-        return newNgo;
+const handleBulkStatusChange = async () => {
+  const updatedData = ngoData.map((ngo) => {
+    if (selectedRows.has(ngo.ID)) {
+      const newNgo = { ...ngo, status: bulkStatus };
+      if (ngo.status === "Data Uploaded" && bulkStatus === "Laptop Assigned") {
+        newNgo["Date-time"] = new Date().toISOString();
       }
-      return ngo;
-    });
-
-    setOpenDialog(false);
-    setNgoData(updatedData);
-    setSelectedRows(new Set());
-    setEditStatus(true);
-
-    try {
-      const selectedNgos = Array.from(selectedRows).map(id => 
-        ngoData.find(ngo => ngo.ID === id)
-      );
-      const isAssigningLaptop = selectedNgos.some(ngo => 
-        ngo.status === 'Data Uploaded' && bulkStatus === 'Laptop Assigned'
-      );
-
-      const payload = {
-        id: Array.from(selectedRows),
-        status: bulkStatus,
-        type: "editUser",
-      };
-
-      if (isAssigningLaptop) {
-        payload.assignedAt = new Date().toISOString();
-      }
-
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          mode: "no-cors",
-          body: JSON.stringify(payload),
-        }
-      );
-    } catch (error) {
-      console.error("Error updating status in bulk:", error);
+      return newNgo;
     }
-  };
+    return ngo;
+  });
 
+  setOpenDialog(false);
+  setNgoData(updatedData);
+  setSelectedRows(new Set());
+  setEditStatus(true);
+
+    const AuthUser = JSON.parse(localStorage.getItem("_AuthSama_"));
+  try {
+    const selectedNgos = Array.from(selectedRows).map((id) =>
+      ngoData.find((ngo) => ngo.ID === id)
+    );
+    // Get detailed info for selected NGOs including NGO ID, email, and new status
+    const selectedNgoDetails = selectedNgos.map((ngo) => ({
+      email: ngo.email,
+      ngoId: AuthUser[0].NgoId,
+      newStatus: bulkStatus,
+    }));
+
+    await fetch(
+      "https://script.google.com/macros/s/AKfycbzAR35oDa2j26ifFya9cRcM4AlTV2vu124VsBNB04laz8AeOCReG95nej1J9gfWWAf6/exec?type=updateStatusHistory",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+        body: JSON.stringify(selectedNgoDetails),
+      }
+    );
+
+
+    const isAssigningLaptop = selectedNgos.some(
+      (ngo) =>
+        ngo.status === "Data Uploaded" && bulkStatus === "Laptop Assigned"
+    );
+
+    const payload = {
+      id: Array.from(selectedRows),
+      status: bulkStatus,
+      type: "editUser",
+    };
+
+    if (isAssigningLaptop) {
+      payload.assignedAt = new Date().toISOString();
+    }
+
+
+    await fetch(
+      "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+        body: JSON.stringify(payload),
+      }
+    );
+  } catch (error) {
+    console.error("Error updating status in bulk:", error);
+  }
+};
   const handleIndividualStatusChange = async (id, newStatus, event) => {
     event.stopPropagation();
 
-    const currentNgo = ngoData.find(ngo => ngo.ID === id);
+    const currentNgo = ngoData.find((ngo) => ngo.ID === id);
+    const currentRow = ngoData.find((ngo) => ngo.ID === id);
+    const rowEmail = currentRow ? currentRow.email : "";
     const updatedData = ngoData.map((ngo) => {
       if (ngo.ID === id) {
         const updatedNgo = { ...ngo, status: newStatus };
-        if (ngo.status === 'Data Uploaded' && newStatus === 'Laptop Assigned') {
-          updatedNgo['Date-time'] = new Date().toISOString();
+        if (ngo.status === "Data Uploaded" && newStatus === "Laptop Assigned") {
+          updatedNgo["Date-time"] = new Date().toISOString();
         }
         return updatedNgo;
       }
@@ -291,7 +320,10 @@ const NGOTable = ({
         type: "editUser",
       };
 
-      if (currentNgo.status === 'Data Uploaded' && newStatus === 'Laptop Assigned') {
+      if (
+        currentNgo.status === "Data Uploaded" &&
+        newStatus === "Laptop Assigned"
+      ) {
         payload.assignedAt = new Date().toISOString();
       }
 
@@ -302,6 +334,20 @@ const NGOTable = ({
           headers: { "Content-Type": "application/json" },
           mode: "no-cors",
           body: JSON.stringify(payload),
+        }
+      );
+
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbxs0SUYi40w506ODB351wZ28AYCGatKjhJtIjywP9sueeqXPGu_PmKnsN2qZhiPC8el/exec?type=updateStatusHistory",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          mode: "no-cors",
+          body: JSON.stringify({
+            ngoid: currentNgo.Ngo,
+            email: rowEmail,
+            statusName: newStatus,
+          }),
         }
       );
     } catch (error) {
@@ -352,137 +398,138 @@ const NGOTable = ({
           ngo["contact number"]?.toString().includes(searchTerm)) &&
         (filters["ID Proof type"] === "" ||
           ngo["ID Proof type"] === filters["ID Proof type"]) &&
-        (filters["Use case"] === "" || ngo["Use case"] === filters["Use case"]) &&
+        (filters["Use case"] === "" ||
+          ngo["Use case"] === filters["Use case"]) &&
         (filters["Occupation Status"] === "" ||
           ngo["Occupation"] === filters["Occupation Status"]) &&
         (filters.status === "" || ngo.status === filters.status)
       );
     });
-    return (
-      <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-        {/* MOU Section */}
-        {mouFound?.data ? <MouReviewd /> : <MOUCard ngoid={user} />}
-  
-        {/* Header */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
+  return (
+    <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
+      {/* MOU Section */}
+      {mouFound?.data ? <MouReviewd /> : <MOUCard ngoid={user} />}
+
+      {/* Header */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          All Beneficiaries({filteredData.length})
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/user-details", { state: { userId: id } })}
+          sx={{ mt: 2, mr: 2 }}
         >
-          <Typography variant="h6" gutterBottom>
-            All Beneficiaries({filteredData.length})
+          Add Beneficiaries
+        </Button>
+      </Box>
+
+      {/* Search */}
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
+          <TextField
+            sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
+            label="Search by Name, Location, Contact"
+            variant="outlined"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+      </Grid>
+
+      {/* Filters */}
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", mt: 3 }}>
+          <FilterListIcon />
+          <Typography variant="subtitle1" sx={{ ml: 1 }}>
+            Filters
           </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate("/user-details", { state: { userId: id } })}
-            sx={{ mt: 2, mr: 2 }}
-          >
-            Add Beneficiaries
-          </Button>
         </Box>
-  
-        {/* Search */}
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
-            <TextField
-              sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
-              label="Search by Name, Location, Contact"
-              variant="outlined"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Grid>
-        </Grid>
-  
-        {/* Filters */}
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Box sx={{ display: "flex", alignItems: "center", mt: 3 }}>
-            <FilterListIcon />
-            <Typography variant="subtitle1" sx={{ ml: 1 }}>
-              Filters
-            </Typography>
-          </Box>
-  
-          <FormControl sx={{ m: 1, minWidth: 200 }}>
-            <InputLabel>ID Proof Type</InputLabel>
-            <Select
-              value={filters["ID Proof type"]}
-              onChange={handleFilterChange}
-              name="ID Proof type"
-            >
-              <MenuItem value="">All</MenuItem>
-              {filterOptions.idProof.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-  
-          <FormControl sx={{ m: 1, minWidth: 200 }}>
-            <InputLabel>Use Case</InputLabel>
-            <Select
-              value={filters["Use case"]}
-              onChange={handleFilterChange}
-              name="Use case"
-            >
-              <MenuItem value="">All</MenuItem>
-              {filterOptions.useCase.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-  
-          <FormControl sx={{ m: 1, minWidth: 200 }}>
-            <InputLabel>Occupation Status</InputLabel>
-            <Select
-              value={filters["Occupation Status"]}
-              onChange={handleFilterChange}
-              name="Occupation Status"
-            >
-              <MenuItem value="">All</MenuItem>
-              {filterOptions.occupation.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-  
-          <FormControl sx={{ m: 1, minWidth: 200 }}>
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={filters["status"]}
-              onChange={handleFilterChange}
-              name="status"
-            >
-              <MenuItem value="">All</MenuItem>
-              {defaultStatus.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-              {additionalStatuses.map(status => (
-                <MenuItem key={status.name} value={status.name}>
-                  {status.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        {/* Table */}
+
+        <FormControl sx={{ m: 1, minWidth: 200 }}>
+          <InputLabel>ID Proof Type</InputLabel>
+          <Select
+            value={filters["ID Proof type"]}
+            onChange={handleFilterChange}
+            name="ID Proof type"
+          >
+            <MenuItem value="">All</MenuItem>
+            {filterOptions.idProof.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl sx={{ m: 1, minWidth: 200 }}>
+          <InputLabel>Use Case</InputLabel>
+          <Select
+            value={filters["Use case"]}
+            onChange={handleFilterChange}
+            name="Use case"
+          >
+            <MenuItem value="">All</MenuItem>
+            {filterOptions.useCase.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl sx={{ m: 1, minWidth: 200 }}>
+          <InputLabel>Occupation Status</InputLabel>
+          <Select
+            value={filters["Occupation Status"]}
+            onChange={handleFilterChange}
+            name="Occupation Status"
+          >
+            <MenuItem value="">All</MenuItem>
+            {filterOptions.occupation.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl sx={{ m: 1, minWidth: 200 }}>
+          <InputLabel>Status</InputLabel>
+          <Select
+            value={filters["status"]}
+            onChange={handleFilterChange}
+            name="status"
+          >
+            <MenuItem value="">All</MenuItem>
+            {defaultStatus.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+            {additionalStatuses.map((status) => (
+              <MenuItem key={status.name} value={status.name}>
+                {status.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Grid>
+      {/* Table */}
       <TableContainer
         style={{ border: "none" }}
         sx={{ backgroundColor: "white", mt: 2 }}
@@ -545,7 +592,7 @@ const NGOTable = ({
                             {option}
                           </MenuItem>
                         ))}
-                        {additionalStatuses.map(status => (
+                        {additionalStatuses.map((status) => (
                           <MenuItem key={status.name} value={status.name}>
                             {status.name}
                           </MenuItem>
@@ -658,10 +705,12 @@ const NGOTable = ({
                     <StatusCell
                       status={ngo.status}
                       id={ngo.ID}
-                      handleIndividualStatusChange={handleIndividualStatusChange}
+                      handleIndividualStatusChange={
+                        handleIndividualStatusChange
+                      }
                       statusDisabled={statusDisabled}
                       defaultStatus={defaultStatus}
-                      dateTime={ngo['Date-time']}
+                      dateTime={ngo["Date-time"]}
                       additionalStatuses={additionalStatuses}
                     />
                   </TableCell>

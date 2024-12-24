@@ -57,6 +57,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
 
   const defaultStatus = ["Laptop Assigned", "Data Uploaded"];
 
+  const [defaultSelectedStatus, setDefaultSelectedStatus] = useState("Data Uploaded");
   // Load stored statuses when component mounts
   useEffect(() => {
     try {
@@ -130,7 +131,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
 
   const handleIndividualStatusChange = async (id, newStatus, event) => {
     event.stopPropagation();
-
+    setDefaultSelectedStatus(newStatus);
     try {
       // Update local state immediately
       const updatedData = ngoData.map((ngo) => {
@@ -562,7 +563,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                   <TableCell>
                     <FormControl fullWidth>
                       <Select
-                        value={ngo.status || "Data Uploaded"}
+                        value={ngo.status?? defaultSelectedStatus}
                         onChange={(e) => {
                           handleIndividualStatusChange(ngo.ID, e.target.value, e);
                         }}
