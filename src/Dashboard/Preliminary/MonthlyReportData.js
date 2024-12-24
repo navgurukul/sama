@@ -35,22 +35,23 @@ function MonthlyReportData() {
       >
         <Paper
           sx={{
-            width: '700px',
-            padding: '24px',
-            backgroundColor: '#f2f8f2',
+            width: '528px',
+            padding: '32px',
+            backgroundColor: 'primary.light',
             textAlign: 'left',
           }}
         >
-          <Typography variant="h6" fontWeight="bold" color="#2e523c" mb={2}>
+          <Typography variant="h6" fontWeight="bold" color="primary.main" mb={2}>
           {monthName && monthName} {yearName && yearName} Monthly Report
           </Typography>
           {Object.entries(monthlyReportData).map(([question, answer], index) => (
             <Box key={index} mb={2}>
-              <Typography variant="body1" 
+              <Typography variant="subtitle1" 
+              color="#828282"
               >
                 {question}
               </Typography>
-              <Typography variant="body2">{answer}</Typography>
+              <Typography variant="body1" color="#4A4A4A">{answer}</Typography>
             </Box>
           ))}
   
@@ -58,14 +59,14 @@ function MonthlyReportData() {
         </Paper>
        
       </Box> 
-       <Box display="flex" justifyContent="center" mt={2}>
+       <Box display="flex" justifyContent="center" mt="32PX">
             <Button
               variant="contained"
-              sx={{
-                backgroundColor: '#2e523c',
-                color: '#ffffff',
-                '&:hover': { backgroundColor: '#3a6e4b' },
-              }}
+              // sx={{
+              //   backgroundColor: '#2e523c',
+              //   color: '#ffffff',
+              //   '&:hover': { backgroundColor: '#3a6e4b' },
+              // }}
              onClick={() =>  (gettingStored === "admin") ? navigate(`/ngo`) : navigate('/preliminary')} 
             >
               Go to Dashboard

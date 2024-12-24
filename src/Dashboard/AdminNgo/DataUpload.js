@@ -235,6 +235,7 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 
+
 const DataUpload = () => {
   const [documents, setDocuments] = useState(null);
   const [open, setOpen] = useState(false);
@@ -337,7 +338,7 @@ const DataUpload = () => {
   return (
     <Container maxWidth="sm" sx={{ padding: "24px" }}>
       <Grid container spacing={2}>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h6" color='#4A4A4A' paddingLeft="18px" gutterBottom>
           Approve or Decline the NGO's documents below
         </Typography>
         {documentKeys.map((key, index) => {
@@ -363,13 +364,17 @@ const DataUpload = () => {
                   <>
                     <Typography
                       variant="subtitle1"
-                      color={isApproved ? "primary" : "error"}
-                      sx={{padding: "16px 0px 0px 0px"}}
+                      color={isApproved ? "#48A145" : "error"}
+                      sx={{ 
+                          display: 'flex', 
+                          alignItems: 'center',
+                          pt:2
+                        }}
                     >
                       {isApproved ? (
-                        <CheckCircleIcon sx={{ marginRight: "8px", marginTop: "4px" }} />
+                        <CheckCircleIcon sx={{ marginRight: "8px" }} />
                       ) : (
-                        <ErrorIcon sx={{ marginRight: "8px" }} />
+                        <ErrorIcon sx={{ marginRight: "8px" }}  />
                       )}
                       {isApproved ? "Approved" : "Declined"}
                     </Typography>
@@ -389,13 +394,14 @@ const DataUpload = () => {
                   >
                     <Button
                       variant="outlined"
-                      sx={{ marginRight: "8px" }}
+                      sx={{ marginRight: "8px",borderRadius:"100px",border:"2px solid" }}
                       onClick={() => handleOpenDialog("Decline", key)}
                     >
                       Decline
                     </Button>
                     <Button
                       variant="contained"
+                      sx={{ marginRight: "8px",borderRadius:"100px",bgcolor:"5C785A",color:"#FFFFFF" }}
                       onClick={() => handleOpenDialog("Approve", key)}
                     >
                       Approve

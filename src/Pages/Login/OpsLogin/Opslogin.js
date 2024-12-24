@@ -180,7 +180,7 @@ function Opslogin() {
                 onClick={handleSubmit}
                 type="submit" 
                 variant="contained" 
-                sx={{ width: 'auto', alignSelf: 'start', mt: 2 }} 
+                sx={{ width: 'auto', alignSelf: 'start', mt: 2,borderRadius:"100px" }} 
               >
                 {loder ? <CircularProgress color='white'/> : "Login"}
                </Button>

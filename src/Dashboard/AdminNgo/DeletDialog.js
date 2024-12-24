@@ -9,8 +9,8 @@ const DeleteDialog = ({ open, handleClose, handleDelete }) => {
                 <DialogContentText>Are you sure you want to delete this record?</DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>Cancel</Button>
-                <Button onClick={handleDelete} color="error">Delete</Button>
+                <Button sx={{borderRadius:"100px",border:"2px solid"}} onClick={handleClose}>Cancel</Button>
+                <Button sx={{borderRadius:"100px",bgcolor:"#F44336",color:"#FFFFFF"}} onClick={handleDelete}>Delete</Button>
             </DialogActions>
         </Dialog>
     );

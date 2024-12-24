@@ -16,11 +16,10 @@ import {
 import CircularProgress from "@mui/material/CircularProgress";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 const FormComponent = ({ user }) => {
-
   const statesOptions = [
     "Andhra Pradesh",
     "Arunachal Pradesh",
@@ -57,11 +56,11 @@ const FormComponent = ({ user }) => {
     "Daman and Diu",
     "Delhi",
     "Lakshadweep",
-    "Puducherry"
+    "Puducherry",
   ];
 
   const idProofOptions = [
-    // "Ration card", 
+    // "Ration card",
     "Aadhar Card",
     "Voter ID card",
     "Driving License",
@@ -73,15 +72,9 @@ const FormComponent = ({ user }) => {
     "Income Increase/Job",
     "Entrepreneurship",
     "Internships",
-    "Skilling/Vocations"
+    "Skilling/Vocations",
   ];
-  const statusOptions = [
-    "Laptop Received",
-    "Employed",
-    "Intern",
-    "Entrepreneur/Freelancing",
-    "Trainer"
-  ];
+  const statusOptions = ["Data Uploaded", "Laptop Assigned"];
   const qualification = [
     "Elementary School",
     "Middle School",
@@ -92,19 +85,15 @@ const FormComponent = ({ user }) => {
     "Diploma Courses",
     "Postgraduate Degree",
   ];
-  const occupation=[
-    "Students", 
-    "Trainer", 
-    "Employed",
-  ]
-  const familyAnnualIncome=[
-    "0 to 50K",  
-    "50 to 1Lakh" ,  
-    "1 to 2lakh" , 
+  const occupation = ["Students", "Trainer", "Employed"];
+  const familyAnnualIncome = [
+    "0 to 50K",
+    "50 to 1Lakh",
+    "1 to 2lakh",
     "2 to 3lakh",
-    "3 to 5lakh", 
+    "3 to 5lakh",
     "5+ lakh",
-  ]
+  ];
   const fields = [
     { label: "Name", name: "name" },
     { label: "Email", name: "email" },
@@ -125,15 +114,14 @@ const FormComponent = ({ user }) => {
     // { label: "Income Certificate", name: "incomeCertificate" },
   ];
 
-
   const [formData, setFormData] = useState({
     idProofType: "",
     useCase: "",
     addressState: "",
     status: "",
     qualification: "",
-    occupation:"",
-    familyAnnualIncome:"",
+    occupation: "",
+    familyAnnualIncome: "",
     idProofFile: null,
     incomeCertificateFile: null,
   });
@@ -148,7 +136,6 @@ const FormComponent = ({ user }) => {
   const { id } = useParams();
 
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
-
 
   const handleFileChange = (event, fileType) => {
     setFormData({
@@ -193,11 +180,8 @@ const FormComponent = ({ user }) => {
 
     return Object.values(tempErrors).every((x) => x === "");
   };
-  
 
-  
   const handleChange = (event) => {
-    
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
@@ -220,7 +204,9 @@ const FormComponent = ({ user }) => {
       try {
         const [idProofBase64, incomeCertificateBase64] = await Promise.all([
           formData.idProofFile ? readFileAsBase64(formData.idProofFile) : null,
-          formData.incomeCertificateFile ? readFileAsBase64(formData.incomeCertificateFile) : null,
+          formData.incomeCertificateFile
+            ? readFileAsBase64(formData.incomeCertificateFile)
+            : null,
         ]);
 
         const finalData = {
@@ -248,15 +234,14 @@ const FormComponent = ({ user }) => {
           }
         );
 
-
         setFormData({
           idProofType: "",
           useCase: "",
           addressState: "",
           status: "",
-          qualification:"",
-          occupation:"",
-          familyAnnualIncome:"",
+          qualification: "",
+          occupation: "",
+          familyAnnualIncome: "",
           idProofFile: null,
           incomeCertificateFile: null,
         });
@@ -277,7 +262,6 @@ const FormComponent = ({ user }) => {
     }
   };
 
-
   return (
     <Container maxWidth="sm" sx={{ mb: 2, pb: 2 }}>
       <form onSubmit={handleSubmit}>
@@ -285,7 +269,9 @@ const FormComponent = ({ user }) => {
           if (field.name === "idProofType") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <Typography variant="subtitle1" key={field.name}>
+                  {field.label}
+                </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
@@ -303,18 +289,32 @@ const FormComponent = ({ user }) => {
                 </Select>
                 {formData[field.name] && (
                   <FormControl fullWidth margin="normal">
-                    <Button variant="outlined" component="label" sx= {{border : "1px solid #5C785A", borderRadius: '100px'}}>
+                    <Button
+                      variant="outlined"
+                      component="label"
+                      sx={{
+                        border: "1px solid #5C785A",
+                        borderRadius: "100px",
+                      }}
+                    >
                       Upload ID Proof Image
-                      <input type="file" hidden
+                      <input
+                        type="file"
+                        hidden
                         onChange={(e) => handleFileChange(e, "idProofFile")}
                       />
                     </Button>
                     {formData.idProofFile ? (
-                      <Typography sx={{ mt: 1 }}>Selected file: {formData.idProofFile.name}</Typography>
+                      <Typography sx={{ mt: 1 }}>
+                        Selected file: {formData.idProofFile.name}
+                      </Typography>
                     ) : (
-                      errors.idProofFile && <Typography color="error">{errors.idProofFile}</Typography>
+                      errors.idProofFile && (
+                        <Typography color="error">
+                          {errors.idProofFile}
+                        </Typography>
+                      )
                     )}
-
                   </FormControl>
                 )}
               </FormControl>
@@ -322,7 +322,9 @@ const FormComponent = ({ user }) => {
           } else if (field.name === "useCase") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <Typography variant="subtitle1" key={field.name}>
+                  {field.label}
+                </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
@@ -342,7 +344,9 @@ const FormComponent = ({ user }) => {
           } else if (field.name === "status") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <Typography variant="subtitle1" key={field.name}>
+                  {field.label}
+                </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
@@ -362,7 +366,9 @@ const FormComponent = ({ user }) => {
           } else if (field.name === "dateOfBirth") {
             return (
               <>
-                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <Typography variant="subtitle1" key={field.name}>
+                  {field.label}
+                </Typography>
                 <TextField
                   fullWidth
                   key={field.name}
@@ -380,7 +386,9 @@ const FormComponent = ({ user }) => {
           } else if (field.name === "addressState") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <Typography variant="subtitle1" key={field.name}>
+                  {field.label}
+                </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
@@ -396,11 +404,12 @@ const FormComponent = ({ user }) => {
                 </Select>
               </FormControl>
             );
-          } 
-          else if (field.name === "qualification") {
+          } else if (field.name === "qualification") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <Typography variant="subtitle1" key={field.name}>
+                  {field.label}
+                </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
@@ -417,11 +426,12 @@ const FormComponent = ({ user }) => {
                 </Select>
               </FormControl>
             );
-          } 
-          else if (field.name === "occupation") {
+          } else if (field.name === "occupation") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <Typography variant="subtitle1" key={field.name}>
+                  {field.label}
+                </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
@@ -438,11 +448,12 @@ const FormComponent = ({ user }) => {
                 </Select>
               </FormControl>
             );
-          } 
-          else if (field.name === "familyAnnualIncome") {
+          } else if (field.name === "familyAnnualIncome") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
-                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <Typography variant="subtitle1" key={field.name}>
+                  {field.label}
+                </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
@@ -459,11 +470,12 @@ const FormComponent = ({ user }) => {
                 </Select>
               </FormControl>
             );
-          } 
-           else {
+          } else {
             return (
               <>
-                <Typography variant="subtitle1" key={field.name}>{field.label}</Typography>
+                <Typography variant="subtitle1" key={field.name}>
+                  {field.label}
+                </Typography>
                 <TextField
                   fullWidth
                   required
@@ -482,38 +494,56 @@ const FormComponent = ({ user }) => {
           }
         })}
         <FormControl fullWidth margin="normal">
-            <Typography variant="subtitle1">Income Certificate</Typography>
-           <Button variant="outlined"component="label" sx= {{border : "1px solid #5C785A", borderRadius: '100px'}}>
-             Upload Income Certificate
-              <input type="file" hidden 
-                onChange={(e) => handleFileChange(e, "incomeCertificateFile")}
+          <Typography variant="subtitle1">Income Certificate</Typography>
+          <Button
+            variant="outlined"
+            component="label"
+            sx={{ border: "1px solid #5C785A", borderRadius: "100px" }}
+          >
+            Upload Income Certificate
+            <input
+              type="file"
+              hidden
+              onChange={(e) => handleFileChange(e, "incomeCertificateFile")}
               // onChange={handleFileChange}
-               />
-           </Button>
-            {formData.incomeCertificateFile ? (
-            <Typography sx={{ mt: 1 }}>Selected file: {formData.incomeCertificateFile.name}</Typography>
+            />
+          </Button>
+          {formData.incomeCertificateFile ? (
+            <Typography sx={{ mt: 1 }}>
+              Selected file: {formData.incomeCertificateFile.name}
+            </Typography>
           ) : (
-            errors.incomeCertificateFile && <Typography color="error">{errors.incomeCertificateFile}</Typography>
+            errors.incomeCertificateFile && (
+              <Typography color="error">
+                {errors.incomeCertificateFile}
+              </Typography>
+            )
           )}
         </FormControl>
         <Button
           fullWidth
           variant="contained"
           color="primary"
-          sx={{ mt: 4, width : '201px', borderRadius: '100px', marginLeft: '150px' , fontSize: "17.7px"}}
+          sx={{
+            mt: 4,
+            width: "201px",
+            borderRadius: "100px",
+            marginLeft: "150px",
+            fontSize: "17.7px",
+          }}
           type="submit"
-        // disabled={loading}
+          // disabled={loading}
         >
           {loading ? (
-            <CircularProgress size={24}
+            <CircularProgress
+              size={24}
               // color="white"
               color="inherit"
-            //  sx={{ color: "white" }} 
+              //  sx={{ color: "white" }}
             />
           ) : (
             "Add Benificiary"
           )}
-
         </Button>
       </form>
 

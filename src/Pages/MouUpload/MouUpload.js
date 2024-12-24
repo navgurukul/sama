@@ -142,14 +142,14 @@ const MOUCard = (ngoid) => {
       }}
        >
         <Paper
-          elevation={3}
+          elevation={0}
           sx={{
             p: 3,
             display: "flex",
             flexDirection: "column",
             backgroundColor: "#f8f5f2",
             borderRadius: 2,
-            maxWidth: "90%",
+            maxWidth: "100%",
           }}
         >
           <Typography variant="h6" fontWeight="bold" gutterBottom>
@@ -163,9 +163,9 @@ const MOUCard = (ngoid) => {
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button
               variant="contained"
-              color="success"
+                color="primary"
               startIcon={<DownloadIcon />}
-              sx={{ borderRadius: 5, textTransform: "none", px: 3 }}
+              sx={{ textTransform: "none", px: 3 }}
               onClick={() =>
                 window.open(
                   "https://docs.google.com/document/d/1E7UzWAD1-OB-oi7Vcxb6iqCIy7CRmE6Z0dqu0IkkB9A/edit?tab=t.0",
@@ -177,10 +177,10 @@ const MOUCard = (ngoid) => {
             </Button>
             <Button
               variant="contained"
-              color="primary"
+              color="secondary"
               startIcon={<CloudUploadIcon />}
               onClick={handleDialogOpen}
-              sx={{ borderRadius: 5, textTransform: "none", px: 3 }}
+              sx={{ textTransform: "none", px: 3 }}
             >
               Upload Signed MOU
             </Button>

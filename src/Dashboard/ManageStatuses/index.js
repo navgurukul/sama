@@ -246,25 +246,12 @@ const ManageStatuses = () => {
                 <CardActions
                   sx={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: "flex-end",
                     px: 3,
                     py: 2,
                   }}
                 >
-                  <Button
-                    onClick={() => setModals({ ...modals, edit: status })}
-                    sx={{
-                      color: "#4CAF50",
-                      textTransform: "capitalize",
-                      fontWeight: "bold",
-                      p: 0,
-                      "&:hover": {
-                        background: "none",
-                      },
-                    }}
-                  >
-                    Edit
-                  </Button>
+              
                   <Button
                     onClick={() => setModals({ ...modals, delete: status })}
                     sx={{
@@ -278,6 +265,20 @@ const ManageStatuses = () => {
                     }}
                   >
                     Delete
+                  </Button>
+                  <Button
+                    onClick={() => setModals({ ...modals, edit: status })}
+                    sx={{
+                      color: "primary.main",
+                      textTransform: "capitalize",
+                      fontWeight: "bold",
+                      p: 0,
+                      "&:hover": {
+                        background: "none",
+                      },
+                    }}
+                  >
+                    Edit
                   </Button>
                 </CardActions>
               </Card>
