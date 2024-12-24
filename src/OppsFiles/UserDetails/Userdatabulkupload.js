@@ -9,7 +9,7 @@ import {
   Link,
   LinearProgress,
   Card,
-  CardContent
+  CardContent,
 } from "@mui/material";
 import { CloudUpload as CloudUploadIcon } from "@mui/icons-material";
 import * as XLSX from "xlsx";
@@ -20,7 +20,8 @@ function Userdatabulkupload({ user }) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0); // New progress state
+  const [progress, setProgress] = useState(0);
+  const [uploadComplete, setUploadComplete] = useState(false);
 
   const expectedHeaders = [
     "name",
@@ -69,7 +70,8 @@ function Userdatabulkupload({ user }) {
     }
 
     setLoading(true);
-    setProgress(0); // Reset progress at the beginning of each upload
+    setProgress(0);
+    setUploadComplete(false);
 
     const reader = new FileReader();
     reader.onload = async (event) => {
@@ -87,27 +89,26 @@ function Userdatabulkupload({ user }) {
         setLoading(false);
         return;
       }
-    
+
       const updatedSheetData = sheetData.map((entry) => ({
         ...entry,
-        Ngo: user
-          }));
-    
+        Ngo: user,
+      }));
+
       const dataToSend = {
         type: "userdetailsbulkupload",
-        data: updatedSheetData, 
+        data: updatedSheetData,
       };
 
-      // Simulate a progressive upload by updating the progress
       const simulateUpload = setInterval(() => {
         setProgress((prev) => {
           if (prev >= 100) {
             clearInterval(simulateUpload);
             return 100;
           }
-          return prev + 10; // Increase progress by 10% at each interval
+          return prev + 10;
         });
-      }, 200); // Update every 200ms for the simulation effect
+      }, 200);
 
       try {
         await fetch(
@@ -126,6 +127,7 @@ function Userdatabulkupload({ user }) {
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
         setFile(null);
+        setUploadComplete(true); // Mark upload as complete
       } catch (error) {
         setSnackbarMessage("Failed to upload data. Please try again.");
         setSnackbarSeverity("error");
@@ -139,16 +141,18 @@ function Userdatabulkupload({ user }) {
 
   return (
     <>
-      <Box mt={3} 
-      >
-
-        <Typography variant="body2" align="left" backgroundColor="#F8F3F0" mb = {1} style={{ padding: "10px",}}>
-        Please upload an Excel file (.xlsx format). You can download the
-        sample file to understand the required format.
+      <Box mt={3}>
+        <Typography
+          variant="body2"
+          align="left"
+          backgroundColor="#F8F3F0"
+          sx={{ padding: "10px", mt: 3, mb: 2, height: "80px", borderRadius: "8px", alignContent: "center" }}
+        >
+          Please upload an Excel file (.xlsx format). You can download the sample file to understand the required format.
         </Typography>
         <Box
           sx={{
-            border: "2px dashed",
+            border: "2px dashed #518672",
             borderRadius: 1,
             padding: 6,
             textAlign: "center",
@@ -174,85 +178,55 @@ function Userdatabulkupload({ user }) {
           style={{ display: "none" }}
           id="upload-file"
         />
-        <Box mt={2} align= "left">
-        <Typography
-          variant="subtitle2"
-          color="textPrimary"
-          sx={{ display: "inline", textAlign: "left" }}
-        >
-          Format for learner data:{" "}
-        </Typography>
-        <Link
-          href="https://docs.google.com/spreadsheets/d/1rhsK-Hir7J8HQgDCZHsoFNnpONu14tLP3Jp3d5pGuAs/edit?gid=1579348065#gid=1579348065"
-          // href="/Example-Sheet.xlsx"
-          // download="Sample_Beneficiary_Data.xlsx"
-          download
-          target="_blank"
-          sx={{ display: "inline", color: "primary.main", textDecoration: "none" }}
-        >
-          Sample_Beneficiary_Data.xlsx
-        </Link>
+        <Box mt={2} align="left">
+          <Typography color="textPrimary" sx={{ display: "inline", textAlign: "left", fontSize: "14px" }}>
+            Format for learner data:{" "}
+          </Typography>
+          <Link
+            href="https://docs.google.com/spreadsheets/d/1rhsK-Hir7J8HQgDCZHsoFNnpONu14tLP3Jp3d5pGuAs/edit?gid=1579348065#gid=1579348065"
+            download
+            target="_blank"
+            sx={{ display: "inline", color: "primary.main", textDecoration: "none" }}
+          >
+            Sample_Beneficiary_Data.xlsx
+          </Link>
         </Box>
         <Box display="flex" justifyContent="center" mt={4}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleUpload}
-            disabled={!file || loading}
-          >
+          <Button variant="contained" color="primary" onClick={handleUpload} disabled={!file || loading}>
             {loading ? <CircularProgress size={24} /> : "Upload"}
           </Button>
         </Box>
         {loading && (
-          <Card sx={{ mt: 2,}}>
+          <Card sx={{ mt: 2 }}>
             <CardContent>
-              <Typography variant="subtile1"  >
-                {file ? file.name : ""}
-              </Typography>
-              <Box
-               display="flex"
-               alignItems="center"
-                my = {2}
-               >
-                <LinearProgress
-                  variant="determinate"
-                  value={progress}
-                  sx={{ flexGrow: 1, mr: 2 }}
-                />
+              <Typography variant="subtitle1">{file ? file.name : ""}</Typography>
+              <Box display="flex" alignItems="center" my={2}>
+                <LinearProgress variant="determinate" value={progress} sx={{ flexGrow: 1, mr: 2 }} />
                 <Typography variant="body2" color="textSecondary">
                   {progress}%
                 </Typography>
               </Box>
             </CardContent>
           </Card>
-         )}
-      </Box>
-      {loading && 
-              <Box display="flex" justifyContent="center" mt={4}>
-
-             <Button
-                variant="contained"
-                color="primary"
-                sx={{ mt: 2, }}
-                onClick={() => window.location.href = "/ngo-dashboard"}
-              >
-                Return to Dashboard
-              </Button>
+        )}
+        <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+          <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+        {uploadComplete && (
+          <Box display="flex" justifyContent="center" mt={4}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2}}
+              onClick={() => (window.location.href = "/beneficiarydata")}
+            >
+              Return to Dashboard
+            </Button>
           </Box>
-    }
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+        )}
+      </Box>
     </>
   );
 }

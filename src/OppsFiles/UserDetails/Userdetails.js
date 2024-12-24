@@ -303,7 +303,7 @@ const FormComponent = ({ user }) => {
                 </Select>
                 {formData[field.name] && (
                   <FormControl fullWidth margin="normal">
-                    <Button variant="outlined" component="label">
+                    <Button variant="outlined" component="label" sx= {{border : "1px solid #5C785A", borderRadius: '100px'}}>
                       Upload ID Proof Image
                       <input type="file" hidden
                         onChange={(e) => handleFileChange(e, "idProofFile")}
@@ -483,7 +483,7 @@ const FormComponent = ({ user }) => {
         })}
         <FormControl fullWidth margin="normal">
             <Typography variant="subtitle1">Income Certificate</Typography>
-           <Button variant="outlined" component="label">
+           <Button variant="outlined"component="label" sx= {{border : "1px solid #5C785A", borderRadius: '100px'}}>
              Upload Income Certificate
               <input type="file" hidden 
                 onChange={(e) => handleFileChange(e, "incomeCertificateFile")}
@@ -500,7 +500,7 @@ const FormComponent = ({ user }) => {
           fullWidth
           variant="contained"
           color="primary"
-          sx={{ mt: 2 }}
+          sx={{ mt: 4, width : '201px', borderRadius: '100px', marginLeft: '150px' , fontSize: "17.7px"}}
           type="submit"
         // disabled={loading}
         >
@@ -511,7 +511,7 @@ const FormComponent = ({ user }) => {
             //  sx={{ color: "white" }} 
             />
           ) : (
-            "Submit"
+            "Add Benificiary"
           )}
 
         </Button>

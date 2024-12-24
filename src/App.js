@@ -47,6 +47,7 @@ import PrivacyPolicy from './Pages/PrivacyPolicy';
 import LandingPage from './Pages/LandingPage';
 
 
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -92,6 +93,7 @@ function App() {
                }
                 />
                 <Route path="/ngo/:id" element={<TabNavigation />} />
+
               <Route path='/mouUpload' element={<MouUpload/>} />
               <Route path='/beneficiaryProfile' element={<BeneficiaryProfile/>} />
               <Route path="/monthly-reporting/:id" element={<MonthlyForm />} />

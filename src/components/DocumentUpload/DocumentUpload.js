@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
-  Paper,
+  Grid,
   Button,
   Container,
   IconButton,
@@ -104,7 +104,7 @@ const DocumentUpload = () => {
   };
 
   const dropZoneStyles = {
-    border: '2px dashed #ccc',
+    border: '2px dashed #518672',
     borderRadius: 1,
     p: 3,
     textAlign: 'center',
@@ -115,130 +115,125 @@ const DocumentUpload = () => {
     submitted ? (
       <SubmissionSuccess />
     ) : (
-      <Container maxWidth="md" sx={{ py: 4 }}>
      
-        <Paper elevation={3} sx={{ p: 4 }}>
-         
-          <Typography variant="h6" component="h1" align="center" gutterBottom>
-            Upload Documents
-          </Typography>
-  
-          <Typography align="center" sx={{ mb: 3, color: 'text.secondary' }}>
-            Supported File format: PDF only
-          </Typography>
-  
-          <form onSubmit={handleSubmit}>
-            <Stack spacing={4}>
-          
-              {fileLabels.map((label) => (
-                <Box key={label}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    {label}
-                  </Typography>
-  
-                  <Box sx={dropZoneStyles}>
-                    <input
-                      type="file"
-                      accept=".pdf"
-                      onChange={(e) => handleFileChange(e, label)}
-                      style={{ display: 'none' }}
-                      id={`file-${label}`}
-                    />
-                    <label htmlFor={`file-${label}`} style={{ cursor: 'pointer' }}>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <UploadIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-                        <Typography color="textSecondary">
-                          Upload or Drag File
-                        </Typography>
-                      </Box>
-                    </label>
-                  </Box>
-  
-                  {fileStates[label] && (
-                    <Box
-                      sx={{
-                        mt: 2,
-                        p: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        border: '1px solid #ccc',
-                        borderRadius: 1,
-                        bgcolor: 'grey.100',
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <FileIcon color="primary" />
-                        <Typography noWrap sx={{ maxWidth: 300 }}>
-                          {fileStates[label].file.name}
-                        </Typography>
-                      </Box>
-                      <IconButton onClick={() => handleRemoveFile(label)} size="small">
-                        <CloseIcon />
-                      </IconButton>
+      <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      sx={{ 
+        py: 4, 
+        width: "592px", 
+        margin: "0 auto", 
+      }}
+    >
+      <Grid item>
+        <Typography variant="h6" component="h1" align="center" gutterBottom>
+          Upload Documents
+        </Typography>
+    
+        <Typography 
+          align="center" 
+          sx={{ 
+            mb: 3, 
+            mt: 4, 
+            width: "592px", 
+            height: "63px", 
+            bgcolor: '#F8F3F0', 
+            borderRadius: "8px" ,
+            alignContent: 'center',
+            fontWeight: '700', 
+            fontSize: '18px', 
+          }}
+        >
+          Supported File format: PDF only
+        </Typography>
+    
+        <form onSubmit={handleSubmit}>
+          <Stack spacing={4}>
+            {fileLabels.map((label) => (
+              <Box key={label}>
+                <Typography variant="subtitle1" gutterBottom sx={{color: '#4A4A4A',fontWeight: '700', fontSize: '14px'}}>
+                  {label}
+                </Typography>
+                <Box sx={dropZoneStyles}>
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={(e) => handleFileChange(e, label)}
+                    style={{ display: 'none' }}
+                    id={`file-${label}`}
+                  />
+                  <label htmlFor={`file-${label}`} style={{ cursor: 'pointer' }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <UploadIcon sx={{ fontSize: 40, color: '#5C785A', mb: 1 }} />
+                      <Typography color="#5C785A" 
+                        sx={{
+                        fontWeight: '700', 
+                        fontSize: '14px', 
+                        }}>Upload or Drag File</Typography>
                     </Box>
-                  )}
+                  </label>
                 </Box>
-              ))}
-            </Stack>
-  
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, gap: 2 }}>
-              <Button
-                variant="contained"
-                type="submit"
-                disabled={uploading}
-                startIcon={uploading ? <CircularProgress size={20} /> : undefined}
-                sx={{ minWidth: 200 }}
-              >
-                {uploading ? 'Uploading...' : 'Submit Documents'}
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={handleSkip}
-                sx={{ minWidth: 200 }}
-              >
-                Skip
-              </Button>
-            </Box>
-          </form>
-  
-          {data && data.length > 0 && (
-            <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
-              <h2>Document Data</h2>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr>
-                    <th style={{ border: "1px solid #ddd", padding: "8px" }}>User-Id</th>
-                    <th style={{ border: "1px solid #ddd", padding: "8px" }}>NGO Name</th>
-                    {fileLabels.map((label) => (
-                      <th key={label} style={{ border: "1px solid #ddd", padding: "8px" }}>{label}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map((item, index) => (
-                    <tr key={index}>
-                      <td style={{ border: "1px solid #ddd", padding: "8px" }}>{item["User-Id"]}</td>
-                      <td style={{ border: "1px solid #ddd", padding: "8px" }}>{item["NGO Name"]}</td>
-                      {fileLabels.map((label) => (
-                        <td key={label} style={{ border: "1px solid #ddd", padding: "8px" }}>
-                          {item[label]?.link ? (
-                            <a href={item[label].link} target="_blank" rel="noopener noreferrer">
-                              View Document
-                            </a>
-                          ) : (
-                            "No Document"
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Paper>
-      </Container>
+                {fileStates[label] && (
+                  <Box
+                    sx={{
+                      mt: 2,
+                      p: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      borderRadius: '8px',
+                      height : '79px',
+                      border: "1px solid white",
+                      boxShadow: '0px 4px 12px 0px rgba(74, 74, 74, 0.08)'
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <FileIcon color="primary" />
+                      <Typography noWrap 
+                        sx={{ 
+                          maxWidth: 300,
+                          fontSize: '18px', 
+                          color: '#4A4A4A' }}>
+                        Uploaded File: 
+                      </Typography>
+                      <Typography noWrap 
+                        sx={{ 
+                          maxWidth: 300,
+                          fontWeight: '400', 
+                          fontSize: '18px', 
+                          color: '#518672' }}>
+                        {fileStates[label].file.name}
+                      </Typography>
+                    </Box>
+                    <IconButton onClick={() => handleRemoveFile(label)} size="small" >
+                      <CloseIcon sx={{
+                        width: '14px',
+                        color: '#BDBDBD'}}/>
+                    </IconButton>
+                  </Box>
+                )}
+              </Box>
+            ))}
+          </Stack>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, gap: 2 }}>
+            <Button
+              variant="contained"
+              type="submit"
+              disabled={uploading}
+              startIcon={uploading ? <CircularProgress size={20} /> : undefined}
+              sx={{ width: '230px', borderRadius: '100px', bgColor: '#5C785A', fontSize: '17.2px', fontWeight: '700px' }}
+            >
+              {uploading ? 'Uploading...' : 'Submit Documents'}
+            </Button>
+            {/* <Button variant="outlined" onClick={handleSkip} sx={{ minWidth: 200 }}>
+              Skip
+            </Button> */}
+          </Box>
+        </form>
+      </Grid>
+    </Grid>
+    
     )
   );
 };
