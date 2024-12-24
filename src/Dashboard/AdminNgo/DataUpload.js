@@ -234,6 +234,7 @@ import { useParams } from "react-router-dom";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
+import Update from "../AdminNgo/assets/upload.png"
 
 
 const DataUpload = () => {
@@ -328,7 +329,19 @@ const DataUpload = () => {
   }
 
   if (!documents.isDataAvailable) {
-    return <Typography>No documents available for this NGO.</Typography>;
+    return <Grid
+    container
+    sx={{
+      justifyContent: "center", 
+      alignItems: "center", 
+    }}
+  >
+    <img
+      src={Update}
+      alt="Centered Update"
+      style={{ maxWidth: "100%", height: "auto" }}
+    />
+  </Grid>;
   }
 
   const documentKeys = Object.keys(documents).filter(
