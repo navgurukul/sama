@@ -5,8 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const YearlyReport = () => {
-  console.log("YearlyReport");
+const YearlyForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [fields, setFields] = useState([
@@ -36,7 +35,7 @@ const YearlyReport = () => {
     };
 
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbywiddDzBjgYDbNEz_O27XoJFq6d1AtYzggk8qdt_7YziUl7xaVS0K65Hyb_8vfKs4j/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbzv3DzoZThej1kzBT6x3IqEJkQT1r9xUClPUbb3LA62QJ-43DUxhUlZzrC7JABuABlb/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -121,4 +120,4 @@ const YearlyReport = () => {
   );
 };
 
-export default YearlyReport;
+export default YearlyForm;
