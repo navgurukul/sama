@@ -43,6 +43,7 @@ const AttentionNeeded = () => {
           setDocumentsToReupload(failedDocuments);
         } catch (error) {
           console.error('Error fetching data:', error);
+
         }
       };
 
@@ -50,7 +51,6 @@ const AttentionNeeded = () => {
     }, [storedUserId]);
 
     const documents = failedStatuses || documentsToReupload;
-
   return (
     <Box
       sx={{

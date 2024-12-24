@@ -41,7 +41,10 @@ import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
 import MonthlyForm from './Dashboard/MontlyReport/MothlyForm';
 import SubmissionSuccess from './components/SubmissionSuccess/SubmissionSuccess';
 import MonthlyEditForm from './Dashboard/MontlyReport/MonthlyEditForm';
+import NgoProfile from './Dashboard/AdminNgo/NgoProfile';
 import MonthlyReportData from './Dashboard/Preliminary/MonthlyReportData';
+import PrivacyPolicy from './Pages/PrivacyPolicy';
+import LandingPage from './Pages/LandingPage';
 
 
 function App() {
@@ -60,6 +63,8 @@ function App() {
               <Route path="/ngoregistration/:donorId" element={ <NgoForm />} />
               <Route path='/ngoregistration' element={<NgoForm />} />  {/* // this is for all the ngo's */}
               <Route path="/login" element={<Opslogin />} /> {/* // need to rename this component */}
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/about-initiative" element={<LandingPage />} />
               <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
               <Route path="/question-selection" element={    
                 <PrivateRoute reqired={'ops'}>
@@ -94,6 +99,7 @@ function App() {
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
+               <Route path = "/ngoprofile" element= {<NgoProfile/>} />
 
               <Route path="/documentreupload" element={<DocumentReupload />} />
               <Route path="/attentionneeded" element={<AttentionNeeded />} />
@@ -168,6 +174,7 @@ function App() {
             {" "}
           </div>
           <Footer />
+
         </div>
       </Router>
       
