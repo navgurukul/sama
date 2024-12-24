@@ -132,11 +132,11 @@ const DocumentUpload = () => {
             <Stack spacing={4}>
           
               {fileLabels.map((label) => (
-                <Box key={label}>
-                  <Typography variant="subtitle1"  gutterBottom>
+                <>
+                <Typography variant="subtitle1"  gutterBottom>
                     {label}
                   </Typography>
-  
+                <Box key={label} sx={{paddingBottom:"48px"}}>
                   <Box sx={dropZoneStyles}>
                     <input
                       type="file"
@@ -182,6 +182,7 @@ const DocumentUpload = () => {
                     </Paper>
                   )}
                 </Box>
+                </>
               ))}
             </Stack>
   
