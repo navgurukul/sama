@@ -85,7 +85,7 @@ const SubmissionSuccess = () => {
         style={{ width: '150px', marginBottom: '20px' }}
       />
       <Typography variant="body1">
-        Your documents are being reviewed by Sama team. We will reach you within 48 hours.
+        Your documents are being reviewed by Sama team.We <br/>will reach you within 48 hours.
       </Typography>
     </Box>
   );

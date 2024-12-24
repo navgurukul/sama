@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
-  Paper,
+  Grid,
   Button,
   Container,
   IconButton,
   Stack,
   CircularProgress,
+  Paper,
 } from '@mui/material';
 import {
   CloudUpload as UploadIcon,
@@ -114,7 +115,6 @@ const DocumentUpload = () => {
       <SubmissionSuccess />
     ) : (
       <Container maxWidth="md" sx={{ py: 4 }}>
-     
         <Paper elevation={0} sx={{ p: 4 }}>
          
           <Typography variant="h6" component="h1" align="center" mb="48px" gutterBottom>
