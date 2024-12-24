@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -8,7 +7,11 @@ import {
   TextField,
   Button,
   Box,
+  Typography,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
+
 
 const AddStatusModal = ({ open, onClose, onAdd }) => {
   const [formData, setFormData] = useState({
@@ -55,12 +58,32 @@ const AddStatusModal = ({ open, onClose, onAdd }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>New Status</DialogTitle>
+        <DialogTitle>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="h6">New Status</Typography>
+          <IconButton
+            onClick={onClose}
+          >
+            <CloseIcon      sx={{
+              color:"#BDBDBD"
+            }}/>
+          </IconButton>
+        </Box>
+      </DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+            <Typography variant="subtitle1" sx={{ mb: "8px", color: "4A4A4A" }}>
+              Name
+            </Typography>
             <TextField
-              label="Name"
+              // label="Name"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
@@ -68,8 +91,11 @@ const AddStatusModal = ({ open, onClose, onAdd }) => {
               required
               fullWidth
             />
+            <Typography variant="subtitle1" sx={{ mb: "8px", color: "4A4A4A" }}>
+              Description
+            </Typography>
             <TextField
-              label="Description"
+              // label="Description"
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
@@ -82,8 +108,31 @@ const AddStatusModal = ({ open, onClose, onAdd }) => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained" sx={{ bgcolor: "#4CAF50" }}>
+          <Button
+            sx={{
+              border: "2px solid",
+              borderColor: "primary.main",
+              borderRadius: "100px",
+              color: "primary.main",
+              "&:hover": {
+                backgroundColor: "primary.light",
+                color: "primary.main",
+                border: "none",
+              },
+            }}
+            onClick={onClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contined"
+            type="submit"
+            sx={{
+              bgcolor: "primary.main",
+              color: "#FFFFFF",
+              borderRadius: "100px",
+            }}
+          >
             {loading ? "Adding..." : "Add Status"}
           </Button>
         </DialogActions>
