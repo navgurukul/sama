@@ -11,6 +11,8 @@ import axios from "axios";
 import PreDestibution from "./PreDestibution";
 import PreliminaryForm from "./PreliminaryForm";
 import { useNavigate, useParams } from "react-router-dom";
+import preDistribution from '../Preliminary/PreDistribution.png'
+
 
 const Preliminary = () => {
   // State for API data
@@ -44,7 +46,11 @@ const Preliminary = () => {
 
   // Determine if the user is found
   const isUserFound = NgoData.length > 0;
-  const preliminaryId = NgoData && NgoData[0] && NgoData[0].Id;  
+  const preliminaryId = NgoData && NgoData[0] && NgoData[0].Id;
+  const prerole = JSON.parse(localStorage.getItem('role') || '[]');
+  console.log("Retrieved Role from Local Storage:", prerole);
+
+
 
   if (loading) {
     return (
@@ -79,14 +85,32 @@ const Preliminary = () => {
   }
 
   return (
-    
-    <Container maxWidth="lg" mt="10">
+
+    <Container maxWidth="lg" sx={{ mt: 10 }}>
       {isUserFound ? (
         <PreDestibution userId={user} preliminaryId={preliminaryId} />
-      ) : (
+      ) : prerole.includes('ngo') ? (
         <PreliminaryForm userId={user} preliminaryId={preliminaryId} />
+      ) : prerole.includes('admin') ? (
+        <Grid
+          container
+          sx={{
+            mt: 15,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src={preDistribution}
+            alt="Centered Update"
+            style={{ maxWidth: "100%", height: "auto" }}
+          />
+        </Grid>
+      ) : (
+        <p>Role not defined</p> 
       )}
     </Container>
+
   );
 };
 
