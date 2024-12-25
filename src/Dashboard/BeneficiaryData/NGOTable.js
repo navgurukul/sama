@@ -15,31 +15,189 @@ import {
   TableHead,
   TableRow,
   Button,
+  Box,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Box,
-  Checkbox,
 } from "@mui/material";
-
 import FilterListIcon from "@mui/icons-material/FilterList";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import TablePagination from "@mui/material/TablePagination";
 import { useNavigate, useParams } from "react-router-dom";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DeleteDialog from "../AdminNgo/DeletDialog";
+import MOUCard from "../../Pages/MouUpload/MouUpload";
+import MouReviewd from "../../Pages/MouUpload/MouReviewd";
 
-const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
+// Updated StatusCell Component with monthly date-based enabling
+const StatusCell = ({
+  status,
+  id,
+  handleIndividualStatusChange,
+  statusDisabled,
+  defaultStatus,
+  dateTime,
+  additionalStatuses = [],
+}) => {
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [isDateEnabled, setIsDateEnabled] = useState(false);
+
+  useEffect(() => {
+    // Check if current date is between 1-10 of the month
+    const checkDateEnabled = () => {
+      const currentDate = new Date();
+      const dayOfMonth = currentDate.getDate();
+      setIsDateEnabled(dayOfMonth >= 1 && dayOfMonth <= 10);
+      // setIsDateEnabled(dayOfMonth >= 20 && dayOfMonth <= 30);
+    };
+
+    // Check time elapsed for Laptop Assigned status
+
+    const checkTimeElapsed = () => {
+      if (status === "Laptop Assigned" && dateTime) {
+        const assignedTime = new Date(dateTime).getTime();
+        const currentTime = new Date().getTime();
+        const minutesDiff = (currentTime - assignedTime) / (1000 * 60);
+        setIsEnabled(minutesDiff >= 48 * 60); // 48 hours = 48 * 60 minutes
+        // setIsEnabled(minutesDiff >= 1);
+      }
+    };
+
+    checkDateEnabled();
+    checkTimeElapsed();
+
+    // Set up intervals for both checks
+    const dateInterval = setInterval(checkDateEnabled, 1000 * 60 * 60); // Check every hour
+    const timeInterval = setInterval(checkTimeElapsed, 10000); // Check every 10 seconds
+
+    return () => {
+      clearInterval(dateInterval);
+      clearInterval(timeInterval);
+    };
+  }, [status, dateTime]);
+
+  // Extract names from filtered additional statuses
+  const additionalStatusNames = additionalStatuses.map((status) => status.name);
+
+  // Show different status options based on current status and conditions
+  const getAvailableStatuses = () => {
+    // If status is "Data Uploaded", show default statuses
+    if (status === "Data Uploaded") {
+      return defaultStatus;
+    }
+
+    // If status is "Laptop Assigned" and within first minute
+    if (status === "Laptop Assigned" && !isEnabled) {
+      return ["Laptop Assigned"];
+    }
+
+    // If status is "Laptop Assigned" and after one minute, or if it's any additionalStatus
+    if (
+      (status === "Laptop Assigned" && isEnabled) ||
+      additionalStatusNames.includes(status)
+    ) {
+      return additionalStatusNames;
+    }
+
+    // If no status is set (initial state)
+    if (!status) {
+      return defaultStatus;
+    }
+
+    return additionalStatusNames;
+  };
+
+  const availableStatuses = getAvailableStatuses();
+
+  // Determine if dropdown should be disabled
+  const shouldDisableDropdown = () => {
+    // Disable if status is "Data Uploaded"
+    if (status === "Data Uploaded") {
+      return true;
+    }
+
+    // Disable if status is "Laptop Assigned" and within first minute
+    if (status === "Laptop Assigned" && !isEnabled) {
+      return true;
+    }
+
+    // Disable if showing additional statuses and not within 1-10 days of month
+    if (additionalStatusNames.includes(status) && !isDateEnabled) {
+      return true;
+    }
+
+    // Enable for all other cases
+    return false;
+  };
+
+  const isDropdownDisabled = shouldDisableDropdown();
+
+  if (isDropdownDisabled) {
+    return (
+      <TextField
+        value={status || ""}
+        disabled
+        fullWidth
+        variant="outlined"
+        size="small"
+        sx={{
+          backgroundColor: "rgb(243, 243, 243)",
+          "& .MuiInputBase-input.Mui-disabled": {
+            WebkitTextFillColor: "rgb(115, 115, 115)",
+            backgroundColor: "rgb(243, 243, 243)",
+            borderRadius: "8px",
+          },
+          "& .MuiOutlinedInput-root": {
+            borderRadius: "8px",
+            "&.Mui-disabled": {
+              backgroundColor: "rgb(243, 243, 243)",
+            },
+          },
+        }}
+      />
+    );
+  }
+
+  return (
+    <FormControl fullWidth size="small">
+      <Select
+        value={status || ""}
+        onChange={(e) => handleIndividualStatusChange(id, e.target.value, e)}
+        onClick={(e) => e.stopPropagation()}
+        sx={{
+          backgroundColor: "rgb(243, 243, 243)",
+          borderRadius: "8px",
+          "& .MuiSelect-select": {
+            backgroundColor: "rgb(243, 243, 243)",
+            padding: "4px 8px",
+          },
+        }}
+      >
+        {availableStatuses.map((option) => (
+          <MenuItem key={option} value={option}>
+            {option}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+};
+
+const NGOTable = ({
+  ngoData,
+  setNgoData,
+  setEditStatus,
+  filterOptions,
+  NgoId,
+  mouFound,
+}) => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const user = id ? id : NgoId[0].NgoId;
 
-  const selectedNgoId = id || JSON.parse(localStorage.getItem("_AuthSama_"))[0].NgoId;
-
-  // Local state management
+  // Local state
   const [filters, setFilters] = useState({
     "ID Proof type": "",
     "Use case": "",
@@ -52,51 +210,91 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [bulkStatus, setBulkStatus] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [ngoIdToDelete, setNgoIdToDelete] = useState(null);
+  const [statusDisabled, setStatusDisabled] = useState(true);
+  const [additionalStatuses, setAdditionalStatuses] = useState([]);
 
   const defaultStatus = ["Laptop Assigned", "Data Uploaded"];
 
-  const [defaultSelectedStatus, setDefaultSelectedStatus] = useState("Data Uploaded");
-  // Load stored statuses when component mounts
+  // Fetch additional statuses with ID filtering
   useEffect(() => {
-    try {
-      const storedStatuses = JSON.parse(localStorage.getItem('userStatuses') || '{}');
-      if (ngoData && ngoData.length > 0) {
-        const updatedData = ngoData.map((ngo) => ({
-          ...ngo,
-          status: storedStatuses[ngo.ID] || ngo.status || "Data Uploaded"
-        }));
-        setNgoData(updatedData);
+    const fetchStatuses = async () => {
+      try {
+        const response = await fetch(
+          "https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=manageStatus"
+        );
+        const data = await response.json();
+
+        // Get the current NGO ID
+        const currentNgoId = id ? id : NgoId[0].NgoId;
+
+        // Filter statuses based on matching ID
+        if (Array.isArray(data)) {
+          const filteredStatuses = data.filter(
+            (status) => status.id === currentNgoId
+          );
+          setAdditionalStatuses(filteredStatuses);
+        } else if (data.data && Array.isArray(data.data)) {
+          const filteredStatuses = data.data.filter(
+            (status) => status.id === currentNgoId
+          );
+          setAdditionalStatuses(filteredStatuses);
+        }
+      } catch (error) {
+        console.error("Error fetching additional statuses:", error);
+        setAdditionalStatuses([]);
       }
-    } catch (error) {
-      console.error("Error loading stored statuses:", error);
-    }
-  }, [ngoData]);
+    };
+
+    fetchStatuses();
+  }, [id, NgoId]);
 
   // Handlers
   const handleBulkStatusChange = async () => {
-    try {
-      const updatedData = ngoData.map((ngo) => {
-        if (selectedRows.has(ngo.ID)) {
-          return { ...ngo, status: bulkStatus };
+    const updatedData = ngoData.map((ngo) => {
+      if (selectedRows.has(ngo.ID)) {
+        const newNgo = { ...ngo, status: bulkStatus };
+        if (
+          ngo.status === "Data Uploaded" &&
+          bulkStatus === "Laptop Assigned"
+        ) {
+          newNgo["Date-time"] = new Date().toISOString();
         }
-        return ngo;
-      });
+        return newNgo;
+      }
+      return ngo;
+    });
 
-      // Update UI immediately
-      setNgoData(updatedData);
-      setSelectedRows(new Set());
-      setEditStatus(true);
-      setOpenDialog(false);
+    setOpenDialog(false);
+    setNgoData(updatedData);
+    setSelectedRows(new Set());
+    setEditStatus(true);
 
-      // Store in localStorage
-      const storedStatuses = JSON.parse(localStorage.getItem('userStatuses') || '{}');
-      const newStoredStatuses = { ...storedStatuses };
-      selectedRows.forEach(id => {
-        newStoredStatuses[id] = bulkStatus;
-      });
-      localStorage.setItem('userStatuses', JSON.stringify(newStoredStatuses));
+    const AuthUser = JSON.parse(localStorage.getItem("_AuthSama_"));
+    try {
+      const selectedNgos = Array.from(selectedRows).map((id) =>
+        ngoData.find((ngo) => ngo.ID === id)
+      );
+      // Get detailed info for selected NGOs including NGO ID, email, and new status
+      const selectedNgoDetails = selectedNgos.map((ngo) => ({
+        email: ngo.email,
+        ngoId: AuthUser[0].NgoId,
+        newStatus: bulkStatus,
+      }));
+
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbzAR35oDa2j26ifFya9cRcM4AlTV2vu124VsBNB04laz8AeOCReG95nej1J9gfWWAf6/exec?type=updateStatusHistory",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          mode: "no-cors",
+          body: JSON.stringify(selectedNgoDetails),
+        }
+      );
+
+      const isAssigningLaptop = selectedNgos.some(
+        (ngo) =>
+          ngo.status === "Data Uploaded" && bulkStatus === "Laptop Assigned"
+      );
 
       const payload = {
         id: Array.from(selectedRows),
@@ -104,12 +302,12 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
         type: "editUser",
       };
 
-      if (bulkStatus === "Laptop Assigned") {
+      if (isAssigningLaptop) {
         payload.assignedAt = new Date().toISOString();
       }
 
       await fetch(
-        "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec",
+        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -119,51 +317,45 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
       );
     } catch (error) {
       console.error("Error updating status in bulk:", error);
-      // Revert changes if the API call fails
-      const storedStatuses = JSON.parse(localStorage.getItem('userStatuses') || '{}');
-      const updatedData = ngoData.map((ngo) => ({
-        ...ngo,
-        status: storedStatuses[ngo.ID] || "Data Uploaded"
-      }));
-      setNgoData(updatedData);
     }
   };
 
   const handleIndividualStatusChange = async (id, newStatus, event) => {
     event.stopPropagation();
-    setDefaultSelectedStatus(newStatus);
-    try {
-      // Update local state immediately
-      const updatedData = ngoData.map((ngo) => {
-        if (ngo.ID === id) {
-          return { ...ngo, status: newStatus };
+
+    const currentNgo = ngoData.find((ngo) => ngo.ID === id);
+    const currentRow = ngoData.find((ngo) => ngo.ID === id);
+    const rowEmail = currentRow ? currentRow.email : "";
+    const updatedData = ngoData.map((ngo) => {
+      if (ngo.ID === id) {
+        const updatedNgo = { ...ngo, status: newStatus };
+        if (ngo.status === "Data Uploaded" && newStatus === "Laptop Assigned") {
+          updatedNgo["Date-time"] = new Date().toISOString();
         }
-        return ngo;
-      });
+        return updatedNgo;
+      }
+      return ngo;
+    });
 
-      // Update UI immediately
-      setNgoData(updatedData);
-      setEditStatus(true);
+    setNgoData(updatedData);
+    setEditStatus(true);
 
-      // Store in localStorage
-      const storedStatuses = JSON.parse(localStorage.getItem('userStatuses') || '{}');
-      localStorage.setItem('userStatuses', JSON.stringify({
-        ...storedStatuses,
-        [id]: newStatus
-      }));
-
+    try {
       const payload = {
         id: [id],
         status: newStatus,
         type: "editUser",
       };
 
-      if (newStatus === "Laptop Assigned") {
+      if (
+        currentNgo.status === "Data Uploaded" &&
+        newStatus === "Laptop Assigned"
+      ) {
         payload.assignedAt = new Date().toISOString();
       }
 
       await fetch(
-        "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec",
+        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -171,17 +363,22 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
           body: JSON.stringify(payload),
         }
       );
-    } catch (error) {
-      console.error("Error updating status:", error);
-      // Revert the local state if the API call fails
-      const storedStatuses = JSON.parse(localStorage.getItem('userStatuses') || '{}');
-      const updatedData = ngoData.map((ngo) => {
-        if (ngo.ID === id) {
-          return { ...ngo, status: storedStatuses[id] || "Data Uploaded" };
+
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbxs0SUYi40w506ODB351wZ28AYCGatKjhJtIjywP9sueeqXPGu_PmKnsN2qZhiPC8el/exec?type=updateStatusHistory",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          mode: "no-cors",
+          body: JSON.stringify({
+            ngoid: currentNgo.Ngo,
+            email: rowEmail,
+            statusName: newStatus,
+          }),
         }
-        return ngo;
-      });
-      setNgoData(updatedData);
+      );
+    } catch (error) {
+      console.error("Error updating individual status:", error);
     }
   };
 
@@ -217,48 +414,10 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
     }
   };
 
-  const handleDeleteDialog = (id) => {
-    setNgoIdToDelete(id);
-    setOpenDeleteDialog(true);
-  };
-
-  const handleCloseDeleteDialog = () => {
-    setOpenDeleteDialog(false);
-  };
-
-  const handleDelete = async () => {
-    try {
-      const updatedData = ngoData.filter((ngo) => ngo.ID !== ngoIdToDelete);
-      setNgoData(updatedData);
-      setOpenDeleteDialog(false);
-      setEditStatus(true);
-
-      // Remove from localStorage when deleted
-      const storedStatuses = JSON.parse(localStorage.getItem('userStatuses') || '{}');
-      delete storedStatuses[ngoIdToDelete];
-      localStorage.setItem('userStatuses', JSON.stringify(storedStatuses));
-
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          mode: "no-cors",
-          body: JSON.stringify({
-            userId: ngoIdToDelete,
-            type: "deleteUser",
-          }),
-        }
-      );
-    } catch (error) {
-      console.error("Error deleting row:", error);
-    }
-  };
-
+  // Continuing from the filteredData definition...
   const filteredData = ngoData
-    .filter((ngo) => ngo.Ngo === selectedNgoId)
+    .filter((ngo) => ngo.Ngo === user)
     .filter((ngo) => {
-      const ngoStatus = ngo.status || "Data Uploaded";
       return (
         (searchTerm === "" ||
           ngo.name?.toLowerCase().includes(searchTerm) ||
@@ -270,12 +429,15 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
           ngo["Use case"] === filters["Use case"]) &&
         (filters["Occupation Status"] === "" ||
           ngo["Occupation"] === filters["Occupation Status"]) &&
-        (filters.status === "" || ngoStatus === filters.status)
+        (filters.status === "" || ngo.status === filters.status)
       );
     });
 
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
+      {/* MOU Section */}
+      {mouFound?.data ? <MouReviewd /> : <MOUCard ngoid={user} />}
+
       {/* Header */}
       <Box
         sx={{
@@ -382,9 +544,14 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             name="status"
           >
             <MenuItem value="">All</MenuItem>
-            {defaultStatus?.map((option) => (
+            {defaultStatus.map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
+              </MenuItem>
+            ))}
+            {additionalStatuses.map((status) => (
+              <MenuItem key={status.name} value={status.name}>
+                {status.name}
               </MenuItem>
             ))}
           </Select>
@@ -400,7 +567,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
           <TableHead>
             {selectedRows.size > 0 ? (
               <TableRow>
-                <TableCell colSpan={11}>
+                <TableCell colSpan={9}>
                   <Box
                     sx={{
                       mb: 2,
@@ -434,7 +601,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                     <Typography variant="body1" sx={{ color: "#666" }}>
                       Change status for {selectedRows.size} selected items
                     </Typography>
-                    <FormControl sx={{ width: 300 }}>
+                    <FormControl sx={{ width: 300, }}>
                       <Select
                         value={bulkStatus}
                         onChange={(e) => setBulkStatus(e.target.value)}
@@ -452,6 +619,11 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                         {defaultStatus.map((option) => (
                           <MenuItem key={option} value={option}>
                             {option}
+                          </MenuItem>
+                        ))}
+                        {additionalStatuses.map((status) => (
+                          <MenuItem key={status.name} value={status.name}>
+                            {status.name}
                           </MenuItem>
                         ))}
                       </Select>
@@ -513,12 +685,6 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                 <TableCell>
                   <Typography variant="subtitle2">Status</Typography>
                 </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Edit</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Delete</Typography>
-                </TableCell>
               </TableRow>
             )}
           </TableHead>
@@ -549,10 +715,14 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                     <Typography variant="body2">{ngo.email}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">{ngo["contact number"]}</Typography>
+                    <Typography variant="body2">
+                      {ngo["contact number"]}
+                    </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">{ngo["ID Proof type"]}</Typography>
+                    <Typography variant="body2">
+                      {ngo["ID Proof type"]}
+                    </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">{ngo["Use case"]}</Typography>
@@ -561,37 +731,16 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                     <Typography variant="body2">{ngo["Occupation"]}</Typography>
                   </TableCell>
                   <TableCell>
-                    <FormControl fullWidth>
-                      <Select
-                        value={ngo.status?? defaultSelectedStatus}
-                        onChange={(e) => {
-                          handleIndividualStatusChange(ngo.ID, e.target.value, e);
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                        displayEmpty
-                      >
-                        {defaultStatus.map((option) => (
-                          <MenuItem key={option} value={option}>
-                            {option}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </TableCell>
-                  <TableCell style={{ cursor: "pointer" }}>
-                    <EditIcon 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRowClick(ngo.ID);
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell style={{ cursor: "pointer" }}>
-                    <DeleteIcon
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteDialog(ngo.ID);
-                      }}
+                    <StatusCell
+                      status={ngo.status}
+                      id={ngo.ID}
+                      handleIndividualStatusChange={
+                        handleIndividualStatusChange
+                      }
+                      statusDisabled={statusDisabled}
+                      defaultStatus={defaultStatus}
+                      dateTime={ngo["Date-time"]}
+                      additionalStatuses={additionalStatuses}
                     />
                   </TableCell>
                 </TableRow>
@@ -614,12 +763,13 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
         }}
       />
 
-      {/* Dialogs */}
+      {/* Bulk Update Confirmation Dialog */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Change Status</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to change the status?
+            Are you sure you want to change the status for {selectedRows.size}{" "}
+            selected items to "{bulkStatus}"?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -631,15 +781,8 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      <DeleteDialog
-        open={openDeleteDialog}
-        handleClose={handleCloseDeleteDialog}
-        handleDelete={handleDelete}
-      />
     </Container>
   );
 };
 
-export default AdminTable;
-
+export default NGOTable;
