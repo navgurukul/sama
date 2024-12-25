@@ -31,7 +31,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import MOUCard from "../../Pages/MouUpload/MouUpload";
 import MouReviewd from "../../Pages/MouUpload/MouReviewd";
 
-
+// Updated StatusCell Component with monthly date-based enabling
 const StatusCell = ({
   status,
   id,
@@ -49,18 +49,19 @@ const StatusCell = ({
     const checkDateEnabled = () => {
       const currentDate = new Date();
       const dayOfMonth = currentDate.getDate();
-      // setIsDateEnabled(dayOfMonth >= 1 && dayOfMonth <= 10);
-      setIsDateEnabled(dayOfMonth >= 20 && dayOfMonth <= 30);
+      setIsDateEnabled(dayOfMonth >= 1 && dayOfMonth <= 10);
+      // setIsDateEnabled(dayOfMonth >= 20 && dayOfMonth <= 30);
     };
 
     // Check time elapsed for Laptop Assigned status
+
     const checkTimeElapsed = () => {
       if (status === "Laptop Assigned" && dateTime) {
         const assignedTime = new Date(dateTime).getTime();
         const currentTime = new Date().getTime();
         const minutesDiff = (currentTime - assignedTime) / (1000 * 60);
-        setIsEnabled(minutesDiff >= 1);
-
+        setIsEnabled(minutesDiff >= 48 * 60); // 48 hours = 48 * 60 minutes
+        // setIsEnabled(minutesDiff >= 1);
       }
     };
 
