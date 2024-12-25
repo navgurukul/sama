@@ -39,7 +39,7 @@ const handleSubmit = async (e) => {
     };
 
     await fetch(
-      "https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=editManageStatus",
+      "	https://script.google.com/macros/s/AKfycbyXgpBdyC423mHLQ-hm5vh9yRCHxzAD03Opk3Pc6x4Nik865xH6GJCVt-LYI_7i4UPA/exec?type=editManageStatus",
       {
         method: "POST",
         mode: "no-cors",

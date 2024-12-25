@@ -48,8 +48,8 @@ const StatusCell = ({
     const checkDateEnabled = () => {
       const currentDate = new Date();
       const dayOfMonth = currentDate.getDate();
-      setIsDateEnabled(dayOfMonth >= 1 && dayOfMonth <= 10);
-      // setIsDateEnabled(dayOfMonth >= 20 && dayOfMonth <= 30);
+      // setIsDateEnabled(dayOfMonth >= 1 && dayOfMonth <= 10);
+      setIsDateEnabled(dayOfMonth >= 20 && dayOfMonth <= 30);
     };
 
     // Check time elapsed for Laptop Assigned status
@@ -58,8 +58,8 @@ const StatusCell = ({
         const assignedTime = new Date(dateTime).getTime();
         const currentTime = new Date().getTime();
         const minutesDiff = (currentTime - assignedTime) / (1000 * 60);
-        setIsEnabled(minutesDiff >= 48 * 60); // 48 hours = 48 * 60 minutes
-        // setIsEnabled(minutesDiff >= 1);
+        setIsEnabled(minutesDiff >= 1);
+
       }
     };
 
@@ -599,7 +599,7 @@ const NGOTable = ({
                     <Typography variant="body1" sx={{ color: "#666" }}>
                       Change status for {selectedRows.size} selected items
                     </Typography>
-                    <FormControl sx={{ width: 300 }}>
+                    <FormControl sx={{ width: 300, }}>
                       <Select
                         value={bulkStatus}
                         onChange={(e) => setBulkStatus(e.target.value)}
