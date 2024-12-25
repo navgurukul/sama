@@ -117,11 +117,11 @@ const DocumentUpload = () => {
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Paper elevation={0} sx={{ p: 4 }}>
          
-          <Typography variant="h6" component="h1" align="center" mb="48px" gutterBottom>
+          <Typography variant="h6" component="h1" align="center" mb="40px" gutterBottom>
             Upload Documents
           </Typography>
   
-          <Typography align="center" sx={{ mb: 3, color: '#6E6E6E',bgcolor:"#F8F3F0",p:"16px" ,mb:"48px"}}>
+          <Typography align="center" sx={{ mb: 3, color: '#6E6E6E',bgcolor:"#F8F3F0",p:"16px" ,mb:"40px"}}>
             Supported File format: PDF only
           </Typography>
   
@@ -133,7 +133,7 @@ const DocumentUpload = () => {
                 <Typography variant="subtitle1"  gutterBottom>
                     {label}
                   </Typography>
-                <Box key={label} sx={{paddingBottom:"48px"}}>
+                <Box key={label} sx={{paddingBottom:"10px"}}>
                   <Box sx={dropZoneStyles}>
                     <input
                       type="file"
@@ -166,7 +166,7 @@ const DocumentUpload = () => {
                         // bgcolor: 'grey.100',
                       }}
                     >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, height: '70px' }}>
                         {/* <FileIcon color="primary" /> */}
                         <Typography variant='subtitle1'>Uploaded File: </Typography>
                         <Typography noWrap sx={{ maxWidth: 300,color:"primary.main" }}>
@@ -193,13 +193,13 @@ const DocumentUpload = () => {
               >
                 {uploading ? 'Uploading...' : 'Submit Documents'}
               </Button>
-              <Button
+              {/* <Button
                 variant="outlined"
                 onClick={handleSkip}
                 sx={{ minWidth: 200 }}
               >
                 Skip
-              </Button>
+              </Button> */}
             </Box>
           </form>
   
