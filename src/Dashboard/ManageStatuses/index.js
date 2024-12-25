@@ -206,16 +206,7 @@ const ManageStatuses = () => {
                 }}
               >
                 <CardContent sx={{ p: 3, pb: 0, flexGrow: 1 }}>
-                  {/* <Typography
-                    sx={{
-                      color: "#4CAF50",
-                      fontWeight: "bold",
-                      fontSize: "1rem",
-                      mb: 1,
-                    }}
-                  >
-                    {status.name}
-                  </Typography> */}
+                
                   <Typography
                     variant="subtitle2"
                     sx={{
@@ -260,7 +251,7 @@ const ManageStatuses = () => {
                       fontWeight: "bold",
                       p: 0,
                       "&:hover": {
-                        background: "none",
+                        background: "none !important",
                       },
                     }}
                   >
