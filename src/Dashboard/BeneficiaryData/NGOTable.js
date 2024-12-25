@@ -31,7 +31,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import MOUCard from "../../Pages/MouUpload/MouUpload";
 import MouReviewd from "../../Pages/MouUpload/MouReviewd";
 
-// Status Cell Component with fixed status flow
 const StatusCell = ({
   status,
   id,
@@ -42,26 +41,45 @@ const StatusCell = ({
   additionalStatuses = [],
 }) => {
   const [isEnabled, setIsEnabled] = useState(false);
+  const [isDateEnabled, setIsDateEnabled] = useState(false);
 
   useEffect(() => {
+    // Check if current date is between 1-10 of the month
+    const checkDateEnabled = () => {
+      const currentDate = new Date();
+      const dayOfMonth = currentDate.getDate();
+      setIsDateEnabled(dayOfMonth >= 1 && dayOfMonth <= 10);
+      // setIsDateEnabled(dayOfMonth >= 20 && dayOfMonth <= 30);
+    };
+
+    // Check time elapsed for Laptop Assigned status
     const checkTimeElapsed = () => {
       if (status === "Laptop Assigned" && dateTime) {
         const assignedTime = new Date(dateTime).getTime();
         const currentTime = new Date().getTime();
         const minutesDiff = (currentTime - assignedTime) / (1000 * 60);
-        setIsEnabled(minutesDiff >= 1);
+        setIsEnabled(minutesDiff >= 48 * 60); // 48 hours = 48 * 60 minutes
+        // setIsEnabled(minutesDiff >= 1);
       }
     };
 
+    checkDateEnabled();
     checkTimeElapsed();
-    const interval = setInterval(checkTimeElapsed, 10000);
-    return () => clearInterval(interval);
+
+    // Set up intervals for both checks
+    const dateInterval = setInterval(checkDateEnabled, 1000 * 60 * 60); // Check every hour
+    const timeInterval = setInterval(checkTimeElapsed, 10000); // Check every 10 seconds
+
+    return () => {
+      clearInterval(dateInterval);
+      clearInterval(timeInterval);
+    };
   }, [status, dateTime]);
 
   // Extract names from filtered additional statuses
   const additionalStatusNames = additionalStatuses.map((status) => status.name);
 
-  // Show different status options based on current status and time condition
+  // Show different status options based on current status and conditions
   const getAvailableStatuses = () => {
     // If status is "Data Uploaded", show default statuses
     if (status === "Data Uploaded") {
@@ -103,7 +121,12 @@ const StatusCell = ({
       return true;
     }
 
-    // Enable for all other cases (after 1 min or when showing additionalStatuses)
+    // Disable if showing additional statuses and not within 1-10 days of month
+    if (additionalStatusNames.includes(status) && !isDateEnabled) {
+      return true;
+    }
+
+    // Enable for all other cases
     return false;
   };
 
@@ -224,75 +247,77 @@ const NGOTable = ({
   }, [id, NgoId]);
 
   // Handlers
-const handleBulkStatusChange = async () => {
-  const updatedData = ngoData.map((ngo) => {
-    if (selectedRows.has(ngo.ID)) {
-      const newNgo = { ...ngo, status: bulkStatus };
-      if (ngo.status === "Data Uploaded" && bulkStatus === "Laptop Assigned") {
-        newNgo["Date-time"] = new Date().toISOString();
+  const handleBulkStatusChange = async () => {
+    const updatedData = ngoData.map((ngo) => {
+      if (selectedRows.has(ngo.ID)) {
+        const newNgo = { ...ngo, status: bulkStatus };
+        if (
+          ngo.status === "Data Uploaded" &&
+          bulkStatus === "Laptop Assigned"
+        ) {
+          newNgo["Date-time"] = new Date().toISOString();
+        }
+        return newNgo;
       }
-      return newNgo;
-    }
-    return ngo;
-  });
+      return ngo;
+    });
 
-  setOpenDialog(false);
-  setNgoData(updatedData);
-  setSelectedRows(new Set());
-  setEditStatus(true);
+    setOpenDialog(false);
+    setNgoData(updatedData);
+    setSelectedRows(new Set());
+    setEditStatus(true);
 
     const AuthUser = JSON.parse(localStorage.getItem("_AuthSama_"));
-  try {
-    const selectedNgos = Array.from(selectedRows).map((id) =>
-      ngoData.find((ngo) => ngo.ID === id)
-    );
-    // Get detailed info for selected NGOs including NGO ID, email, and new status
-    const selectedNgoDetails = selectedNgos.map((ngo) => ({
-      email: ngo.email,
-      ngoId: AuthUser[0].NgoId,
-      newStatus: bulkStatus,
-    }));
+    try {
+      const selectedNgos = Array.from(selectedRows).map((id) =>
+        ngoData.find((ngo) => ngo.ID === id)
+      );
+      // Get detailed info for selected NGOs including NGO ID, email, and new status
+      const selectedNgoDetails = selectedNgos.map((ngo) => ({
+        email: ngo.email,
+        ngoId: AuthUser[0].NgoId,
+        newStatus: bulkStatus,
+      }));
 
-    await fetch(
-      "https://script.google.com/macros/s/AKfycbzAR35oDa2j26ifFya9cRcM4AlTV2vu124VsBNB04laz8AeOCReG95nej1J9gfWWAf6/exec?type=updateStatusHistory",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        mode: "no-cors",
-        body: JSON.stringify(selectedNgoDetails),
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbzAR35oDa2j26ifFya9cRcM4AlTV2vu124VsBNB04laz8AeOCReG95nej1J9gfWWAf6/exec?type=updateStatusHistory",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          mode: "no-cors",
+          body: JSON.stringify(selectedNgoDetails),
+        }
+      );
+
+      const isAssigningLaptop = selectedNgos.some(
+        (ngo) =>
+          ngo.status === "Data Uploaded" && bulkStatus === "Laptop Assigned"
+      );
+
+      const payload = {
+        id: Array.from(selectedRows),
+        status: bulkStatus,
+        type: "editUser",
+      };
+
+      if (isAssigningLaptop) {
+        payload.assignedAt = new Date().toISOString();
       }
-    );
 
-
-    const isAssigningLaptop = selectedNgos.some(
-      (ngo) =>
-        ngo.status === "Data Uploaded" && bulkStatus === "Laptop Assigned"
-    );
-
-    const payload = {
-      id: Array.from(selectedRows),
-      status: bulkStatus,
-      type: "editUser",
-    };
-
-    if (isAssigningLaptop) {
-      payload.assignedAt = new Date().toISOString();
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          mode: "no-cors",
+          body: JSON.stringify(payload),
+        }
+      );
+    } catch (error) {
+      console.error("Error updating status in bulk:", error);
     }
+  };
 
-
-    await fetch(
-      "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        mode: "no-cors",
-        body: JSON.stringify(payload),
-      }
-    );
-  } catch (error) {
-    console.error("Error updating status in bulk:", error);
-  }
-};
   const handleIndividualStatusChange = async (id, newStatus, event) => {
     event.stopPropagation();
 
@@ -387,7 +412,7 @@ const handleBulkStatusChange = async () => {
     }
   };
 
-  // Filter data
+  // Continuing from the filteredData definition...
   const filteredData = ngoData
     .filter((ngo) => ngo.Ngo === user)
     .filter((ngo) => {
@@ -405,6 +430,7 @@ const handleBulkStatusChange = async () => {
         (filters.status === "" || ngo.status === filters.status)
       );
     });
+
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
       {/* MOU Section */}
@@ -529,6 +555,7 @@ const handleBulkStatusChange = async () => {
           </Select>
         </FormControl>
       </Grid>
+
       {/* Table */}
       <TableContainer
         style={{ border: "none" }}
