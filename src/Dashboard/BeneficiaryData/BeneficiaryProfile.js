@@ -409,7 +409,7 @@ const BeneficiaryProfile = () => {
                     gutterBottom
                     sx={{
                       fontWeight: 500,
-                      color: "primary.main",
+                      // color: "primary.main",
                       textAlign: "left", // Ensure month-year is left-aligned
                     }}
                   >
@@ -417,7 +417,7 @@ const BeneficiaryProfile = () => {
                   </Typography>
 
                   <Typography
-                    variant="body2"
+                    variant="body1"
                     sx={{
                       display: "flex",
                       alignItems: "center", // Align icon and text
