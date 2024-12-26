@@ -124,7 +124,16 @@ const BeneficiaryProfile = () => {
 
   console.log(statusHistory, "statusHistoryooooooooooooo");
 
-  if (loading) return <CircularProgress />;
+  if (loading) return <Box
+  sx={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "50vh",
+  }}
+>
+  <CircularProgress />
+</Box>;
   if (error) return <Typography color="error">{error}</Typography>;
 
   return (
@@ -133,7 +142,7 @@ const BeneficiaryProfile = () => {
       sx={{ padding: "24px", marginTop: "64px", marginBottom: "64px" }}
     >
       {/* Header */}
-      <Typography variant="h5" align="center" sx={{ marginBottom: 4 }}>
+      <Typography variant="h5" align="center" sx={{ marginBottom: 4}}>
         Beneficiary Profile
       </Typography>
 
@@ -144,7 +153,7 @@ const BeneficiaryProfile = () => {
       >
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6}>
-            <Typography variant="h6" mb={3}>
+            <Typography variant="h6" mb={3} color="primary.main" >
               {data.name}
             </Typography>
 
@@ -155,7 +164,6 @@ const BeneficiaryProfile = () => {
             <Typography variant="body1" marginBottom="16px">
               {data.ID}
             </Typography>
-
             {/* Additional Fields */}
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Email

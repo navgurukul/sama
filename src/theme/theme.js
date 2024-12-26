@@ -82,6 +82,7 @@ theme = createTheme(theme, {
       fontStyle: "normal",
       fontWeight: 700,
       fontFamily: "Raleway",
+      color:"#828282"
     },
     subtitle2: {
       fontSize: "14px",
@@ -97,6 +98,7 @@ theme = createTheme(theme, {
       fontStyle: "normal",
       fontWeight: 400,
       fontFamily: "Raleway",
+      color:"#4A4A4A"
     },
     body2: {
       fontSize: "12px",
@@ -137,7 +139,7 @@ theme.components = {
         // borderRadius: "100px",
         height: "48px",
         padding:"0px 32px 0px 32px",
-          borderRadius: "100px",
+        borderRadius: "100px",
         
         "&:hover": {
       backgroundColor: "#5C785A",
