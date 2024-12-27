@@ -7,12 +7,15 @@ import {
   Paper,
   CircularProgress,
   Divider,
+  IconButton,
 } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Container } from "@mui/system";
 import { classes } from "./style";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import UploadIcon from "@mui/icons-material/UploadFile";
+import HistoryStatusPopup from "./HistoryStatusPopup";
 
 const BeneficiaryProfile = () => {
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
@@ -21,6 +24,10 @@ const BeneficiaryProfile = () => {
   const [statusHistory, setStatusHistory] = useState([]);
   const [error, setError] = useState(null);
   const { id } = useParams();
+  const [openPopup, setOpenPopup] = useState(false);
+  const [ statusId,setStatusId] = useState("")
+
+  const user = Array.isArray(NgoId) && NgoId.length > 0 ? NgoId[0] : null;
 
   const API_URL = `https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${id}`;
 
@@ -29,6 +36,7 @@ const BeneficiaryProfile = () => {
       try {
         // Fetch user data
         const response = await axios.get(API_URL);
+        setStatusId(response.data[0].Ngo)
         if (!response.data || !response.data[0]) {
           throw new Error("No user data found");
         }
@@ -124,7 +132,27 @@ const BeneficiaryProfile = () => {
 
   console.log(statusHistory, "statusHistoryooooooooooooo");
 
-  if (loading) return <CircularProgress />;
+  const handlePopupOpen = () => {
+    setOpenPopup(true);
+  };
+
+  const handlePopupClose = () => {
+    setOpenPopup(false);
+  };
+
+  if (loading)
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "50vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   if (error) return <Typography color="error">{error}</Typography>;
 
   return (
@@ -417,21 +445,47 @@ const BeneficiaryProfile = () => {
                       textAlign: "left", // Ensure status is left-aligned
                     }}
                   >
-                    {status.status_name === "No Change" && (
-                      <ErrorOutlineIcon
-                        sx={{
-                          fontSize: 16,
-                          color: "error.main",
-                          marginRight: "8px", // Spacing between icon and text
-                        }}
-                      />
+                    {status.status_name === "No Change" ? (
+                      user && user.role && user.role.includes("admin") ? (
+                        <>
+                          <IconButton onClick={handlePopupOpen}>
+                            <UploadIcon
+                              sx={{
+                                fontSize: 16,
+                                color: "primary.main",
+
+                              }}
+                            />
+                          </IconButton>
+                          {status.status_name}
+                        </>
+                      ) : (
+                        <>
+                          <ErrorOutlineIcon
+                            sx={{
+                              fontSize: 16,
+                              color: "error.main",
+                            }}
+                          />
+                          {status.status_name}
+                        </>
+                      )
+                    ) : (
+                      status.status_name
                     )}
-                    {status.status_name || "No status update"}
                   </Typography>
                 </Paper>
               </Grid>
             ))}
           </Grid>
+          {/* Render the popup */}
+          {openPopup && (
+            <HistoryStatusPopup
+              open={openPopup}
+              onClose={handlePopupClose}
+              id={statusId}
+            />
+          )}
         </>
       ) : (
         <Box
