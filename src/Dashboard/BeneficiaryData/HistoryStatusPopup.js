@@ -3,19 +3,21 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  List,
-  ListItem,
   Typography,
   CircularProgress,
   IconButton,
   Box,
+  TextField,
+  MenuItem,
+  Button,
 } from "@mui/material";
 import axios from "axios";
 import CloseIcon from "@mui/icons-material/Close";
 
-const HistoryStatusPopup = ({ open, onClose,id }) => {
+const HistoryStatusPopup = ({ open, onClose, id }) => {
   const [statusData, setStatusData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedName, setSelectedName] = useState("");
 
   useEffect(() => {
     if (open) {
@@ -28,7 +30,11 @@ const HistoryStatusPopup = ({ open, onClose,id }) => {
             const filteredData = response.data.filter(
               (item) => item.id === id
             );
-            setStatusData(filteredData);
+            if (filteredData.length > 0) {
+              setStatusData(filteredData);
+              console.log("stayus",filteredData)
+              setSelectedName(filteredData[0].name); // Set default name
+            }
             setLoading(false);
           })
           .catch((error) => {
@@ -40,12 +46,35 @@ const HistoryStatusPopup = ({ open, onClose,id }) => {
         setLoading(false);
       }
     }
-  }, [open,id]);
+  }, [open, id]);
+
+  const handleSubmit = async () => {
+    const payload = {
+      id: [id],
+      status: selectedName,
+      type: "editUser",
+    };
+
+    try {
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          mode: "no-cors",
+          body: JSON.stringify(payload),
+        }
+      );
+      console.log("Data submitted successfully:", payload);
+      onClose();
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle>
-        {" "}
         <Box
           sx={{
             display: "flex",
@@ -71,29 +100,37 @@ const HistoryStatusPopup = ({ open, onClose,id }) => {
             <CircularProgress />
           </Box>
         ) : statusData.length > 0 ? (
-          <List>
-            {statusData.map((item, index) => (
-              <ListItem
-                key={index}
-                sx={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <Typography
-                  variant="body1"
-                  sx={{ fontWeight: "bold", marginRight: 2 }}
-                >
+          <Box
+            component="form"
+            sx={{ display: "flex", flexDirection: "column", gap: 4, pt: 2 }}
+          >
+            {/* Dropdown for Name */}
+            <TextField
+              select
+              label="Name"
+              value={selectedName}
+              onChange={(e) => setSelectedName(e.target.value)}
+              fullWidth
+            >
+              {statusData.map((item, index) => (
+                <MenuItem key={index} value={item.name}>
                   {item.name}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{ textAlign: "right", flexGrow: 1 }}
-                >
-                  {item.description}
-                </Typography>
-              </ListItem>
-            ))}
-          </List>
+                </MenuItem>
+              ))}
+            </TextField>
+
+            {/* Submit Button */}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              fullWidth
+            >
+              Submit
+            </Button>
+          </Box>
         ) : (
-          <p>No status details available.</p>
+          <Typography>No status details available.</Typography>
         )}
       </DialogContent>
     </Dialog>
@@ -101,3 +138,5 @@ const HistoryStatusPopup = ({ open, onClose,id }) => {
 };
 
 export default HistoryStatusPopup;
+
+
