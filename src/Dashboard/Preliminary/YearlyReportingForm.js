@@ -1,28 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Typography, Button, Paper, Container, FormLabel } from '@mui/material';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const YearlyReportingForm = () => {
   const [questions, setQuestions] = useState([]); // Holds fetched questions
   const [error, setError] = useState(""); // For error handling
   const [formData, setFormData] = useState({}); // For storing answers
-  const [submittedData, setSubmittedData] = useState(null); // For storing submitted questions and answers
-  
+
   const location = useLocation();
   const { month, year } = location.state || {};
-
-  
   const navigate = useNavigate();
-  const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
-  const { id } = useParams();
-  const gettingStoredData = id ? id : NgoId[0].NgoId;
+  const NgoId = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const ngoId = NgoId[0]?.NgoId;
 
   useEffect(() => {
     async function fetchData() {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec?type=Yearly&id=${gettingStoredData}`
+          `https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=Yearly&id=${ngoId}`
         );
         const data = response.data;
         setQuestions(data.questions || []);
@@ -31,8 +27,8 @@ const YearlyReportingForm = () => {
         setError("Failed to load questions.");
       }
     }
-    if (gettingStoredData) fetchData();
-  }, [gettingStoredData]);
+    if (ngoId) fetchData();
+  }, [ngoId]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,18 +36,17 @@ const YearlyReportingForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSubmittedData(formData); // Save submitted data
 
     fetch(
-      "https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec"
+      "https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=SendYearlyReport"
       , {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       mode: 'no-cors',
-      body: JSON.stringify({
-        id: gettingStoredData,
-        data: { ...formData },
-        type: 'SendYearlyReport'
+      body: JSON.stringify({ ...formData,
+          year: `${month} ${year}`,
+          ngoId: ngoId,
+         
       }),
     })
       .then(response => response.json())
@@ -63,8 +58,6 @@ const YearlyReportingForm = () => {
     navigate('/preliminary');
   };
 
-  
-
   return (
     <Container maxWidth="sm">
       <Paper
@@ -73,30 +66,26 @@ const YearlyReportingForm = () => {
           maxWidth: '600px',
           padding: 4,
           borderRadius: 2,
-          // backgroundColor: '#fffdf3',
         }}
       >
         <Typography variant="h5" align="center" gutterBottom>
-         {month && month} {year && year} Monthly Report
+          {month && month} {year && year} Yearly Report
         </Typography>
 
         {questions.length > 0 ? (
           <Box component="form" sx={{ mt: 2 }} onSubmit={handleSubmit} noValidate>
-
             {questions.map((question, index) => (
-              <>
-              <FormLabel>{question}</FormLabel>              
-              <TextField
-                key={index}
-                // label={question}
-                name={question}
-                value={formData[question] || ""}
-                onChange={handleChange}
-                fullWidth
-                margin="normal"
-                variant="outlined"
-              />
-              </>
+              <Box key={index} sx={{ mb: 2 }}>
+                <FormLabel>{question}</FormLabel>
+                <TextField
+                  name={question}
+                  value={formData[question] || ""}
+                  onChange={handleChange}
+                  fullWidth
+                  margin="normal"
+                  variant="outlined"
+                />
+              </Box>
             ))}
 
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>

@@ -8,6 +8,7 @@ import { set } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import MonthlyReport from './MonthlyReport';
+import YearlyReport from './YearlyReport';
 
 const generateMonthlyDates = (startDate) => {
   const validDate = convertToValidDate(startDate);
@@ -27,21 +28,32 @@ const generateMonthlyDates = (startDate) => {
   return dates;
 };
 
+const generateYearlyDates = (startDate) => {
+  if (!startDate) return [];
+  const validDate = convertToValidDate(startDate);
+  if (isNaN(validDate)) {
+    console.error("Invalid date format");
+    return [];
+  }
+  
+  const yearlyDate = new Date(validDate);
+  yearlyDate.setFullYear(yearlyDate.getFullYear() + 1);
+  return [yearlyDate];
+};
+
 const convertToValidDate = (input) => {
   const [date, time] = input.split(", ");
   const [day, month, year] = date.split("/");
   return new Date(`${year}-${month}-${day}T${time}`);
 };
 
-
-// Helper function to format the date
 const formatDate = (date) => {
-  // const day = "10th"; // Fixed day
   const day = date.getDate();
-  const month = date.toLocaleString("default", { month: "long" }); // Get full month name
+  const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
   return `${day} ${month} ${year}`;
 };
+
 
 const PreDestibution = ({userId, preliminaryId}) => {
   // State for API data
@@ -50,16 +62,22 @@ const PreDestibution = ({userId, preliminaryId}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [monthlyMetrixGet, setMonthlyMetrixGet] = useState([]);
-  const [showComponentA, setShowComponentA] = useState(true); // Start with Component A
-  const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
-  const gettingStoredData = NgoId[0].NgoId ;
-  const { id } = useParams();
-  const user = id? id : NgoId[0].NgoId;
-  const navigate = useNavigate();
-  const [monthlyReportingDate, setMonthlyReportingDate] = useState(""); // Set your start date here
+  const [yearlyMetrixGet, setYearlyMetrixGet] = useState(null);
+  const [showComponentA, setShowComponentA] = useState(true);
+  const [monthlyReportingDate, setMonthlyReportingDate] = useState("");
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [isDataAvailabel, setIsDataAvailabel] = useState(false);
+
+  const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
+  const gettingStoredData = NgoId[0].NgoId;
+  const { id } = useParams();
+  const user = id ? id : NgoId[0].NgoId;
+  const navigate = useNavigate();
+
   const monthlyDates = monthlyReportingDate && generateMonthlyDates(monthlyReportingDate);
-  const [selectedData, setSelectedData] = useState(null);
+  const yearlyDates = monthlyReportingDate && generateYearlyDates(monthlyReportingDate);
+  
+ 
   
   
   // this is to fetch monthly report 
@@ -98,9 +116,6 @@ const PreDestibution = ({userId, preliminaryId}) => {
       // Set the date once
       setCurrentDate(new Date());
     }, []);
-
-
-  const yearlyReport = { title: "Jan 2024 - Dec 2024", dueDate: "10th January 2025" };
 
   const [mouFound, setMouFound] = useState(true);
 
@@ -149,6 +164,8 @@ const PreDestibution = ({userId, preliminaryId}) => {
           return { ...metric, disabled: diffInMinutes <= 10 }; // Add disabled flag
         });
         setMetrics(dateComparedData);
+
+        
         
         // setMetrics(response.data); // Update according to API response structure
         setLoading(false);
@@ -162,16 +179,69 @@ const PreDestibution = ({userId, preliminaryId}) => {
     };
     fetchData();
   }, [preliminaryId]);
+  
+
+  useEffect(() => {
+    if (gettingStoredData) {
+      fetch(`https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=GetYearlyReport&ngoId=${gettingStoredData}`)
+        .then((response) => response.json())
+        .then((result) => {
+          
+          setYearlyMetrixGet(result.data);
+          setIsDataAvailabel(result.success);
+
+
+          // if (result.success) {
+          //   const rawData = result.data;
+          //   const parsedData = Array.isArray(rawData) ? rawData : JSON.parse(rawData);
+
+            
+          //   const transformedData = parsedData
+          //     .filter((item) => item.trim() !== '')
+          //     .map((item) => {
+          //       return item.split(',').reduce((acc, pair) => {
+          //         const [key, value] = pair.split(':').map((str) => str.trim());
+          //         acc[key] = value;
+          //         return acc;
+          //       }, {});
+          //     });
+          //   setYearlyMetrixGet(rawData.success);
+          // }
+          // else{
+          //   setYearlyMetrixGet(result.success);
+          // }
+        })
+        .catch((error) => console.error('API error:', error));
+    }
+  }, [gettingStoredData]);
+  console.log(yearlyMetrixGet)
+
 
 
   const handleCardClick = (monthData, monthName , yearName) => {
     navigate('/monthly-report', { state: { monthlyReportData: monthData , monthName, yearName } });
+  };
+
+  const handleYearlyCardClick = (data, monthCurrent, year,formattedstartDate ) => {
+    navigate('/yearly-report', { 
+      state: { 
+        yearlyReportData: data,
+        monthCurrent,
+        year,
+        formattedstartDate
+      } 
+    });
   };
   const monthlyReportingFormHandler = (monthName, yearN) => {
     const month = monthName;
     const year = yearN;
     navigate('/monthly-reporting', { state: { month, year } });
   };
+
+  const yearlyReportingFormHandler = (month, year) => {
+    navigate('/yearly-reporting', { state: { month, year } });
+  };
+
 
   if (loading) {
     return (
@@ -260,22 +330,17 @@ const PreDestibution = ({userId, preliminaryId}) => {
 
       {/* {selectedData && <MonthlyReportData monthlyReportData={selectedData} />} */}
 
-      <Typography variant="h6" gutterBottom style={{ marginTop: "40px",color:"#4A4A4A" }}>
-        Yearly Report
-      </Typography>
-      <Grid container spacing={3} mb={5}>
-        <Grid item xs={12} sm={6} md={4}>
-          <Card style={{ height: "100%" }} sx={{backgroundColor:"#E0E0E0"}}>
-            <CardContent>
-              <Typography variant="subtitle1" mt={1} ml={2} sx={{color:"#828282"}}>{yearlyReport.title}</Typography>
-              <Typography color="textSecondary" variant="body1" mt={1} ml={2}>Due by {yearlyReport.dueDate}</Typography>
-              <Button variant="text" sx={{ marginTop: "25px", marginLeft:"29%", color:"#828282"}}>
-                Submit Report &rarr;
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid> 
+      <YearlyReport 
+          yearlyDates={yearlyDates}
+          onCardClick={handleYearlyCardClick}
+          yearlyReportingFormHandler={yearlyReportingFormHandler}
+          currentDate={currentDate}
+          yearlyMetrixGet={yearlyMetrixGet}
+          formatDate={formatDate}
+          isDataAvailabel={isDataAvailabel}
+          monthlyReportingDate={monthlyReportingDate}
+
+        />
       </>
       }
     </Container>

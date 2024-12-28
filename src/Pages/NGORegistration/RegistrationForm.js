@@ -232,7 +232,7 @@ function RegistrationForm() {
       };
 
       try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=NGO', {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
