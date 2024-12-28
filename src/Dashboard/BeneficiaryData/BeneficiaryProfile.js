@@ -26,6 +26,8 @@ const BeneficiaryProfile = () => {
   const { id } = useParams();
   const [openPopup, setOpenPopup] = useState(false);
   const [ statusId,setStatusId] = useState("")
+  const [userEmail, setUserEmail] = useState("");
+  const [selectedMonthYear,setSelectedMonthYear] = useState("");
 
   const user = Array.isArray(NgoId) && NgoId.length > 0 ? NgoId[0] : null;
 
@@ -42,6 +44,7 @@ const BeneficiaryProfile = () => {
         }
 
         setData(response.data[0]);
+        setUserEmail(response.data[0].email);
         const email = response.data[0].email;
 
         // Fetch status history
@@ -132,9 +135,11 @@ const BeneficiaryProfile = () => {
 
   console.log(statusHistory, "statusHistoryooooooooooooo");
 
-  const handlePopupOpen = () => {
-    setOpenPopup(true);
-  };
+  // In BeneficiaryProfile.jsx, replace the current handlePopupOpen with:
+const handlePopupOpen = (monthYear) => {
+  setOpenPopup(true);
+  setSelectedMonthYear(monthYear); // Add this state variable
+};
 
   const handlePopupClose = () => {
     setOpenPopup(false);
@@ -448,12 +453,11 @@ const BeneficiaryProfile = () => {
                     {status.status_name === "No Change" ? (
                       user && user.role && user.role.includes("admin") ? (
                         <>
-                          <IconButton onClick={handlePopupOpen}>
+                          <IconButton onClick={() => handlePopupOpen(status.date)}>
                             <UploadIcon
                               sx={{
                                 fontSize: 16,
                                 color: "primary.main",
-
                               }}
                             />
                           </IconButton>
@@ -484,6 +488,8 @@ const BeneficiaryProfile = () => {
               open={openPopup}
               onClose={handlePopupClose}
               id={statusId}
+              email={userEmail}
+              monthYear={selectedMonthYear}
             />
           )}
         </>
