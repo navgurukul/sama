@@ -38,15 +38,38 @@ const TabNavigation = () => {
 
   // Render tabs dynamically
   const renderTabs = () => {
+    const tabStyle = {
+      fontSize: '18px',
+      fontFamily: 'Raleway',
+      fontWeight: 700,
+      textTransform: 'none',
+      borderRadius: '100px',
+      padding: '0px 32px',
+      height: '48px',
+      minHeight: '48px',
+      color: '#5C785A',
+      border: '1px solid #5C785A',
+      '&.Mui-selected': {
+        backgroundColor: '#5C785A',
+        color: '#FFFFFF',
+        border: 'none'
+      },
+      '&:hover': {
+        backgroundColor: '#5C785A',
+        color: '#FFFFFF'
+      }
+    };
+  
     const tabs = [
-      <Tab key="ngo-details" label="NGO Details" />,
-      <Tab key="uploaded-documents" label="Uploaded Documents" />,
+      <Tab key="ngo-details" label="NGO Details" sx={tabStyle} />,
+      <Tab key="uploaded-documents" label="Uploaded Documents" sx={tabStyle} />,
     ];
-
-    // Add Beneficiary Data and ManageStatuses tabs for "1 to one"
+  
     if (ngoDetails && ngoDetails[0]?.['Ngo Type'] === '1 to one') {
-      tabs.push(<Tab key="beneficiary-data" label="Beneficiary Data" />);
-      tabs.push(<Tab key="manage-statuses" label="Manage Statuses" />);
+      tabs.push(
+        <Tab key="beneficiary-data" label="Beneficiary Data" sx={tabStyle} />,
+        <Tab key="manage-statuses" label="Manage Statuses" sx={tabStyle} />
+      );
     } else {
       tabs.push(
         <Tab key="pre-distribution" label="Pre-Distribution Metrics" />,
@@ -60,27 +83,27 @@ const TabNavigation = () => {
 
   // Render tab content dynamically
   const renderTabContent = () => {
-    if (status === 'loading') {
+    if (status === "loading") {
       return <Box>Loading NGO details...</Box>;
     }
 
-    if (status === 'failed') {
+    if (status === "failed") {
       return <Box>Error: {error}</Box>;
     }
 
-    if (status === 'succeeded' && ngoDetails) {
+    if (status === "succeeded" && ngoDetails) {
       switch (value) {
         case 0:
           return <NGODetails ngo={ngoDetails} />;
         case 1:
           return <DataUpload />;
         case 2:
-          if (ngoDetails[0]?.['Ngo Type'] === '1 to one') {
+          if (ngoDetails[0]?.["Ngo Type"] === "1 to one") {
             return <BeneficiaryData />;
           }
           return <Preliminary />;
         case 3:
-          if (ngoDetails[0]?.['Ngo Type'] === '1 to one') {
+          if (ngoDetails[0]?.["Ngo Type"] === "1 to one") {
             return <ManageStatuses />;
           }
           return <MonthlyReport/>; // Fallback if accessed incorrectly
@@ -99,7 +122,20 @@ const TabNavigation = () => {
 
   return (
     <Container maxWidth="lg">
-      <Tabs value={value} onChange={handleChange} centered sx={{ my: 4 }}>
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        centered
+        sx={{
+          my: 4,
+          "& .MuiTabs-flexContainer": {
+            gap: "16px",
+          },
+          "& .MuiTabs-indicator": {
+            display: "none", 
+          },
+        }}
+      >
         {renderTabs()}
       </Tabs>
       <Box sx={{ mt: 2 }}>{renderTabContent()}</Box>
@@ -108,4 +144,3 @@ const TabNavigation = () => {
 };
 
 export default TabNavigation;
-

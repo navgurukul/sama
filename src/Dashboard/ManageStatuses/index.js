@@ -206,16 +206,7 @@ const ManageStatuses = () => {
                 }}
               >
                 <CardContent sx={{ p: 3, pb: 0, flexGrow: 1 }}>
-                  {/* <Typography
-                    sx={{
-                      color: "#4CAF50",
-                      fontWeight: "bold",
-                      fontSize: "1rem",
-                      mb: 1,
-                    }}
-                  >
-                    {status.name}
-                  </Typography> */}
+                
                   <Typography
                     variant="subtitle2"
                     sx={{
@@ -246,15 +237,30 @@ const ManageStatuses = () => {
                 <CardActions
                   sx={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: "flex-end",
                     px: 3,
                     py: 2,
                   }}
                 >
+              
+                  <Button
+                    onClick={() => setModals({ ...modals, delete: status })}
+                    sx={{
+                      color: "#F44336",
+                      textTransform: "capitalize",
+                      fontWeight: "bold",
+                      p: 0,
+                      "&:hover": {
+                        background: "none !important",
+                      },
+                    }}
+                  >
+                    Delete
+                  </Button>
                   <Button
                     onClick={() => setModals({ ...modals, edit: status })}
                     sx={{
-                      color: "#4CAF50",
+                      color: "primary.main",
                       textTransform: "capitalize",
                       fontWeight: "bold",
                       p: 0,
@@ -264,20 +270,6 @@ const ManageStatuses = () => {
                     }}
                   >
                     Edit
-                  </Button>
-                  <Button
-                    onClick={() => setModals({ ...modals, delete: status })}
-                    sx={{
-                      color: "#F44336",
-                      textTransform: "capitalize",
-                      fontWeight: "bold",
-                      p: 0,
-                      "&:hover": {
-                        background: "none",
-                      },
-                    }}
-                  >
-                    Delete
                   </Button>
                 </CardActions>
               </Card>

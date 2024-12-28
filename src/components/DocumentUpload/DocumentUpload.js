@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
-  Paper,
+  Grid,
   Button,
   Container,
   IconButton,
   Stack,
   CircularProgress,
+  Paper,
 } from '@mui/material';
 import {
   CloudUpload as UploadIcon,
@@ -70,26 +71,23 @@ const DocumentUpload = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
-
     const files = Object.keys(fileStates).map((label) => ({
       category: label,
       fileName: fileStates[label].file.name,
       mimeType: fileStates[label].file.type,
       file: fileStates[label].base64,
     }));
-
     const payload = { name: formData.name, files, type: "MultipleDocsUpload" , ngoId: userid,  };
-
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec"
+        "https://script.google.com/macros/s/AKfycbyXgpBdyC423mHLQ-hm5vh9yRCHxzAD03Opk3Pc6x4Nik865xH6GJCVt-LYI_7i4UPA/exec?type=MultipleDocsUpload"
         , {
         method: "POST",
         mode:"no-cors",
         body: JSON.stringify(payload),
       });
       setUploading(false);
-      alert("Documents uploaded successfully!");      
+      alert("Documents uploaded successfully!");
       navigate('/submission-success');
     } catch (error) {
       console.error("Error uploading documents:", error);
@@ -104,7 +102,8 @@ const DocumentUpload = () => {
   };
 
   const dropZoneStyles = {
-    border: '2px dashed #ccc',
+    border: '2px dashed',
+    borderColor: 'primary.main',
     borderRadius: 1,
     p: 3,
     textAlign: 'center',
@@ -116,14 +115,13 @@ const DocumentUpload = () => {
       <SubmissionSuccess />
     ) : (
       <Container maxWidth="md" sx={{ py: 4 }}>
-     
-        <Paper elevation={3} sx={{ p: 4 }}>
+        <Paper elevation={0} sx={{ p: 4 }}>
          
-          <Typography variant="h6" component="h1" align="center" gutterBottom>
+          <Typography variant="h6" component="h1" align="center" mb="40px" gutterBottom>
             Upload Documents
           </Typography>
   
-          <Typography align="center" sx={{ mb: 3, color: 'text.secondary' }}>
+          <Typography align="center" sx={{ mb: 3, color: '#6E6E6E',bgcolor:"#F8F3F0",p:"16px" ,mb:"40px"}}>
             Supported File format: PDF only
           </Typography>
   
@@ -131,11 +129,11 @@ const DocumentUpload = () => {
             <Stack spacing={4}>
           
               {fileLabels.map((label) => (
-                <Box key={label}>
-                  <Typography variant="subtitle1" gutterBottom>
+                <>
+                <Typography variant="subtitle1"  gutterBottom>
                     {label}
                   </Typography>
-  
+                <Box key={label} sx={{paddingBottom:"10px"}}>
                   <Box sx={dropZoneStyles}>
                     <input
                       type="file"
@@ -146,8 +144,8 @@ const DocumentUpload = () => {
                     />
                     <label htmlFor={`file-${label}`} style={{ cursor: 'pointer' }}>
                       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <UploadIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-                        <Typography color="textSecondary">
+                        <UploadIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
+                        <Typography color="primary.main" fontSize="18px">
                           Upload or Drag File
                         </Typography>
                       </Box>
@@ -155,30 +153,33 @@ const DocumentUpload = () => {
                   </Box>
   
                   {fileStates[label] && (
-                    <Box
+                    <Paper
+                    elevation={2}
                       sx={{
                         mt: 2,
                         p: 1,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        border: '1px solid #ccc',
+                        // border: '1px solid #ccc',
                         borderRadius: 1,
-                        bgcolor: 'grey.100',
+                        // bgcolor: 'grey.100',
                       }}
                     >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <FileIcon color="primary" />
-                        <Typography noWrap sx={{ maxWidth: 300 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, height: '70px' }}>
+                        {/* <FileIcon color="primary" /> */}
+                        <Typography variant='subtitle1'>Uploaded File: </Typography>
+                        <Typography noWrap sx={{ maxWidth: 300,color:"primary.main" }}>
                           {fileStates[label].file.name}
                         </Typography>
                       </Box>
                       <IconButton onClick={() => handleRemoveFile(label)} size="small">
-                        <CloseIcon />
+                        <CloseIcon sx={{color:"#828282"}}/>
                       </IconButton>
-                    </Box>
+                    </Paper>
                   )}
                 </Box>
+                </>
               ))}
             </Stack>
   
@@ -192,13 +193,13 @@ const DocumentUpload = () => {
               >
                 {uploading ? 'Uploading...' : 'Submit Documents'}
               </Button>
-              <Button
+              {/* <Button
                 variant="outlined"
                 onClick={handleSkip}
                 sx={{ minWidth: 200 }}
               >
                 Skip
-              </Button>
+              </Button> */}
             </Box>
           </form>
   

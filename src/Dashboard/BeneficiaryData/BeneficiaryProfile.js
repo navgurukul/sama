@@ -12,11 +12,13 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Container } from "@mui/system";
 import { classes } from "./style";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 const BeneficiaryProfile = () => {
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [statusHistory, setStatusHistory] = useState([]);
   const [error, setError] = useState(null);
   const { id } = useParams();
 
@@ -25,20 +27,113 @@ const BeneficiaryProfile = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch user data
         const response = await axios.get(API_URL);
+        if (!response.data || !response.data[0]) {
+          throw new Error("No user data found");
+        }
+
         setData(response.data[0]);
+        const email = response.data[0].email;
+
+        // Fetch status history
+        const userStatusHistory = await fetch(
+          `https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?email=${email}&type=getMonthlyStatusUpdate`
+        );
+
+        if (!userStatusHistory.ok) {
+          throw new Error("Failed to fetch status history");
+        }
+
+        const statusHistoryData = await userStatusHistory.json();
+
+        // Validate and set status history data
+        if (!statusHistoryData || !statusHistoryData.monthly_data) {
+          setStatusHistory([]);
+          console.warn("No status history data available");
+        } else {
+          // Sort status history by date (newest first)
+          const sortedHistory = statusHistoryData.monthly_data.sort((a, b) => {
+            // Extract year and month from month_year string
+            const [aMonth, aYear] = a.month_year.split(" ");
+            const [bMonth, bYear] = b.month_year.split(" ");
+
+            // Compare years first
+            if (aYear !== bYear) {
+              return parseInt(bYear) - parseInt(aYear);
+            }
+
+            console.log(statusHistoryData, " statusHistoryData ");
+
+            // If years are same, compare months
+            const months = [
+              "January",
+              "February",
+              "March",
+              "April",
+              "May",
+              "June",
+              "July",
+              "August",
+              "September",
+              "October",
+              "November",
+              "December",
+            ];
+            return months.indexOf(bMonth) - months.indexOf(aMonth);
+          });
+
+          setStatusHistory(sortedHistory);
+        }
       } catch (err) {
-        setError("Failed to load data");
+        console.error("Error in data fetching:", err);
+        if (err.response) {
+          // Handle specific API errors
+          setError(
+            `Failed to load data: ${
+              err.response.data.message || "Unknown error"
+            }`
+          );
+        } else if (err.request) {
+          // Handle network errors
+          setError("Network error: Please check your connection");
+        } else {
+          // Handle other errors
+          setError(`Error: ${err.message || "Something went wrong"}`);
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [id]);
+    // Only fetch if we have an ID
+    if (id) {
+      fetchData();
+    } else {
+      setError("No user ID provided");
+      setLoading(false);
+    }
 
+    // Cleanup function
+    return () => {
+      setData(null);
+      setStatusHistory([]);
+      setError(null);
+    };
+  }, [id, API_URL]);
 
-  if (loading) return <CircularProgress />;
+  console.log(statusHistory, "statusHistoryooooooooooooo");
+
+  if (loading) return <Box
+  sx={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "50vh",
+  }}
+>
+  <CircularProgress />
+</Box>;
   if (error) return <Typography color="error">{error}</Typography>;
 
   return (
@@ -47,7 +142,7 @@ const BeneficiaryProfile = () => {
       sx={{ padding: "24px", marginTop: "64px", marginBottom: "64px" }}
     >
       {/* Header */}
-      <Typography variant="h5" align="center" sx={{ marginBottom: 4 }}>
+      <Typography variant="h5" align="center" sx={{ marginBottom: 4}}>
         Beneficiary Profile
       </Typography>
 
@@ -58,7 +153,7 @@ const BeneficiaryProfile = () => {
       >
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6}>
-            <Typography variant="h6" mb={3}>
+            <Typography variant="h6" mb={3} color="primary.main" >
               {data.name}
             </Typography>
 
@@ -69,7 +164,6 @@ const BeneficiaryProfile = () => {
             <Typography variant="body1" marginBottom="16px">
               {data.ID}
             </Typography>
-
             {/* Additional Fields */}
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Email
@@ -184,47 +278,6 @@ const BeneficiaryProfile = () => {
         </Grid>
       </Paper>
 
-      {/* Additional Sections */}
-      {/* <Grid container spacing={4} sx={{ marginTop: 4, }}>
-        <Grid item xs={12} sm={6}>
-        <Typography variant="h6" gutterBottom>ID Proof</Typography>
-          <Paper elevation={1} sx={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 2 }}>
-            
-            {data["ID Link"] ? (
-              <img
-                src={data["ID Link"]}
-                alt="ID Proof"
-                style={{ border: "none", overflow: "hidden", width: "100%", height: "100%" }}
-               
-              ></img>
-            ) : (
-              <Typography variant="subtitle1" color="textSecondary">
-                ID Proof not available
-              </Typography>
-            )}
-          </Paper>
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-        <Typography variant="h6" gutterBottom>Income Certificate</Typography>
-          <Paper elevation={1} sx={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 2 }}>
-            
-            {data["Income Certificate Link"] ? (
-              <img
-                src={data["Income Certificate Link"]}
-                alt="Address Proof"
-                style={{ border: "none", overflow: "hidden", width: "100%", height: "100%" }}
-              ></img>
-            ) : (
-              <Typography variant="subtitle1" color="textSecondary">
-                Address Proof not available
-              </Typography>
-            )
-            }
-          </Paper>
-        </Grid>
-      </Grid> */}
-
       <Grid container spacing={4} sx={{ marginTop: 4 }}>
         <Grid item xs={12} sm={6}>
           <Typography variant="h6" gutterBottom>
@@ -310,26 +363,99 @@ const BeneficiaryProfile = () => {
         </Grid>
       </Grid>
 
-      {/* <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
-        Status History
-      </Typography>
-      <Divider sx={{ mb: 2 }} />
+      {/* Status History Section */}
+      {statusHistory && statusHistory.length > 0 ? (
+        <>
+          <Typography variant="h6" gutterBottom sx={{ mt: 6, mb: 3 }}>
+            Status History
+          </Typography>
+          <Divider sx={{ mb: 4 }} />
 
-      <Grid container spacing={2} sx={{ mb: 2 }}>
-        {Array.from({ length: 12 }, (_, index) => (
-          <Grid item xs={3} key={index}>
-            <Paper elevation={3} sx={{ p: 2, textAlign: "center" }}>
-              <Typography variant="body1" gutterBottom>
-                {new Date(2024, index).toLocaleString("default", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </Typography>
-              <Typography variant="body1">Status {index + 1}</Typography>
-            </Paper>
+          <Grid
+            container
+            spacing={3}
+            sx={{
+              justifyContent: "flex-start", // Align items to start
+              width: "100%",
+            }}
+          >
+            {statusHistory.map((status, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={3}
+                key={index}
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-start", // Align grid items to start
+                }}
+              >
+                <Paper
+                  elevation={1}
+                  sx={{
+                    p: 2,
+                    width: "100%", // Make paper take full width of grid item
+                    backgroundColor: "#f8f9fa", // Default background color
+                    minHeight: "100px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    textAlign: "left", // Align text to left
+                  }}
+                >
+                  <Typography
+                    variant="subtitle1"
+                    gutterBottom
+                    sx={{
+                      fontWeight: 500,
+                      // color: "primary.main",
+                      textAlign: "left", // Ensure month-year is left-aligned
+                    }}
+                  >
+                    {status.month_year}
+                  </Typography>
+
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center", // Align icon and text
+                      color: "text.primary",
+                      textAlign: "left", // Ensure status is left-aligned
+                    }}
+                  >
+                    {status.status_name === "No Change" && (
+                      <ErrorOutlineIcon
+                        sx={{
+                          fontSize: 16,
+                          color: "error.main",
+                          marginRight: "8px", // Spacing between icon and text
+                        }}
+                      />
+                    )}
+                    {status.status_name || "No status update"}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid> */}
+        </>
+      ) : (
+        <Box
+          sx={{
+            mt: 6,
+            p: 3,
+            textAlign: "left", // Align error message to left
+            backgroundColor: "#f8f9fa",
+            borderRadius: 1,
+          }}
+        >
+          <Typography variant="subtitle1" color="text.secondary">
+            No status history available for this beneficiary
+          </Typography>
+        </Box>
+      )}
     </Container>
   );
 };

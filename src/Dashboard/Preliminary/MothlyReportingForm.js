@@ -68,6 +68,7 @@ const MonthlyReportingForm = () => {
   return (
     <Container maxWidth="sm">
       <Paper
+      elevation={0}
         sx={{
           width: '100%',
           maxWidth: '600px',
@@ -85,7 +86,7 @@ const MonthlyReportingForm = () => {
 
             {questions.map((question, index) => (
               <>
-              <FormLabel>{question}</FormLabel>              
+              <FormLabel sx={{color:"#4A4A4A"}}>{question}</FormLabel>              
               <TextField
                 key={index}
                 // label={question}
@@ -103,7 +104,7 @@ const MonthlyReportingForm = () => {
               <Button
                 type="submit"
                 variant="contained"
-                color="success"
+                // color="pr"
                 sx={{ paddingX: 4, textTransform: 'none', fontSize: '16px' }}
               >
                 Submit Answers

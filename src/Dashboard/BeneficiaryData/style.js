@@ -21,7 +21,7 @@ export const classes = {
         width: { xs: "100%", sm: "100%", lg: 0, md: 0 }
     },
     BeneficiaryData:{
-        color: "gray",
+        color: "#828282",
         fontWeight: "700",
         marginBottom: "8px"
     }

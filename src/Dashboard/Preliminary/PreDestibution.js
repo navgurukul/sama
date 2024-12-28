@@ -262,7 +262,7 @@ const PreDestibution = ({userId, preliminaryId}) => {
   
   
   return (
-    <Container maxWidth="lg" mt="10" >
+    <Container maxWidth="md" mt="10" >
       {/* Main Content */}
       {(NgoId[0]?.role[0] === "ngo") ? showComponentA 
       ?

@@ -73,10 +73,10 @@ const AttentionNeeded = () => {
       </Typography>
 
       <Typography sx={{ mb: 3, color: 'text.secondary' }}>
-        We couldn't verify the documents below. Please re-upload them to proceed forward.
+        We couldn't verify the documents below. Please re-upload them to <br/> proceed forward.
       </Typography>
 
-      <Stack spacing={3} sx={{ width: '100%', maxWidth: '650px', mb: 4 }}>
+      <Stack spacing={3} sx={{ width: '100%', maxWidth: '598px', mb: 4 }}>
         {documents.map((doc, index) => (
           <Paper
             key={index}
@@ -88,6 +88,11 @@ const AttentionNeeded = () => {
               p: 2,
               bgcolor: 'grey.50',
               mb:2,
+              color:'#4A4A4A',
+              fontFamily: 'Raleway',
+              fontWeight: '700', 
+              fontSize: '18px', 
+              lineHeight:'30.6px'
             }}
           >
             <Typography>{doc}</Typography>
@@ -99,14 +104,16 @@ const AttentionNeeded = () => {
       <Button
         variant="contained"
         sx={{
-          bgcolor: 'green',
+          widht: "261px",
+          bgcolor: '#5C785A',
           color: 'white',
-          ':hover': {
-            bgcolor: 'darkgreen',
-          },
+          fontFamily: 'Raleway',
+          fontWeight: '700', 
+          fontSize: '18px', 
+          lineHeight:'30.6px',
           px: 4,
           py: 1,
-          borderRadius: '5px',
+          borderRadius: '100px',
         }}
         onClick={() => navigate('/documentreupload')}
       >

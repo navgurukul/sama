@@ -192,7 +192,7 @@ const AdminNgo = () => {
       (filters.status === '' || ngo.Status === filters.status)
     );
   });
-  
+
 
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
@@ -210,7 +210,7 @@ const AdminNgo = () => {
                 xs:"100%"
               }
             }}
-            label="Search by Name, Location, Contact Number..."
+            placeholder="Search by Name, Location, Contact Number..."
             variant="outlined"
             maxWidth="lg"
             value={searchTerm}
@@ -311,7 +311,7 @@ const AdminNgo = () => {
               <TableCell sx={{ ...classes.tableHeader, width: "220px" }}>Purpose</TableCell>
               <TableCell sx={classes.tableHeader}>Type</TableCell>
               <TableCell sx={classes.tableHeader}>Status</TableCell>
-              <TableCell sx={classes.tableHeader}>Delete</TableCell>
+              <TableCell sx={classes.tableHeader}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody sx={classes.tablecell}>
@@ -330,11 +330,11 @@ const AdminNgo = () => {
                 <TableCell sx={classes.tablecell}>{ngo.location}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.expectedOutcome}</TableCell><TableCell sx={classes.tablecell}>
                   <FormControl fullWidth >
-                    <InputLabel id="demo-simple-select-label"> type</InputLabel>
+                    {/* <InputLabel id="demo-simple-select-label"> type</InputLabel> */}
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
-                      label="Request Submitted"
+                      // label="Request Submitted"
                       value={ngo["Ngo Type"]}
                       onChange={(e) => {
                         e.stopPropagation();
@@ -356,14 +356,13 @@ const AdminNgo = () => {
                 </TableCell>
                 <TableCell sx={classes.tablecell}>
                   <FormControl fullWidth >
-                    <InputLabel id="demo-simple-select-label">
+                    {/* <InputLabel id="demo-simple-select-label">
                      
-                      Status</InputLabel>
-                      
+                      Status</InputLabel> */}
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
-                      label="Request Submitted"
+                      // label="Request Submitted"
                       value={ngo.Status}
                       onChange={(e) => {
                         e.stopPropagation();
@@ -375,8 +374,7 @@ const AdminNgo = () => {
                         container: dialogRef.current
                       }}
                     >
-                     
-                      {filterOptions.status.map((option) => (
+                    {filterOptions.status.map((option) => (
 
                         <MenuItem key={option} value={option} onClick={(e) => e.stopPropagation()}>
                            {/* <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" fill="none">
@@ -393,7 +391,7 @@ const AdminNgo = () => {
                 <TableCell sx={{ border: "none" }}>
                   <IconButton onClick={(e) => {
                     e.stopPropagation();
-                    handleDeleteRecord(ngo.Id)}}><DeleteIcon /></IconButton>
+                    handleDeleteRecord(ngo.Id)}}><DeleteIcon sx={{color: '#BDBDBD'}}/></IconButton>
                 </TableCell>
               </TableRow>
             )):
@@ -455,5 +453,4 @@ const AdminNgo = () => {
     
   );
 };
-
 export default AdminNgo;
