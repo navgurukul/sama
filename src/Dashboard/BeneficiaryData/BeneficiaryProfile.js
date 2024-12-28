@@ -166,7 +166,7 @@ const handlePopupOpen = (monthYear) => {
       sx={{ padding: "24px", marginTop: "64px", marginBottom: "64px" }}
     >
       {/* Header */}
-      <Typography variant="h5" align="center" sx={{ marginBottom: 4 }}>
+      <Typography variant="h5" align="center" sx={{ marginBottom: 4}}>
         Beneficiary Profile
       </Typography>
 
@@ -177,7 +177,7 @@ const handlePopupOpen = (monthYear) => {
       >
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6}>
-            <Typography variant="h6" mb={3}>
+            <Typography variant="h6" mb={3} color="primary.main" >
               {data.name}
             </Typography>
 
@@ -188,7 +188,6 @@ const handlePopupOpen = (monthYear) => {
             <Typography variant="body1" marginBottom="16px">
               {data.ID}
             </Typography>
-
             {/* Additional Fields */}
             <Typography variant="subtitle1" sx={classes.BeneficiaryData}>
               Email
@@ -434,7 +433,7 @@ const handlePopupOpen = (monthYear) => {
                     gutterBottom
                     sx={{
                       fontWeight: 500,
-                      color: "primary.main",
+                      // color: "primary.main",
                       textAlign: "left", // Ensure month-year is left-aligned
                     }}
                   >
@@ -442,7 +441,7 @@ const handlePopupOpen = (monthYear) => {
                   </Typography>
 
                   <Typography
-                    variant="body2"
+                    variant="body1"
                     sx={{
                       display: "flex",
                       alignItems: "center", // Align icon and text

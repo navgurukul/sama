@@ -45,6 +45,10 @@ import NgoProfile from './Dashboard/AdminNgo/NgoProfile';
 import MonthlyReportData from './Dashboard/Preliminary/MonthlyReportData';
 import PrivacyPolicy from './Pages/PrivacyPolicy';
 import LandingPage from './Pages/LandingPage';
+import YearlyEditForm from './Dashboard/YearlyReport/YearlyEditForm';
+import YearlyForm from './Dashboard/YearlyReport/YearlyForm';
+import YearlyReportingForm from './Dashboard/Preliminary/YearlyReportingForm';
+import YearlyReportData from './Dashboard/Preliminary/YearlyReportData';
 
 
 
@@ -98,6 +102,7 @@ function App() {
               <Route path='/beneficiaryProfile' element={<BeneficiaryProfile/>} />
               <Route path="/monthly-reporting/:id" element={<MonthlyForm />} />
               <Route path="/edit-form/:id" element={<MonthlyEditForm />} />
+              
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
@@ -154,6 +159,10 @@ function App() {
                 }
               />
               <Route path="/edit-user/:id" element={<EditUserPage />} />
+              <Route path="/yearly-reporting/:id" element={<YearlyForm />} />
+              <Route path="/edit-yearly-form/:id" element={<YearlyEditForm />} />
+              <Route path="/Yearly-reporting" element={<YearlyReportingForm/>} />
+              <Route path="/Yearly-report" element={<YearlyReportData />} />
               
               
               <Route
