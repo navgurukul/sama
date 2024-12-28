@@ -249,9 +249,10 @@ const ManageStatuses = () => {
                       color: "#F44336",
                       textTransform: "capitalize",
                       fontWeight: "bold",
-                      p: 0,
+                      // p: 0,
                       "&:hover": {
                         background: "none !important",
+                        color: "#F44336",
                       },
                     }}
                   >
@@ -263,9 +264,10 @@ const ManageStatuses = () => {
                       color: "primary.main",
                       textTransform: "capitalize",
                       fontWeight: "bold",
-                      p: 0,
+                      // p: 0,
                       "&:hover": {
                         background: "none",
+                        color: "primary.main",
                       },
                     }}
                   >
