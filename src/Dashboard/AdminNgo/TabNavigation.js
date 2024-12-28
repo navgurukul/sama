@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect } from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
@@ -44,7 +41,7 @@ const TabNavigation = () => {
       fontWeight: 700,
       textTransform: 'none',
       borderRadius: '100px',
-      padding: '0px 32px',
+      padding: '0px 28px',
       height: '48px',
       minHeight: '48px',
       color: '#5C785A',
