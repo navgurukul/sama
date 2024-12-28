@@ -30,6 +30,7 @@ function YearlyReportData() {
             backgroundColor: '#f2f8f2',
             textAlign: 'left',
           }}
+          elevation={0}
         >
           <Typography variant="h6" fontWeight="bold" color="#2e523c" mb={2}>
           {formattedstartDate && formattedstartDate}- {monthCurrent && monthCurrent} {year && year} Yearly Report

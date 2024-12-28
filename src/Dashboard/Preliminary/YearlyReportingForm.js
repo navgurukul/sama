@@ -67,9 +67,10 @@ const YearlyReportingForm = () => {
           padding: 4,
           borderRadius: 2,
         }}
+        elevation={0}
       >
         <Typography variant="h5" align="center" gutterBottom>
-          {month && month} {year && year} Yearly Report
+          {month && month} {year && year} Report
         </Typography>
 
         {questions.length > 0 ? (
