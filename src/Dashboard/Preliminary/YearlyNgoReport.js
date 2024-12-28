@@ -43,7 +43,7 @@ const YearlyNgoReport = ({
 
 
   return (
-    <Box sx={{ mt: 5, backgroundColor: "#F0F4EF", borderRadius: 2, p: 4 }}>
+    <Box sx={{ mt: 5 }}>
       <Typography variant="h6" color="primary" sx={{ mb: 3 }}>
         Yearly Distribution Metrics
       </Typography>
