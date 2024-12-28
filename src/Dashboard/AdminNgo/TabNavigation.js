@@ -14,7 +14,7 @@ import ManageStatuses from '../ManageStatuses'; // Ensure correct import
 import { Container } from '@mui/system';
 import MonthlyForm from '../MontlyReport/MothlyForm';
 import MonthlyReport from '../MontlyReport';
-import YearlyNgo from '../YearlyReport';
+import YearlyNgo from '../YearlyReport/index';
 
 const TabNavigation = () => {
   const [value, setValue] = React.useState(0);
@@ -72,9 +72,9 @@ const TabNavigation = () => {
       );
     } else {
       tabs.push(
-        <Tab key="pre-distribution" label="Pre-Distribution Metrics" />,
-        <Tab key="monthly-metrics" label="Monthly Metrics" />,
-        <Tab key="yearly-metrics" label="Yearly Metrics" />,
+        <Tab key="pre-distribution" label="Pre-Distribution Metrics" sx={tabStyle}/>,
+        <Tab key="monthly-metrics" label="Monthly Metrics" sx={tabStyle} />,
+        <Tab key="yearly-metrics" label="Yearly Metrics" sx={tabStyle} />,
       )
     }
 

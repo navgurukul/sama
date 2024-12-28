@@ -7,8 +7,8 @@ import MouReviewd from '../../Pages/MouUpload/MouReviewd';
 import { set } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import MonthlyReport from './MonthlyReport';
-import YearlyReport from './YearlyReport';
+import MonthlyNgoReport from './MonthlyNgoReport';
+import YearlyNgoReport from './YearlyNgoReport';
 
 const generateMonthlyDates = (startDate) => {
   const validDate = convertToValidDate(startDate);
@@ -214,7 +214,6 @@ const PreDestibution = ({userId, preliminaryId}) => {
         .catch((error) => console.error('API error:', error));
     }
   }, [gettingStoredData]);
-  console.log(yearlyMetrixGet)
 
 
 
@@ -319,7 +318,7 @@ const PreDestibution = ({userId, preliminaryId}) => {
       </Box> 
       {(NgoId[0]?.role[0] === "ngo") && 
       <>
-        <MonthlyReport 
+        <MonthlyNgoReport 
         monthlyDates={monthlyDates} 
         onCardClick={handleCardClick} 
         monthlyReportingFormHandler={monthlyReportingFormHandler}
@@ -330,7 +329,7 @@ const PreDestibution = ({userId, preliminaryId}) => {
 
       {/* {selectedData && <MonthlyReportData monthlyReportData={selectedData} />} */}
 
-      <YearlyReport 
+      <YearlyNgoReport 
           yearlyDates={yearlyDates}
           onCardClick={handleYearlyCardClick}
           yearlyReportingFormHandler={yearlyReportingFormHandler}

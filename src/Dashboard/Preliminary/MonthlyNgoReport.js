@@ -11,7 +11,7 @@ import { Box,
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 
-const MonthlyReport = ({ monthlyDates, onCardClick, monthlyReportingFormHandler, monthlyMetrixGet, currentDate,formatDate }) => {
+const MonthlyNgoReport = ({ monthlyDates, onCardClick, monthlyReportingFormHandler, monthlyMetrixGet, currentDate,formatDate }) => {
   return (
     <Box sx={{ mt: 5, backgroundColor: "#F0F4EF", borderRadius: 2, p: 4 }}>
       <Typography variant="h6" color="primary" sx={{ mb: 3 }}>
@@ -84,4 +84,4 @@ const MonthlyReport = ({ monthlyDates, onCardClick, monthlyReportingFormHandler,
   );
 };
 
-export default MonthlyReport;
+export default MonthlyNgoReport;

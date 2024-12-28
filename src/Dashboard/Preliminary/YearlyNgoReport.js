@@ -24,7 +24,7 @@ const formatDateCurrent = (input) => {
 
 
 
-const YearlyReport = ({ 
+const YearlyNgoReport = ({ 
   yearlyDates, 
   onCardClick, 
   yearlyReportingFormHandler, 
@@ -112,4 +112,4 @@ const YearlyReport = ({
   );
 };
 
-export default YearlyReport;
+export default YearlyNgoReport;
