@@ -6,7 +6,7 @@ import axios from 'axios';
 const YearlyReportingForm = () => {
   const [questions, setQuestions] = useState([]); // Holds fetched questions
   const [error, setError] = useState(""); // For error handling
-  const [formData, setFormData] = useState({}); // For storing answers
+  const [formData, setFormData] = useState({}); // For storing answer
 
   const location = useLocation();
   const { month, year } = location.state || {};
