@@ -25,9 +25,9 @@ const BeneficiaryProfile = () => {
   const [error, setError] = useState(null);
   const { id } = useParams();
   const [openPopup, setOpenPopup] = useState(false);
-  const [ statusId,setStatusId] = useState("")
+  const [statusId, setStatusId] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [selectedMonthYear,setSelectedMonthYear] = useState("");
+  const [selectedMonthYear, setSelectedMonthYear] = useState("");
 
   const user = Array.isArray(NgoId) && NgoId.length > 0 ? NgoId[0] : null;
 
@@ -38,7 +38,7 @@ const BeneficiaryProfile = () => {
       try {
         // Fetch user data
         const response = await axios.get(API_URL);
-        setStatusId(response.data[0].Ngo)
+        setStatusId(response.data[0].Ngo);
         if (!response.data || !response.data[0]) {
           throw new Error("No user data found");
         }
@@ -49,7 +49,7 @@ const BeneficiaryProfile = () => {
 
         // Fetch status history
         const userStatusHistory = await fetch(
-          `https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?email=${email}&type=getMonthlyStatusUpdate`
+          `https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?email=${email}&type=getMonthlyStatusUpdate`
         );
 
         if (!userStatusHistory.ok) {
@@ -136,10 +136,10 @@ const BeneficiaryProfile = () => {
   console.log(statusHistory, "statusHistoryooooooooooooo");
 
   // In BeneficiaryProfile.jsx, replace the current handlePopupOpen with:
-const handlePopupOpen = (monthYear) => {
-  setOpenPopup(true);
-  setSelectedMonthYear(monthYear); // Add this state variable
-};
+  const handlePopupOpen = (monthYear) => {
+    setOpenPopup(true);
+    setSelectedMonthYear(monthYear); // Add this state variable
+  };
 
   const handlePopupClose = () => {
     setOpenPopup(false);
@@ -166,7 +166,7 @@ const handlePopupOpen = (monthYear) => {
       sx={{ padding: "24px", marginTop: "64px", marginBottom: "64px" }}
     >
       {/* Header */}
-      <Typography variant="h5" align="center" sx={{ marginBottom: 4}}>
+      <Typography variant="h5" align="center" sx={{ marginBottom: 4 }}>
         Beneficiary Profile
       </Typography>
 
@@ -177,7 +177,7 @@ const handlePopupOpen = (monthYear) => {
       >
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6}>
-            <Typography variant="h6" mb={3} color="primary.main" >
+            <Typography variant="h6" mb={3} color="primary.main">
               {data.name}
             </Typography>
 
@@ -452,7 +452,9 @@ const handlePopupOpen = (monthYear) => {
                     {status.status_name === "No Change" ? (
                       user && user.role && user.role.includes("admin") ? (
                         <>
-                          <IconButton onClick={() => handlePopupOpen(status.date)}>
+                          <IconButton
+                            onClick={() => handlePopupOpen(status.date)}
+                          >
                             <UploadIcon
                               sx={{
                                 fontSize: 16,
