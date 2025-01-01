@@ -93,14 +93,14 @@ theme = createTheme(theme, {
       lineHeight: "170%",
       fontStyle: "normal",
       fontWeight: 400,
-      fontFamily: "Raleway",
+      fontFamily: "Raleway, sans-serif",
       color: "#4A4A4A",
     },
     body2: {
       fontSize: "14px",
       lineHeight: "170%",
       color: "#3A3A3A",
-      fontFamily: "Raleway",
+      fontFamily: "Raleway, sans-serif",
       fontWeight: 400,
       fontStyle: "normal",
     },
@@ -147,5 +147,8 @@ theme.components = {
       },
     },
   },
+
+  
+  
 };
 export default theme;
