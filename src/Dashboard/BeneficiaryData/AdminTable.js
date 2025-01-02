@@ -56,28 +56,43 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [ngoIdToDelete, setNgoIdToDelete] = useState(null);
+  const [defaultSelectedStatus, setDefaultSelectedStatus] = useState("Data Uploaded");
 
-  const defaultStatus = ["Laptop Assigned", "Data Uploaded"];
+  const defaultStatus = ["Data Uploaded", "Laptop Assigned"];
 
-  const [defaultSelectedStatus, setDefaultSelectedStatus] =
-    useState("Data Uploaded");
+  // Helper function to get row status
+  const getRowStatus = (ngo) => {
+    if (!ngo.status) {
+      return "Data Uploaded";
+    }
+    return ngo.status;
+  };
+
   // Load stored statuses when component mounts
   useEffect(() => {
     try {
-      const storedStatuses = JSON.parse(
-        localStorage.getItem("userStatuses") || "{}"
-      );
+      const storedStatuses = JSON.parse(localStorage.getItem("userStatuses") || "{}");
       if (ngoData && ngoData.length > 0) {
-        const updatedData = ngoData.map((ngo) => ({
-          ...ngo,
-          status: storedStatuses[ngo.ID] || ngo.status || "Data Uploaded",
-        }));
+        const updatedData = ngoData.map((ngo) => {
+          // If no status is set, use "Data Uploaded"
+          if (!ngo.status && !storedStatuses[ngo.ID]) {
+            return {
+              ...ngo,
+              status: "Data Uploaded"
+            };
+          }
+          // If status exists in localStorage, use that
+          return {
+            ...ngo,
+            status: storedStatuses[ngo.ID] || "Data Uploaded"
+          };
+        });
         setNgoData(updatedData);
       }
     } catch (error) {
       console.error("Error loading stored statuses:", error);
     }
-  }, [ngoData]);
+  }, []);
 
   // Handlers
   const handleBulkStatusChange = async () => {
@@ -140,7 +155,6 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
 
   const handleIndividualStatusChange = async (id, newStatus, event) => {
     event.stopPropagation();
-    setDefaultSelectedStatus(newStatus);
     try {
       // Update local state immediately
       const updatedData = ngoData.map((ngo) => {
@@ -276,7 +290,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
   const filteredData = ngoData
     .filter((ngo) => ngo.Ngo === selectedNgoId)
     .filter((ngo) => {
-      const ngoStatus = ngo.status || "Data Uploaded";
+      const ngoStatus = getRowStatus(ngo);
       return (
         (searchTerm === "" ||
           ngo.name?.toLowerCase().includes(searchTerm) ||
@@ -345,7 +359,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                 }
                 sx={{ mt: 2, mr: 2 }}
               >
-                Add Beneficiaries
+                Add Beneficiaries 
               </Button>
             </Grid>
           </Grid>
@@ -415,7 +429,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                 name="status"
               >
                 <MenuItem value="">All</MenuItem>
-                {defaultStatus?.map((option) => (
+                {defaultStatus.map((option) => (
                   <MenuItem key={option} value={option}>
                     {option}
                   </MenuItem>
@@ -424,6 +438,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             </FormControl>
           </Grid>
 
+          {/*
           {/* Table */}
           <TableContainer
             style={{ border: "none" }}
@@ -532,9 +547,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                       <Typography variant="subtitle2">Email</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="subtitle2">
-                        Contact Number
-                      </Typography>
+                      <Typography variant="subtitle2">Contact Number</Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="subtitle2">ID Proof Type</Typography>
@@ -543,9 +556,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                       <Typography variant="subtitle2">Use Case</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="subtitle2">
-                        Occupation Status
-                      </Typography>
+                      <Typography variant="subtitle2">Occupation Status</Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="subtitle2">Status</Typography>
@@ -572,9 +583,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                       <TableCell padding="checkbox">
                         <Checkbox
                           checked={selectedRows.has(ngo.ID)}
-                          onChange={(event) =>
-                            handleCheckboxChange(ngo.ID, event)
-                          }
+                          onChange={(event) => handleCheckboxChange(ngo.ID, event)}
                           onClick={(event) => event.stopPropagation()}
                         />
                       </TableCell>
@@ -588,35 +597,23 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                         <Typography variant="body2">{ngo.email}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="body2">
-                          {ngo["contact number"]}
-                        </Typography>
+                        <Typography variant="body2">{ngo["contact number"]}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="body2">
-                          {ngo["ID Proof type"]}
-                        </Typography>
+                        <Typography variant="body2">{ngo["ID Proof type"]}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="body2">
-                          {ngo["Use case"]}
-                        </Typography>
+                        <Typography variant="body2">{ngo["Use case"]}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="body2">
-                          {ngo["Occupation"]}
-                        </Typography>
+                        <Typography variant="body2">{ngo["Occupation"]}</Typography>
                       </TableCell>
                       <TableCell>
                         <FormControl fullWidth>
                           <Select
-                            value={ngo.status ?? defaultSelectedStatus}
+                            value={getRowStatus(ngo)}
                             onChange={(e) => {
-                              handleIndividualStatusChange(
-                                ngo.ID,
-                                e.target.value,
-                                e
-                              );
+                              handleIndividualStatusChange(ngo.ID, e.target.value, e);
                             }}
                             onClick={(e) => e.stopPropagation()}
                             displayEmpty
@@ -629,9 +626,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                           </Select>
                         </FormControl>
                       </TableCell>
-                      <TableCell
-                        style={{ cursor: "pointer", color: "#828282" }}
-                      >
+                      <TableCell style={{ cursor: "pointer", color: "#828282" }}>
                         <EditIcon
                           onClick={(e) => {
                             e.stopPropagation();
@@ -639,9 +634,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                           }}
                         />
                       </TableCell>
-                      <TableCell
-                        style={{ cursor: "pointer", color: "#828282" }}
-                      >
+                      <TableCell style={{ cursor: "pointer", color: "#828282" }}>
                         <DeleteIcon
                           onClick={(e) => {
                             e.stopPropagation();
@@ -695,8 +688,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
         </>
       ) : (
         <>
-          {" "}
-          <EmptyBeneficiary />{" "}
+          <EmptyBeneficiary />
           <Box
             display="flex"
             justifyContent="center"
@@ -721,3 +713,8 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
 };
 
 export default AdminTable;
+
+
+
+
+

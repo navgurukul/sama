@@ -61,8 +61,8 @@ const StatusCell = ({
         const assignedTime = new Date(dateTime).getTime();
         const currentTime = new Date().getTime();
         const minutesDiff = (currentTime - assignedTime) / (1000 * 60);
-        setIsEnabled(minutesDiff >= 48 * 60); // 48 hours = 48 * 60 minutes
-        // setIsEnabled(minutesDiff >= 1);
+        // setIsEnabled(minutesDiff >= 48 * 60); // 48 hours = 48 * 60 minutes
+        setIsEnabled(minutesDiff >= 1);
       }
     };
 
@@ -856,7 +856,7 @@ const NGOTable = ({
               }
               sx={{ alignSelf: "center" }}
             >
-              Add Beneficiaries
+              Add Beneficiaries 
             </Button>
             </Box>
           </Box>
