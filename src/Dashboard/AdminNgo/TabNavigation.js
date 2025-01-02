@@ -118,7 +118,7 @@ const TabNavigation = () => {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Tabs
         value={value}
         onChange={handleChange}
