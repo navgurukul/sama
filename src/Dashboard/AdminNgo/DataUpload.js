@@ -127,7 +127,7 @@
 //                 >
 //                   Preview
 //                 </Button>
-                
+
 //                   {doc.status === "Approved" || doc.status === "Declined" ? (
 //                     <>
 //                       <Typography
@@ -172,7 +172,7 @@
 //                       </Button>
 //                     </Box>
 //                   )}
-               
+
 //               </Card>
 //             </Grid>
 //           );
@@ -234,13 +234,16 @@ import { useParams } from "react-router-dom";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
-import Update from "../AdminNgo/assets/upload.png"
-
+import Update from "../AdminNgo/assets/upload.png";
 
 const DataUpload = () => {
   const [documents, setDocuments] = useState(null);
   const [open, setOpen] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "" });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
   const [selectedAction, setSelectedAction] = useState("");
   const [selectedDocument, setSelectedDocument] = useState("");
   const { id } = useParams();
@@ -295,7 +298,7 @@ const DataUpload = () => {
           const updatedDocuments = { ...documents };
           updatedDocuments[selectedDocument] = {
             ...updatedDocuments[selectedDocument],
-            status: selectedAction === "Approve" ? "Success" : "Failed"
+            status: selectedAction === "Approve" ? "Success" : "Failed",
           };
           setDocuments(updatedDocuments);
         }
@@ -303,9 +306,10 @@ const DataUpload = () => {
         // Show success message
         setSnackbar({
           open: true,
-          message: selectedAction === "Approve" 
-            ? "Document successfully approved" 
-            : "Document has been declined",
+          message:
+            selectedAction === "Approve"
+              ? "Document successfully approved"
+              : "Document has been declined",
           severity: selectedAction === "Approve" ? "success" : "error",
         });
       })
@@ -329,36 +333,46 @@ const DataUpload = () => {
   }
 
   if (!documents.isDataAvailable) {
-    return <Grid
-    container
-    sx={{
-      justifyContent: "center", 
-      alignItems: "center", 
-    }}
-  >
-    <img
-      src={Update}
-      alt="Centered Update"
-      style={{ maxWidth: "100%", height: "auto" }}
-    />
-  </Grid>;
+    return (
+      <Grid
+        container
+        sx={{
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <img
+          src={Update}
+          alt="Centered Update"
+          style={{ maxWidth: "100%", height: "auto" }}
+        />
+      </Grid>
+    );
   }
 
   const documentKeys = Object.keys(documents).filter(
-    (key) => !["isDataAvailable", "User-Id", "NGO Name", "subfolderId"].includes(key)
+    (key) =>
+      !["isDataAvailable", "User-Id", "NGO Name", "subfolderId"].includes(key)
   );
 
   return (
     <Container maxWidth="sm" sx={{ padding: "24px" }}>
       <Grid container spacing={2}>
-        <Typography variant="h6" color='#4A4A4A' paddingLeft="18px" gutterBottom>
+        <Typography
+          variant="h6"
+          color="#4A4A4A"
+          paddingLeft="18px"
+          gutterBottom
+        >
           Approve or Decline the NGO's documents below
         </Typography>
         {documentKeys.map((key, index) => {
           const doc = documents[key];
-          const isApproved = doc.status === "Success" || doc.status === "Approved";
-          const isDeclined = doc.status === "Failed" || doc.status === "Declined";
-          
+          const isApproved =
+            doc.status === "Success" || doc.status === "Approved";
+          const isDeclined =
+            doc.status === "Failed" || doc.status === "Declined";
+
           return (
             <Grid item xs={12} key={index}>
               <Card sx={{ padding: "32px" }}>
@@ -368,26 +382,32 @@ const DataUpload = () => {
                   href={doc.link}
                   target="_blank"
                   startIcon={<RemoveRedEyeIcon />}
-                  sx={{ padding: "0px" }}
+                  sx={{
+                    paddingLeft: "5px",
+                    "&:hover": {
+                      backgroundColor: "#FFFFFF",
+                      color: "#5C785A",
+                    },
+                  }}
                 >
                   Preview
                 </Button>
-                
-                {(isApproved || isDeclined) ? (
+
+                {isApproved || isDeclined ? (
                   <>
                     <Typography
                       variant="subtitle1"
                       color={isApproved ? "#48A145" : "error"}
-                      sx={{ 
-                          display: 'flex', 
-                          alignItems: 'center',
-                          pt:2
-                        }}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        pt: 2,
+                      }}
                     >
                       {isApproved ? (
                         <CheckCircleIcon sx={{ marginRight: "8px" }} />
                       ) : (
-                        <ErrorIcon sx={{ marginRight: "8px" }}  />
+                        <ErrorIcon sx={{ marginRight: "8px" }} />
                       )}
                       {isApproved ? "Approved" : "Declined"}
                     </Typography>
@@ -407,14 +427,23 @@ const DataUpload = () => {
                   >
                     <Button
                       variant="outlined"
-                      sx={{ marginRight: "8px",borderRadius:"100px",border:"2px solid" }}
+                      sx={{
+                        marginRight: "8px",
+                        borderRadius: "100px",
+                        border: "2px solid",
+                      }}
                       onClick={() => handleOpenDialog("Decline", key)}
                     >
                       Decline
                     </Button>
                     <Button
                       variant="contained"
-                      sx={{ marginRight: "8px",borderRadius:"100px",bgcolor:"5C785A",color:"#FFFFFF" }}
+                      sx={{
+                        marginRight: "8px",
+                        borderRadius: "100px",
+                        bgcolor: "5C785A",
+                        color: "#FFFFFF",
+                      }}
                       onClick={() => handleOpenDialog("Approve", key)}
                     >
                       Approve
@@ -431,15 +460,19 @@ const DataUpload = () => {
         <DialogTitle>{selectedAction} Document</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to <strong>{selectedAction}</strong> the document{" "}
-            <strong>{selectedDocument}</strong>?
+            Are you sure you want to <strong>{selectedAction}</strong> the
+            document <strong>{selectedDocument}</strong>?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="secondary">
             Cancel
           </Button>
-          <Button onClick={handleConfirmAction} color="primary" variant="contained">
+          <Button
+            onClick={handleConfirmAction}
+            color="primary"
+            variant="contained"
+          >
             Confirm
           </Button>
         </DialogActions>

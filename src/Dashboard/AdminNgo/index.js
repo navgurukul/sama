@@ -40,7 +40,6 @@ const AdminNgo = () => {
     laptopsRequired: [],
     purpose: [],
     location: [],
-    
   });
 
   const [editStatus, setEditStatus] = useState(false);
@@ -189,10 +188,27 @@ const AdminNgo = () => {
       (filters.laptopsRequired === '' || ngo.beneficiariesCount === filters.laptopsRequired) &&
       (filters.purpose === '' || ngo.expectedOutcome === filters.purpose) &&
       (filters.location === '' || ngo.location === filters.location) &&
-      (filters.status === '' || ngo.Status === filters.status)
+      (filters.status === '' || ngo.Status === filters.status) 
     );
   });
 
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0); // Reset page when rowsPerPage changes
+  };
+
+  
+  const paginatedData = filteredData.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+ 
 
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
@@ -317,7 +333,7 @@ const AdminNgo = () => {
           <TableBody sx={classes.tablecell}>
             {loading ? <CircularProgress sx={{ mt: 10, ml: 2, mb: 10 }} size={40} /> : 
             ngoData?.length > 0 ?
-            filteredData.map((ngo) => (
+            paginatedData.map((ngo) => (
               <TableRow key={ngo.Id} hover sx={classes.tablecell} 
               onClick={(e) => {
                
@@ -357,8 +373,7 @@ const AdminNgo = () => {
                 <TableCell sx={classes.tablecell}>
                   <FormControl fullWidth >
                     {/* <InputLabel id="demo-simple-select-label">
-                     
-                      Status</InputLabel> */}
+                     Status</InputLabel> */}
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
@@ -405,7 +420,7 @@ const AdminNgo = () => {
         </Table>
       </TableContainer>
       <Divider />
-      <TablePagination
+      {/* <TablePagination
         sx={{ mt: 3, mb: 8 }}
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
@@ -417,7 +432,17 @@ const AdminNgo = () => {
           setRowsPerPage(parseInt(event.target.value, 10));
           setPage(0);
         }}
-      />
+      /> */}
+      <TablePagination
+         sx={{ mt: 3, mb: 8 }}
+         rowsPerPageOptions={[10, 25, 100]}
+  component="div"
+  count={filteredData.length} 
+  rowsPerPage={rowsPerPage}
+  page={page}
+  onPageChange={handleChangePage}
+  onRowsPerPageChange={handleChangeRowsPerPage}
+/>
       </>
       ):
       <>
