@@ -31,15 +31,13 @@ const YearlyNgoReport = ({
   yearlyMetrixGet, 
   currentDate,
   formatDate ,
-  isDataAvailabel,
+  isDataAvailable,
   monthlyReportingDate
 }) => {
   // Check if a full year has passed since the start date
 
   // Format the output
   const formattedstartDate = formatDateCurrent(monthlyReportingDate);
- 
-
 
 
   return (
@@ -56,7 +54,7 @@ const YearlyNgoReport = ({
           
           return (
             <Grid item xs={12} sm={6} md={4} key={index}>
-              {isDataAvailabel ? (
+              {isDataAvailable ? (
                 <Card style={{ height: "100%" }} 
                   sx={{ backgroundColor: !yearComplete && "#E0E0E0" }}
                 >
