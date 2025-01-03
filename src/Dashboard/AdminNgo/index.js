@@ -179,6 +179,7 @@ const AdminNgo = () => {
     setOpenDialog(false); // Close dialog without changing status
   };
 
+
   const filteredData = ngoData?.filter((ngo) => {
     return (
       (searchTerm === '' || 
@@ -226,7 +227,7 @@ const AdminNgo = () => {
                 xs:"100%"
               }
             }}
-            placeholder="Search by Name, Location, Contact Number..."
+            placeholder="Search by Name, Contact Number..."
             variant="outlined"
             maxWidth="lg"
             value={searchTerm}
@@ -344,32 +345,43 @@ const AdminNgo = () => {
                 <TableCell sx={classes.tablecell}>{ngo.contactNumber}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.beneficiariesCount}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.location}</TableCell>
-                <TableCell sx={classes.tablecell}>{ngo.expectedOutcome}</TableCell><TableCell sx={classes.tablecell}>
-                  <FormControl fullWidth >
-                    {/* <InputLabel id="demo-simple-select-label"> type</InputLabel> */}
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      // label="Request Submitted"
-                      value={ngo["Ngo Type"]}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setType(e.target.value);
-                      }
-                    }
-                      MenuProps={{
-                        container: dialogRef.current
-                      }}
-                    >
-                      {NgoType.map((option) => (
-                        <MenuItem key={option} value={option} onClick={(e) => e.stopPropagation()}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </TableCell>
+                <TableCell sx={classes.tablecell}>{ngo.expectedOutcome}</TableCell>
+                <TableCell sx={classes.tablecell}>
+  <FormControl fullWidth>
+                      {/* <InputLabel id="demo-simple-select-label"> type</InputLabel> */}
+    <Select
+      labelId="demo-simple-select-label"
+      id="demo-simple-select"
+        // label="Request Submitted"
+      value={ngo["Ngo Type"] || ''}
+      onChange={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setType(e.target.value);
+      }}
+      disabled={ngo["Ngo Type"] ? true : false}
+      IconComponent={ngo["Ngo Type"] ? () => null : undefined}
+      sx={{
+        '& .MuiSelect-select': {
+          paddingRight: ngo["Ngo Type"] ? '14px' : '32px',
+        }
+      }}
+      MenuProps={{
+        container: dialogRef.current
+      }}
+    >
+      {NgoType.map((option) => (
+        <MenuItem 
+          key={option} 
+          value={option} 
+          onClick={(e) => e.stopPropagation()}
+        >
+          {option}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</TableCell>
                 <TableCell sx={classes.tablecell}>
                   <FormControl fullWidth >
                     {/* <InputLabel id="demo-simple-select-label">

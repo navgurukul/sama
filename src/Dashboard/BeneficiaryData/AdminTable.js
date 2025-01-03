@@ -364,130 +364,123 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             : `All Beneficiaries`}
         </Typography>
       </Box>
-
-      {/* Search and Add Beneficiaries */}
-      <Grid container spacing={2} sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}>
-        <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
-          <TextField
-            sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
-            label="Search by Name, Location, Contact"
-            variant="outlined"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
+          {/* Search */}
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
-          />
-        </Grid>
-        <Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate("/user-details", { state: { userId: id } })}
-            sx={{ mt: 2, mr: 2 }}
           >
-            Add Beneficiaries
-          </Button>
-        </Grid>
-      </Grid>
+            <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
+              <TextField
+                sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
+                label="Search by Name, Contact"
+                variant="outlined"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() =>
+                  navigate("/user-details", { state: { userId: id } })
+                }
+                sx={{ mt: 2, mr: 2 }}
+              >
+                Add Beneficiaries 
+              </Button>
+            </Grid>
+          </Grid>
 
-      {/* Filters */}
-      <Grid container spacing={2} sx={{ mt: 2 }}>
-        <Box sx={{ display: "flex", alignItems: "center", mt: 3, width: "100%" }}>
-          <FilterListIcon />
-          <Typography variant="subtitle1" sx={{ ml: 1 }}>
-            Filters
-          </Typography>
-          {hasActiveFilters() && (
-            <Button
-              size="small"
-              sx={{ ml: 2 }}
-              onClick={clearAllFilters}
-            >
-              Clear All Filters
-            </Button>
-          )}
-        </Box>
+          {/* Filters */}
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mt: 3 }}>
+              <FilterListIcon />
+              <Typography variant="subtitle1" sx={{ ml: 1 }}>
+                Filters
+              </Typography>
+            </Box>
 
-        {/* Filter Controls */}
-        <Grid container spacing={2} sx={{ mt: 1, ml: 1 }}>
-          <FormControl sx={{ m: 1, minWidth: 200 }}>
-            <InputLabel>ID Proof Type</InputLabel>
-            <Select
-              value={filters["ID Proof type"]}
-              onChange={handleFilterChange}
-              name="ID Proof type"
-            >
-              <MenuItem value="">All</MenuItem>
-              {filterOptions.idProof.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            <FormControl sx={{ m: 1, minWidth: 200 }}>
+              <InputLabel>ID Proof Type</InputLabel>
+              <Select
+                value={filters["ID Proof type"]}
+                onChange={handleFilterChange}
+                name="ID Proof type"
+              >
+                <MenuItem value="">All</MenuItem>
+                {filterOptions.idProof.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <FormControl sx={{ m: 1, minWidth: 200 }}>
-            <InputLabel>Use Case</InputLabel>
-            <Select
-              value={filters["Use case"]}
-              onChange={handleFilterChange}
-              name="Use case"
-            >
-              <MenuItem value="">All</MenuItem>
-              {filterOptions.useCase.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            <FormControl sx={{ m: 1, minWidth: 200 }}>
+              <InputLabel>Use Case</InputLabel>
+              <Select
+                value={filters["Use case"]}
+                onChange={handleFilterChange}
+                name="Use case"
+              >
+                <MenuItem value="">All</MenuItem>
+                {filterOptions.useCase.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <FormControl sx={{ m: 1, minWidth: 200 }}>
-            <InputLabel>Occupation Status</InputLabel>
-            <Select
-              value={filters["Occupation Status"]}
-              onChange={handleFilterChange}
-              name="Occupation Status"
-            >
-              <MenuItem value="">All</MenuItem>
-              {filterOptions.occupation.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            <FormControl sx={{ m: 1, minWidth: 200 }}>
+              <InputLabel>Occupation Status</InputLabel>
+              <Select
+                value={filters["Occupation Status"]}
+                onChange={handleFilterChange}
+                name="Occupation Status"
+              >
+                <MenuItem value="">All</MenuItem>
+                {filterOptions.occupation.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <FormControl sx={{ m: 1, minWidth: 200 }}>
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={filters.status}
-              onChange={handleFilterChange}
-              name="status"
-            >
-              <MenuItem value="">All</MenuItem>
-              {defaultStatus.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-      </Grid>
+            <FormControl sx={{ m: 1, minWidth: 200 }}>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={filters["status"]}
+                onChange={handleFilterChange}
+                name="status"
+              >
+                <MenuItem value="">All</MenuItem>
+                {defaultStatus.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
 
-      {/* Table Section */}
-      {filteredData.length > 0 ? (
-        <>
+          {filteredData.length > 0 ? (
+            <>
+          {/*
           {/* Table */}
           <TableContainer style={{ border: "none" }} sx={{ backgroundColor: "white", mt: 2 }}>
             <Table>

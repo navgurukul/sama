@@ -266,7 +266,7 @@ const PreDistribution = ({ userId, preliminaryId }) => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <CircularProgress />
       </Box>
     );
