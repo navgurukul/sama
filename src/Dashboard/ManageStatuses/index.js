@@ -309,6 +309,7 @@ const ManageStatuses = () => {
         autoHideDuration={3000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
+
       >
         <Alert
           onClose={handleSnackbarClose}

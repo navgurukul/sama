@@ -32,7 +32,7 @@ import MOUCard from "../../Pages/MouUpload/MouUpload";
 import MouReviewd from "../../Pages/MouUpload/MouReviewd";
 import EmptyBeneficiary from "./EmptyBeneficiary";
 
-// Updated StatusCell Component with monthly date-based enabling
+// StatusCell Component
 const StatusCell = ({
   status,
   id,
@@ -46,32 +46,27 @@ const StatusCell = ({
   const [isDateEnabled, setIsDateEnabled] = useState(false);
 
   useEffect(() => {
-    // Check if current date is between 1-10 of the month
     const checkDateEnabled = () => {
       const currentDate = new Date();
       const dayOfMonth = currentDate.getDate();
       setIsDateEnabled(dayOfMonth >= 1 && dayOfMonth <= 10);
-      // setIsDateEnabled(dayOfMonth >= 20 && dayOfMonth <= 30);
     };
-
-    // Check time elapsed for Laptop Assigned status
 
     const checkTimeElapsed = () => {
       if (status === "Laptop Assigned" && dateTime) {
         const assignedTime = new Date(dateTime).getTime();
         const currentTime = new Date().getTime();
         const minutesDiff = (currentTime - assignedTime) / (1000 * 60);
-        // setIsEnabled(minutesDiff >= 48 * 60); // 48 hours = 48 * 60 minutes
-        setIsEnabled(minutesDiff >= 1);
+        setIsEnabled(minutesDiff >= 48 * 60); // 48 hours = 48 * 60 minutes
+        // setIsEnabled(minutesDiff >= 1);
       }
     };
 
     checkDateEnabled();
     checkTimeElapsed();
 
-    // Set up intervals for both checks
-    const dateInterval = setInterval(checkDateEnabled, 1000 * 60 * 60); // Check every hour
-    const timeInterval = setInterval(checkTimeElapsed, 10000); // Check every 10 seconds
+    const dateInterval = setInterval(checkDateEnabled, 1000 * 60 * 60);
+    const timeInterval = setInterval(checkTimeElapsed, 10000);
 
     return () => {
       clearInterval(dateInterval);
@@ -79,57 +74,39 @@ const StatusCell = ({
     };
   }, [status, dateTime]);
 
-  // Extract names from filtered additional statuses
   const additionalStatusNames = additionalStatuses.map((status) => status.name);
 
-  // Show different status options based on current status and conditions
   const getAvailableStatuses = () => {
-    // If status is "Data Uploaded", show default statuses
     if (status === "Data Uploaded") {
       return defaultStatus;
     }
-
-    // If status is "Laptop Assigned" and within first minute
     if (status === "Laptop Assigned" && !isEnabled) {
       return ["Laptop Assigned"];
     }
-
-    // If status is "Laptop Assigned" and after one minute, or if it's any additionalStatus
     if (
       (status === "Laptop Assigned" && isEnabled) ||
       additionalStatusNames.includes(status)
     ) {
       return additionalStatusNames;
     }
-
-    // If no status is set (initial state)
     if (!status) {
       return defaultStatus;
     }
-
     return additionalStatusNames;
   };
 
   const availableStatuses = getAvailableStatuses();
 
-  // Determine if dropdown should be disabled
   const shouldDisableDropdown = () => {
-    // Disable if status is "Data Uploaded"
     if (status === "Data Uploaded") {
       return true;
     }
-
-    // Disable if status is "Laptop Assigned" and within first minute
     if (status === "Laptop Assigned" && !isEnabled) {
       return true;
     }
-
-    // Disable if showing additional statuses and not within 1-10 days of month
     if (additionalStatusNames.includes(status) && !isDateEnabled) {
       return true;
     }
-
-    // Enable for all other cases
     return false;
   };
 
@@ -185,7 +162,6 @@ const StatusCell = ({
     </FormControl>
   );
 };
-
 const NGOTable = ({
   ngoData,
   setNgoData,
@@ -198,7 +174,6 @@ const NGOTable = ({
   const { id } = useParams();
   const user = id ? id : NgoId[0].NgoId;
 
-  // Local state
   const [filters, setFilters] = useState({
     "ID Proof type": "",
     "Use case": "",
@@ -216,7 +191,27 @@ const NGOTable = ({
 
   const defaultStatus = ["Laptop Assigned", "Data Uploaded"];
 
-  // Fetch additional statuses with ID filtering
+  const hasActiveFilters = () => {
+    return (
+      filters["ID Proof type"] !== "" ||
+      filters["Use case"] !== "" ||
+      filters["Occupation Status"] !== "" ||
+      filters.status !== "" ||
+      searchTerm !== ""
+    );
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      "ID Proof type": "",
+      "Use case": "",
+      "Occupation Status": "",
+      status: "",
+    });
+    setSearchTerm("");
+    setPage(0);
+  };
+
   useEffect(() => {
     const fetchStatuses = async () => {
       try {
@@ -224,11 +219,8 @@ const NGOTable = ({
           "https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=manageStatus"
         );
         const data = await response.json();
-
-        // Get the current NGO ID
         const currentNgoId = id ? id : NgoId[0].NgoId;
-
-        // Filter statuses based on matching ID
+        
         if (Array.isArray(data)) {
           const filteredStatuses = data.filter(
             (status) => status.id === currentNgoId
@@ -249,15 +241,11 @@ const NGOTable = ({
     fetchStatuses();
   }, [id, NgoId]);
 
-  // Handlers
   const handleBulkStatusChange = async () => {
     const updatedData = ngoData.map((ngo) => {
       if (selectedRows.has(ngo.ID)) {
         const newNgo = { ...ngo, status: bulkStatus };
-        if (
-          ngo.status === "Data Uploaded" &&
-          bulkStatus === "Laptop Assigned"
-        ) {
+        if (ngo.status === "Data Uploaded" && bulkStatus === "Laptop Assigned") {
           newNgo["Date-time"] = new Date().toISOString();
         }
         return newNgo;
@@ -275,7 +263,6 @@ const NGOTable = ({
       const selectedNgos = Array.from(selectedRows).map((id) =>
         ngoData.find((ngo) => ngo.ID === id)
       );
-      // Get detailed info for selected NGOs including NGO ID, email, and new status
       const selectedNgoDetails = selectedNgos.map((ngo) => ({
         email: ngo.email,
         ngoId: AuthUser[0].NgoId,
@@ -385,14 +372,18 @@ const NGOTable = ({
 
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
+    setPage(0);
   };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value.toLowerCase());
+    setPage(0);
   };
 
   const handleRowClick = (id) => {
-    navigate(`/userdetails/${id}`);
+    if (!hasActiveFilters()) {
+      navigate(`/userdetails/${id}`);
+    }
   };
 
   const handleCheckboxChange = (id, event) => {
@@ -415,455 +406,362 @@ const NGOTable = ({
     }
   };
 
-  // Continuing from the filteredData definition...
+  // Enhanced filtering logic
+  
+
   const filteredData = ngoData
-    .filter((ngo) => ngo.Ngo === user)
-    .filter((ngo) => {
-      return (
-        (searchTerm === "" ||
-          ngo.name?.toLowerCase().includes(searchTerm) ||
-          ngo.email?.toLowerCase().includes(searchTerm) ||
-          ngo["contact number"]?.toString().includes(searchTerm)) &&
-        (filters["ID Proof type"] === "" ||
-          ngo["ID Proof type"] === filters["ID Proof type"]) &&
-        (filters["Use case"] === "" ||
-          ngo["Use case"] === filters["Use case"]) &&
-        (filters["Occupation Status"] === "" ||
-          ngo["Occupation"] === filters["Occupation Status"]) &&
-        (filters.status === "" || ngo.status === filters.status)
-      );
-    });
+  .filter((ngo) => ngo.Ngo === user)
+  .filter((ngo) => {
+    const matchesSearch = searchTerm === "" ||
+      ngo.name?.toLowerCase().includes(searchTerm) ||
+      ngo.email?.toLowerCase().includes(searchTerm) ||
+      ngo["contact number"]?.toString().includes(searchTerm);
 
-  return (
-    <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-      {/* MOU Section */}
-      {mouFound?.data ? <MouReviewd /> : <MOUCard ngoid={user} />}
+    const matchesIdProof = filters["ID Proof type"] === "" ||
+      ngo["ID Proof type"] === filters["ID Proof type"];
 
-      {/* Header */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h6" gutterBottom>
-          {filteredData.length > 0
-            ? `All Beneficiaries (${filteredData.length})`
-            : `All Beneficiaries`}
+    const matchesUseCase = filters["Use case"] === "" ||
+      ngo["Use case"] === filters["Use case"];
+
+    const matchesOccupation = filters["Occupation Status"] === "" ||
+      ngo["Occupation"] === filters["Occupation Status"];
+
+    const matchesStatus = filters.status === "" ||
+      ngo.status === filters.status;
+
+    return matchesSearch && matchesIdProof && matchesUseCase && 
+           matchesOccupation && matchesStatus;
+  });
+
+return (
+  <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
+    {mouFound?.data ? <MouReviewd /> : <MOUCard ngoid={user} />}
+
+    {/* Header */}
+    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Typography variant="h6" gutterBottom>
+        {filteredData.length > 0 ? `All Beneficiaries (${filteredData.length})` : `All Beneficiaries`}
+      </Typography>
+    </Box>
+
+    {/* Search and Add Beneficiaries */}
+    <Grid container spacing={2} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
+        <TextField
+          sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
+          label="Search by Name, Location, Contact"
+          variant="outlined"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Grid>
+      <Grid>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/user-details", { state: { userId: id } })}
+          sx={{ mt: 2, mr: 2 }}
+        >
+          Add Beneficiaries
+        </Button>
+      </Grid>
+    </Grid>
+
+    {/* Filters */}
+    <Grid container spacing={2} sx={{ mt: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center", mt: 3, width: "100%" }}>
+        <FilterListIcon />
+        <Typography variant="subtitle1" sx={{ ml: 1 }}>
+          Filters
         </Typography>
+        {hasActiveFilters() && (
+          <Button size="small" sx={{ ml: 2 }} onClick={clearAllFilters}>
+            Clear All Filters
+          </Button>
+        )}
       </Box>
-      {filteredData.length > 0 ? (
-        <>
-          {/* Search */}
-          <Grid
-            container
-            spacing={2}
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
+
+      <Grid container spacing={2} sx={{ mt: 1, ml: 1 }}>
+        {/* ID Proof Type Filter */}
+        <FormControl sx={{ m: 1, minWidth: 200 }}>
+          <InputLabel>ID Proof Type</InputLabel>
+          <Select
+            value={filters["ID Proof type"]}
+            onChange={handleFilterChange}
+            name="ID Proof type"
           >
-            <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
-              <TextField
-                sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
-                label="Search by Name, Location, Contact"
-                variant="outlined"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() =>
-                  navigate("/user-details", { state: { userId: id } })
-                }
-                sx={{ mt: 2, mr: 2 }}
-              >
-                Add Beneficiaries
-              </Button>
-            </Grid>
-          </Grid>
+            <MenuItem value="">All</MenuItem>
+            {filterOptions.idProof.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-          {/* Filters */}
-          <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mt: 3 }}>
-              <FilterListIcon />
-              <Typography variant="subtitle1" sx={{ ml: 1 }}>
-                Filters
-              </Typography>
-            </Box>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>ID Proof Type</InputLabel>
-              <Select
-                value={filters["ID Proof type"]}
-                onChange={handleFilterChange}
-                name="ID Proof type"
-              >
-                <MenuItem value="">All</MenuItem>
-                {filterOptions.idProof.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Use Case</InputLabel>
-              <Select
-                value={filters["Use case"]}
-                onChange={handleFilterChange}
-                name="Use case"
-              >
-                <MenuItem value="">All</MenuItem>
-                {filterOptions.useCase.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Occupation Status</InputLabel>
-              <Select
-                value={filters["Occupation Status"]}
-                onChange={handleFilterChange}
-                name="Occupation Status"
-              >
-                <MenuItem value="">All</MenuItem>
-                {filterOptions.occupation.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={filters["status"]}
-                onChange={handleFilterChange}
-                name="status"
-              >
-                <MenuItem value="">All</MenuItem>
-                {defaultStatus.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-                {additionalStatuses.map((status) => (
-                  <MenuItem key={status.name} value={status.name}>
-                    {status.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          {/* Table */}
-          <TableContainer
-            style={{ border: "none" }}
-            sx={{ backgroundColor: "white", mt: 2 }}
+        {/* Use Case Filter */}
+        <FormControl sx={{ m: 1, minWidth: 200 }}>
+          <InputLabel>Use Case</InputLabel>
+          <Select
+            value={filters["Use case"]}
+            onChange={handleFilterChange}
+            name="Use case"
           >
-            <Table>
-              <TableHead>
-                {selectedRows.size > 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={9}>
+            <MenuItem value="">All</MenuItem>
+            {filterOptions.useCase.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* Occupation Status Filter */}
+        <FormControl sx={{ m: 1, minWidth: 200 }}>
+          <InputLabel>Occupation Status</InputLabel>
+          <Select
+            value={filters["Occupation Status"]}
+            onChange={handleFilterChange}
+            name="Occupation Status"
+          >
+            <MenuItem value="">All</MenuItem>
+            {filterOptions.occupation.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* Status Filter */}
+        <FormControl sx={{ m: 1, minWidth: 200 }}>
+          <InputLabel>Status</InputLabel>
+          <Select
+            value={filters.status}
+            onChange={handleFilterChange}
+            name="status"
+          >
+            <MenuItem value="">All</MenuItem>
+            {defaultStatus.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+            {additionalStatuses.map((status) => (
+              <MenuItem key={status.name} value={status.name}>
+                {status.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Grid>
+    </Grid>
+
+    {/* Conditional rendering of content */}
+    {filteredData.length > 0 ? (
+      <>
+        <TableContainer style={{ border: "none" }} sx={{ backgroundColor: "white", mt: 2 }}>
+          <Table>
+            <TableHead>
+              {selectedRows.size > 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9}>
+                    {/* Bulk update controls */}
+                    <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 2 }}>
                       <Box
-                        sx={{
-                          mb: 2,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 2,
-                        }}
+                        sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+                        onClick={() => setSelectedRows(new Set())}
                       >
-                        <Box
+                        <Typography
+                          variant="body1"
+                          component="span"
                           sx={{
-                            display: "flex",
-                            alignItems: "center",
+                            bgcolor: "#f5f5f5",
+                            p: 0.5,
+                            borderRadius: "4px",
+                            fontWeight: "medium",
                             cursor: "pointer",
                           }}
-                          onClick={() => setSelectedRows(new Set())}
                         >
-                          <Typography
-                            variant="body1"
-                            component="span"
-                            sx={{
-                              bgcolor: "#f5f5f5",
-                              p: 0.5,
-                              borderRadius: "4px",
-                              fontWeight: "medium",
-                              cursor: "pointer",
-                            }}
-                          >
-                            ✕
-                          </Typography>
-                        </Box>
-                        <Typography variant="body1" sx={{ color: "#666" }}>
-                          Change status for {selectedRows.size} selected items
+                          ✕
                         </Typography>
-                        <FormControl sx={{ width: 300 }}>
-                          <Select
-                            value={bulkStatus}
-                            onChange={(e) => setBulkStatus(e.target.value)}
-                            displayEmpty
-                            sx={{
-                              bgcolor: "white",
-                              "& .MuiSelect-select": {
-                                py: 1.5,
-                              },
-                            }}
-                          >
-                            <MenuItem value="" disabled>
-                              Change Status for Selected
-                            </MenuItem>
-                            {defaultStatus.map((option) => (
-                              <MenuItem key={option} value={option}>
-                                {option}
-                              </MenuItem>
-                            ))}
-                            {additionalStatuses.map((status) => (
-                              <MenuItem key={status.name} value={status.name}>
-                                {status.name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        <Button
-                          variant="contained"
-                          onClick={() => setOpenDialog(true)}
-                          disabled={!bulkStatus}
+                      </Box>
+                      <Typography variant="body1" sx={{ color: "#666" }}>
+                        Change status for {selectedRows.size} selected items
+                      </Typography>
+                      <FormControl sx={{ width: 300 }}>
+                        <Select
+                          value={bulkStatus}
+                          onChange={(e) => setBulkStatus(e.target.value)}
+                          displayEmpty
                           sx={{
-                            bgcolor: "#4B6455",
-                            "&:hover": {
-                              bgcolor: "#3d503f",
-                            },
-                            py: 1.5,
-                            px: 4,
+                            bgcolor: "white",
+                            "& .MuiSelect-select": { py: 1.5 },
                           }}
                         >
-                          Update Status
-                        </Button>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  <TableRow>
+                          <MenuItem value="" disabled>
+                            Change Status for Selected
+                          </MenuItem>
+                          {defaultStatus.map((option) => (
+                            <MenuItem key={option} value={option}>
+                              {option}
+                            </MenuItem>
+                          ))}
+                          {additionalStatuses.map((status) => (
+                            <MenuItem key={status.name} value={status.name}>
+                              {status.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <Button
+                        variant="contained"
+                        onClick={() => setOpenDialog(true)}
+                        disabled={!bulkStatus}
+                        sx={{
+                          bgcolor: "#4B6455",
+                          "&:hover": { bgcolor: "#3d503f" },
+                          py: 1.5,
+                          px: 4,
+                        }}
+                      >
+                        Update Status
+                      </Button>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <TableRow>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      indeterminate={selectedRows.size > 0 && selectedRows.size < filteredData.length}
+                      checked={filteredData.length > 0 && selectedRows.size === filteredData.length}
+                      onChange={handleSelectAllClick}
+                    />
+                  </TableCell>
+                  <TableCell><Typography variant="subtitle2">ID</Typography></TableCell>
+                  <TableCell><Typography variant="subtitle2">Name</Typography></TableCell>
+                  <TableCell><Typography variant="subtitle2">Email</Typography></TableCell>
+                  <TableCell><Typography variant="subtitle2">Contact Number</Typography></TableCell>
+                  <TableCell><Typography variant="subtitle2">ID Proof Type</Typography></TableCell>
+                  <TableCell><Typography variant="subtitle2">Use Case</Typography></TableCell>
+                  <TableCell><Typography variant="subtitle2">Occupation Status</Typography></TableCell>
+                  <TableCell><Typography variant="subtitle2">Status</Typography></TableCell>
+                </TableRow>
+              )}
+            </TableHead>
+            <TableBody>
+              {filteredData
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((ngo) => (
+                  <TableRow
+                    key={ngo.ID}
+                    hover
+                    onClick={() => handleRowClick(ngo.ID)}
+                    selected={selectedRows.has(ngo.ID)}
+                  >
                     <TableCell padding="checkbox">
                       <Checkbox
-                        indeterminate={
-                          selectedRows.size > 0 &&
-                          selectedRows.size < filteredData.length
-                        }
-                        checked={
-                          filteredData.length > 0 &&
-                          selectedRows.size === filteredData.length
-                        }
-                        onChange={handleSelectAllClick}
+                        checked={selectedRows.has(ngo.ID)}
+                        onChange={(event) => handleCheckboxChange(ngo.ID, event)}
+                        onClick={(event) => event.stopPropagation()}
                       />
                     </TableCell>
+                    <TableCell><Typography variant="body2">{ngo.ID}</Typography></TableCell>
+                    <TableCell><Typography variant="body2">{ngo.name}</Typography></TableCell>
+                    <TableCell><Typography variant="body2">{ngo.email}</Typography></TableCell>
+                    <TableCell><Typography variant="body2">{ngo["contact number"]}</Typography></TableCell>
+                    <TableCell><Typography variant="body2">{ngo["ID Proof type"]}</Typography></TableCell>
+                    <TableCell><Typography variant="body2">{ngo["Use case"]}</Typography></TableCell>
+                    <TableCell><Typography variant="body2">{ngo["Occupation"]}</Typography></TableCell>
                     <TableCell>
-                      <Typography variant="subtitle2">ID</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">Name</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">Email</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">
-                        Contact Number
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">ID Proof Type</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">Use Case</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">
-                        Occupation Status
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">Status</Typography>
+                      <StatusCell
+                        status={ngo.status}
+                        id={ngo.ID}
+                        handleIndividualStatusChange={handleIndividualStatusChange}
+                        statusDisabled={statusDisabled}
+                        defaultStatus={defaultStatus}
+                        dateTime={ngo["Date-time"]}
+                        additionalStatuses={additionalStatuses}
+                      />
                     </TableCell>
                   </TableRow>
-                )}
-              </TableHead>
-              <TableBody>
-                {filteredData
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((ngo) => (
-                    <TableRow
-                      key={ngo.ID}
-                      hover
-                      onClick={() => handleRowClick(ngo.ID)}
-                      selected={selectedRows.has(ngo.ID)}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={selectedRows.has(ngo.ID)}
-                          onChange={(event) =>
-                            handleCheckboxChange(ngo.ID, event)
-                          }
-                          onClick={(event) => event.stopPropagation()}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">{ngo.ID}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">{ngo.name}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">{ngo.email}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {ngo["contact number"]}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {ngo["ID Proof type"]}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {ngo["Use case"]}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {ngo["Occupation"]}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <StatusCell
-                          status={ngo.status}
-                          id={ngo.ID}
-                          handleIndividualStatusChange={
-                            handleIndividualStatusChange
-                          }
-                          statusDisabled={statusDisabled}
-                          defaultStatus={defaultStatus}
-                          dateTime={ngo["Date-time"]}
-                          additionalStatuses={additionalStatuses}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          {/* Pagination */}
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 50]}
-            component="div"
-            count={filteredData.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(event, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(event) => {
-              setRowsPerPage(parseInt(event.target.value, 10));
-              setPage(0);
-            }}
-          />
-
-          {/* Bulk Update Confirmation Dialog */}
-          <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-            <DialogTitle>Change Status</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Are you sure you want to change the status for{" "}
-                {selectedRows.size} selected items to "{bulkStatus}"?
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setOpenDialog(false)} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handleBulkStatusChange} color="primary">
-                Confirm
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </>
-      ) : (
-        <>
-          <Table style={{ width: "100%"}}>
-            <TableBody>
-              <TableRow>
-                <TableCell>
-                  <Typography variant="subtitle2">ID</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Name</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Email</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Contact Number</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">ID Proof Type</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Use Case</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Occupation Status</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">Status</Typography>
-                </TableCell>
-              </TableRow>
+                ))}
             </TableBody>
-          </Table>{" "}
-          <Box mt={5}>
-          <EmptyBeneficiary />{" "}
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            mt={2}
+          </Table>
+        </TableContainer>
+
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 50]}
+          component="div"
+          count={filteredData.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={(event, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+          }}
+        />
+      </>
+    ) : hasActiveFilters() ? (
+      // Show when any filter is active but no results found
+      <Box mt={4} mb={4} display="flex" flexDirection="column" alignItems="center">
+        <Typography variant="body1" align="center" color="textSecondary" gutterBottom>
+          No beneficiaries found with the selected filters.
+        </Typography>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={clearAllFilters}
+          sx={{ mt: 2 }}
+        >
+          Clear All Filters
+        </Button>
+      </Box>
+    ) : (
+      // Empty state when no data and no filters
+      <Box mt={5}>
+        <EmptyBeneficiary />
+        <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/user-details", { state: { userId: id } })}
+            sx={{ alignSelf: "center" }}
           >
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() =>
-                navigate("/user-details", { state: { userId: id } })
-              }
-              sx={{ alignSelf: "center" }}
-            >
-              Add Beneficiaries 
-            </Button>
-            </Box>
-          </Box>
-        </>
-      )}
-    </Container>
-  );
+            Add Beneficiaries
+          </Button>
+        </Box>
+      </Box>
+    )}
+
+    {/* Bulk Update Dialog */}
+    <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+      <DialogTitle>Change Status</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are you sure you want to change the status for {selectedRows.size} selected items to "{bulkStatus}"?
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setOpenDialog(false)} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={handleBulkStatusChange} color="primary">
+          Confirm
+        </Button>
+      </DialogActions>
+    </Dialog>
+  </Container>
+);
 };
 
 export default NGOTable;
