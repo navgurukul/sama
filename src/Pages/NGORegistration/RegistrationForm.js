@@ -159,33 +159,33 @@ function RegistrationForm() {
 
   const validate = () => {
     const newErrors = {};
-
-    // General required field validation
-    // Object.keys(formData).forEach((key) => {
-    //   if (!formData[key] && key !== 'impactReport' && key !== 'beneficiarySelectionOther' && key !== 'primaryUseOther') {
-    //     newErrors[key] = 'This field is required';
-    //   }
-    // });
-
-    // Specific validation for impact report file upload
-    const fileUploadField = formFields.find(field => field.type === 'fileUpload');
-    if (fileUploadField && !formData.impactReport) {
-      newErrors.impactReport = 'Impact report file is required';
-    }
-
-    // Specific validation for contact number
-    if (formData.contactNumber && !/^\d{10}$/.test(formData.contactNumber)) {
-      newErrors.contactNumber = 'Contact number must be 10 digits (number)';
-    }
-
-    // Specific validation for email
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email address';
-    }
-
+  
+    formFields.forEach((field) => {
+      
+      // Required field validation
+      if (field.required && !formData[field.name]) {
+        newErrors[field.name] = `${field.label || field.name} is required`;
+      }
+      
+      // Example: File size validation for 'impactReport'
+      if (field.name === 'impactReport' && formData[field.name]?.size > 2 * 1024 * 1024) {
+        newErrors[field.name] = 'File size must not exceed 2MB';
+      }
+  
+      // Add additional checks for specific field types if needed
+      // Example: Email validation
+      if (field.type === 'email' && formData[field.name]) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(formData[field.name])) {
+          newErrors[field.name] = 'Invalid email format';
+        }
+      }
+    });
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
 
   
   useEffect(() => {
