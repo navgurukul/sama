@@ -21,6 +21,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import './styles.css';
 import EditButton from './EditButton';
+import { padding } from '@mui/system';
 
 
 const style = {
@@ -164,14 +165,13 @@ function LaptopTagging() {
               right: 30px;
               width: 150px;
               height: 50px;
-               border: 1px dashed black; /* Dashed line for cutting */
+              border: 1px dashed black; /* Dashed line for cutting */
               padding: 10px;
             }
             table {
               width: 100%;
               bottom: 50px;
               left: 10px;
-              
             }
             th, td {
               padding: 8px 0;
@@ -561,9 +561,9 @@ function LaptopTagging() {
             variant="contained"
             color="primary"
             onClick={handleSearch}
-            disabled={loading || (!idQuery && !macQuery)}
+            disabled={(!idQuery && !macQuery)}
           >
-            {loading ? <CircularProgress size={24} /> : 'Search'}
+            {'Search'}
           </Button>
         </Grid>
         <Grid item>
@@ -580,9 +580,8 @@ function LaptopTagging() {
 
       {/* Conditionally render the data table */}
       
-      <div id="tableToPrint">
+      <div id="tableToPrint" >
         <MUIDataTable
-          
           title={"Laptop Data"}
           data={data}
           columns={columns}
