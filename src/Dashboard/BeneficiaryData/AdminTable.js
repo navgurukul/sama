@@ -38,8 +38,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const selectedNgoId =
-    id || JSON.parse(localStorage.getItem("_AuthSama_"))[0].NgoId;
+  const selectedNgoId = id || JSON.parse(localStorage.getItem("_AuthSama_"))[0].NgoId;
 
   // Local state management
   const [filters, setFilters] = useState({
@@ -56,47 +55,95 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [ngoIdToDelete, setNgoIdToDelete] = useState(null);
-  const [defaultSelectedStatus, setDefaultSelectedStatus] = useState("Data Uploaded");
 
   const defaultStatus = ["Data Uploaded", "Laptop Assigned"];
 
-  // Helper function to get row status
-  const getRowStatus = (ngo) => {
-    if (!ngo.status) {
-      return "Data Uploaded";
-    }
-    return ngo.status;
+  // Helper functions
+  const hasActiveFilters = () => {
+    return (
+      filters["ID Proof type"] !== "" ||
+      filters["Use case"] !== "" ||
+      filters["Occupation Status"] !== "" ||
+      filters.status !== "" ||
+      searchTerm !== ""
+    );
   };
 
-  // Load stored statuses when component mounts
-  useEffect(() => {
+  const clearAllFilters = () => {
+    setFilters({
+      "ID Proof type": "",
+      "Use case": "",
+      "Occupation Status": "",
+      status: "",
+    });
+    setSearchTerm("");
+    setPage(0);
+  };
+
+  const getRowStatus = (ngo) => {
     try {
       const storedStatuses = JSON.parse(localStorage.getItem("userStatuses") || "{}");
-      if (ngoData && ngoData.length > 0) {
-        const updatedData = ngoData.map((ngo) => {
-          // If no status is set, use "Data Uploaded"
-          if (!ngo.status && !storedStatuses[ngo.ID]) {
-            return {
-              ...ngo,
-              status: "Data Uploaded"
-            };
+      return storedStatuses[ngo.ID] || ngo.status || "Data Uploaded";
+    } catch (error) {
+      console.error("Error getting row status:", error);
+      return ngo.status || "Data Uploaded";
+    }
+  };
+
+  // Initialize and maintain statuses
+  useEffect(() => {
+    if (!ngoData) return;
+
+    try {
+      const storedStatuses = JSON.parse(localStorage.getItem("userStatuses") || "{}");
+      let hasChanges = false;
+
+      const updatedData = ngoData.map((ngo) => {
+        if (storedStatuses[ngo.ID]) {
+          if (ngo.status !== storedStatuses[ngo.ID]) {
+            hasChanges = true;
           }
-          // If status exists in localStorage, use that
           return {
             ...ngo,
-            status: storedStatuses[ngo.ID] || "Data Uploaded"
+            status: storedStatuses[ngo.ID]
           };
-        });
+        }
+        
+        if (!ngo.status) {
+          hasChanges = true;
+          storedStatuses[ngo.ID] = "Data Uploaded";
+          return {
+            ...ngo,
+            status: "Data Uploaded"
+          };
+        }
+        
+        if (ngo.status && !storedStatuses[ngo.ID]) {
+          storedStatuses[ngo.ID] = ngo.status;
+        }
+        
+        return ngo;
+      });
+
+      localStorage.setItem("userStatuses", JSON.stringify(storedStatuses));
+      
+      if (hasChanges) {
         setNgoData(updatedData);
       }
     } catch (error) {
-      console.error("Error loading stored statuses:", error);
+      console.error("Error managing statuses:", error);
     }
-  }, []);
+  }, [ngoData, setNgoData]);
 
-  // Handlers
   const handleBulkStatusChange = async () => {
     try {
+      const storedStatuses = JSON.parse(localStorage.getItem("userStatuses") || "{}");
+      
+      selectedRows.forEach((id) => {
+        storedStatuses[id] = bulkStatus;
+      });
+      localStorage.setItem("userStatuses", JSON.stringify(storedStatuses));
+
       const updatedData = ngoData.map((ngo) => {
         if (selectedRows.has(ngo.ID)) {
           return { ...ngo, status: bulkStatus };
@@ -104,21 +151,10 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
         return ngo;
       });
 
-      // Update UI immediately
       setNgoData(updatedData);
       setSelectedRows(new Set());
       setEditStatus(true);
       setOpenDialog(false);
-
-      // Store in localStorage
-      const storedStatuses = JSON.parse(
-        localStorage.getItem("userStatuses") || "{}"
-      );
-      const newStoredStatuses = { ...storedStatuses };
-      selectedRows.forEach((id) => {
-        newStoredStatuses[id] = bulkStatus;
-      });
-      localStorage.setItem("userStatuses", JSON.stringify(newStoredStatuses));
 
       const payload = {
         id: Array.from(selectedRows),
@@ -141,10 +177,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
       );
     } catch (error) {
       console.error("Error updating status in bulk:", error);
-      // Revert changes if the API call fails
-      const storedStatuses = JSON.parse(
-        localStorage.getItem("userStatuses") || "{}"
-      );
+      const storedStatuses = JSON.parse(localStorage.getItem("userStatuses") || "{}");
       const updatedData = ngoData.map((ngo) => ({
         ...ngo,
         status: storedStatuses[ngo.ID] || "Data Uploaded",
@@ -156,7 +189,11 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
   const handleIndividualStatusChange = async (id, newStatus, event) => {
     event.stopPropagation();
     try {
-      // Update local state immediately
+      const storedStatuses = JSON.parse(localStorage.getItem("userStatuses") || "{}");
+      
+      storedStatuses[id] = newStatus;
+      localStorage.setItem("userStatuses", JSON.stringify(storedStatuses));
+
       const updatedData = ngoData.map((ngo) => {
         if (ngo.ID === id) {
           return { ...ngo, status: newStatus };
@@ -164,21 +201,8 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
         return ngo;
       });
 
-      // Update UI immediately
       setNgoData(updatedData);
       setEditStatus(true);
-
-      // Store in localStorage
-      const storedStatuses = JSON.parse(
-        localStorage.getItem("userStatuses") || "{}"
-      );
-      localStorage.setItem(
-        "userStatuses",
-        JSON.stringify({
-          ...storedStatuses,
-          [id]: newStatus,
-        })
-      );
 
       const payload = {
         id: [id],
@@ -201,10 +225,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
       );
     } catch (error) {
       console.error("Error updating status:", error);
-      // Revert the local state if the API call fails
-      const storedStatuses = JSON.parse(
-        localStorage.getItem("userStatuses") || "{}"
-      );
+      const storedStatuses = JSON.parse(localStorage.getItem("userStatuses") || "{}");
       const updatedData = ngoData.map((ngo) => {
         if (ngo.ID === id) {
           return { ...ngo, status: storedStatuses[id] || "Data Uploaded" };
@@ -217,14 +238,18 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
 
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
+    setPage(0);
   };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value.toLowerCase());
+    setPage(0);
   };
 
   const handleRowClick = (id) => {
-    navigate(`/userdetails/${id}`);
+    if (!hasActiveFilters()) {
+      navigate(`/userdetails/${id}`);
+    }
   };
 
   const handleCheckboxChange = (id, event) => {
@@ -263,10 +288,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
       setOpenDeleteDialog(false);
       setEditStatus(true);
 
-      // Remove from localStorage when deleted
-      const storedStatuses = JSON.parse(
-        localStorage.getItem("userStatuses") || "{}"
-      );
+      const storedStatuses = JSON.parse(localStorage.getItem("userStatuses") || "{}");
       delete storedStatuses[ngoIdToDelete];
       localStorage.setItem("userStatuses", JSON.stringify(storedStatuses));
 
@@ -287,6 +309,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
     }
   };
 
+  // Get filtered data for current NGO
   const filteredData = ngoData
     .filter((ngo) => ngo.Ngo === selectedNgoId)
     .filter((ngo) => {
@@ -306,163 +329,175 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
       );
     });
 
+  // Check if there is any data for the current NGO before filtering
+  const hasData = ngoData.some(ngo => ngo.Ngo === selectedNgoId);
+
+  // If no data exists, show only the empty state
+  if (!hasData) {
+    return (
+      <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+          <EmptyBeneficiary />
+          <Box display="flex" justifyContent="center" alignItems="center" mt="32px">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/user-details", { state: { userId: id } })}
+              sx={{ alignSelf: "center" }}
+            >
+              Add Beneficiaries
+            </Button>
+          </Box>
+        </Box>
+      </Container>
+    );
+  }
+
+  // If data exists, render the full interface
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
       {/* Header */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Typography variant="h6" gutterBottom>
           {filteredData.length > 0
             ? `All Beneficiaries (${filteredData.length})`
             : `All Beneficiaries`}
         </Typography>
       </Box>
+
+      {/* Search and Add Beneficiaries */}
+      <Grid container spacing={2} sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}>
+        <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
+          <TextField
+            sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
+            label="Search by Name, Location, Contact"
+            variant="outlined"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+        <Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/user-details", { state: { userId: id } })}
+            sx={{ mt: 2, mr: 2 }}
+          >
+            Add Beneficiaries
+          </Button>
+        </Grid>
+      </Grid>
+
+      {/* Filters */}
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", mt: 3, width: "100%" }}>
+          <FilterListIcon />
+          <Typography variant="subtitle1" sx={{ ml: 1 }}>
+            Filters
+          </Typography>
+          {hasActiveFilters() && (
+            <Button
+              size="small"
+              sx={{ ml: 2 }}
+              onClick={clearAllFilters}
+            >
+              Clear All Filters
+            </Button>
+          )}
+        </Box>
+
+        {/* Filter Controls */}
+        <Grid container spacing={2} sx={{ mt: 1, ml: 1 }}>
+          <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <InputLabel>ID Proof Type</InputLabel>
+            <Select
+              value={filters["ID Proof type"]}
+              onChange={handleFilterChange}
+              name="ID Proof type"
+            >
+              <MenuItem value="">All</MenuItem>
+              {filterOptions.idProof.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <InputLabel>Use Case</InputLabel>
+            <Select
+              value={filters["Use case"]}
+              onChange={handleFilterChange}
+              name="Use case"
+            >
+              <MenuItem value="">All</MenuItem>
+              {filterOptions.useCase.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <InputLabel>Occupation Status</InputLabel>
+            <Select
+              value={filters["Occupation Status"]}
+              onChange={handleFilterChange}
+              name="Occupation Status"
+            >
+              <MenuItem value="">All</MenuItem>
+              {filterOptions.occupation.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={filters.status}
+              onChange={handleFilterChange}
+              name="status"
+            >
+              <MenuItem value="">All</MenuItem>
+              {defaultStatus.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+
+      {/* Table Section */}
       {filteredData.length > 0 ? (
         <>
-          {/* Search */}
-          <Grid
-            container
-            spacing={2}
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
-              <TextField
-                sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
-                label="Search by Name, Location, Contact"
-                variant="outlined"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() =>
-                  navigate("/user-details", { state: { userId: id } })
-                }
-                sx={{ mt: 2, mr: 2 }}
-              >
-                Add Beneficiaries 
-              </Button>
-            </Grid>
-          </Grid>
-
-          {/* Filters */}
-          <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mt: 3 }}>
-              <FilterListIcon />
-              <Typography variant="subtitle1" sx={{ ml: 1 }}>
-                Filters
-              </Typography>
-            </Box>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>ID Proof Type</InputLabel>
-              <Select
-                value={filters["ID Proof type"]}
-                onChange={handleFilterChange}
-                name="ID Proof type"
-              >
-                <MenuItem value="">All</MenuItem>
-                {filterOptions.idProof.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Use Case</InputLabel>
-              <Select
-                value={filters["Use case"]}
-                onChange={handleFilterChange}
-                name="Use case"
-              >
-                <MenuItem value="">All</MenuItem>
-                {filterOptions.useCase.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Occupation Status</InputLabel>
-              <Select
-                value={filters["Occupation Status"]}
-                onChange={handleFilterChange}
-                name="Occupation Status"
-              >
-                <MenuItem value="">All</MenuItem>
-                {filterOptions.occupation.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={filters["status"]}
-                onChange={handleFilterChange}
-                name="status"
-              >
-                <MenuItem value="">All</MenuItem>
-                {defaultStatus.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          {/*
           {/* Table */}
-          <TableContainer
-            style={{ border: "none" }}
-            sx={{ backgroundColor: "white", mt: 2 }}
-          >
+          <TableContainer style={{ border: "none" }} sx={{ backgroundColor: "white", mt: 2 }}>
             <Table>
               <TableHead>
                 {selectedRows.size > 0 ? (
                   <TableRow>
                     <TableCell colSpan={11}>
-                      <Box
-                        sx={{
-                          mb: 2,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 2,
-                        }}
-                      >
+                      <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 2 }}>
                         <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            cursor: "pointer",
-                          }}
+                          sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
                           onClick={() => setSelectedRows(new Set())}
                         >
                           <Typography
@@ -489,9 +524,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                             displayEmpty
                             sx={{
                               bgcolor: "white",
-                              "& .MuiSelect-select": {
-                                py: 1.5,
-                              },
+                              "& .MuiSelect-select": { py: 1.5 },
                             }}
                           >
                             <MenuItem value="" disabled>
@@ -510,9 +543,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                           disabled={!bulkStatus}
                           sx={{
                             bgcolor: "#4B6455",
-                            "&:hover": {
-                              bgcolor: "#3d503f",
-                            },
+                            "&:hover": { bgcolor: "#3d503f" },
                             py: 1.5,
                             px: 4,
                           }}
@@ -526,47 +557,21 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
-                        indeterminate={
-                          selectedRows.size > 0 &&
-                          selectedRows.size < filteredData.length
-                        }
-                        checked={
-                          filteredData.length > 0 &&
-                          selectedRows.size === filteredData.length
-                        }
+                        indeterminate={selectedRows.size > 0 && selectedRows.size < filteredData.length}
+                        checked={filteredData.length > 0 && selectedRows.size === filteredData.length}
                         onChange={handleSelectAllClick}
                       />
                     </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">ID</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">Name</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">Email</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">Contact Number</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">ID Proof Type</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">Use Case</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">Occupation Status</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">Status</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2"></Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2"></Typography>
-                    </TableCell>
+                    <TableCell><Typography variant="subtitle2">ID</Typography></TableCell>
+                    <TableCell><Typography variant="subtitle2">Name</Typography></TableCell>
+                    <TableCell><Typography variant="subtitle2">Email</Typography></TableCell>
+                    <TableCell><Typography variant="subtitle2">Contact Number</Typography></TableCell>
+                    <TableCell><Typography variant="subtitle2">ID Proof Type</Typography></TableCell>
+                    <TableCell><Typography variant="subtitle2">Use Case</Typography></TableCell>
+                    <TableCell><Typography variant="subtitle2">Occupation Status</Typography></TableCell>
+                    <TableCell><Typography variant="subtitle2">Status</Typography></TableCell>
+                    <TableCell><Typography variant="subtitle2"></Typography></TableCell>
+                    <TableCell><Typography variant="subtitle2"></Typography></TableCell>
                   </TableRow>
                 )}
               </TableHead>
@@ -587,34 +592,18 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                           onClick={(event) => event.stopPropagation()}
                         />
                       </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">{ngo.ID}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">{ngo.name}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">{ngo.email}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">{ngo["contact number"]}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">{ngo["ID Proof type"]}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">{ngo["Use case"]}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">{ngo["Occupation"]}</Typography>
-                      </TableCell>
+                      <TableCell><Typography variant="body2">{ngo.ID}</Typography></TableCell>
+                      <TableCell><Typography variant="body2">{ngo.name}</Typography></TableCell>
+                      <TableCell><Typography variant="body2">{ngo.email}</Typography></TableCell>
+                      <TableCell><Typography variant="body2">{ngo["contact number"]}</Typography></TableCell>
+                      <TableCell><Typography variant="body2">{ngo["ID Proof type"]}</Typography></TableCell>
+                      <TableCell><Typography variant="body2">{ngo["Use case"]}</Typography></TableCell>
+                      <TableCell><Typography variant="body2">{ngo["Occupation"]}</Typography></TableCell>
                       <TableCell>
                         <FormControl fullWidth>
                           <Select
                             value={getRowStatus(ngo)}
-                            onChange={(e) => {
-                              handleIndividualStatusChange(ngo.ID, e.target.value, e);
-                            }}
+                            onChange={(e) => handleIndividualStatusChange(ngo.ID, e.target.value, e)}
                             onClick={(e) => e.stopPropagation()}
                             displayEmpty
                           >
@@ -648,7 +637,6 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             </Table>
           </TableContainer>
 
-          {/* Pagination */}
           <TablePagination
             rowsPerPageOptions={[10, 25, 50]}
             component="div"
@@ -661,46 +649,31 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
               setPage(0);
             }}
           />
-
-          {/* Dialogs */}
-          <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-            <DialogTitle>Change Status</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Are you sure you want to change the status?
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setOpenDialog(false)} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handleBulkStatusChange} color="primary">
-                Confirm
-              </Button>
-            </DialogActions>
-          </Dialog>
-
-          <DeleteDialog
-            open={openDeleteDialog}
-            handleClose={handleCloseDeleteDialog}
-            handleDelete={handleDelete}
-          />
         </>
+      ) : hasActiveFilters() ? (
+        // Show when filters are active but no results found
+        <Box mt={4} mb={4} display="flex" flexDirection="column" alignItems="center">
+          <Typography variant="body1" align="center" color="textSecondary" gutterBottom>
+            No beneficiaries found with the selected filters.
+          </Typography>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={clearAllFilters}
+            sx={{ mt: 2 }}
+          >
+            Clear All Filters
+          </Button>
+        </Box>
       ) : (
+        // Empty state when no data after filtering
         <>
           <EmptyBeneficiary />
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            mt="32px"
-          >
+          <Box display="flex" justifyContent="center" alignItems="center" mt="32px">
             <Button
               variant="contained"
               color="primary"
-              onClick={() =>
-                navigate("/user-details", { state: { userId: id } })
-              }
+              onClick={() => navigate("/user-details", { state: { userId: id } })}
               sx={{ alignSelf: "center" }}
             >
               Add Beneficiaries
@@ -708,13 +681,32 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
           </Box>
         </>
       )}
+
+      {/* Dialogs */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Change Status</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to change the status for {selectedRows.size} selected items to "{bulkStatus}"?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleBulkStatusChange} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <DeleteDialog
+        open={openDeleteDialog}
+        handleClose={handleCloseDeleteDialog}
+        handleDelete={handleDelete}
+      />
     </Container>
   );
 };
 
 export default AdminTable;
-
-
-
-
-
