@@ -504,12 +504,14 @@ const NGOTable = ({
               </Typography>
             </Box>
 
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>ID Proof Type</InputLabel>
+            <FormControl sx={{m: 1, minWidth: 200,}}>
+              <InputLabel id="id-proof-type-label">ID Proof Type</InputLabel>
               <Select
+                labelId="id-proof-type-label"
                 value={filters["ID Proof type"]}
                 onChange={handleFilterChange}
                 name="ID Proof type"
+                label="ID Proof Type"
               >
                 <MenuItem value="">All</MenuItem>
                 {filterOptions.idProof.map((option) => (
@@ -520,12 +522,15 @@ const NGOTable = ({
               </Select>
             </FormControl>
 
+
             <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Use Case</InputLabel>
+              <InputLabel id="use-case-label">Use Case</InputLabel>
               <Select
-                value={filters["Use case"]}
+                labelId="use-case-label"
+                value={filters["Use case type"]}
                 onChange={handleFilterChange}
                 name="Use case"
+                label="Use case Type"
               >
                 <MenuItem value="">All</MenuItem>
                 {filterOptions.useCase.map((option) => (
@@ -537,11 +542,13 @@ const NGOTable = ({
             </FormControl>
 
             <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Occupation Status</InputLabel>
+              <InputLabel id="occupation-status-label">Occupation Status</InputLabel>
               <Select
-                value={filters["Occupation Status"]}
+                labelId="occupation-status-label"
+                value={filters["Occupation Status Type"]}
                 onChange={handleFilterChange}
                 name="Occupation Status"
+                label="Occupation Status Type"
               >
                 <MenuItem value="">All</MenuItem>
                 {filterOptions.occupation.map((option) => (
@@ -553,11 +560,13 @@ const NGOTable = ({
             </FormControl>
 
             <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Status</InputLabel>
+              <InputLabel id="status-label">Status</InputLabel>
               <Select
+                labelId="status-label"
                 value={filters["status"]}
                 onChange={handleFilterChange}
                 name="status"
+                label="Status Type"
               >
                 <MenuItem value="">All</MenuItem>
                 {defaultStatus.map((option) => (
@@ -810,7 +819,7 @@ const NGOTable = ({
         </>
       ) : (
         <>
-          <Table style={{ width: "100%"}}>
+          <Table style={{ width: "100%" }}>
             <TableBody>
               <TableRow>
                 <TableCell>
@@ -841,23 +850,23 @@ const NGOTable = ({
             </TableBody>
           </Table>{" "}
           <Box mt={5}>
-          <EmptyBeneficiary />{" "}
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            mt={2}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() =>
-                navigate("/user-details", { state: { userId: id } })
-              }
-              sx={{ alignSelf: "center" }}
+            <EmptyBeneficiary />{" "}
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              mt={2}
             >
-              Add Beneficiaries 
-            </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() =>
+                  navigate("/user-details", { state: { userId: id } })
+                }
+                sx={{ alignSelf: "center" }}
+              >
+                Add Beneficiaries
+              </Button>
             </Box>
           </Box>
         </>

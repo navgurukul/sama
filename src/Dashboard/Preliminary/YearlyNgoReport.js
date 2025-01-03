@@ -70,12 +70,17 @@ const YearlyNgoReport = ({
                     </Box>
                     <Button 
                       variant="subtitle1"
-                      sx={{ marginTop: "25px", marginLeft: "29%" }}
-                      color="primary"
+                      sx={{ marginTop: "40px",
+                        marginLeft:"20%",
+                        color : "#828282",
+                        height: '35px',
+                        width: '200px',
+                        fontSize: '18px'
+                        }}
                       disabled={!yearComplete}
                       onClick={() => onCardClick(yearlyMetrixGet, monthCurrent, yearCurrent, formattedstartDate)}
                     >
-                      View Report &rarr;
+                      View Report &#62;
                     </Button>
                   </CardContent>
                 </Card>
@@ -92,12 +97,18 @@ const YearlyNgoReport = ({
                     </Typography>
                     <Button 
                       variant="subtitle1"
-                      sx={{ marginTop: "25px", marginLeft: "29%" }}
-                      color="primary"
+                      sx={{
+                        marginTop: "35px",
+                        marginLeft:"16%",
+                        color: "#828282",
+                        height: "35px",
+                        width: "211px",
+                        fontSize: "18px",
+                      }}
                       disabled={!yearComplete}
                       onClick={() => yearlyReportingFormHandler(monthCurrent, yearCurrent)}
                     >
-                      Submit Report &rarr;
+                      Submit Report  &#62;
                     </Button>
                   </CardContent>
                 </Card>
