@@ -322,8 +322,6 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             : `All Beneficiaries`}
         </Typography>
       </Box>
-      {filteredData.length > 0 ? (
-        <>
           {/* Search */}
           <Grid
             container
@@ -337,7 +335,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
               <TextField
                 sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
-                label="Search by Name, Location, Contact"
+                label="Search by Name, Contact"
                 variant="outlined"
                 value={searchTerm}
                 onChange={handleSearchChange}
@@ -438,6 +436,8 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             </FormControl>
           </Grid>
 
+          {filteredData.length > 0 ? (
+            <>
           {/*
           {/* Table */}
           <TableContainer

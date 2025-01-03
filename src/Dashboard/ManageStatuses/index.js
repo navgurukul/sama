@@ -308,12 +308,12 @@ const ManageStatuses = () => {
         open={snackbar.open}
         autoHideDuration={3000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        // anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <Alert
           onClose={handleSnackbarClose}
           severity={snackbar.severity}
-          variant="filled"
+          // variant="filled"
           elevation={6}
         >
           {snackbar.message}

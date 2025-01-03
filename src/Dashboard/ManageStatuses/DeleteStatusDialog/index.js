@@ -139,10 +139,10 @@ const DeleteStatusDialog = ({ open, onClose, onDeleteSuccess, status }) => {
             borderColor: "#E0E0E0",
             textTransform: "none",
             minWidth: "80px",
-            "&:hover": {
-              borderColor: "#D0D0D0",
-              backgroundColor: "#f5f5f5",
-            },
+            // "&:hover": {
+            //   borderColor: "#D0D0D0",
+            //   backgroundColor: "#f5f5f5",
+            // },
           }}
         >
           Cancel

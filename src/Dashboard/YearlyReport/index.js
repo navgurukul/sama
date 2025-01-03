@@ -211,7 +211,9 @@ const YearlyReport = () => {
         Click the button below to {isFormCreated ? "edit" : "create"} your Yearly report form.
       </p>
       {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <CircularProgress />
+      </Box>
       ) : error ? (
         <Alert severity="error">{error}</Alert>
       ) : (

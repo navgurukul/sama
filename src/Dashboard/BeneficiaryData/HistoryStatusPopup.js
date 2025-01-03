@@ -147,6 +147,7 @@ const HistoryStatusPopup = ({ open, onClose, id, email, monthYear  }) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              height:"50vh"
             }}
           >
             <CircularProgress />

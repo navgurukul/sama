@@ -45,6 +45,7 @@ const Preliminary = () => {
   const NgoData = metrics.filter((data) => data.NgoId === user);
 
   // Determine if the user is found
+
   const isUserFound = NgoData.length > 0;
   const preliminaryId = NgoData && NgoData[0] && NgoData[0].Id;
   const prerole = JSON.parse(localStorage.getItem('role') || '[]');
@@ -59,7 +60,7 @@ const Preliminary = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "100vh",
+          minHeight: "50vh",
         }}
       >
         <CircularProgress />
