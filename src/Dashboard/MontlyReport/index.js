@@ -14,6 +14,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PreDestibution from "../Preliminary/PreDestibution";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import WorkingProductively from "./assets/Working Productively 1 1.svg";
 
 //  Generate 12 monthly dates starting from a given date
 
@@ -260,11 +261,6 @@ const MonthlyReport = () => {
   ) : (
     <Container maxWidth="md" sx={{ mt: 5 }}>
       <h1>Monthly Report</h1>
-      <p>
-        Click the button below to {isFormCreated ? "edit" : "create"} your
-        monthly report form
-      </p>
-
       {loading ? (
         <Box
           sx={{
@@ -274,15 +270,42 @@ const MonthlyReport = () => {
             height: "50vh",
           }}
         >
-          <CircularProgress /> 
+          <CircularProgress />
         </Box>
       ) : error ? (
         <Alert severity="error">{error}</Alert> // Display error if any
       ) : (
-        <Button variant="contained" onClick={handleButtonClick}>
+        <>
+        {isFormCreated ? (
+        <p>Click the button below to edit your monthly report form</p>
+      ) : (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            pb: 2,
+          }}
+        >
+          <img src={WorkingProductively} height="160" width="160" />
+          <Typography variant="body1">
+            Please create a monthly form specific to this NGO.
+          </Typography>
+        </Box>
+      )}
+
+        <Button
+          variant="contained"
+          sx={!isFormCreated && { display: "block", margin: "0 auto" }}
+          onClick={handleButtonClick}
+        >
           {isFormCreated ? "Edit Form" : "Create Form"}
         </Button>
+        </>
       )}
+      
     </Container>
   );
 };

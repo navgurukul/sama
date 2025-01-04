@@ -13,6 +13,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Survey from "./assets/Survey 1.svg";
 
 // Helper functions
 const generateYearlyDates = (startDate) => {
@@ -40,15 +41,15 @@ const convertToValidDate = (input) => {
 
 const formatDateCurrent = (input) => {
   // Parse the input date string
-  const [datePart] = input.split(','); // "24/11/2023"
-  const [day, month, year] = datePart.split('/');
+  const [datePart] = input.split(","); // "24/11/2023"
+  const [day, month, year] = datePart.split("/");
 
   // Create a Date object (Note: months in Date are 0-indexed)
   const date = new Date(`${year}-${month}-${day}`);
 
   // Format the month and year
-  const options = { month: 'long', year: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+  const options = { month: "long", year: "numeric" };
+  return date.toLocaleDateString("en-US", options);
 };
 
 const YearlyReport = () => {
@@ -67,9 +68,9 @@ const YearlyReport = () => {
   const [currentDate] = useState(new Date());
   const [isDataAvailable, setIsDataAvailable] = useState(false);
 
-  const yearlyDates = YearlyReportingDate && generateYearlyDates(YearlyReportingDate);
-  const formattedstartDate= formatDateCurrent(YearlyReportingDate);
-  
+  const yearlyDates =
+    YearlyReportingDate && generateYearlyDates(YearlyReportingDate);
+  const formattedstartDate = formatDateCurrent(YearlyReportingDate);
 
   // Fetch preliminary data
   useEffect(() => {
@@ -138,14 +139,14 @@ const YearlyReport = () => {
   }, [user]);
 
   // Handle navigation
-  const handleCardClick = (data, monthCurrent, year,formattedstartDate ) => {
-    navigate('/yearly-report', { 
-      state: { 
+  const handleCardClick = (data, monthCurrent, year, formattedstartDate) => {
+    navigate("/yearly-report", {
+      state: {
         yearlyReportData: data,
         monthCurrent,
         year,
-        formattedstartDate
-      } 
+        formattedstartDate,
+      },
     });
   };
 
@@ -173,58 +174,99 @@ const YearlyReport = () => {
         Yearly Report
       </Typography>
       <Grid container spacing={3}>
-        {yearlyDates && yearlyDates?.map((report, index) => {
-          const isEnabled = currentDate >= report;
-          const monthName = report.toLocaleString("default", { month: "long" });
-          const year = report.getFullYear();
+        {yearlyDates &&
+          yearlyDates?.map((report, index) => {
+            const isEnabled = currentDate >= report;
+            const monthName = report.toLocaleString("default", {
+              month: "long",
+            });
+            const year = report.getFullYear();
 
-          return (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card
-                sx={{
-                  backgroundColor: !isEnabled && "#E0E0E0",
-                  cursor: isEnabled ? "pointer" : "default",
-                }}
-                onClick={() => isEnabled && handleCardClick(yearlyMetrixGet, monthName, year, formattedstartDate )}
-              >
-                <CardContent>
-                  <Typography variant="subtitle1">
-                    {monthName} {year}
-                  </Typography>
-                  {isEnabled && (
-                    <Box display="flex" alignItems="center">
-                      <CheckCircleIcon color="success" />
-                      <Typography color="green">Submitted</Typography>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
-          );
-        })}
+            return (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Card
+                  sx={{
+                    backgroundColor: !isEnabled && "#E0E0E0",
+                    cursor: isEnabled ? "pointer" : "default",
+                  }}
+                  onClick={() =>
+                    isEnabled &&
+                    handleCardClick(
+                      yearlyMetrixGet,
+                      monthName,
+                      year,
+                      formattedstartDate
+                    )
+                  }
+                >
+                  <CardContent>
+                    <Typography variant="subtitle1">
+                      {monthName} {year}
+                    </Typography>
+                    {isEnabled && (
+                      <Box display="flex" alignItems="center">
+                        <CheckCircleIcon color="success" />
+                        <Typography color="green">Submitted</Typography>
+                      </Box>
+                    )}
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
       </Grid>
     </>
   ) : (
     <Container maxWidth="md" sx={{ mt: 5 }}>
       <h1>Yearly Report</h1>
-      <p>
-        Click the button below to {isFormCreated ? "edit" : "create"} your Yearly report form.
-      </p>
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-        <CircularProgress />
-      </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "50vh",
+          }}
+        >
+          <CircularProgress />
+        </Box>
       ) : error ? (
         <Alert severity="error">{error}</Alert>
       ) : (
-        <Button
-          variant="contained"
-          onClick={() =>
-            navigate(isFormCreated ? `/edit-yearly-form/${id}` : `/yearly-reporting/${id}`)
-          }
-        >
-          {isFormCreated ? "Edit Form" : "Create Form"}
-        </Button>
+        <>
+          {isFormCreated ? (
+            <p>Click the button below to edit your Yearly report form</p>
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                pb: 2,
+              }}
+            >
+              <img src={Survey} height="160" width="160" />
+              <Typography variant="body1">
+                Please create a yearly form specific to this NGO.
+              </Typography>
+            </Box>
+          )}
+          <Button
+            variant="contained"
+            sx={!isFormCreated && { display: "block", margin: "0 auto" }}
+            onClick={() =>
+              navigate(
+                isFormCreated
+                  ? `/edit-yearly-form/${id}`
+                  : `/yearly-reporting/${id}`
+              )
+            }
+          >
+            {isFormCreated ? "Edit Form" : "Create Form"}
+          </Button>
+        </>
       )}
     </Container>
   );
