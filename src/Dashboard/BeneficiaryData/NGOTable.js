@@ -220,7 +220,7 @@ const NGOTable = ({
         );
         const data = await response.json();
         const currentNgoId = id ? id : NgoId[0].NgoId;
-        
+
         if (Array.isArray(data)) {
           const filteredStatuses = data.filter(
             (status) => status.id === currentNgoId
@@ -245,7 +245,10 @@ const NGOTable = ({
     const updatedData = ngoData.map((ngo) => {
       if (selectedRows.has(ngo.ID)) {
         const newNgo = { ...ngo, status: bulkStatus };
-        if (ngo.status === "Data Uploaded" && bulkStatus === "Laptop Assigned") {
+        if (
+          ngo.status === "Data Uploaded" &&
+          bulkStatus === "Laptop Assigned"
+        ) {
           newNgo["Date-time"] = new Date().toISOString();
         }
         return newNgo;
@@ -407,369 +410,482 @@ const NGOTable = ({
   };
 
   // Enhanced filtering logic
-  
 
   const filteredData = ngoData
-  .filter((ngo) => ngo.Ngo === user)
-  .filter((ngo) => {
-    const matchesSearch = searchTerm === "" ||
-      ngo.name?.toLowerCase().includes(searchTerm) ||
-      ngo.email?.toLowerCase().includes(searchTerm) ||
-      ngo["contact number"]?.toString().includes(searchTerm);
+    .filter((ngo) => ngo.Ngo === user)
+    .filter((ngo) => {
+      const matchesSearch =
+        searchTerm === "" ||
+        ngo.name?.toLowerCase().includes(searchTerm) ||
+        ngo.email?.toLowerCase().includes(searchTerm) ||
+        ngo["contact number"]?.toString().includes(searchTerm);
 
-    const matchesIdProof = filters["ID Proof type"] === "" ||
-      ngo["ID Proof type"] === filters["ID Proof type"];
+      const matchesIdProof =
+        filters["ID Proof type"] === "" ||
+        ngo["ID Proof type"] === filters["ID Proof type"];
 
-    const matchesUseCase = filters["Use case"] === "" ||
-      ngo["Use case"] === filters["Use case"];
+      const matchesUseCase =
+        filters["Use case"] === "" || ngo["Use case"] === filters["Use case"];
 
-    const matchesOccupation = filters["Occupation Status"] === "" ||
-      ngo["Occupation"] === filters["Occupation Status"];
+      const matchesOccupation =
+        filters["Occupation Status"] === "" ||
+        ngo["Occupation"] === filters["Occupation Status"];
 
-    const matchesStatus = filters.status === "" ||
-      ngo.status === filters.status;
+      const matchesStatus =
+        filters.status === "" || ngo.status === filters.status;
 
-    return matchesSearch && matchesIdProof && matchesUseCase && 
-           matchesOccupation && matchesStatus;
-  });
+      return (
+        matchesSearch &&
+        matchesIdProof &&
+        matchesUseCase &&
+        matchesOccupation &&
+        matchesStatus
+      );
+    });
 
-return (
-  <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
-    {mouFound?.data ? <MouReviewd /> : <MOUCard ngoid={user} />}
+  return (
+    <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
+      {filteredData.length > 0 &&
+        (mouFound?.data ? <MouReviewd /> : <MOUCard ngoid={user} />)}
 
-    {/* Header */}
-    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <Typography variant="h6" gutterBottom>
-        {filteredData.length > 0 ? `All Beneficiaries (${filteredData.length})` : `All Beneficiaries`}
-      </Typography>
-    </Box>
-
-    {/* Search and Add Beneficiaries */}
-    <Grid container spacing={2} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
-        <TextField
-          sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
-          label="Search by Name, Location, Contact"
-          variant="outlined"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Grid>
-      <Grid>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => navigate("/user-details", { state: { userId: id } })}
-          sx={{ mt: 2, mr: 2 }}
-        >
-          Add Beneficiaries
-        </Button>
-      </Grid>
-    </Grid>
-
-    {/* Filters */}
-    <Grid container spacing={2} sx={{ mt: 2 }}>
-      <Box sx={{ display: "flex", alignItems: "center", mt: 3, width: "100%" }}>
-        <FilterListIcon />
-        <Typography variant="subtitle1" sx={{ ml: 1 }}>
-          Filters
+      {/* Header */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          {filteredData.length > 0
+            ? `All Beneficiaries (${filteredData.length})`
+            : `All Beneficiaries`}
         </Typography>
-        {hasActiveFilters() && (
-          <Button size="small" sx={{ ml: 2 }} onClick={clearAllFilters}>
-            Clear All Filters
-          </Button>
-        )}
       </Box>
 
-      <Grid container spacing={2} sx={{ mt: 1, ml: 1 }}>
-        {/* ID Proof Type Filter */}
-        <FormControl sx={{ m: 1, minWidth: 200 }}>
-          <InputLabel id="id-proof-type-label">ID Proof Type</InputLabel>
-          <Select
-            labelId="id-proof-type-label"
-            label="ID Proof Type"
-            value={filters["ID Proof type"]}
-            onChange={handleFilterChange}
-            name="ID Proof type"
-          >
-            <MenuItem value="">All</MenuItem>
-            {filterOptions.idProof.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {/* Use Case Filter */}
-        <FormControl sx={{ m: 1, minWidth: 200 }}>
-          <InputLabel id="use-case-label">Use Case</InputLabel>
-          <Select
-            labelId="use-case-label"
-            label="Use case Type"
-            value={filters["Use case"]}
-            onChange={handleFilterChange}
-            name="Use case"
-          >
-            <MenuItem value="">All</MenuItem>
-            {filterOptions.useCase.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {/* Occupation Status Filter */}
-        <FormControl sx={{ m: 1, minWidth: 200 }}>
-          <InputLabel id="occupation-status-label">Occupation Status</InputLabel>
-          <Select
-            labelId="occupation-status-label"
-            label="Occupation Status Type"
-            value={filters["Occupation Status"]}
-            onChange={handleFilterChange}
-            name="Occupation Status"
-          >
-            <MenuItem value="">All</MenuItem>
-            {filterOptions.occupation.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {/* Status Filter */}
-        <FormControl sx={{ m: 1, minWidth: 200 }}>
-          <InputLabel id="status-label">Status</InputLabel>
-          <Select
-            labelId="status-label"
-            label="Status Type"
-            value={filters.status}
-            onChange={handleFilterChange}
-            name="status"
-          >
-            <MenuItem value="">All</MenuItem>
-            {defaultStatus.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-            {additionalStatuses.map((status) => (
-              <MenuItem key={status.name} value={status.name}>
-                {status.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Grid>
-    </Grid>
-
-    {/* Conditional rendering of content */}
-    {filteredData.length > 0 ? (
-      <>
-        <TableContainer style={{ border: "none" }} sx={{ backgroundColor: "white", mt: 2 }}>
-          <Table>
-            <TableHead>
-              {selectedRows.size > 0 ? (
-                <TableRow>
-                  <TableCell colSpan={9}>
-                    {/* Bulk update controls */}
-                    <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 2 }}>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-                        onClick={() => setSelectedRows(new Set())}
-                      >
-                        <Typography
-                          variant="body1"
-                          component="span"
-                          sx={{
-                            bgcolor: "#f5f5f5",
-                            p: 0.5,
-                            borderRadius: "4px",
-                            fontWeight: "medium",
-                            cursor: "pointer",
-                          }}
-                        >
-                          ✕
-                        </Typography>
-                      </Box>
-                      <Typography variant="body1" sx={{ color: "#666" }}>
-                        Change status for {selectedRows.size} selected items
-                      </Typography>
-                      <FormControl sx={{ width: 300 }}>
-                        <Select
-                          value={bulkStatus}
-                          onChange={(e) => setBulkStatus(e.target.value)}
-                          displayEmpty
-                          sx={{
-                            bgcolor: "white",
-                            "& .MuiSelect-select": { py: 1.5 },
-                          }}
-                        >
-                          <MenuItem value="" disabled>
-                            Change Status for Selected
-                          </MenuItem>
-                          {defaultStatus.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
-                            </MenuItem>
-                          ))}
-                          {additionalStatuses.map((status) => (
-                            <MenuItem key={status.name} value={status.name}>
-                              {status.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <Button
-                        variant="contained"
-                        onClick={() => setOpenDialog(true)}
-                        disabled={!bulkStatus}
-                        sx={{
-                          bgcolor: "#4B6455",
-                          "&:hover": { bgcolor: "#3d503f" },
-                          py: 1.5,
-                          px: 4,
-                        }}
-                      >
-                        Update Status
-                      </Button>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      indeterminate={selectedRows.size > 0 && selectedRows.size < filteredData.length}
-                      checked={filteredData.length > 0 && selectedRows.size === filteredData.length}
-                      onChange={handleSelectAllClick}
-                    />
-                  </TableCell>
-                  <TableCell><Typography variant="subtitle2">ID</Typography></TableCell>
-                  <TableCell><Typography variant="subtitle2">Name</Typography></TableCell>
-                  <TableCell><Typography variant="subtitle2">Email</Typography></TableCell>
-                  <TableCell><Typography variant="subtitle2">Contact Number</Typography></TableCell>
-                  <TableCell><Typography variant="subtitle2">ID Proof Type</Typography></TableCell>
-                  <TableCell><Typography variant="subtitle2">Use Case</Typography></TableCell>
-                  <TableCell><Typography variant="subtitle2">Occupation Status</Typography></TableCell>
-                  <TableCell><Typography variant="subtitle2">Status</Typography></TableCell>
-                </TableRow>
-              )}
-            </TableHead>
-            <TableBody>
-              {filteredData
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((ngo) => (
-                  <TableRow
-                    key={ngo.ID}
-                    hover
-                    onClick={() => handleRowClick(ngo.ID)}
-                    selected={selectedRows.has(ngo.ID)}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={selectedRows.has(ngo.ID)}
-                        onChange={(event) => handleCheckboxChange(ngo.ID, event)}
-                        onClick={(event) => event.stopPropagation()}
-                      />
-                    </TableCell>
-                    <TableCell><Typography variant="body2">{ngo.ID}</Typography></TableCell>
-                    <TableCell><Typography variant="body2">{ngo.name}</Typography></TableCell>
-                    <TableCell><Typography variant="body2">{ngo.email}</Typography></TableCell>
-                    <TableCell><Typography variant="body2">{ngo["contact number"]}</Typography></TableCell>
-                    <TableCell><Typography variant="body2">{ngo["ID Proof type"]}</Typography></TableCell>
-                    <TableCell><Typography variant="body2">{ngo["Use case"]}</Typography></TableCell>
-                    <TableCell><Typography variant="body2">{ngo["Occupation"]}</Typography></TableCell>
-                    <TableCell>
-                      <StatusCell
-                        status={ngo.status}
-                        id={ngo.ID}
-                        handleIndividualStatusChange={handleIndividualStatusChange}
-                        statusDisabled={statusDisabled}
-                        defaultStatus={defaultStatus}
-                        dateTime={ngo["Date-time"]}
-                        additionalStatuses={additionalStatuses}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 50]}
-          component="div"
-          count={filteredData.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={(event, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-          }}
-        />
-      </>
-    ) : hasActiveFilters() ? (
-      // Show when any filter is active but no results found
-      <Box mt={4} mb={4} display="flex" flexDirection="column" alignItems="center">
-        <Typography variant="body1" align="center" color="textSecondary" gutterBottom>
-          No beneficiaries found with the selected filters.
-        </Typography>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={clearAllFilters}
-          sx={{ mt: 2 }}
-        >
-          Clear All Filters
-        </Button>
-      </Box>
-    ) : (
-      // Empty state when no data and no filters
-      <Box mt={5}>
-        <EmptyBeneficiary />
-        <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
+      {/* Search and Add Beneficiaries */}
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
+          <TextField
+            sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
+            label="Search by Name, Location, Contact"
+            variant="outlined"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+        <Grid>
           <Button
             variant="contained"
             color="primary"
             onClick={() => navigate("/user-details", { state: { userId: id } })}
-            sx={{ alignSelf: "center" }}
+            sx={{ mt: 2, mr: 2 }}
           >
             Add Beneficiaries
           </Button>
-        </Box>
-      </Box>
-    )}
+        </Grid>
+      </Grid>
 
-    {/* Bulk Update Dialog */}
-    <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-      <DialogTitle>Change Status</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Are you sure you want to change the status for {selectedRows.size} selected items to "{bulkStatus}"?
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={() => setOpenDialog(false)} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleBulkStatusChange} color="primary">
-          Confirm
-        </Button>
-      </DialogActions>
-    </Dialog>
-  </Container>
-);
+      {/* Filters */}
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Box
+          sx={{ display: "flex", alignItems: "center", mt: 3, width: "100%" }}
+        >
+          <FilterListIcon />
+          <Typography variant="subtitle1" sx={{ ml: 1 }}>
+            Filters
+          </Typography>
+          {hasActiveFilters() && (
+            <Button size="small" sx={{ ml: 2 }} onClick={clearAllFilters}>
+              Clear All Filters
+            </Button>
+          )}
+        </Box>
+
+        <Grid container spacing={2} sx={{ mt: 1, ml: 1 }}>
+          {/* ID Proof Type Filter */}
+          <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <InputLabel id="id-proof-type-label">ID Proof Type</InputLabel>
+            <Select
+              labelId="id-proof-type-label"
+              label="ID Proof Type"
+              value={filters["ID Proof type"]}
+              onChange={handleFilterChange}
+              name="ID Proof type"
+            >
+              <MenuItem value="">All</MenuItem>
+              {filterOptions.idProof.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Use Case Filter */}
+          <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <InputLabel id="use-case-label">Use Case</InputLabel>
+            <Select
+              labelId="use-case-label"
+              label="Use case Type"
+              value={filters["Use case"]}
+              onChange={handleFilterChange}
+              name="Use case"
+            >
+              <MenuItem value="">All</MenuItem>
+              {filterOptions.useCase.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Occupation Status Filter */}
+          <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <InputLabel id="occupation-status-label">
+              Occupation Status
+            </InputLabel>
+            <Select
+              labelId="occupation-status-label"
+              label="Occupation Status Type"
+              value={filters["Occupation Status"]}
+              onChange={handleFilterChange}
+              name="Occupation Status"
+            >
+              <MenuItem value="">All</MenuItem>
+              {filterOptions.occupation.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Status Filter */}
+          <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <InputLabel id="status-label">Status</InputLabel>
+            <Select
+              labelId="status-label"
+              label="Status Type"
+              value={filters.status}
+              onChange={handleFilterChange}
+              name="status"
+            >
+              <MenuItem value="">All</MenuItem>
+              {defaultStatus.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+              {additionalStatuses.map((status) => (
+                <MenuItem key={status.name} value={status.name}>
+                  {status.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+
+      {/* Conditional rendering of content */}
+      {filteredData.length > 0 ? (
+        <>
+          <TableContainer
+            style={{ border: "none" }}
+            sx={{ backgroundColor: "white", mt: 2 }}
+          >
+            <Table>
+              <TableHead>
+                {selectedRows.size > 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={9}>
+                      {/* Bulk update controls */}
+                      <Box
+                        sx={{
+                          mb: 2,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 2,
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => setSelectedRows(new Set())}
+                        >
+                          <Typography
+                            variant="body1"
+                            component="span"
+                            sx={{
+                              bgcolor: "#f5f5f5",
+                              p: 0.5,
+                              borderRadius: "4px",
+                              fontWeight: "medium",
+                              cursor: "pointer",
+                            }}
+                          >
+                            ✕
+                          </Typography>
+                        </Box>
+                        <Typography variant="body1" sx={{ color: "#666" }}>
+                          Change status for {selectedRows.size} selected items
+                        </Typography>
+                        <FormControl sx={{ width: 300 }}>
+                          <Select
+                            value={bulkStatus}
+                            onChange={(e) => setBulkStatus(e.target.value)}
+                            displayEmpty
+                            sx={{
+                              bgcolor: "white",
+                              "& .MuiSelect-select": { py: 1.5 },
+                            }}
+                          >
+                            <MenuItem value="" disabled>
+                              Change Status for Selected
+                            </MenuItem>
+                            {defaultStatus.map((option) => (
+                              <MenuItem key={option} value={option}>
+                                {option}
+                              </MenuItem>
+                            ))}
+                            {additionalStatuses.map((status) => (
+                              <MenuItem key={status.name} value={status.name}>
+                                {status.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <Button
+                          variant="contained"
+                          onClick={() => setOpenDialog(true)}
+                          disabled={!bulkStatus}
+                          sx={{
+                            bgcolor: "#4B6455",
+                            "&:hover": { bgcolor: "#3d503f" },
+                            py: 1.5,
+                            px: 4,
+                          }}
+                        >
+                          Update Status
+                        </Button>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  <TableRow>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        indeterminate={
+                          selectedRows.size > 0 &&
+                          selectedRows.size < filteredData.length
+                        }
+                        checked={
+                          filteredData.length > 0 &&
+                          selectedRows.size === filteredData.length
+                        }
+                        onChange={handleSelectAllClick}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle2">ID</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle2">Name</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle2">Email</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle2">
+                        Contact Number
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle2">ID Proof Type</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle2">Use Case</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle2">
+                        Occupation Status
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle2">Status</Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableHead>
+              <TableBody>
+                {filteredData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((ngo) => (
+                    <TableRow
+                      key={ngo.ID}
+                      hover
+                      onClick={() => handleRowClick(ngo.ID)}
+                      selected={selectedRows.has(ngo.ID)}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selectedRows.has(ngo.ID)}
+                          onChange={(event) =>
+                            handleCheckboxChange(ngo.ID, event)
+                          }
+                          onClick={(event) => event.stopPropagation()}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">{ngo.ID}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">{ngo.name}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">{ngo.email}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {ngo["contact number"]}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {ngo["ID Proof type"]}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {ngo["Use case"]}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {ngo["Occupation"]}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <StatusCell
+                          status={ngo.status}
+                          id={ngo.ID}
+                          handleIndividualStatusChange={
+                            handleIndividualStatusChange
+                          }
+                          statusDisabled={statusDisabled}
+                          defaultStatus={defaultStatus}
+                          dateTime={ngo["Date-time"]}
+                          additionalStatuses={additionalStatuses}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 50]}
+            component="div"
+            count={filteredData.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(event, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(event) => {
+              setRowsPerPage(parseInt(event.target.value, 10));
+              setPage(0);
+            }}
+          />
+        </>
+      ) : hasActiveFilters() ? (
+        // Show when any filter is active but no results found
+        <Box
+          mt={4}
+          mb={4}
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+        >
+          <Typography
+            variant="body1"
+            align="center"
+            color="textSecondary"
+            gutterBottom
+          >
+            No beneficiaries found with the selected filters.
+          </Typography>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={clearAllFilters}
+            sx={{ mt: 2 }}
+          >
+            Clear All Filters
+          </Button>
+        </Box>
+      ) : (
+        // Empty state when no data and no filters
+        <Box mt={5}>
+          <EmptyBeneficiary />
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            mt={2}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() =>
+                navigate("/user-details", { state: { userId: id } })
+              }
+              sx={{ alignSelf: "center" }}
+            >
+              Add Beneficiaries
+            </Button>
+          </Box>
+        </Box>
+      )}
+
+      {/* Bulk Update Dialog */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Change Status</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to change the status for {selectedRows.size}{" "}
+            selected items to "{bulkStatus}"?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleBulkStatusChange} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
+  );
 };
 
 export default NGOTable;

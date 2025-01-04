@@ -98,7 +98,7 @@ const MonthlyEditForm = () => {
       });
       setTimeout(() => {
         navigate(`/ngo/${id}`);
-      }, 3000);
+      }, 2000);
     } catch (error) {
       setSnackbar({
         open: true,
@@ -188,6 +188,7 @@ const MonthlyEditForm = () => {
             color="primary"
             fullWidth
             onClick={handleSubmit}
+            sx={{mb:"20px"}}
           >
             Update Form
           </Button>
