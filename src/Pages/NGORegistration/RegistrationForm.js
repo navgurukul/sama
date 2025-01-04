@@ -157,41 +157,85 @@ function RegistrationForm() {
     setFileName(file ? file.name : '');
   };
 
+const formfields = [
+  { name: 'impactReport', label: 'Impact Report', type: 'fileUpload', required: true },
+  { name: 'contactNumber', label: 'Contact Number', required: true },
+  { name: 'email', label: 'Email', required: true },
+  { name: 'organizationName', label: 'Organization Name', required: true }, // Example field
+  { name: 'registrationNumber', label: 'Registation Number', required: true }, // Example field
+  { name: 'primaryContactName', label: 'Primary Contact Name ', required: true }, // Example field
+];
+
   const validate = () => {
-    const newErrors = {};
+  const newErrors = {};
+console.log('Form Data:', formData);
+console.log('Validation Errors:', newErrors);
 
-    // General required field validation
-    // Object.keys(formData).forEach((key) => {
-    //   if (!formData[key] && key !== 'impactReport' && key !== 'beneficiarySelectionOther' && key !== 'primaryUseOther') {
-    //     newErrors[key] = 'This field is required';
-    //   }
-    // });
+  // General required field validation
+  formfields.forEach((field) => {
+    const value = formData[field.name];
 
-    // Specific validation for impact report file upload
-    const fileUploadField = formFields.find(field => field.type === 'fileUpload');
-    if (fileUploadField && !formData.impactReport) {
-      newErrors.impactReport = 'Impact report file is required';
+    // Required field validation
+    // if (field.required && !value) {
+    //   newErrors[field.name] = `${field.label || field.name} is required`;
+    // }
+
+    // Specific validation for file upload
+    if (field.name === 'impactReport' && value?.size > 2 * 1024 * 1024) {
+      newErrors[field.name] = 'Impact report file size must not exceed 2MB';
     }
 
-    // Specific validation for contact number
-    if (formData.contactNumber && !/^\d{10}$/.test(formData.contactNumber)) {
-      newErrors.contactNumber = 'Contact number must be 10 digits (number)';
+    // Contact number validation
+    if (field.name === 'contactNumber' && value) {
+      const contactNumberPattern = /^\d{10}$/; // Only 10-digit numbers
+      if (!contactNumberPattern.test(value)) {
+        newErrors[field.name] = 'Contact number must be a valid 10-digit number';
+      }
     }
 
-    // Specific validation for email
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email address';
+    // Email validation
+    if (field.name === 'email' && value) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(value)) {
+        newErrors[field.name] = 'Invalid email address';
+      }
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    // Text-only validation
+    if (field.name === 'organizationName'&& value) {
+      const textPattern = /^[A-Za-z\s]+$/; // Letters and spaces only
+      if (!textPattern.test(value)) {
+        newErrors[field.name] = `${field.label || field.name} should contain only letters`;
+      }
+    }
 
+    // Text-only validation
+    if (field.name ==='primaryContactName'&& value) {
+      const textPattern = /^[A-Za-z\s]+$/; // Letters and spaces only
+      if (!textPattern.test(value)) {
+        newErrors[field.name] = `${field.label || field.name} should contain only letters`;
+      }
+    }
+
+    // Number-only validation
+    if (field.name === 'registrationNumber' && value) {
+      const numberPattern = /^\d+$/; // Only digits allowed
+      if (!numberPattern.test(value)) {
+        newErrors[field.name] = `${field.label || field.name} should contain only digits`;
+      }
+    }
+  });
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0; // Return true if no errors
   
+};
+
+
   useEffect(() => {
-    setIsFormValid(validate());
-  }, [formData, formFields]);
-  
+  setIsFormValid(validate());
+}, [formData, formfields]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
