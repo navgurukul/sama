@@ -30,9 +30,9 @@ const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
   return (
     <FormControl fullWidth margin="normal" required error={!!error}>
       <FormLabel>
-        <Typography component="span" fontWeight="bold">{label}</Typography>
+      <Typography component="span" fontWeight="bold">{label}</Typography>
         {/* {label} */}
-      </FormLabel>
+        </FormLabel>
       <RadioGroup
         name={name}
         value={options.includes(value) ? value : 'Other'}
@@ -66,7 +66,7 @@ function RegistrationForm() {
 
   const [formFields, setFormFields] = useState([]);  // Store fetched form fields here
   const [formData, setFormData] = useState({
-
+    
     organizationName: '',
     registrationNumber: '',
     primaryContactName: '',
@@ -90,7 +90,7 @@ function RegistrationForm() {
     previousProjects: '',
     sufficientStaff: '',
     impactReport: "",
-
+    
   });
 
   const [errors, setErrors] = useState({});
@@ -115,7 +115,7 @@ function RegistrationForm() {
     fetchCompanies();
   }, []);
   const donorIDs = companies.find((company) => company.Donner === donorId)?.["Donor id"];
-
+  
   // Fetch form fields from API
   useEffect(() => {
     const fetchFormFields = async () => {
@@ -123,7 +123,7 @@ function RegistrationForm() {
         // Construct the API URL based on the presence of donorId
         const baseURL = 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorQuestion';
         const apiUrl = donorIDs ? `${baseURL}&donorId=${donorIDs}` : baseURL;
-
+        
         const response = await fetch(apiUrl);
         const data = await response.json();
         setFormFields(data);  // Assuming the API response has a 'formFields' key
@@ -131,15 +131,13 @@ function RegistrationForm() {
         console.error('Error fetching form fields:', error);
       }
     };
-
+  
     fetchFormFields();
   }, [donorIDs]);
-
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    const isNumberField = formFields.find(field => field.name === name)?.type === 'number';
-    if (isNumberField && !/^\d*$/.test(value)) return; // Prevent invalid input
     setFormData({ ...formData, [name]: value });
   };
 
@@ -159,56 +157,84 @@ function RegistrationForm() {
     setFileName(file ? file.name : '');
   };
 
+const formfields = [
+  { name: 'impactReport', label: 'Impact Report', type: 'fileUpload', required: true },
+  { name: 'contactNumber', label: 'Contact Number', required: true },
+  { name: 'email', label: 'Email', required: true },
+  { name: 'organizationName', label: 'Organization Name', required: true }, // Example field
+  { name: 'registrationNumber', label: 'Registation Number', required: true }, // Example field
+  { name: 'primaryContactName', label: 'Primary Contact Name ', required: true }, // Example field
+];
+
   const validate = () => {
-    const newErrors = {};
+  const newErrors = {};
+console.log('Form Data:', formData);
+console.log('Validation Errors:', newErrors);
 
-    formFields.forEach((field) => {
-      const value = formData[field.name];
+  // General required field validation
+  formfields.forEach((field) => {
+    const value = formData[field.name];
 
-      // Required field validation
-      if (field.required && !value) {
-        newErrors[field.name] = `${field.label || field.name} is required`;
+    // Required field validation
+    // if (field.required && !value) {
+    //   newErrors[field.name] = `${field.label || field.name} is required`;
+    // }
+
+    // Specific validation for file upload
+    if (field.name === 'impactReport' && value?.size > 2 * 1024 * 1024) {
+      newErrors[field.name] = 'Impact report file size must not exceed 2MB';
+    }
+
+    // Contact number validation
+    if (field.name === 'contactNumber' && value) {
+      const contactNumberPattern = /^\d{10}$/; // Only 10-digit numbers
+      if (!contactNumberPattern.test(value)) {
+        newErrors[field.name] = 'Contact number must be a valid 10-digit number';
       }
+    }
 
-      // File size validation for 'impactReport'
-      if (field.name === 'impactReport' && value?.size > 2 * 1024 * 1024) {
-        newErrors[field.name] = 'File size must not exceed 2MB';
+    // Email validation
+    if (field.name === 'email' && value) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(value)) {
+        newErrors[field.name] = 'Invalid email address';
       }
+    }
 
-      // Email validation
-      if (field.type === 'email' && value) {
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(value)) {
-          newErrors[field.name] = 'Invalid email format';
-        }
+    // Text-only validation
+    if (field.name === 'organizationName'&& value) {
+      const textPattern = /^[A-Za-z\s]+$/; // Letters and spaces only
+      if (!textPattern.test(value)) {
+        newErrors[field.name] = `${field.label || field.name} should contain only letters`;
       }
+    }
 
-      // Text-only validation
-      if (field.type === 'text' && value) {
-        const textPattern = /^[A-Za-z\s]+$/;
-        if (!textPattern.test(value)) {
-          newErrors[field.name] = `${field.label || field.name} should contain only letters`;
-        }
+    // Text-only validation
+    if (field.name ==='primaryContactName'&& value) {
+      const textPattern = /^[A-Za-z\s]+$/; // Letters and spaces only
+      if (!textPattern.test(value)) {
+        newErrors[field.name] = `${field.label || field.name} should contain only letters`;
       }
+    }
 
-      // Number-only validation
-      if (field.type === 'number' && value) {
-        const isNumber = /^\d+$/.test(value); 
-        if (!isNumber) {
-          newErrors[field.name] = `${field.label || field.name} should contain only digits`;
-        }
+    // Number-only validation
+    if (field.name === 'registrationNumber' && value) {
+      const numberPattern = /^\d+$/; // Only digits allowed
+      if (!numberPattern.test(value)) {
+        newErrors[field.name] = `${field.label || field.name} should contain only digits`;
       }
+    }
+  });
 
-    });
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0; // Return true if no errors
+  
+};
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   useEffect(() => {
-    setIsFormValid(validate());
-  }, [formData, formFields]);
-
+  setIsFormValid(validate());
+}, [formData, formfields]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -259,41 +285,41 @@ function RegistrationForm() {
           body: JSON.stringify(formDataWithType),
         });
         // Log the response for debugging
-
+        
         setLoading(false);
         setSnackbarMessage('Form submitted successfully!');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
-        setFormData({
-          organizationName: '',
-          registrationNumber: '',
-          primaryContactName: '',
-          contactNumber: '',
-          email: '',
-          operatingState: '',
-          location: [],
-          yearsOperating: '',
-          focusArea: '',
-          worksWithWomen: '',
-          infrastructure: '',
-          beneficiarySelection: [],
-          beneficiarySelectionOther: '',
-          numberOfBeneficiaries: '',
-          ageGroup: '',
-          primaryUse: [],
-          primaryUseOther: '',
-          expectedOutcome: '',
-          laptopTracking: '',
-          jobsCreated: '',
-          previousProjects: '',
-          sufficientStaff: '',
-          impactReport: '',
-        });
-        setFileName('');
-        setErrors({});
-      } catch (error) {
-        console.error('Error submitting form:', error);
-      }
+          setFormData({
+            organizationName: '',
+            registrationNumber: '',
+            primaryContactName: '',
+            contactNumber: '',
+            email: '',
+            operatingState: '',
+            location: [],
+            yearsOperating: '',
+            focusArea: '',
+            worksWithWomen: '',
+            infrastructure: '',
+            beneficiarySelection: [],
+            beneficiarySelectionOther: '',
+            numberOfBeneficiaries: '',
+            ageGroup: '',
+            primaryUse: [],
+            primaryUseOther: '',
+            expectedOutcome: '',
+            laptopTracking: '',
+            jobsCreated: '',
+            previousProjects: '',
+            sufficientStaff: '',
+            impactReport: '',
+          });
+          setFileName('');
+          setErrors({});
+        } catch (error) {
+          console.error('Error submitting form:', error);
+        }
     }
   };
 
@@ -310,10 +336,10 @@ function RegistrationForm() {
       {formFields?.length == 0 ? (
         <CircularProgress />
       ) : (
-
+        
         <form onSubmit={handleSubmit}>
           {formFields?.map((field) => {
-
+           
             if (field?.type === 'text') {
               return (
                 <TextField
@@ -330,16 +356,16 @@ function RegistrationForm() {
                   helperText={errors[field.name]}
                 />
               );
-            }
+            } 
             else if (field?.type === 'radio') {
               return (
                 <FormControl key={field.name}
-                  fullWidth margin="normal" required error={!!errors[field.name]}>
+                 fullWidth margin="normal" required error={!!errors[field.name]}>
                   <FormLabel>
                     <Typography component="span" fontWeight="bold">{field.question}</Typography>
-
+          
                     {/* {field?.question} */}
-                  </FormLabel>
+                    </FormLabel>
                   <RadioGroup
                     name={field.name}
                     value={formData[field.name]}
@@ -352,7 +378,7 @@ function RegistrationForm() {
                   {errors[field.name] && <Typography color="error">{errors[field.name]}</Typography>}
                 </FormControl>
               );
-            }
+            } 
             else if (field.type === 'radioWithOther') {
               return (
                 <RadioWithOther
@@ -370,29 +396,29 @@ function RegistrationForm() {
             else if (field.type === 'fileUpload') {
               return (
                 <>
-                  {/* Impact Reports Upload here */}
-                  <Typography variant="body1" gutterBottom fontWeight="bold" >
-                    {/* <strong> */}
+                {/* Impact Reports Upload here */}
+                <Typography variant="body1" gutterBottom fontWeight="bold" >
+                  {/* <strong> */}
                     Please share any impact reports or documentation related to your previous projects.
                     {/* </strong> */}
+                </Typography>
+                <Button variant="contained" component="label">
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.xlsx"
+                    hidden
+                    onChange={handleFileUpload}
+                    required
+                  />
+                </Button>
+                {fileName && 
+                (
+                  <Typography variant="subtitle1" gutterBottom>
+                    Selected file: {fileName}
                   </Typography>
-                  <Button variant="contained" component="label">
-                    Upload File
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx,.xlsx"
-                      hidden
-                      onChange={handleFileUpload}
-                      required
-                    />
-                  </Button>
-                  {fileName &&
-                    (
-                      <Typography variant="subtitle1" gutterBottom>
-                        Selected file: {fileName}
-                      </Typography>
-                    )
-                  }
+                ) 
+               }
                   <br></br>
                 </>
               );
@@ -401,9 +427,9 @@ function RegistrationForm() {
               return (
                 <FormControl key={field.name} fullWidth margin="normal">
                   <FormLabel>
-                    <Typography component="span" fontWeight="bold">{field.question}</Typography>
+                  <Typography component="span" fontWeight="bold">{field.question}</Typography>
                     {/* {field.question} */}
-                  </FormLabel>
+                    </FormLabel>
                   {field?.options?.map((option) => (
                     <FormControlLabel
                       key={option}
@@ -418,27 +444,27 @@ function RegistrationForm() {
                     />
                   ))}
                   {formData[field.name].includes('Other') && (
-                    <TextField
-                      name={`${field.name}Other`}
-                      label="Please specify"
-                      value={formData[`${field.name}Other`]}
-                      onChange={handleInputChange}
-                      fullWidth
-                      margin="normal"
-                      error={!!errors[`${field.name}Other`]}
-                    />
-                  )}
+                  <TextField
+                    name={`${field.name}Other`}
+                    label="Please specify"
+                    value={formData[`${field.name}Other`]}
+                    onChange={handleInputChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors[`${field.name}Other`]}
+                  />
+                )}
                 </FormControl>
               );
-            }
+            } 
             return null;
           })}
 
-          {(formFields.length > 0) &&
-            <Button type="submit" variant="contained" color="primary" disabled={!isFormValid || loading} sx={{ marginTop: 2 }}>
-              {loading ? <CircularProgress size={24} /> : 'Submit'}
-            </Button>
-          }
+        { (formFields.length > 0) && 
+        <Button type="submit" variant="contained" color="primary" disabled={!isFormValid || loading} sx={{ marginTop: 2 }}>
+        {loading ? <CircularProgress size={24} /> : 'Submit'}
+        </Button> 
+         }
         </form>
       )}
 
@@ -453,4 +479,4 @@ function RegistrationForm() {
 
 export default RegistrationForm;
 
-
+                   
