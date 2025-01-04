@@ -9,6 +9,8 @@ import {
   Stack,
   CircularProgress,
   Paper,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import {
   CloudUpload as UploadIcon,
@@ -16,14 +18,12 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import SubmissionSuccess from '../SubmissionSuccess/SubmissionSuccess'
+import SubmissionSuccess from '../SubmissionSuccess/SubmissionSuccess';
 
 const DocumentUpload = () => {
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
   const location = useLocation();
-
-  const { pendingStatuses } = location.state || {}; // Default to an empty object if state is undefined
-
+  const { pendingStatuses } = location.state || {};
   
   const userid = NgoId[0].NgoId;
   const navigate = useNavigate();
@@ -31,8 +31,11 @@ const DocumentUpload = () => {
   const [fileStates, setFileStates] = useState({});
   const [formData, setFormData] = useState({ name: '', files: [] });
   const [data, setData] = useState([]);
-  const [submitted, setSubmitted] = useState(false);
-
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
   const fileLabels = [
     "12A Registration",
@@ -43,6 +46,12 @@ const DocumentUpload = () => {
     "Financial Report FY 2022-23",
     "Financial Report FY 2021-22"
   ];
+
+  const areAllDocumentsUploaded = () => {
+    return fileLabels.every(label => 
+      fileStates[label] && fileStates[label].file && fileStates[label].base64
+    );
+  };
 
   const handleFileChange = (event, label) => {
     const file = event.target.files[0];
@@ -58,6 +67,12 @@ const DocumentUpload = () => {
         }));
       };
       reader.readAsDataURL(file);
+    } else {
+      setSnackbar({
+        open: true,
+        message: 'Please upload a PDF file',
+        severity: 'error'
+      });
     }
   };
 
@@ -68,8 +83,25 @@ const DocumentUpload = () => {
     }));
   };
 
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!areAllDocumentsUploaded()) {
+      setSnackbar({
+        open: true,
+        message: 'Please upload all required documents',
+        severity: 'error'
+      });
+      return;
+    }
+
     setUploading(true);
     const files = Object.keys(fileStates).map((label) => ({
       category: label,
@@ -77,132 +109,213 @@ const DocumentUpload = () => {
       mimeType: fileStates[label].file.type,
       file: fileStates[label].base64,
     }));
-    const payload = { name: formData.name, files, type: "MultipleDocsUpload" , ngoId: userid,  };
+    const payload = { name: formData.name, files, type: "MultipleDocsUpload", ngoId: userid };
+    
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbyXgpBdyC423mHLQ-hm5vh9yRCHxzAD03Opk3Pc6x4Nik865xH6GJCVt-LYI_7i4UPA/exec?type=MultipleDocsUpload"
-        , {
-        method: "POST",
-        mode:"no-cors",
-        body: JSON.stringify(payload),
-      });
+        "https://script.google.com/macros/s/AKfycbyXgpBdyC423mHLQ-hm5vh9yRCHxzAD03Opk3Pc6x4Nik865xH6GJCVt-LYI_7i4UPA/exec?type=MultipleDocsUpload",
+        {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify(payload),
+        }
+      );
       setUploading(false);
-      alert("Documents uploaded successfully!");
-      navigate('/submission-success');
+      setSnackbar({
+        open: true,
+        message: 'Documents uploaded successfully!',
+        severity: 'success'
+      });
+      
+      setTimeout(() => {
+        navigate('/submission-success', { replace: true });
+      }, 2000);
     } catch (error) {
       console.error("Error uploading documents:", error);
-      alert("Failed to upload documents. Please try again.");
-    } finally {
-      setSubmitted(true);
+      setSnackbar({
+        open: true,
+        message: 'Failed to upload documents. Please try again.',
+        severity: 'error'
+      });
+      setUploading(false);
     }
-  };
-  
-  const handleSkip = () => {
-    navigate('/beneficiarydata');
   };
 
   const dropZoneStyles = {
-    border: '2px dashed',
-    borderColor: 'primary.main',
-    borderRadius: 1,
-    p: 3,
+    border: '2px dashed #A7A7A7',
+    borderRadius: '4px',
+    p: 2,
     textAlign: 'center',
     cursor: 'pointer',
+    height: '80px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    '&:hover': {
+      backgroundColor: '#F8F9FA',
+      borderColor: '#678761'
+    }
   };
 
-  return  (
-    submitted ? (
-      <SubmissionSuccess />
-    ) : (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Paper elevation={0} sx={{ p: 4 }}>
-         
-          <Typography variant="h6" component="h1" align="center" mb="40px" gutterBottom>
+  return (
+    <>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          elevation={6}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+      <Container maxWidth="sm" sx={{ py: 2 }}>
+        <Paper elevation={0} sx={{ p: 3 }}>
+          <Typography 
+            variant="h6" 
+            component="h1" 
+            align="center" 
+            sx={{ 
+              mb: 2, 
+              fontWeight: 500,
+              fontSize: '20px',
+              color: '#333333'
+            }}
+          >
             Upload Documents
           </Typography>
-  
-          <Typography align="center" sx={{ mb: 3, color: '#6E6E6E',bgcolor:"#F8F3F0",p:"16px" ,mb:"40px"}}>
+
+          <Typography 
+            align="center" 
+            sx={{ 
+              mb: 3, 
+              color: '#6E6E6E', 
+              bgcolor: "#F8F3F0", 
+              p: "12px",
+              fontSize: '14px',
+              borderRadius: '4px'
+            }}
+          >
             Supported File format: PDF only
           </Typography>
-  
+
           <form onSubmit={handleSubmit}>
-            <Stack spacing={4}>
-          
+            <Stack spacing={2}>
               {fileLabels.map((label) => (
-                <>
-                <Typography variant="subtitle1"  gutterBottom>
+                <Box key={label}>
+                  <Typography 
+                    variant="subtitle2" 
+                    sx={{ 
+                      mb: 1, 
+                      color: '#4B4B4B',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
                     {label}
+                    <span style={{ color: '#E53E3E' }}>*</span>
                   </Typography>
-                <Box key={label} sx={{paddingBottom:"10px"}}>
-                  <Box sx={dropZoneStyles}>
-                    <input
-                      type="file"
-                      accept=".pdf"
-                      onChange={(e) => handleFileChange(e, label)}
-                      style={{ display: 'none' }}
-                      id={`file-${label}`}
-                    />
-                    <label htmlFor={`file-${label}`} style={{ cursor: 'pointer' }}>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <UploadIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
-                        <Typography color="primary.main" fontSize="18px">
-                          Upload or Drag File
-                        </Typography>
-                      </Box>
-                    </label>
+                  <Box sx={{ mb: 2 }}>
+                    <Box sx={dropZoneStyles}>
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={(e) => handleFileChange(e, label)}
+                        style={{ display: 'none' }}
+                        id={`file-${label}`}
+                      />
+                      <label htmlFor={`file-${label}`} style={{ cursor: 'pointer', width: '100%' }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <UploadIcon sx={{ fontSize: 24, color: '#678761', mb: 0.5 }} />
+                          <Typography 
+                            color="#678761" 
+                            fontSize="13px" 
+                            sx={{ fontWeight: 500 }}
+                          >
+                            Upload or Drag File
+                          </Typography>
+                        </Box>
+                      </label>
+                    </Box>
+
+                    {fileStates[label] && (
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          mt: 1,
+                          p: 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          borderRadius: '4px',
+                          border: '2px solid #E0E0E0',
+                          backgroundColor: '#FAFAFA'
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Typography variant='body2' color="#666666">
+                            Uploaded File:
+                          </Typography>
+                          <Typography 
+                            noWrap 
+                            sx={{ 
+                              maxWidth: 200, 
+                              color: "#678761",
+                              fontSize: '13px'
+                            }}
+                          >
+                            {fileStates[label].file.name}
+                          </Typography>
+                        </Box>
+                        <IconButton 
+                          onClick={() => handleRemoveFile(label)} 
+                          size="small"
+                          sx={{ padding: '4px' }}
+                        >
+                          <CloseIcon sx={{ fontSize: 16, color: "#828282" }} />
+                        </IconButton>
+                      </Paper>
+                    )}
                   </Box>
-  
-                  {fileStates[label] && (
-                    <Paper
-                    elevation={2}
-                      sx={{
-                        mt: 2,
-                        p: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        // border: '1px solid #ccc',
-                        borderRadius: 1,
-                        // bgcolor: 'grey.100',
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, height: '70px' }}>
-                        {/* <FileIcon color="primary" /> */}
-                        <Typography variant='subtitle1'>Uploaded File: </Typography>
-                        <Typography noWrap sx={{ maxWidth: 300,color:"primary.main" }}>
-                          {fileStates[label].file.name}
-                        </Typography>
-                      </Box>
-                      <IconButton onClick={() => handleRemoveFile(label)} size="small">
-                        <CloseIcon sx={{color:"#828282"}}/>
-                      </IconButton>
-                    </Paper>
-                  )}
                 </Box>
-                </>
               ))}
             </Stack>
-  
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, gap: 2 }}>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
               <Button
                 variant="contained"
                 type="submit"
-                disabled={uploading}
-                startIcon={uploading ? <CircularProgress size={20} /> : undefined}
-                sx={{ minWidth: 200 }}
+                disabled={uploading || !areAllDocumentsUploaded()}
+                startIcon={uploading ? <CircularProgress size={16} /> : undefined}
+                sx={{
+                  minWidth: 180,
+                  height: '40px',
+                  textTransform: 'none',
+                  fontSize: '14px',
+                  backgroundColor: '#678761',
+                  '&:hover': {
+                    backgroundColor: '#527A4C'
+                  },
+                  '&.Mui-disabled': {
+                    backgroundColor: '#A7A7A7',
+                    color: '#FFFFFF'
+                  }
+                }}
               >
                 {uploading ? 'Uploading...' : 'Submit Documents'}
               </Button>
-              {/* <Button
-                variant="outlined"
-                onClick={handleSkip}
-                sx={{ minWidth: 200 }}
-              >
-                Skip
-              </Button> */}
             </Box>
           </form>
-  
+
           {data && data.length > 0 && (
             <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
               <h2>Document Data</h2>
@@ -240,7 +353,7 @@ const DocumentUpload = () => {
           )}
         </Paper>
       </Container>
-    )
+    </>
   );
 };
 

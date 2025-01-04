@@ -74,7 +74,7 @@ const SubmissionSuccess = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100vh',
+        // height: '100vh',
         textAlign: 'center',
         padding: '20px',
       }}
