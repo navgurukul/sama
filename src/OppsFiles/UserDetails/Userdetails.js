@@ -17,6 +17,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 const FormComponent = ({ user }) => {
@@ -187,6 +188,7 @@ const FormComponent = ({ user }) => {
       [event.target.name]: event.target.value,
     });
   };
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -259,6 +261,10 @@ const FormComponent = ({ user }) => {
       setSnackbarMessage("Please correct the fields.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
+    }
+    if (!loading) {
+      // Navigate to /beneficiarydata after form submission
+      navigate("/beneficiarydata");
     }
   };
 

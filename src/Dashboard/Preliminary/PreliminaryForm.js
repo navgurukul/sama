@@ -87,17 +87,19 @@ const PreliminaryForm = ({ userId }) => {
       courses,
     } = formData;
     // Check if any required field is empty
+
     if (
-      !numberOfSchools ||
-      !numberOfTeachers ||
-      !numberOfStudents ||
-      !numberOfFemaleStudents ||
+      !numberOfSchools || numberOfSchools < 0 ||
+      !numberOfTeachers || numberOfTeachers < 0 ||
+      !numberOfStudents || numberOfStudents < 0 ||
+      !numberOfFemaleStudents || numberOfFemaleStudents < 0 ||
+      !numberOfCourses || numberOfCourses < 0 ||
       states.length === 0 ||
-      !numberOfCourses ||
       courses.some((course) => !course.duration || !course.unit)
     ) {
       return false;
     }
+
     return true;
   };
   // Update form validation whenever formData changes
@@ -209,10 +211,16 @@ const PreliminaryForm = ({ userId }) => {
             name="numberOfSchools"
             type="number"
             value={formData.numberOfSchools}
-            onChange={handleChange}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || Number(value) >= 0) {
+                handleChange(e); // Call the existing handleChange function only for valid input
+              }
+            }}
             fullWidth
           />
         </Grid>
+
         <Grid item xs={6}>
           <Typography variant="subtitle1" mb={1}>
             Number of Teachers
@@ -221,8 +229,12 @@ const PreliminaryForm = ({ userId }) => {
             name="numberOfTeachers"
             type="number"
             value={formData.numberOfTeachers}
-            onChange={handleChange}
-            fullWidth
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || Number(value) >= 0) {
+                handleChange(e); // Call the existing handleChange function only for valid input
+              }
+            }} fullWidth
           />
         </Grid>
         <Grid item xs={6}>
@@ -233,7 +245,12 @@ const PreliminaryForm = ({ userId }) => {
             name="numberOfStudents"
             type="number"
             value={formData.numberOfStudents}
-            onChange={handleChange}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || Number(value) >= 0) {
+                handleChange(e); // Call the existing handleChange function only for valid input
+              }
+            }}
             fullWidth
           />
         </Grid>
@@ -245,7 +262,12 @@ const PreliminaryForm = ({ userId }) => {
             name="numberOfFemaleStudents"
             type="number"
             value={formData.numberOfFemaleStudents}
-            onChange={handleChange}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || Number(value) >= 0) {
+                handleChange(e); // Call the existing handleChange function only for valid input
+              }
+            }}
             fullWidth
           />
         </Grid>
@@ -270,14 +292,14 @@ const PreliminaryForm = ({ userId }) => {
                   sx={{
                     display: "flex",
                     flexWrap: "wrap",
-                    gap: 1, 
+                    gap: 1,
                   }}
                 >
                   {selected.map((value) => (
                     <Chip
                       key={value}
                       label={value}
-                      onDelete={(event) => handleDeleteState(value, event)} 
+                      onDelete={(event) => handleDeleteState(value, event)}
                       onMouseDown={(event) => {
                         // Prevent Select from opening when clicking the delete icon
                         event.stopPropagation();
@@ -305,7 +327,7 @@ const PreliminaryForm = ({ userId }) => {
                         >
                           X
                         </span>
-                      } 
+                      }
                     />
                   ))}
                 </Box>
@@ -332,7 +354,12 @@ const PreliminaryForm = ({ userId }) => {
             type="number"
             name="numberOfCourses"
             value={formData.numberOfCourses}
-            onChange={handleCourseNumberChange}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || Number(value) >= 0) {
+                handleCourseNumberChange(e); // Call the existing handleChange function only for valid input
+              }
+            }}
             fullWidth
           />
         </Grid>
@@ -401,7 +428,7 @@ const PreliminaryForm = ({ userId }) => {
         <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: "100%" }}>
           Please fill all required fields before submitting!
         </Alert>
-        </Snackbar>
+      </Snackbar>
     </Box>
   );
 };
