@@ -160,6 +160,7 @@ const SocialImpactPage = ({data}) => {
                                             flexDirection: 'column',
                                             height: '100%',
                                             transform: `translateY(${currentY}px)`,
+                                            
                                         }}
                                     >
                                         {[...students, ...students].map((student, index) => (
