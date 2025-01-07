@@ -10,18 +10,18 @@ import {
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const formatDateCurrent = (input) => {
-  // Parse the input date string
-  const [datePart] = input.split(','); // "24/11/2023"
-  const [day, month, year] = datePart.split('/');
+  // Create a Date object directly from the ISO 8601 input
+  const date = new Date(input);
 
-  // Create a Date object (Note: months in Date are 0-indexed)
-  const date = new Date(`${year}-${month}-${day}`);
+  // Check if the date is valid
+  if (isNaN(date.getTime())) {
+    return "Invalid Date";
+  }
 
   // Format the month and year
   const options = { month: 'long', year: 'numeric' };
   return date.toLocaleDateString('en-US', options);
 };
-
 
 
 const YearlyNgoReport = ({ 
