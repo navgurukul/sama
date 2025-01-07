@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const YearlyReportingForm = () => {
-  const [questions, setQuestions] = useState([]); // Holds fetched questions
+  const [questions, setQuestions] = useState([]); // Holds fetched questions and their types
   const [error, setError] = useState(""); // For error handling
   const [formData, setFormData] = useState({}); // For storing answers
 
@@ -18,7 +18,7 @@ const YearlyReportingForm = () => {
     async function fetchData() {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=Yearly&id=${ngoId}`
+          `https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=Yearly&id=${ngoId}`
         );
         setQuestions(response.data.questions || []);
       } catch (error) {
@@ -35,14 +35,14 @@ const YearlyReportingForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Validate that all questions are answered
-    const unanswered = questions.filter((question) => !formData[question]);
+    const unanswered = questions.filter((question) => !formData[question.question]);
     if (unanswered.length > 0) {
       setError(`Please answer all questions.`);
       return;
     }
-  
+
     try {
       await fetch(
         "https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=SendYearlyReport",
@@ -52,12 +52,12 @@ const YearlyReportingForm = () => {
           mode: 'no-cors',
           body: JSON.stringify({
             ...formData,
-            year: `${month} ${year}`, // Ensure this is properly enclosed in template literals
+            year: `${month} ${year}`,
             ngoId: ngoId,
           }),
         }
       );
-  
+
       // Clear form and reset state after successful submission
       setFormData({});
       setError(""); // Clear error if any
@@ -67,7 +67,6 @@ const YearlyReportingForm = () => {
       setError("An error occurred during submission.");
     }
   };
-  
 
   return (
     <Container maxWidth="sm">
@@ -88,15 +87,33 @@ const YearlyReportingForm = () => {
           <Box component="form" sx={{ mt: 2 }} onSubmit={handleSubmit} noValidate>
             {questions.map((question, index) => (
               <Box key={index} sx={{ mb: 2 }}>
-                <FormLabel>{question}</FormLabel>
-                <TextField
-                  name={question}
-                  value={formData[question] || ""}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                  variant="outlined"
-                />
+                <FormLabel>{question.question}</FormLabel>
+                {question.type === "number" ? (
+                  <TextField
+                    name={question.question}
+                    value={formData[question.question] || ""}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    variant="outlined"
+                    type={question.type}
+                    placeholder='Enter only number'
+                    
+                  />
+                ) : (
+                  // You can handle other types (checkbox, select, etc.) here as needed
+                  <TextField
+                    name={question.question}
+                    value={formData[question.question] || ""}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    variant="outlined"
+                    type={question.type}
+                    
+
+                  />
+                )}
               </Box>
             ))}
 
