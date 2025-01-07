@@ -13,6 +13,7 @@ import {
   FormLabel,
 } from "@mui/material";
 
+
 import CircularProgress from "@mui/material/CircularProgress";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
@@ -21,6 +22,11 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 const FormComponent = ({ user }) => {
+  const location = useLocation();
+  const role = JSON.parse(localStorage.getItem('role'));
+  const { userId } = location.state || {};
+
+  
   const statesOptions = [
     "Andhra Pradesh",
     "Arunachal Pradesh",
@@ -264,7 +270,7 @@ const FormComponent = ({ user }) => {
     }
     if (!loading) {
       // Navigate to /beneficiarydata after form submission
-      navigate("/beneficiarydata");
+      navigate(role.includes("admin") ? `/ngo/${userId}` : "/beneficiarydata");
     }
   };
 
