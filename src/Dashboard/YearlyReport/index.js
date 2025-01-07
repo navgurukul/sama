@@ -16,41 +16,82 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Survey from "./assets/Survey 1.svg";
 
 // Helper functions
-const generateYearlyDates = (startDate) => {
+const parseDate = (dateString) => {
+  // Handle ISO format dates (e.g., "2025-01-31T19:51:34.000Z")
+  if (dateString.includes('T')) {
+    return new Date(dateString);
+  }
+  
+  // Handle format "DD/MM/YYYY, HH:mm:ss"
+  const [datePart, timePart] = dateString.split(', ');
+  if (!datePart || !timePart) return null;
+  
+  const [day, month, year] = datePart.split('/');
+  if (!day || !month || !year) return null;
+  
+  // JavaScript months are 0-based
+  return new Date(year, parseInt(month) - 1, day);
+};
+
+const generateMonthlyDates = (startDate) => {
   if (!startDate) return [];
-  const validDate = convertToValidDate(startDate);
-  if (isNaN(validDate)) {
-    console.error("Invalid date format");
+  
+  const parsedStartDate = parseDate(startDate);
+  if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
+    console.error("Invalid start date:", startDate);
     return [];
   }
-  const yearlyDate = new Date(validDate);
+
+  const dates = [];
+  for (let i = 0; i < 12; i++) {
+    const newDate = new Date(parsedStartDate);
+    newDate.setMonth(parsedStartDate.getMonth() + i + 1); // Start from next month
+    dates.push(newDate);
+  }
+  
+  return dates;
+};
+
+const generateYearlyDates = (startDate) => {
+  if (!startDate) return [];
+  
+  const parsedStartDate = parseDate(startDate);
+  if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
+    console.error("Invalid start date:", startDate);
+    return [];
+  }
+
+  const yearlyDate = new Date(parsedStartDate);
   yearlyDate.setFullYear(yearlyDate.getFullYear() + 1);
   return [yearlyDate];
 };
 
-const convertToValidDate = (input) => {
-  try {
-    const [date, time] = input.split(", ");
-    const [day, month, year] = date.split("/");
-    return new Date(`${year}-${month}-${day}T${time}`);
-  } catch (err) {
-    console.error("Error converting date:", err);
-    return NaN;
-  }
+const formatDate = (date) => {
+  if (!date || isNaN(date.getTime())) return '';
+  
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
 };
+
 
 const formatDateCurrent = (input) => {
-  // Parse the input date string
-  const [datePart] = input.split(","); // "24/11/2023"
-  const [day, month, year] = datePart.split("/");
 
-  // Create a Date object (Note: months in Date are 0-indexed)
-  const date = new Date(`${year}-${month}-${day}`);
+  // Create a Date object directly from the ISO 8601 input
+  const date = new Date(input);
+
+  // Check if the date is valid
+  if (isNaN(date.getTime())) {
+    return "Invalid Date";
+  }
 
   // Format the month and year
-  const options = { month: "long", year: "numeric" };
-  return date.toLocaleDateString("en-US", options);
+  const options = { month: 'long', year: 'numeric' };
+  return date.toLocaleDateString('en-US', options);
 };
+
+
 
 const YearlyReport = () => {
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
@@ -67,6 +108,8 @@ const YearlyReport = () => {
   const [yearlyMetrixGet, setYearlyMetrixGet] = useState([]);
   const [currentDate] = useState(new Date());
   const [isDataAvailable, setIsDataAvailable] = useState(false);
+  const [extraLoader, setExtraLoader] = useState(true);
+
 
   const yearlyDates =
     YearlyReportingDate && generateYearlyDates(YearlyReportingDate);
@@ -130,10 +173,12 @@ const YearlyReport = () => {
         .then((response) => {
           setYearlyMetrixGet(response.data.data || []);
           setIsDataAvailable(response.data.success);
+          setExtraLoader(false)
         })
         .catch((err) => {
           console.error("Error fetching yearly reports:", err);
           setError("Failed to fetch yearly reports.");
+          setExtraLoader(false)
         });
     }
   }, [user]);
@@ -168,6 +213,21 @@ const YearlyReport = () => {
     checkFormCreation();
   }, [id]);
 
+  if (loading || extraLoader) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "50vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return isDataAvailable ? (
     <>
       <Typography variant="h6" gutterBottom>
@@ -187,7 +247,7 @@ const YearlyReport = () => {
                 <Card
                   sx={{
                     backgroundColor: !isEnabled && "#E0E0E0",
-                    cursor: isEnabled ? "pointer" : "default",
+                    cursor: isEnabled ? "pointer" : "default", border: '2px solid black',
                   }}
                   onClick={() =>
                     isEnabled &&
@@ -217,7 +277,7 @@ const YearlyReport = () => {
       </Grid>
     </>
   ) : (
-    <Container maxWidth="md" sx={{ mt: 5 }}>
+    <Container maxWidth="md" sx={{ mt: 5 , mb: 5}}>
       <h1>Yearly Report</h1>
       {loading ? (
         <Box

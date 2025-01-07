@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -13,8 +13,8 @@ import {
   CircularProgress,
   Snackbar,
   Alert,
-} from '@mui/material';
-import { useParams } from 'react-router-dom';
+} from "@mui/material";
+import { useParams } from "react-router-dom";
 
 const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
   const handleRadioChange = (e) => {
@@ -30,24 +30,30 @@ const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
   return (
     <FormControl fullWidth margin="normal" required error={!!error}>
       <FormLabel>
-      <Typography component="span" fontWeight="bold">{label}</Typography>
-        {/* {label} */}
-        </FormLabel>
+        <Typography component="span" fontWeight="bold">
+          {label}
+        </Typography>
+      </FormLabel>
       <RadioGroup
         name={name}
-        value={options.includes(value) ? value : 'Other'}
+        value={options.includes(value) ? value : "Other"}
         onChange={handleRadioChange}
       >
         {options.map((option) => (
-          <FormControlLabel key={option} value={option} control={<Radio />} label={option} />
+          <FormControlLabel
+            key={option}
+            value={option}
+            control={<Radio />}
+            label={option}
+          />
         ))}
         <FormControlLabel value="Other" control={<Radio />} label="Other" />
       </RadioGroup>
-      {value === 'Other' || !options.includes(value) ? (
+      {value === "Other" || !options.includes(value) ? (
         <TextField
           name={name}
           label="Please specify"
-          value={value === 'Other' ? '' : value}
+          value={value === "Other" ? "" : value}
           onChange={handleOtherChange}
           fullWidth
           margin="normal"
@@ -63,82 +69,134 @@ const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
 
 function RegistrationForm() {
   const { donorId } = useParams();
+  const [formFields, setFormFields] = useState([]);
+  const [emailExists, setEmailExists] = useState(false);
+  const [checkingEmail, setCheckingEmail] = useState(false);
 
-  const [formFields, setFormFields] = useState([]);  // Store fetched form fields here
   const [formData, setFormData] = useState({
-    
-    organizationName: '',
-    registrationNumber: '',
-    primaryContactName: '',
-    contactNumber: '',
-    email: '',
-    operatingState: '',
+    organizationName: "",
+    registrationNumber: "",
+    primaryContactName: "",
+    contactNumber: "",
+    email: "",
+    operatingState: "",
     location: [],
-    yearsOperating: '',
-    focusArea: '',
-    worksWithWomen: '',
-    infrastructure: '',
+    yearsOperating: "",
+    focusArea: "",
+    worksWithWomen: "",
+    infrastructure: "",
     beneficiarySelection: [],
-    beneficiarySelectionOther: '',
-    numberOfBeneficiaries: '',
-    ageGroup: '',
+    beneficiarySelectionOther: "",
+    numberOfBeneficiaries: "",
+    ageGroup: "",
     primaryUse: [],
-    primaryUseOther: '',
-    expectedOutcome: '',
-    laptopTracking: '',
-    jobsCreated: '',
-    previousProjects: '',
-    sufficientStaff: '',
+    primaryUseOther: "",
+    expectedOutcome: "",
+    laptopTracking: "",
+    jobsCreated: "",
+    previousProjects: "",
+    sufficientStaff: "",
     impactReport: "",
-    
   });
 
   const [errors, setErrors] = useState({});
-  const [fileName, setFileName] = useState('');
+  const [fileName, setFileName] = useState("");
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [companies, setCompanies] = useState([]);
   const [isFormValid, setIsFormValid] = useState(false);
+
+  // Updated email verification function for new API response structure
+  const verifyEmail = async (email) => {
+    if (!email) return;
+
+    setCheckingEmail(true);
+    try {
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration"
+      );
+      const responseData = await response.json();
+
+      // Check if response has the expected structure
+      if (
+        responseData.status === "success" &&
+        Array.isArray(responseData.data)
+      ) {
+        // Check if email exists in the data array
+        const exists = responseData.data.some(
+          (item) => item.email?.toLowerCase() === email.toLowerCase()
+        );
+        setEmailExists(exists);
+
+        if (exists) {
+          setErrors((prev) => ({
+            ...prev,
+            email: "This email is already registered",
+          }));
+        } else {
+          setErrors((prev) => {
+            const newErrors = { ...prev };
+            delete newErrors.email;
+            return newErrors;
+          });
+        }
+      } else {
+        console.error("Unexpected API response structure:", responseData);
+      }
+    } catch (error) {
+      console.error("Error checking email:", error);
+    } finally {
+      setCheckingEmail(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchCompanies() {
       try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorID'); // Replace with your API URL
+        const response = await fetch(
+          "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorID"
+        );
         const data = await response.json();
-        setCompanies(data); // Assuming data is an array of company names
+        setCompanies(data);
       } catch (error) {
-        console.error('Error fetching company names:', error);
+        console.error("Error fetching company names:", error);
       }
     }
     fetchCompanies();
   }, []);
-  const donorIDs = companies.find((company) => company.Donner === donorId)?.["Donor id"];
-  
-  // Fetch form fields from API
+
+  const donorIDs = companies.find((company) => company.Donner === donorId)?.[
+    "Donor id"
+  ];
+
   useEffect(() => {
     const fetchFormFields = async () => {
       try {
-        // Construct the API URL based on the presence of donorId
-        const baseURL = 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorQuestion';
+        const baseURL =
+          "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorQuestion";
         const apiUrl = donorIDs ? `${baseURL}&donorId=${donorIDs}` : baseURL;
-        
+
         const response = await fetch(apiUrl);
         const data = await response.json();
-        setFormFields(data);  // Assuming the API response has a 'formFields' key
+        setFormFields(data);
       } catch (error) {
-        console.error('Error fetching form fields:', error);
+        console.error("Error fetching form fields:", error);
       }
     };
-  
+
     fetchFormFields();
   }, [donorIDs]);
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Check email when email field changes
+    if (name === "email") {
+      verifyEmail(value);
+    }
   };
 
   const handleCheckboxChange = (e, field) => {
@@ -154,87 +212,104 @@ function RegistrationForm() {
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     setFormData({ ...formData, impactReport: file });
-    setFileName(file ? file.name : '');
+    setFileName(file ? file.name : "");
   };
 
-const formfields = [
-  { name: 'impactReport', label: 'Impact Report', type: 'fileUpload', required: true },
-  { name: 'contactNumber', label: 'Contact Number', required: true },
-  { name: 'email', label: 'Email', required: true },
-  { name: 'organizationName', label: 'Organization Name', required: true }, // Example field
-  { name: 'registrationNumber', label: 'Registation Number', required: true }, // Example field
-  { name: 'primaryContactName', label: 'Primary Contact Name ', required: true }, // Example field
-];
+  const formfields = [
+    {
+      name: "impactReport",
+      label: "Impact Report",
+      type: "fileUpload",
+      required: true,
+    },
+    { name: "contactNumber", label: "Contact Number", required: true },
+    { name: "email", label: "Email", required: true },
+    { name: "organizationName", label: "Organization Name", required: true },
+    {
+      name: "registrationNumber",
+      label: "Registration Number",
+      required: true,
+    },
+    {
+      name: "primaryContactName",
+      label: "Primary Contact Name ",
+      required: true,
+    },
+  ];
 
   const validate = () => {
-  const newErrors = {};
-console.log('Form Data:', formData);
-console.log('Validation Errors:', newErrors);
+    const newErrors = {};
+    console.log("Form Data:", formData);
+    console.log("Validation Errors:", newErrors);
 
-  // General required field validation
-  formfields.forEach((field) => {
-    const value = formData[field.name];
+    formfields.forEach((field) => {
+      const value = formData[field.name];
 
-    // Required field validation
-    // if (field.required && !value) {
-    //   newErrors[field.name] = `${field.label || field.name} is required`;
-    // }
-
-    // Specific validation for file upload
-    if (field.name === 'impactReport' && value?.size > 2 * 1024 * 1024) {
-      newErrors[field.name] = 'Impact report file size must not exceed 2MB';
-    }
-
-    // Contact number validation
-    if (field.name === 'contactNumber' && value) {
-      const contactNumberPattern = /^\d{10}$/; // Only 10-digit numbers
-      if (!contactNumberPattern.test(value)) {
-        newErrors[field.name] = 'Contact number must be a valid 10-digit number';
+      // File size validation
+      if (field.name === "impactReport" && value?.size > 2 * 1024 * 1024) {
+        newErrors[field.name] = "Impact report file size must not exceed 2MB";
       }
-    }
 
-    // Email validation
-    if (field.name === 'email' && value) {
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(value)) {
-        newErrors[field.name] = 'Invalid email address';
+      // Contact number validation
+      if (field.name === "contactNumber" && value) {
+        const contactNumberPattern = /^\d{10}$/;
+        if (!contactNumberPattern.test(value)) {
+          newErrors[field.name] =
+            "Contact number must be a valid 10-digit number";
+        }
       }
-    }
 
-    // Text-only validation
-    if (field.name === 'organizationName'&& value) {
-      const textPattern = /^[A-Za-z\s]+$/; // Letters and spaces only
-      if (!textPattern.test(value)) {
-        newErrors[field.name] = `${field.label || field.name} should contain only letters`;
+      // Email validation
+      if (field.name === "email" && value) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(value)) {
+          newErrors[field.name] = "Invalid email address";
+        }
       }
-    }
 
-    // Text-only validation
-    if (field.name ==='primaryContactName'&& value) {
-      const textPattern = /^[A-Za-z\s]+$/; // Letters and spaces only
-      if (!textPattern.test(value)) {
-        newErrors[field.name] = `${field.label || field.name} should contain only letters`;
+      // Organization name validation
+      if (field.name === "organizationName" && value) {
+        const textPattern = /^[A-Za-z\s]+$/;
+        if (!textPattern.test(value)) {
+          newErrors[field.name] = `${
+            field.label || field.name
+          } should contain only letters and spaces`;
+        }
       }
-    }
 
-    // Number-only validation
-    if (field.name === 'registrationNumber' && value) {
-      const numberPattern = /^\d+$/; // Only digits allowed
-      if (!numberPattern.test(value)) {
-        newErrors[field.name] = `${field.label || field.name} should contain only digits`;
+      // Primary contact name validation
+      if (field.name === "primaryContactName" && value) {
+        const textPattern = /^[A-Za-z\s]+$/;
+        if (!textPattern.test(value)) {
+          newErrors[field.name] = `${
+            field.label || field.name
+          } should contain only letters and spaces`;
+        }
       }
+
+      // Registration number validation
+      if (field.name === "registrationNumber" && value) {
+        const numberPattern = /^\d+$/;
+        if (!numberPattern.test(value)) {
+          newErrors[field.name] = `${
+            field.label || field.name
+          } should contain only digits`;
+        }
+      }
+    });
+
+    // Add email existence validation
+    if (emailExists) {
+      newErrors.email = "This email is already registered";
     }
-  });
 
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0; // Return true if no errors
-  
-};
-
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   useEffect(() => {
-  setIsFormValid(validate());
-}, [formData, formfields]);
+    setIsFormValid(validate());
+  }, [formData, formfields]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -242,23 +317,22 @@ console.log('Validation Errors:', newErrors);
       setLoading(true);
       const updatedFormData = { ...formData };
       if (updatedFormData.beneficiarySelectionOther) {
-        updatedFormData.beneficiarySelection = updatedFormData.beneficiarySelection.map(item =>
-          item === 'Other' ? updatedFormData.beneficiarySelectionOther : item
-        );
+        updatedFormData.beneficiarySelection =
+          updatedFormData.beneficiarySelection.map((item) =>
+            item === "Other" ? updatedFormData.beneficiarySelectionOther : item
+          );
       }
       if (updatedFormData.primaryUseOther) {
-        updatedFormData.primaryUse = updatedFormData.primaryUse.map(item =>
-          item === 'Other' ? updatedFormData.primaryUseOther : item
+        updatedFormData.primaryUse = updatedFormData.primaryUse.map((item) =>
+          item === "Other" ? updatedFormData.primaryUseOther : item
         );
       }
 
-      // Remove beneficiarySelectionOther and primaryUseOther from the updated form data
       delete updatedFormData.beneficiarySelectionOther;
       delete updatedFormData.primaryUseOther;
 
-      let base64File = '';
+      let base64File = "";
       if (updatedFormData.impactReport) {
-        // If a file is provided, convert it to base64
         const reader = new FileReader();
         reader.readAsDataURL(updatedFormData.impactReport);
         base64File = await new Promise((resolve) => {
@@ -267,6 +341,7 @@ console.log('Validation Errors:', newErrors);
           };
         });
       }
+
       var formDataWithType = {
         ...updatedFormData,
         file: base64File || "",
@@ -276,77 +351,85 @@ console.log('Validation Errors:', newErrors);
       };
 
       try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=NGO', {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          mode: "no-cors",
-          body: JSON.stringify(formDataWithType),
-        });
-        // Log the response for debugging
-        
+        const response = await fetch(
+          "https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=NGO",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            mode: "no-cors",
+            body: JSON.stringify(formDataWithType),
+          }
+        );
+
         setLoading(false);
-        setSnackbarMessage('Form submitted successfully!');
-        setSnackbarSeverity('success');
+        setSnackbarMessage("Form submitted successfully!");
+        setSnackbarSeverity("success");
         setSnackbarOpen(true);
-          setFormData({
-            organizationName: '',
-            registrationNumber: '',
-            primaryContactName: '',
-            contactNumber: '',
-            email: '',
-            operatingState: '',
-            location: [],
-            yearsOperating: '',
-            focusArea: '',
-            worksWithWomen: '',
-            infrastructure: '',
-            beneficiarySelection: [],
-            beneficiarySelectionOther: '',
-            numberOfBeneficiaries: '',
-            ageGroup: '',
-            primaryUse: [],
-            primaryUseOther: '',
-            expectedOutcome: '',
-            laptopTracking: '',
-            jobsCreated: '',
-            previousProjects: '',
-            sufficientStaff: '',
-            impactReport: '',
-          });
-          setFileName('');
-          setErrors({});
-        } catch (error) {
-          console.error('Error submitting form:', error);
-        }
+        setFormData({
+          organizationName: "",
+          registrationNumber: "",
+          primaryContactName: "",
+          contactNumber: "",
+          email: "",
+          operatingState: "",
+          location: [],
+          yearsOperating: "",
+          focusArea: "",
+          worksWithWomen: "",
+          infrastructure: "",
+          beneficiarySelection: [],
+          beneficiarySelectionOther: "",
+          numberOfBeneficiaries: "",
+          ageGroup: "",
+          primaryUse: [],
+          primaryUseOther: "",
+          expectedOutcome: "",
+          laptopTracking: "",
+          jobsCreated: "",
+          previousProjects: "",
+          sufficientStaff: "",
+          impactReport: "",
+        });
+        setFileName("");
+        setErrors({});
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        setSnackbarMessage("Error submitting form. Please try again.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      }
     }
   };
 
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setSnackbarOpen(false);
   };
 
   return (
-    <Box sx={{ maxWidth: 600, margin: 'auto', padding: 3 }}>
-      <Typography variant="h4" gutterBottom>NGO Information Form</Typography>
+    <Box sx={{ maxWidth: 600, margin: "auto", padding: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        NGO Information Form
+      </Typography>
       {formFields?.length == 0 ? (
         <CircularProgress />
       ) : (
-        
         <form onSubmit={handleSubmit}>
           {formFields?.map((field) => {
-           
-            if (field?.type === 'text') {
+            if (field?.type === "text") {
               return (
                 <TextField
                   key={field.name}
                   fullWidth
-                  label={<Typography component="span" fontWeight="bold">{field.question}</Typography>}
-                  // label={field.question}
+                  label={
+                    <Typography component="span" fontWeight="bold">
+                      {field.question}
+                    </Typography>
+                  }
                   name={field.name}
                   value={formData[field.name]}
                   onChange={handleInputChange}
@@ -354,37 +437,57 @@ console.log('Validation Errors:', newErrors);
                   required
                   error={!!errors[field.name]}
                   helperText={errors[field.name]}
+                  InputProps={
+                    field.name === "email" && checkingEmail
+                      ? {
+                          endAdornment: <CircularProgress size={20} />,
+                        }
+                      : undefined
+                  }
                 />
               );
-            } 
-            else if (field?.type === 'radio') {
+            } else if (field?.type === "radio") {
               return (
-                <FormControl key={field.name}
-                 fullWidth margin="normal" required error={!!errors[field.name]}>
+                <FormControl
+                  key={field.name}
+                  fullWidth
+                  margin="normal"
+                  required
+                  error={!!errors[field.name]}
+                >
                   <FormLabel>
-                    <Typography component="span" fontWeight="bold">{field.question}</Typography>
-          
-                    {/* {field?.question} */}
-                    </FormLabel>
+                    <Typography component="span" fontWeight="bold">
+                      {field.question}
+                    </Typography>
+                  </FormLabel>
                   <RadioGroup
                     name={field.name}
                     value={formData[field.name]}
                     onChange={handleInputChange}
                   >
                     {field?.options?.map((option) => (
-                      <FormControlLabel key={option} value={option} control={<Radio />} label={option} />
+                      <FormControlLabel
+                        key={option}
+                        value={option}
+                        control={<Radio />}
+                        label={option}
+                      />
                     ))}
                   </RadioGroup>
-                  {errors[field.name] && <Typography color="error">{errors[field.name]}</Typography>}
+                  {errors[field.name] && (
+                    <Typography color="error">{errors[field.name]}</Typography>
+                  )}
                 </FormControl>
               );
-            } 
-            else if (field.type === 'radioWithOther') {
+            } else if (field.type === "radioWithOther") {
               return (
                 <RadioWithOther
                   key={field.name}
-                  label={<Typography component="span" fontWeight="bold">{field.question}</Typography>}
-                  // label={field.question}
+                  label={
+                    <Typography component="span" fontWeight="bold">
+                      {field.question}
+                    </Typography>
+                  }
                   name={field.name}
                   value={formData[field.name]}
                   onChange={handleInputChange}
@@ -392,44 +495,39 @@ console.log('Validation Errors:', newErrors);
                   error={errors[field.name]}
                 />
               );
-            }
-            else if (field.type === 'fileUpload') {
+            } else if (field.type === "fileUpload") {
               return (
                 <>
-                {/* Impact Reports Upload here */}
-                <Typography variant="body1" gutterBottom fontWeight="bold" >
-                  {/* <strong> */}
-                    Please share any impact reports or documentation related to your previous projects.
-                    {/* </strong> */}
-                </Typography>
-                <Button variant="contained" component="label">
-                  Upload File
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx,.xlsx"
-                    hidden
-                    onChange={handleFileUpload}
-                    required
-                  />
-                </Button>
-                {fileName && 
-                (
-                  <Typography variant="subtitle1" gutterBottom>
-                    Selected file: {fileName}
+                  <Typography variant="body1" gutterBottom fontWeight="bold">
+                    Please share any impact reports or documentation related to
+                    your previous projects.
                   </Typography>
-                ) 
-               }
-                  <br></br>
+                  <Button variant="contained" component="label">
+                    Upload File
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.xlsx"
+                      hidden
+                      onChange={handleFileUpload}
+                      required
+                    />
+                  </Button>
+                  {fileName && (
+                    <Typography variant="subtitle1" gutterBottom>
+                      Selected file: {fileName}
+                    </Typography>
+                  )}
+                  <br />
                 </>
               );
-            }
-            else if (field?.type === 'checkbox') {
+            } else if (field?.type === "checkbox") {
               return (
                 <FormControl key={field.name} fullWidth margin="normal">
                   <FormLabel>
-                  <Typography component="span" fontWeight="bold">{field.question}</Typography>
-                    {/* {field.question} */}
-                    </FormLabel>
+                    <Typography component="span" fontWeight="bold">
+                      {field.question}
+                    </Typography>
+                  </FormLabel>
                   {field?.options?.map((option) => (
                     <FormControlLabel
                       key={option}
@@ -443,32 +541,42 @@ console.log('Validation Errors:', newErrors);
                       label={option}
                     />
                   ))}
-                  {formData[field.name].includes('Other') && (
-                  <TextField
-                    name={`${field.name}Other`}
-                    label="Please specify"
-                    value={formData[`${field.name}Other`]}
-                    onChange={handleInputChange}
-                    fullWidth
-                    margin="normal"
-                    error={!!errors[`${field.name}Other`]}
-                  />
-                )}
+                  {formData[field.name].includes("Other") && (
+                    <TextField
+                      name={`${field.name}Other`}
+                      label="Please specify"
+                      value={formData[`${field.name}Other`]}
+                      onChange={handleInputChange}
+                      fullWidth
+                      margin="normal"
+                      error={!!errors[`${field.name}Other`]}
+                    />
+                  )}
                 </FormControl>
               );
-            } 
+            }
             return null;
           })}
 
-        { (formFields.length > 0) && 
-        <Button type="submit" variant="contained" color="primary" disabled={!isFormValid || loading} sx={{ marginTop: 2 }}>
-        {loading ? <CircularProgress size={24} /> : 'Submit'}
-        </Button> 
-         }
+          {formFields.length > 0 && (
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={!isFormValid || loading || emailExists}
+              sx={{ marginTop: 2 }}
+            >
+              {loading ? <CircularProgress size={24} /> : "Submit"}
+            </Button>
+          )}
         </form>
       )}
 
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
         <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
           {snackbarMessage}
         </Alert>
@@ -478,5 +586,3 @@ console.log('Validation Errors:', newErrors);
 }
 
 export default RegistrationForm;
-
-                   

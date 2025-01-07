@@ -18,35 +18,61 @@ import WorkingProductively from "./assets/Working Productively 1 1.svg";
 
 //  Generate 12 monthly dates starting from a given date
 
-const generateMonthlyDates = (startDate) => {
-  console.log(startDate);
+const parseDate = (dateString) => {
+  // Handle ISO format dates (e.g., "2025-01-31T19:51:34.000Z")
+  if (dateString.includes("T")) {
+    return new Date(dateString);
+  }
 
-  const validDate = convertToValidDate(startDate);
-  if (isNaN(validDate)) {
-    console.error("Invalid date format");
+  // Handle format "DD/MM/YYYY, HH:mm:ss"
+  const [datePart, timePart] = dateString.split(", ");
+  if (!datePart || !timePart) return null;
+
+  const [day, month, year] = datePart.split("/");
+  if (!day || !month || !year) return null;
+
+  // JavaScript months are 0-based
+  return new Date(year, parseInt(month) - 1, day);
+};
+
+const generateMonthlyDates = (startDate) => {
+  if (!startDate) return [];
+
+  const parsedStartDate = parseDate(startDate);
+  if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
+    console.error("Invalid start date:", startDate);
     return [];
   }
 
   const dates = [];
   for (let i = 0; i < 12; i++) {
-    const newDate = new Date(validDate);
-    newDate.setMonth(newDate.getMonth() + i);
+    const newDate = new Date(parsedStartDate);
+    newDate.setMonth(parsedStartDate.getMonth() + i + 1); // Start from next month
     dates.push(newDate);
   }
-  console.log(dates);
+
   return dates;
 };
 
-const convertToValidDate = (input) => {
-  const [date, time] = input.split(", ");
-  const [day, month, year] = date.split("/");
-  return new Date(`${year}-${month}-${day}T${time}`);
+const generateYearlyDates = (startDate) => {
+  if (!startDate) return [];
+
+  const parsedStartDate = parseDate(startDate);
+  if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
+    console.error("Invalid start date:", startDate);
+    return [];
+  }
+
+  const yearlyDate = new Date(parsedStartDate);
+  yearlyDate.setFullYear(yearlyDate.getFullYear() + 1);
+  return [yearlyDate];
 };
 
-// Helper function to format the date
 const formatDate = (date) => {
-  const day = "10th"; // Fixed day
-  const month = date.toLocaleString("default", { month: "long" }); // Get full month name
+  if (!date || isNaN(date.getTime())) return "";
+
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
   return `${day} ${month} ${year}`;
 };
@@ -65,6 +91,7 @@ const MonthlyReport = () => {
   const [monthlyReportingDate, setMonthlyReportingDate] = useState(""); // Set your start date here
   const [currentDate, setCurrentDate] = useState(new Date());
   const monthlyDates = generateMonthlyDates(monthlyReportingDate);
+  const [extraLoader, setExtraLoader] = useState(true);
 
   // this is to get the preliminary data from the sheet
   const [metrics, setMetrics] = useState([]);
@@ -152,8 +179,10 @@ const MonthlyReport = () => {
             });
           setMonthlyMetrixGet(transformedData);
           setIsDataAvailabel(true);
+          setExtraLoader(false)
         } else {
           console.error("Error fetching data:", result.message);
+          setExtraLoader(false)
         }
       })
       .catch((error) => console.error("API error:", error));
@@ -194,6 +223,21 @@ const MonthlyReport = () => {
       navigate(`/monthly-reporting/${id}`);
     }
   };
+
+  if (loading || extraLoader) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "50vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return isDataAvailabel ? (
     <>
@@ -259,7 +303,7 @@ const MonthlyReport = () => {
       )}
     </>
   ) : (
-    <Container maxWidth="md" sx={{ mt: 5 }}>
+    <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
       <h1>Monthly Report</h1>
       {loading ? (
         <Box
@@ -276,36 +320,35 @@ const MonthlyReport = () => {
         <Alert severity="error">{error}</Alert> // Display error if any
       ) : (
         <>
-        {isFormCreated ? (
-        <p>Click the button below to edit your monthly report form</p>
-      ) : (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            pb: 2,
-          }}
-        >
-          <img src={WorkingProductively} height="160" width="160" />
-          <Typography variant="body1">
-            Please create a monthly form specific to this NGO.
-          </Typography>
-        </Box>
-      )}
+          {isFormCreated ? (
+            <p>Click the button below to edit your monthly report form</p>
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                pb: 2,
+              }}
+            >
+              <img src={WorkingProductively} height="160" width="160" />
+              <Typography variant="body1">
+                Please create a monthly form specific to this NGO.
+              </Typography>
+            </Box>
+          )}
 
-        <Button
-          variant="contained"
-          sx={!isFormCreated && { display: "block", margin: "0 auto" }}
-          onClick={handleButtonClick}
-        >
-          {isFormCreated ? "Edit Form" : "Create Form"}
-        </Button>
+          <Button
+            variant="contained"
+            sx={!isFormCreated && { display: "block", margin: "0 auto" }}
+            onClick={handleButtonClick}
+          >
+            {isFormCreated ? "Edit Form" : "Create Form"}
+          </Button>
         </>
       )}
-      
     </Container>
   );
 };
