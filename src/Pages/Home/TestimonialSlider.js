@@ -86,17 +86,17 @@ const TestimonialSlider = () => {
   };
 
   return (
-    <Box style={{ backgroundColor: "#5C785A"}}>
+    <Box style={{ backgroundColor: "#5C785A" }}>
       <Container maxWidth="lg" sx={isMobile ? { py: 4 } : { py: 10 }}>
         <Typography variant="h5" style={{ color: "#FFF" }}>
           Student Speaks
         </Typography>
 
-         <Box display="flex" alignItems="center" position="relative" mt={3}>
+        <Box display="flex" alignItems="center" position="relative" mt={3}>
           <IconButton onClick={handlePrevClick} style={{ position: "absolute", left: "-100px" }}>
-            <ChevronLeftIcon style={{ color: "#FFFFFF",width:"40.74px",height:"40.74px"}} />
+            <ChevronLeftIcon style={{ color: "#FFFFFF", width: "40.74px", height: "40.74px" }} />
           </IconButton>
-           <Box ref={sliderRef} className="keen-slider"
+          <Box ref={sliderRef} className="keen-slider"
             sx={{
               overflow: 'hidden',
               width: '100%',
@@ -108,26 +108,26 @@ const TestimonialSlider = () => {
                 {group.map((testimonial, idx) => (
                   <Box key={idx} sx={isMobile ? { width: '100%' } : { width: '50%', paddingRight: '16px' }}>
 
-                    <Typography  variant="body1" sx={!isMobile && { height: "100px" }}>{testimonial.text}</Typography>
-                    <Box style={{width:"64px",height:"64px",border: "7.7px solid rgba(178, 95, 101, 1)",marginTop:"30px",borderRadius:"50px"}}>
-                    <img src={testimonial.src} alt={testimonial.alt}
-                      style={{
-                        width: "64px",
-                        height: "64px",
-                        borderRadius: "50%",
-                        objectFit: "cover"
-                      }} />
-                      </Box>
-                    <Typography variant="subtitle1" sx={{mt:2,fontWeight:"bold"}}>{testimonial.name}</Typography>
+                    <Typography variant="body1" sx={!isMobile && { height: "100px" , color: "#FFF"}}>{testimonial.text}</Typography>
+                    <Box style={{ width: "64px", height: "64px", border: "7.7px solid rgba(178, 95, 101, 1)", marginTop: "30px", borderRadius: "50px" }}>
+                      <img src={testimonial.src} alt={testimonial.alt}
+                        style={{
+                          width: "64px",
+                          height: "64px",
+                          borderRadius: "50%",
+                          objectFit: "cover"
+                        }} />
+                    </Box>
+                    <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: "bold", color: "#FFF" }}>{testimonial.name}</Typography>
                   </Box>
                 ))}
               </Box>
             ))}
-          </Box> 
-           <IconButton onClick={handleNextClick} style={{ position: "absolute", right: "-10px", color: "#FFFFFF" }}>
-            <ChevronRightIcon style={{ color: "#FFFFFF",width:"40.74px",height:"40.74px"}}  />
-          </IconButton>  
-         </Box> 
+          </Box>
+          <IconButton onClick={handleNextClick} style={{ position: "absolute", right: "-10px", color: "#FFFFFF" }}>
+            <ChevronRightIcon style={{ color: "#FFFFFF", width: "40.74px", height: "40.74px" }} />
+          </IconButton>
+        </Box>
       </Container>
     </Box>
   );
