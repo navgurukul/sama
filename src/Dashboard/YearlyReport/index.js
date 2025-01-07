@@ -16,28 +16,65 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Survey from "./assets/Survey 1.svg";
 
 // Helper functions
-const generateYearlyDates = (startDate) => {
+const parseDate = (dateString) => {
+  // Handle ISO format dates (e.g., "2025-01-31T19:51:34.000Z")
+  if (dateString.includes('T')) {
+    return new Date(dateString);
+  }
+  
+  // Handle format "DD/MM/YYYY, HH:mm:ss"
+  const [datePart, timePart] = dateString.split(', ');
+  if (!datePart || !timePart) return null;
+  
+  const [day, month, year] = datePart.split('/');
+  if (!day || !month || !year) return null;
+  
+  // JavaScript months are 0-based
+  return new Date(year, parseInt(month) - 1, day);
+};
+
+const generateMonthlyDates = (startDate) => {
   if (!startDate) return [];
-  const validDate = convertToValidDate(startDate);
-  if (isNaN(validDate)) {
-    console.error("Invalid date format");
+  
+  const parsedStartDate = parseDate(startDate);
+  if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
+    console.error("Invalid start date:", startDate);
     return [];
   }
-  const yearlyDate = new Date(validDate);
+
+  const dates = [];
+  for (let i = 0; i < 12; i++) {
+    const newDate = new Date(parsedStartDate);
+    newDate.setMonth(parsedStartDate.getMonth() + i + 1); // Start from next month
+    dates.push(newDate);
+  }
+  
+  return dates;
+};
+
+const generateYearlyDates = (startDate) => {
+  if (!startDate) return [];
+  
+  const parsedStartDate = parseDate(startDate);
+  if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
+    console.error("Invalid start date:", startDate);
+    return [];
+  }
+
+  const yearlyDate = new Date(parsedStartDate);
   yearlyDate.setFullYear(yearlyDate.getFullYear() + 1);
   return [yearlyDate];
 };
 
-const convertToValidDate = (input) => {
-  try {
-    const [date, time] = input.split(", ");
-    const [day, month, year] = date.split("/");
-    return new Date(`${year}-${month}-${day}T${time}`);
-  } catch (err) {
-    console.error("Error converting date:", err);
-    return NaN;
-  }
+const formatDate = (date) => {
+  if (!date || isNaN(date.getTime())) return '';
+  
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
 };
+
 
 const formatDateCurrent = (input) => {
   // Parse the input date string

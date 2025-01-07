@@ -6,7 +6,7 @@ import axios from 'axios';
 const YearlyReportingForm = () => {
   const [questions, setQuestions] = useState([]); // Holds fetched questions
   const [error, setError] = useState(""); // For error handling
-  const [formData, setFormData] = useState({}); // For storing answer
+  const [formData, setFormData] = useState({}); // For storing answers
 
   const location = useLocation();
   const { month, year } = location.state || {};
@@ -20,8 +20,7 @@ const YearlyReportingForm = () => {
         const response = await axios.get(
           `https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=Yearly&id=${ngoId}`
         );
-        const data = response.data;
-        setQuestions(data.questions || []);
+        setQuestions(response.data.questions || []);
       } catch (error) {
         console.error('Error fetching data:', error);
         setError("Failed to load questions.");
@@ -34,29 +33,41 @@ const YearlyReportingForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    fetch(
-      "https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=SendYearlyReport"
-      , {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      mode: 'no-cors',
-      body: JSON.stringify({ ...formData,
-          year: `${month} ${year}`,
-          ngoId: ngoId,
-         
-      }),
-    })
-      .then(response => response.json())
-      .then(data => console.log('Success:', data))
-      .catch(error => console.error('Error:', error));
-      
-
-    setFormData({}); // Clear the form
-    navigate('/preliminary');
+  
+    // Validate that all questions are answered
+    const unanswered = questions.filter((question) => !formData[question]);
+    if (unanswered.length > 0) {
+      setError(`Please answer all questions.`);
+      return;
+    }
+  
+    try {
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=SendYearlyReport",
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          mode: 'no-cors',
+          body: JSON.stringify({
+            ...formData,
+            year: `${month} ${year}`, // Ensure this is properly enclosed in template literals
+            ngoId: ngoId,
+          }),
+        }
+      );
+  
+      // Clear form and reset state after successful submission
+      setFormData({});
+      setError(""); // Clear error if any
+      navigate('/preliminary'); // Redirect to another page
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setError("An error occurred during submission.");
+    }
   };
+  
 
   return (
     <Container maxWidth="sm">
@@ -88,6 +99,12 @@ const YearlyReportingForm = () => {
                 />
               </Box>
             ))}
+
+            {error && (
+              <Typography align="center" color="error" sx={{ mb: 2 }}>
+                {error}
+              </Typography>
+            )}
 
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
               <Button

@@ -18,38 +18,65 @@ import WorkingProductively from "./assets/Working Productively 1 1.svg";
 
 //  Generate 12 monthly dates starting from a given date
 
-const generateMonthlyDates = (startDate) => {
-  console.log(startDate);
+const parseDate = (dateString) => {
+  // Handle ISO format dates (e.g., "2025-01-31T19:51:34.000Z")
+  if (dateString.includes('T')) {
+    return new Date(dateString);
+  }
+  
+  // Handle format "DD/MM/YYYY, HH:mm:ss"
+  const [datePart, timePart] = dateString.split(', ');
+  if (!datePart || !timePart) return null;
+  
+  const [day, month, year] = datePart.split('/');
+  if (!day || !month || !year) return null;
+  
+  // JavaScript months are 0-based
+  return new Date(year, parseInt(month) - 1, day);
+};
 
-  const validDate = convertToValidDate(startDate);
-  if (isNaN(validDate)) {
-    console.error("Invalid date format");
+const generateMonthlyDates = (startDate) => {
+  if (!startDate) return [];
+  
+  const parsedStartDate = parseDate(startDate);
+  if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
+    console.error("Invalid start date:", startDate);
     return [];
   }
 
   const dates = [];
   for (let i = 0; i < 12; i++) {
-    const newDate = new Date(validDate);
-    newDate.setMonth(newDate.getMonth() + i);
+    const newDate = new Date(parsedStartDate);
+    newDate.setMonth(parsedStartDate.getMonth() + i + 1); // Start from next month
     dates.push(newDate);
   }
-  console.log(dates);
+  
   return dates;
 };
 
-const convertToValidDate = (input) => {
-  const [date, time] = input.split(", ");
-  const [day, month, year] = date.split("/");
-  return new Date(`${year}-${month}-${day}T${time}`);
+const generateYearlyDates = (startDate) => {
+  if (!startDate) return [];
+  
+  const parsedStartDate = parseDate(startDate);
+  if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
+    console.error("Invalid start date:", startDate);
+    return [];
+  }
+
+  const yearlyDate = new Date(parsedStartDate);
+  yearlyDate.setFullYear(yearlyDate.getFullYear() + 1);
+  return [yearlyDate];
 };
 
-// Helper function to format the date
 const formatDate = (date) => {
-  const day = "10th"; // Fixed day
-  const month = date.toLocaleString("default", { month: "long" }); // Get full month name
+  if (!date || isNaN(date.getTime())) return '';
+  
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
   return `${day} ${month} ${year}`;
 };
+
 
 const MonthlyReport = () => {
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
