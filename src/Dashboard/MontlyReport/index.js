@@ -303,7 +303,7 @@ const MonthlyReport = () => {
       )}
     </>
   ) : (
-    <Container maxWidth="md" sx={{ mt: 5 }}>
+    <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
       <h1>Monthly Report</h1>
       {loading ? (
         <Box

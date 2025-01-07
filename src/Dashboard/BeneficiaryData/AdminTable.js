@@ -414,8 +414,10 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             </Box>
 
             <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>ID Proof Type</InputLabel>
+              <InputLabel id="id-proof-type-label">ID Proof Type</InputLabel>
               <Select
+                labelId="id-proof-type-label"
+                label="ID Proof Type"
                 value={filters["ID Proof type"]}
                 onChange={handleFilterChange}
                 name="ID Proof type"
@@ -430,8 +432,10 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             </FormControl>
 
             <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Use Case</InputLabel>
+              <InputLabel id="use-case-label">Use Case</InputLabel>
               <Select
+                labelId="use-case-label"
+                label="Use case Type"
                 value={filters["Use case"]}
                 onChange={handleFilterChange}
                 name="Use case"
@@ -446,8 +450,10 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             </FormControl>
 
             <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Occupation Status</InputLabel>
+              <InputLabel id="occupation-status-label">Occupation Status</InputLabel>
               <Select
+                labelId="occupation-status-label"
+                label="Occupation Status Type"
                 value={filters["Occupation Status"]}
                 onChange={handleFilterChange}
                 name="Occupation Status"
@@ -462,8 +468,10 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             </FormControl>
 
             <FormControl sx={{ m: 1, minWidth: 200 }}>
-              <InputLabel>Status</InputLabel>
+              <InputLabel id="status-label">Status</InputLabel>
               <Select
+                labelId="status-label"
+                label="Status Type"
                 value={filters["status"]}
                 onChange={handleFilterChange}
                 name="status"
