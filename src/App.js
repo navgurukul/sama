@@ -77,13 +77,28 @@ function App() {
                 </PrivateRoute> 
                 } />  {/* // this is to select the doner for the ngo Questions, need to rename the route */}
               <Route path="/submission-success" element={<SubmissionSuccess />} />
-              <Route path="/preliminary" element={<Preliminary />} />
-              <Route path="/monthly-reporting" element={<MonthlyReportingForm />} />
-              <Route path="monthly-report" element={<MonthlyReportData />} />
+              <Route path="/preliminary" element={
+                // <Preliminary />
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many" >
+                <Preliminary/>
+              </PrivateRoute>
+                } />
+              <Route path="/monthly-reporting" element={
+                // <MonthlyReportingForm />
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many" >
+                <MonthlyReportingForm/>
+              </PrivateRoute>
+                } />
+              <Route path="monthly-report" element={
+                // <MonthlyReportData />
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many" >
+                <MonthlyReportData/>
+              </PrivateRoute>
+                } />
               <Route 
               path="/preliminary-distribution"
               element={
-                <PrivateRoute reqired={'ngo'}>
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many" >
                    <PreliminaryForm/>
                  </PrivateRoute>
                }
@@ -99,7 +114,12 @@ function App() {
                 <Route path="/ngo/:id" element={<TabNavigation />} />
 
               <Route path='/mouUpload' element={<MouUpload/>} />
-              <Route path='/beneficiaryProfile' element={<BeneficiaryProfile/>} />
+              <Route path='/beneficiaryProfile' element={
+                <PrivateRoute reqired={'ngo'} ngoType="1 to one" >
+                <BeneficiaryProfile/>
+              </PrivateRoute>
+                // <BeneficiaryProfile/>
+                } />
               <Route path="/monthly-reporting/:id" element={<MonthlyForm />} />
               <Route path="/edit-form/:id" element={<MonthlyEditForm />} />
               
@@ -129,7 +149,7 @@ function App() {
                 <Route 
                 path="/beneficiarydata"
               element={
-                <PrivateRoute reqired={'ngo'}>
+                <PrivateRoute reqired={'ngo'} ngoType="1 to one">
                   < BeneficiaryData/>
                 </PrivateRoute>
                }
@@ -159,10 +179,32 @@ function App() {
                 }
               />
               <Route path="/edit-user/:id" element={<EditUserPage />} />
-              <Route path="/yearly-reporting/:id" element={<YearlyForm />} />
-              <Route path="/edit-yearly-form/:id" element={<YearlyEditForm />} />
-              <Route path="/Yearly-reporting" element={<YearlyReportingForm/>} />
-              <Route path="/Yearly-report" element={<YearlyReportData />} />
+              
+              <Route path="/yearly-reporting/:id" element={
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many">
+                < YearlyForm/>
+              </PrivateRoute>
+                // <YearlyForm />
+                } />
+              <Route path="/edit-yearly-form/:id" element={
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many">
+                < YearlyEditForm/>
+              </PrivateRoute>
+
+                // <YearlyEditForm />
+                } />
+              <Route path="/Yearly-reporting" element={
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many">
+                < YearlyReportingForm/>
+              </PrivateRoute>
+                // <YearlyReportingForm/>
+                } />
+              <Route path="/Yearly-report" element={
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many">
+                < YearlyReportData/>
+              </PrivateRoute>
+                // <YearlyReportData />
+                } />
               
               
               <Route
@@ -185,11 +227,8 @@ function App() {
             {" "}
           </div>
           <Footer />
-
         </div>
       </Router>
-      
-
     </ThemeProvider>
   );
 }
