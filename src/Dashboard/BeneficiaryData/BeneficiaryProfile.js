@@ -133,7 +133,7 @@ const BeneficiaryProfile = () => {
     };
   }, [id, API_URL]);
 
-  console.log(statusHistory, "statusHistoryooooooooooooo");
+
 
   // In BeneficiaryProfile.jsx, replace the current handlePopupOpen with:
   const handlePopupOpen = (monthYear) => {
