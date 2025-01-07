@@ -247,7 +247,7 @@ const YearlyReport = () => {
                 <Card
                   sx={{
                     backgroundColor: !isEnabled && "#E0E0E0",
-                    cursor: isEnabled ? "pointer" : "default",
+                    cursor: isEnabled ? "pointer" : "default", border: '2px solid black',
                   }}
                   onClick={() =>
                     isEnabled &&
@@ -277,7 +277,7 @@ const YearlyReport = () => {
       </Grid>
     </>
   ) : (
-    <Container maxWidth="md" sx={{ mt: 5 }}>
+    <Container maxWidth="md" sx={{ mt: 5 , mb: 5}}>
       <h1>Yearly Report</h1>
       {loading ? (
         <Box
