@@ -42,11 +42,11 @@ function Opslogin() {
     setLoder(true);
 
     const user = data.find((user) => user.Email === email && user.Password === password);
-
+    
     if (user) {
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('role', JSON.stringify(user.Role));
-      localStorage.setItem('_AuthSama_', JSON.stringify([{ name: user.Name, email: user.Email, role: user.Role, NgoId: user["Ngo Id"], type: user["Type"] }]));
+      localStorage.setItem('_AuthSama_', JSON.stringify([{ name: user.Name, email: user.Email, role: user.Role, NgoId: user["Ngo Id"], Type: user.Type }]));
       setError('');
 
       // Redirect based on role
