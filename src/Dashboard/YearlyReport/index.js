@@ -77,17 +77,21 @@ const formatDate = (date) => {
 
 
 const formatDateCurrent = (input) => {
-  // Parse the input date string
-  const [datePart] = input.split(","); // "24/11/2023"
-  const [day, month, year] = datePart.split("/");
 
-  // Create a Date object (Note: months in Date are 0-indexed)
-  const date = new Date(`${year}-${month}-${day}`);
+  // Create a Date object directly from the ISO 8601 input
+  const date = new Date(input);
+
+  // Check if the date is valid
+  if (isNaN(date.getTime())) {
+    return "Invalid Date";
+  }
 
   // Format the month and year
-  const options = { month: "long", year: "numeric" };
-  return date.toLocaleDateString("en-US", options);
+  const options = { month: 'long', year: 'numeric' };
+  return date.toLocaleDateString('en-US', options);
 };
+
+
 
 const YearlyReport = () => {
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
@@ -104,6 +108,8 @@ const YearlyReport = () => {
   const [yearlyMetrixGet, setYearlyMetrixGet] = useState([]);
   const [currentDate] = useState(new Date());
   const [isDataAvailable, setIsDataAvailable] = useState(false);
+  const [extraLoader, setExtraLoader] = useState(true);
+
 
   const yearlyDates =
     YearlyReportingDate && generateYearlyDates(YearlyReportingDate);
@@ -167,10 +173,12 @@ const YearlyReport = () => {
         .then((response) => {
           setYearlyMetrixGet(response.data.data || []);
           setIsDataAvailable(response.data.success);
+          setExtraLoader(false)
         })
         .catch((err) => {
           console.error("Error fetching yearly reports:", err);
           setError("Failed to fetch yearly reports.");
+          setExtraLoader(false)
         });
     }
   }, [user]);
@@ -204,6 +212,21 @@ const YearlyReport = () => {
     };
     checkFormCreation();
   }, [id]);
+
+  if (loading || extraLoader) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "50vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return isDataAvailable ? (
     <>
