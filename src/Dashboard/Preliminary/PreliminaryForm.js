@@ -74,7 +74,11 @@ const PreliminaryForm = ({ userId }) => {
   const [formData, setFormData] = useState(initialFormData);
   const [messageShown, setMessageShown] = useState(false); // State to track if the message has been shown
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
   // Validate form fields
   const validateForm = () => {
     const {
@@ -143,7 +147,11 @@ const PreliminaryForm = ({ userId }) => {
   };
   const handleSubmit = async () => {
     if (!validateForm()) {
-      setSnackbarOpen(true);
+      setSnackbar({
+        open: true,
+        message: " Please fill all required fields before submitting!",
+        severity: "error",
+      });
       return;
     }
     const transformedCourses = formData.courses.map(
@@ -167,9 +175,13 @@ const PreliminaryForm = ({ userId }) => {
         }
       );
 
-      alert("Form submited successfully!");
+      // alert("Form submited successfully!");
+      setSnackbar({
+        open: true,
+        message: "Form submitted successfully!",
+        severity: "success",
+      });
       setFormData(initialFormData);
-
       setTimeout(() => {
         window.location.reload(); // Reloads the current route
       }, 2000);
@@ -178,12 +190,15 @@ const PreliminaryForm = ({ userId }) => {
       // }
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to submit the form.");
+      // alert("Failed to submit the form.");
+      setSnackbar({
+        open: true,
+        message: "Failed to submit the form.",
+        severity: "error",
+      });
     }
   };
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
+
 
   const handleDeleteState = (stateToDelete, event) => {
     event.stopPropagation();
@@ -191,6 +206,10 @@ const PreliminaryForm = ({ userId }) => {
       ...prev,
       states: prev.states.filter((state) => state !== stateToDelete),
     }));
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ open: false, message: "", severity: "" });
   };
 
   return (
@@ -420,13 +439,12 @@ const PreliminaryForm = ({ userId }) => {
         </Button>
       </Box>
       <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={4000}
+        open={snackbar.open}
+        autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: "100%" }}>
-          Please fill all required fields before submitting!
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+          {snackbar.message}
         </Alert>
       </Snackbar>
     </Box>
