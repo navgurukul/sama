@@ -108,6 +108,8 @@ const YearlyReport = () => {
   const [yearlyMetrixGet, setYearlyMetrixGet] = useState([]);
   const [currentDate] = useState(new Date());
   const [isDataAvailable, setIsDataAvailable] = useState(false);
+  const [extraLoader, setExtraLoader] = useState(true);
+
 
   const yearlyDates =
     YearlyReportingDate && generateYearlyDates(YearlyReportingDate);
@@ -171,10 +173,12 @@ const YearlyReport = () => {
         .then((response) => {
           setYearlyMetrixGet(response.data.data || []);
           setIsDataAvailable(response.data.success);
+          setExtraLoader(false)
         })
         .catch((err) => {
           console.error("Error fetching yearly reports:", err);
           setError("Failed to fetch yearly reports.");
+          setExtraLoader(false)
         });
     }
   }, [user]);
@@ -208,6 +212,21 @@ const YearlyReport = () => {
     };
     checkFormCreation();
   }, [id]);
+
+  if (loading || extraLoader) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "50vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return isDataAvailable ? (
     <>
