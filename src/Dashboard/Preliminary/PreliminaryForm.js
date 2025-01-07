@@ -164,7 +164,7 @@ const PreliminaryForm = ({ userId }) => {
     };
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+        "https://script.google.com/macros/s/AKfycbw9O-rLkIeTtQGQvQhtoK4XPS9F710xckxRJxe_V02FrOssJnYs89HuiMjQgU3QDhxtnQ/exec",
         {
           method: "POST",
           headers: {
