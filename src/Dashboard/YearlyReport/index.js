@@ -278,7 +278,7 @@ const YearlyReport = () => {
     </>
   ) : (
     <Container maxWidth="md" sx={{ mt: 5 , mb: 5}}>
-      <h1>Yearly Report</h1>
+      {/* <h1>Yearly Report</h1> */}
       {loading ? (
         <Box
           sx={{

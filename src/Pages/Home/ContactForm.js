@@ -6,6 +6,7 @@ import {
   Typography,
   TextField,
   Button,
+  InputLabel,
 } from "@mui/material";
 
 function ContactForm() {
@@ -136,6 +137,9 @@ function ContactForm() {
             <form onSubmit={handleSubmit}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} md={6}>
+                  <InputLabel sx={{ mt: 5, color: "#4A4A4A" }}>
+                    <b>First Name</b>
+                  </InputLabel>
                   <TextField
                     label="Ex : John"
                     margin="normal"
@@ -150,6 +154,9 @@ function ContactForm() {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
+                  <InputLabel sx={{ mt: 5, color: "#4A4A4A" }}>
+                    <b>Last Name</b>
+                  </InputLabel>
                   <TextField
                     label="Ex :  Doe"
                     margin="normal"
@@ -164,7 +171,9 @@ function ContactForm() {
                   />
                 </Grid>
               </Grid>
-
+              <InputLabel sx={{ mt: 2, color: "#4A4A4A" }}>
+                <b>Email Address</b>
+              </InputLabel>
               <TextField
                 fullWidth
                 label="Ex : John@gmail.com"
@@ -177,7 +186,9 @@ function ContactForm() {
                 error={!!errors.email}
                 helperText={errors.email}
               />
-
+              <InputLabel sx={{ mt: 2, color: "#4A4A4A" }}>
+                <b>Message</b>
+              </InputLabel>
               <TextField
                 fullWidth
                 label="message"
