@@ -413,7 +413,7 @@ const DataUpload = () => {
                     </Typography>
                     {isDeclined && (
                       <Typography variant="body1" color="error">
-                        The document is not in a valid format.
+                      The document is not valid. Please upload a valid document.
                       </Typography>
                     )}
                   </>
