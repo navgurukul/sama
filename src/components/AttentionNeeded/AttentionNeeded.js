@@ -1,19 +1,56 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Box, Typography, Button, Paper, Stack } from '@mui/material';
 import { ReportProblem as WarningIcon } from '@mui/icons-material';
 import ErrorImagePng from '../../assets/Error1.png'
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AttentionNeeded = () => {
+    const [documentsToReupload, setDocumentsToReupload] = React.useState([]);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { failedStatuses } = location.state || {}; // Default to an empty object if state is undefined    
+    const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
+    const storedUserId= NgoId[0].NgoId;
 
-  const documentsToReupload = [
-    "12A Registration",
-    "FCRA",
-    "Financial Report (FY 2023-24)"
-  ];
+  // Static data representing the failed documents for re-upload
+  //   below useeffect is full working
+    useEffect(() => {
+      
+      // Fetch data from the API
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=MultipleDocsGet&userId=${storedUserId}`);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const apiResponse = await response.json();
+          // setUserId(apiResponse['User-Id']);
+          // setSubfolderId(apiResponse.subfolderId);
+          // setNgoName(apiResponse['NGO Name']);
+          // Extract failed documents
+          
+          const failedDocuments = Object.keys(apiResponse)
+            .filter(
+              (key) =>
+                apiResponse[key]?.status !== "Success" &&
+                apiResponse[key]?.status !== "Pending Verification" &&
+                key !== "User-Id" &&
+                key !== "NGO Name" &&
+                key !== "isDataAvailable" &&
+                key !== "subfolderId"
+            )
+            .map((key) => ([key]));            
+          setDocumentsToReupload(failedDocuments);
+        } catch (error) {
+          console.error('Error fetching data:', error);
 
+        }
+      };
+
+      fetchData();
+    }, [storedUserId]);
+
+    const documents = failedStatuses || documentsToReupload;
   return (
     <Box
       sx={{
@@ -36,11 +73,11 @@ const AttentionNeeded = () => {
       </Typography>
 
       <Typography sx={{ mb: 3, color: 'text.secondary' }}>
-        We couldn't verify the documents below. Please re-upload them to proceed forward.
+        We couldn't verify the documents below. Please re-upload them to <br/> proceed forward.
       </Typography>
 
-      <Stack spacing={3} sx={{ width: '100%', maxWidth: '650px', mb: 4 }}>
-        {documentsToReupload.map((doc, index) => (
+      <Stack spacing={3} sx={{ width: '100%', maxWidth: '598px', mb: 4 }}>
+        {documents.map((doc, index) => (
           <Paper
             key={index}
             elevation={1}
@@ -51,6 +88,11 @@ const AttentionNeeded = () => {
               p: 2,
               bgcolor: 'grey.50',
               mb:2,
+              color:'#4A4A4A',
+              fontFamily: 'Raleway',
+              fontWeight: '700', 
+              fontSize: '18px', 
+              lineHeight:'30.6px'
             }}
           >
             <Typography>{doc}</Typography>
@@ -62,14 +104,16 @@ const AttentionNeeded = () => {
       <Button
         variant="contained"
         sx={{
-          bgcolor: 'green',
+          widht: "261px",
+          bgcolor: '#5C785A',
           color: 'white',
-          ':hover': {
-            bgcolor: 'darkgreen',
-          },
+          fontFamily: 'Raleway',
+          fontWeight: '700', 
+          fontSize: '18px', 
+          lineHeight:'30.6px',
           px: 4,
           py: 1,
-          borderRadius: '5px',
+          borderRadius: '100px',
         }}
         onClick={() => navigate('/documentreupload')}
       >
@@ -80,3 +124,5 @@ const AttentionNeeded = () => {
 };
 
 export default AttentionNeeded;
+
+

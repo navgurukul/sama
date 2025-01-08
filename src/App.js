@@ -38,8 +38,19 @@ import DocumentReupload from './Pages/DocumentReupload/DocumentReupload';
 import PreliminaryForm from './Dashboard/Preliminary/PreliminaryForm';
 import Preliminary from './Dashboard/Preliminary';
 import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
+import MonthlyForm from './Dashboard/MontlyReport/MothlyForm';
+import SubmissionSuccess from './components/SubmissionSuccess/SubmissionSuccess';
+import MonthlyEditForm from './Dashboard/MontlyReport/MonthlyEditForm';
+import NgoProfile from './Dashboard/AdminNgo/NgoProfile';
+import MonthlyReportData from './Dashboard/Preliminary/MonthlyReportData';
 import PrivacyPolicy from './Pages/PrivacyPolicy';
 import LandingPage from './Pages/LandingPage';
+import YearlyEditForm from './Dashboard/YearlyReport/YearlyEditForm';
+import YearlyForm from './Dashboard/YearlyReport/YearlyForm';
+import YearlyReportingForm from './Dashboard/Preliminary/YearlyReportingForm';
+import YearlyReportData from './Dashboard/Preliminary/YearlyReportData';
+
+
 
 function App() {
   return (
@@ -65,19 +76,33 @@ function App() {
                 <CompanySelection />
                 </PrivateRoute> 
                 } />  {/* // this is to select the doner for the ngo Questions, need to rename the route */}
-
-                {/* <Route path="/preliminary-distribution" element={<PreliminaryForm />} /> */}
-              <Route path="/preliminary" element={<Preliminary />} />
-              {/* <Route path="/monthly-reporting" element={<MonthlyReportingForm />} /> */}
+              <Route path="/submission-success" element={<SubmissionSuccess />} />
+              <Route path="/preliminary" element={
+                // <Preliminary />
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many" >
+                <Preliminary/>
+              </PrivateRoute>
+                } />
+              <Route path="/monthly-reporting" element={
+                // <MonthlyReportingForm />
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many" >
+                <MonthlyReportingForm/>
+              </PrivateRoute>
+                } />
+              <Route path="monthly-report" element={
+                // <MonthlyReportData />
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many" >
+                <MonthlyReportData/>
+              </PrivateRoute>
+                } />
               <Route 
-              path="/preliminary-distribution" 
+              path="/preliminary-distribution"
               element={
-                <PrivateRoute reqired={'ngo'}>
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many" >
                    <PreliminaryForm/>
                  </PrivateRoute>
                }
                 />                
-              {/* <Route path='/allngo' element={<AdminNgo/>} /> */}
               <Route 
               path="/ngo" 
               element={
@@ -87,15 +112,24 @@ function App() {
                }
                 />
                 <Route path="/ngo/:id" element={<TabNavigation />} />
+
               <Route path='/mouUpload' element={<MouUpload/>} />
-              <Route path='/beneficiaryProfile' element={<BeneficiaryProfile/>} />
+              <Route path='/beneficiaryProfile' element={
+                <PrivateRoute reqired={'ngo'} ngoType="1 to one" >
+                <BeneficiaryProfile/>
+              </PrivateRoute>
+                // <BeneficiaryProfile/>
+                } />
+              <Route path="/monthly-reporting/:id" element={<MonthlyForm />} />
+              <Route path="/edit-form/:id" element={<MonthlyEditForm />} />
+              
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
-              {/* <Route path="/beneficiarydata" element={<BeneficiaryData />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
-              {/* <Route path="/documentupload" element={<DocumentUpload />} /> */}
-              {/* <Route path="/documentreupload" element={<DocumentReupload />} /> */}
-              {/* <Route path="/attentionneeded" element={<AttentionNeeded />} /> */}
+               <Route path = "/ngoprofile" element= {<NgoProfile/>} />
+
+              <Route path="/documentreupload" element={<DocumentReupload />} />
+              <Route path="/attentionneeded" element={<AttentionNeeded />} />
                 <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
               <Route path="/laptopinventory" 
               element={
@@ -104,24 +138,19 @@ function App() {
                 </PrivateRoute>
                }
                 />
-                {/* <Route path="/documentupload" element={<DocumentUpload />} /> */}
                 <Route 
-                // path="/ngo-dashboard" 
                 path="/documentupload"
               element={
                 <PrivateRoute reqired={'ngo'}>
                   <DocumentUpload />
-                   {/* <Ngodashboard /> */}
                 </PrivateRoute>
                }
                 />
                 <Route 
-                // path="/ngo-dashboard" 
                 path="/beneficiarydata"
               element={
-                <PrivateRoute reqired={'ngo'}>
+                <PrivateRoute reqired={'ngo'} ngoType="1 to one">
                   < BeneficiaryData/>
-                   {/* <Ngodashboard /> */}
                 </PrivateRoute>
                }
                 />
@@ -151,6 +180,32 @@ function App() {
               />
               <Route path="/edit-user/:id" element={<EditUserPage />} />
               
+              <Route path="/yearly-reporting/:id" element={
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many">
+                < YearlyForm/>
+              </PrivateRoute>
+                // <YearlyForm />
+                } />
+              <Route path="/edit-yearly-form/:id" element={
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many">
+                < YearlyEditForm/>
+              </PrivateRoute>
+
+                // <YearlyEditForm />
+                } />
+              <Route path="/Yearly-reporting" element={
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many">
+                < YearlyReportingForm/>
+              </PrivateRoute>
+                // <YearlyReportingForm/>
+                } />
+              <Route path="/Yearly-report" element={
+                <PrivateRoute reqired={'ngo'} ngoType="1 to many">
+                < YearlyReportData/>
+              </PrivateRoute>
+                // <YearlyReportData />
+                } />
+              
               
               <Route
                 path="/ops"
@@ -174,8 +229,6 @@ function App() {
           <Footer />
         </div>
       </Router>
-      
-
     </ThemeProvider>
   );
 }

@@ -54,10 +54,27 @@ function LaptopForm() {
     });
   };
 
+  const validateForm = () => {
+    const requiredFields = [
+      "donorCompanyName",
+      "conditionStatus",
+    ];
+    for (let field of requiredFields) {
+      if (!formData[field].trim()) {
+        alert(`${field} is required.`);
+        return false;
+      }
+    }
+    return true;
+  };
+
+
   // Function to handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-    setLoading(true); // Show the loader when form submission starts
+
+    e.preventDefault();
+    if (!validateForm()) return;
+    setLoading(true);
     try {
       await fetch(
         "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
@@ -77,7 +94,7 @@ function LaptopForm() {
       // Reset the form data to its initial state
       setFormData({
         type: "laptopLabeling",
-        id:"",
+        id: "",
         donorCompanyName: "",
         ram: "",
         rom: "",
@@ -91,7 +108,7 @@ function LaptopForm() {
         laptopWeight: "",
         others: "",
         macAddress: "",
-        batteryCapacity:"",
+        batteryCapacity: "",
       });
     } catch (error) {
       console.error("Error:", error); // Log error to the console
@@ -226,36 +243,42 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Minor Issues</InputLabel>
-                <Select
-                  multiple
-                  value={formData.minorIssues}
-                  onChange={handleSelectChange}
-                  name="minorIssues"
-                  renderValue={(selected) => selected.join(", ")}
-                >
-                  {minorIssuesOptions.map((issue) => (
-                    <MenuItem key={issue} value={issue}>
-                      <Checkbox
-                        checked={formData.minorIssues.indexOf(issue) > -1}
-                      />
-                      <ListItemText primary={issue} />
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <TextField
+                fullWidth
+                select
+                label="Minor Issues"
+                name="minorIssues"
+                variant="outlined"
+                SelectProps={{
+                  multiple: true,
+                  value: formData.minorIssues,
+                  onChange: handleSelectChange,
+                  renderValue: (selected) => selected.join(", "),
+                }}
+              >
+                {minorIssuesOptions.map((issue) => (
+                  <MenuItem key={issue} value={issue}>
+                    <Checkbox checked={formData.minorIssues.indexOf(issue) > -1} />
+                    <ListItemText primary={issue} />
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
+
             <Grid item xs={12}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Major Issues</InputLabel>
-                <Select
-                  multiple
-                  value={formData.majorIssues}
-                  onChange={handleSelectChange}
-                  name="majorIssues"
-                  renderValue={(selected) => selected.join(", ")}
-                >
+            <TextField
+                fullWidth
+                select
+                label="Major Issues"
+                name="majorIssues"
+                variant="outlined"
+                SelectProps={{
+                  multiple: true,
+                  value: formData.majorIssues,
+                  onChange: handleSelectChange,
+                  renderValue: (selected) => selected.join(", "),
+                }}
+              >
                   {majorIssueOptions.map((issue) => (
                     <MenuItem key={issue} value={issue}>
                       <Checkbox
@@ -264,8 +287,7 @@ function LaptopForm() {
                       <ListItemText primary={issue} />
                     </MenuItem>
                   ))}
-                </Select>
-              </FormControl>
+              </TextField>
               <TextField
                 fullWidth
                 label="Other Laptop Issues optional"
@@ -305,7 +327,7 @@ function LaptopForm() {
                 variant="outlined"
               />
             </Grid>
-            
+
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -316,7 +338,7 @@ function LaptopForm() {
                 variant="outlined"
               />
             </Grid>
-            <Grid item xs={12} style={{marginBottom:"10%"}}>
+            <Grid item xs={12} style={{ marginBottom: "10%" }}>
               <Button
                 type="submit"
                 variant="contained"

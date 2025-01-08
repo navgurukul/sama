@@ -40,7 +40,6 @@ const AdminNgo = () => {
     laptopsRequired: [],
     purpose: [],
     location: [],
-    
   });
 
   const [editStatus, setEditStatus] = useState(false);
@@ -63,7 +62,7 @@ const AdminNgo = () => {
         setLoading(false);
         setEditStatus(false);
 
-        const laptopsRequiredOptions = [...new Set(data.map(item => item.primaryContactName))];
+        const laptopsRequiredOptions = [...new Set(data.map(item => item.beneficiariesCount))];
         const purposeOptions = [...new Set(data.map(item => item.expectedOutcome))];
         const locationOptions = [...new Set(data.map(item => item.location))];
         const statusOptions = ['Submitted Request', 'In Progress', 'Approved', 'Rejected']; // Set status options manually
@@ -152,7 +151,7 @@ const AdminNgo = () => {
     // Call API to save status
 
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=NGO', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -167,7 +166,6 @@ const AdminNgo = () => {
       })
       
       if (response.ok) {
-        console.log("Status updated successfully");
       } else {
         console.error("Error updating status:", response.statusText);
       }
@@ -181,19 +179,37 @@ const AdminNgo = () => {
     setOpenDialog(false); // Close dialog without changing status
   };
 
+
   const filteredData = ngoData?.filter((ngo) => {
     return (
       (searchTerm === '' || 
         ngo.organizationName?.toLowerCase().includes(searchTerm) ||
         ngo.location?.toLowerCase().includes(searchTerm) ||
         ngo.contactNumber?.toString().includes(searchTerm)) &&
-      (filters.laptopsRequired === '' || ngo.primaryContactName === filters.laptopsRequired) &&
+      (filters.laptopsRequired === '' || ngo.beneficiariesCount === filters.laptopsRequired) &&
       (filters.purpose === '' || ngo.expectedOutcome === filters.purpose) &&
       (filters.location === '' || ngo.location === filters.location) &&
-      (filters.status === '' || ngo.status === filters.status)
+      (filters.status === '' || ngo.Status === filters.status) 
     );
   });
+
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0); // Reset page when rowsPerPage changes
+  };
+
   
+  const paginatedData = filteredData.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+ 
 
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
@@ -211,7 +227,7 @@ const AdminNgo = () => {
                 xs:"100%"
               }
             }}
-            label="Search by Name, Location, Contact"
+            placeholder="Search by Name, Contact Number..."
             variant="outlined"
             maxWidth="lg"
             value={searchTerm}
@@ -308,17 +324,17 @@ const AdminNgo = () => {
               <TableCell sx={classes.tableHeader}>Point of Contact</TableCell>
               <TableCell sx={classes.tableHeader}>Contact Number</TableCell>
               <TableCell sx={classes.tableHeader}>Laptop Required</TableCell>
-              <TableCell sx={classes.tableHeader}>Location of Operation</TableCell>
+              <TableCell sx={classes.tableHeader}>Location</TableCell>
               <TableCell sx={{ ...classes.tableHeader, width: "220px" }}>Purpose</TableCell>
               <TableCell sx={classes.tableHeader}>Type</TableCell>
               <TableCell sx={classes.tableHeader}>Status</TableCell>
-              <TableCell sx={classes.tableHeader}>Delete</TableCell>
+              <TableCell sx={classes.tableHeader}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody sx={classes.tablecell}>
             {loading ? <CircularProgress sx={{ mt: 10, ml: 2, mb: 10 }} size={40} /> : 
             ngoData?.length > 0 ?
-            filteredData.map((ngo) => (
+            paginatedData.map((ngo) => (
               <TableRow key={ngo.Id} hover sx={classes.tablecell} 
               onClick={(e) => {
                
@@ -329,42 +345,51 @@ const AdminNgo = () => {
                 <TableCell sx={classes.tablecell}>{ngo.contactNumber}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.beneficiariesCount}</TableCell>
                 <TableCell sx={classes.tablecell}>{ngo.location}</TableCell>
-                <TableCell sx={classes.tablecell}>{ngo.expectedOutcome}</TableCell><TableCell sx={classes.tablecell}>
-                  <FormControl fullWidth >
-                    <InputLabel id="demo-simple-select-label"> type</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      label="Request Submitted"
-                      value={ngo["Ngo Type"]}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setType(e.target.value);
-                      }
-                    }
-                      MenuProps={{
-                        container: dialogRef.current
-                      }}
-                    >
-                      {NgoType.map((option) => (
-                        <MenuItem key={option} value={option} onClick={(e) => e.stopPropagation()}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </TableCell>
+                <TableCell sx={classes.tablecell}>{ngo.expectedOutcome}</TableCell>
+                <TableCell sx={classes.tablecell}>
+  <FormControl fullWidth>
+                      {/* <InputLabel id="demo-simple-select-label"> type</InputLabel> */}
+    <Select
+      labelId="demo-simple-select-label"
+      id="demo-simple-select"
+        // label="Request Submitted"
+      value={ngo["Ngo Type"] || ''}
+      onChange={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setType(e.target.value);
+      }}
+      disabled={ngo["Ngo Type"] ? true : false}
+      IconComponent={ngo["Ngo Type"] ? () => null : undefined}
+      sx={{
+        '& .MuiSelect-select': {
+          paddingRight: ngo["Ngo Type"] ? '14px' : '32px',
+        }
+      }}
+      MenuProps={{
+        container: dialogRef.current
+      }}
+    >
+      {NgoType.map((option) => (
+        <MenuItem 
+          key={option} 
+          value={option} 
+          onClick={(e) => e.stopPropagation()}
+        >
+          {option}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</TableCell>
                 <TableCell sx={classes.tablecell}>
                   <FormControl fullWidth >
-                    <InputLabel id="demo-simple-select-label">
-                     
-                      Status</InputLabel>
-                      
+                    {/* <InputLabel id="demo-simple-select-label">
+                     Status</InputLabel> */}
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
-                      label="Request Submitted"
+                      // label="Request Submitted"
                       value={ngo.Status}
                       onChange={(e) => {
                         e.stopPropagation();
@@ -376,8 +401,7 @@ const AdminNgo = () => {
                         container: dialogRef.current
                       }}
                     >
-                     
-                      {filterOptions.status.map((option) => (
+                    {filterOptions.status.map((option) => (
 
                         <MenuItem key={option} value={option} onClick={(e) => e.stopPropagation()}>
                            {/* <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" fill="none">
@@ -394,7 +418,7 @@ const AdminNgo = () => {
                 <TableCell sx={{ border: "none" }}>
                   <IconButton onClick={(e) => {
                     e.stopPropagation();
-                    handleDeleteRecord(ngo.Id)}}><DeleteIcon /></IconButton>
+                    handleDeleteRecord(ngo.Id)}}><DeleteIcon sx={{color: '#BDBDBD'}}/></IconButton>
                 </TableCell>
               </TableRow>
             )):
@@ -408,7 +432,7 @@ const AdminNgo = () => {
         </Table>
       </TableContainer>
       <Divider />
-      <TablePagination
+      {/* <TablePagination
         sx={{ mt: 3, mb: 8 }}
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
@@ -420,7 +444,17 @@ const AdminNgo = () => {
           setRowsPerPage(parseInt(event.target.value, 10));
           setPage(0);
         }}
-      />
+      /> */}
+      <TablePagination
+         sx={{ mt: 3, mb: 8 }}
+         rowsPerPageOptions={[10, 25, 100]}
+  component="div"
+  count={filteredData.length} 
+  rowsPerPage={rowsPerPage}
+  page={page}
+  onPageChange={handleChangePage}
+  onRowsPerPageChange={handleChangeRowsPerPage}
+/>
       </>
       ):
       <>
@@ -456,5 +490,4 @@ const AdminNgo = () => {
     
   );
 };
-
 export default AdminNgo;

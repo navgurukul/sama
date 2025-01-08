@@ -13,6 +13,9 @@ theme = createTheme(theme, {
     default: {
       contrastText: "#4A4A4A",
     },
+    succes: {
+      contrastText: "#48A145",
+    },
     primary: {
       main: "#5C785A",
       light: "#F0F4EF",
@@ -44,8 +47,6 @@ theme = createTheme(theme, {
     fontFamily: "Raleway",
     fontSize: 18,
 
-
-
     h4: {
       fontSize: "48px",
       lineHeight: "130%",
@@ -67,7 +68,7 @@ theme = createTheme(theme, {
       fontStyle: "normal",
       fontWeight: 700,
     },
-    
+
     captions: {
       fontSize: "12px",
       lineHeight: "130%",
@@ -78,6 +79,7 @@ theme = createTheme(theme, {
       fontStyle: "normal",
       fontWeight: 700,
       fontFamily: "Raleway",
+      color: "#828282",
     },
     subtitle2: {
       fontSize: "14px",
@@ -85,19 +87,22 @@ theme = createTheme(theme, {
       fontStyle: "normal",
       fontWeight: 700,
       fontFamily: "Raleway",
-
     },
     body1: {
       fontSize: "18px",
       lineHeight: "170%",
       fontStyle: "normal",
       fontWeight: 400,
-      fontFamily: "Raleway",
+      fontFamily: "Raleway, sans-serif",
+      color: "#4A4A4A",
     },
     body2: {
-      fontSize: "12px",
+      fontSize: "14px",
       lineHeight: "170%",
-
+      color: "#3A3A3A",
+      fontFamily: "Raleway, sans-serif",
+      fontWeight: 400,
+      fontStyle: "normal",
     },
 
     button: {
@@ -106,7 +111,7 @@ theme = createTheme(theme, {
       textTransform: "none",
       fontFamily: "Raleway",
       fontWeight: 700,
-      borderRadius: "100px"
+      borderRadius: "100px",
     },
   },
 });
@@ -114,8 +119,8 @@ theme.components = {
   MuiInputBase: {
     styleOverrides: {
       root: {
-        backgroundColor: "#FFFFFF",  
-        fontFamily: "Montserrat, sans-serif"
+        backgroundColor: "#FFFFFF",
+        fontFamily: "Montserrat, sans-serif",
       },
     },
   },
@@ -132,21 +137,18 @@ theme.components = {
       root: {
         // borderRadius: "100px",
         height: "48px",
-        padding:"0px 32px 0px 32px",
-        
-        "&:hover": {
-      backgroundColor: "#5C785A",
-      color: '#FFFFFF',
-      
-    },
+        padding: "0px 32px 0px 32px",
+        borderRadius: "100px",
 
+        "&:hover": {
+          backgroundColor: "#5C785A",
+          color: "#FFFFFF",
+        },
       },
     },
   },
 
   
-
-
   
 };
 export default theme;

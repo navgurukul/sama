@@ -4,14 +4,18 @@ import {
   Toolbar,
   Typography,
   IconButton,
+  Avatar,
+  Menu,
+  MenuItem,
   Box,
   Link as MuiLink,
   Container,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Navbar.css";
+import ProfileImg from "./profile.png";
 import logo from "./samalogo.png";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -19,8 +23,11 @@ import { breakpoints } from "../../theme/constant";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuVisible, setMenuVisible] = useState(false);
   const [activeTab, setActiveTab] = useState(location.pathname);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
   const menuItems = [
@@ -30,20 +37,44 @@ const Navbar = () => {
   ];
 
   useEffect(() => {
+    const authData = localStorage.getItem('_AuthSama_');
+    setIsLoggedIn(!!authData);
     setActiveTab(location.pathname);
   }, [location.pathname]);
 
   const handleMenuToggle = () => {
     setMenuVisible(!menuVisible);
   };
+  const handleProfileClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    console.log('Avatar clicked');
 
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
   const handleTabClick = (href) => {
     setActiveTab(href);
     if (href === "/") {
-      setActiveTab(""); // Reset activeTab if navigating to home
+      setActiveTab("");
     }
     setMenuVisible(false);
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem('_AuthSama_');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('role');
+    setIsLoggedIn(false);
+    navigate('/');
+    handleMenuClose();
+  };
+  const handleProfile = () => {
+    navigate('/ngoprofile');
+    handleMenuClose();
+  };
+  const role = JSON.parse(localStorage.getItem('role') || '[]');
+  console.log("Retrieved Role from Local Storage:", role);
 
   return (
     <AppBar
@@ -61,31 +92,165 @@ const Navbar = () => {
         <Toolbar
           disableGutters
           sx={{
-            justifyContent: isActive && "space-between",
+            justifyContent: isActive ? "space-between" : "flex-start",
             position: "relative",
             padding: 0,
             margin: [2, 1, 2, 1],
+            width: "1400px",
+            '@media (max-width: 600px)': {
+              width: "350px",
+            },
           }}
         >
           <Link to="/" style={{ textDecoration: "none" }}>
-            <Box component="img" src={logo} alt="Loo" className="header-logo" />
+            <Box component="img" src={logo} alt="Logo" className="header-logo" />
           </Link>
           <Box className={`nav-links ${menuVisible ? "visible" : ""}`}>
+            {!isLoggedIn && (
+              menuItems.map((item, index) => (
+                <MuiLink
+                  sx={{
+                    margin: 1,
+                    color: "#4A4A4A",
+                    textDecoration: "none",
+                  }}
+                  component={Link}
+                  to={item.href}
+                  className={`nav-link ${activeTab === item.href ? "active" : ""}`}
+                  key={index}
+                  onClick={() => handleTabClick(item.href)}
+                >
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      textTransform: "none",
+                      color: activeTab === item.href ? "primary.main" : "inherit",
+                      fontWeight: activeTab === item.href ? "bold" : "normal",
+                    }}
+                  >
+                    {item.text}
+                  </Typography>
+                </MuiLink>
+              ))
+            
+              // Show only logout when logged in
+
+            )}
+          </Box>
+
+          {/* show only in mobile view when user will lob in (For Mobile Viwe Code) */}
+          {isLoggedIn && (
+            <Box className="drop">
+              <Avatar
+                alt="Profile"
+                src={ProfileImg} // image for avatar
+                sx={{
+                  width: 40,
+                  height: 40,
+                  cursor: 'pointer',
+                  '&:hover': {
+                    opacity: 0.8,
+                  },
+                }}
+                onClick={handleProfileClick}
+              />
+              {/* Dropdown Menu */}
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                sx={{
+                  '& .MuiPaper-root': {
+                    borderRadius: 2,
+                    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                    minWidth: 200,
+                  },
+                }}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+              >
+                {/* Check the role from localStorage */}
+
+                {(() => {
+                  const role = JSON.parse(localStorage.getItem('role') || '[]');
+                  console.log('Parsed role:', role);
+
+                  if (role.includes('admin') || role.includes('ops') ) {
+
+                    return (
+                      <MenuItem onClick={handleLogout} variant="body1" sx={{ color: 'red' }}>
+                        Logout
+                      </MenuItem>
+                    );
+                  }
+                  return (
+                    <>
+                      <MenuItem onClick={handleProfile} variant="body1">
+                        Profile
+                      </MenuItem>
+                      <MenuItem onClick={handleLogout} variant="body1" sx={{ color: 'red' }}>
+                        Logout
+                      </MenuItem>
+                    </>
+                  );
+                })()}
+              </Menu>
+            </Box>
+          )}
+
+          {/* Code for Dashboard Login */}
+          <Box sx={{ marginLeft: "auto" }}>
+            {!isLoggedIn && (
+              <MuiLink
+                sx={{
+                  margin: 1,
+                  color: "#4A4A4A",
+                  textDecoration: "none",
+                }}
+                component={Link}
+                to="/login"
+              >
+                <Typography variant="body1" className="Login"
+                  sx={{
+                    fontWeight: activeTab === "/login" ? "bold" : "normal",
+                  }} >
+                  Dashboard Login
+                </Typography>
+              </MuiLink>
+            )}
+          </Box>
+          {!isLoggedIn && (
+            <Box className="mobile-nav">
+              <IconButton
+                edge="start"
+                aria-label="menu"
+                onClick={handleMenuToggle}
+                className="MuiIconButton-root"
+              >
+                {menuVisible ? <CloseIcon /> : <MoreVertIcon />}
+              </IconButton>
+            </Box>
+          )}
+        </Toolbar>
+        {!isLoggedIn && (
+          <Box className={`mobile-menu ${(isActive && menuVisible) ? "visible" : ""}`}>
             {menuItems.map((item, index) => (
               <MuiLink
-                sx={{ margin: 1, color: "#4A4A4A" }}
                 component={Link}
                 to={item.href}
-                className={`nav-link ${activeTab === item.href ? "active" : ""
-                  }`}
+                className={`nav-link ${activeTab === item.href ? "active" : ""}`}
                 key={index}
                 onClick={() => handleTabClick(item.href)}
               >
                 <Typography
                   variant="body1"
                   sx={{
-                    textTransform: "none",
-                    color: activeTab === item.href ? "primary.main" : "inherit",
                     fontWeight: activeTab === item.href ? "bold" : "normal",
                   }}
                 >
@@ -93,41 +258,37 @@ const Navbar = () => {
                 </Typography>
               </MuiLink>
             ))}
-          </Box>
-          <Box className="mobile-nav">
-            <IconButton
-              edge="start"
-              aria-label="menu"
-              onClick={handleMenuToggle}
-              className="MuiIconButton-root"
-            >
-              {menuVisible ? <CloseIcon /> : <MoreVertIcon />}
-            </IconButton>
-          </Box>
-        </Toolbar>
-        <Box className={`mobile-menu ${(isActive && menuVisible) ? "visible" : ""}`}>
-          {menuItems.map((item, index) => (
-            <MuiLink
-              component={Link}
-              to={item.href}
-              className={`nav-link ${activeTab === item.href ? "active" : ""}`}
-              key={index}
-              onClick={() => handleTabClick(item.href)}
-            >
-              <Typography
-                variant="body1"
+            {/*Dashboard Login in mobile menu */}
+            {!isLoggedIn && (
+              <MuiLink
                 sx={{
-                  fontWeight: activeTab === item.href ? "bold" : "normal",
+                  margin: 1,
+                  color: "#4A4A4A",
+                  textDecoration: "none",
                 }}
+                component={Link}
+                to="/login"
+                onClick={() => handleTabClick("/login")}
               >
-                {item.text}
-              </Typography>
-            </MuiLink>
-          ))}
-        </Box>
+                <Typography
+                  className="LoginMobile"
+                  variant="body1"
+                  sx={{
+                    fontWeight: activeTab === "/login" ? "bold" : "normal",
+                  }}
+                >
+                  Dashboard Login
+                </Typography>
+
+              </MuiLink>
+            )}
+          </Box>
+        )}
       </Container>
     </AppBar>
   );
 };
 
 export default Navbar;
+
+
