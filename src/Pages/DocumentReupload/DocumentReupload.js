@@ -78,8 +78,8 @@ const DocumentReupload = () => {
   }, [storedUserId]);
 
 
-  const handleFileChange = (event, document) => {
-    const file = event.target.files[0];
+  const handleFileChange = (file, document) => {
+    // const file = event.target.files[0];
     if (file && file.type === "application/pdf") {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -96,6 +96,17 @@ const DocumentReupload = () => {
       alert("Please upload a PDF file.");
     }
   };
+
+  const onDrop = (e, label) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    handleFileChange(file, label);
+  };
+
+  const onDragOver = (e) => {
+    e.preventDefault();
+  };
+
 
   const handleRemoveFile = (document) => {
     setFileStates((prev) => ({
@@ -203,11 +214,14 @@ const DocumentReupload = () => {
                     textAlign: "center",
                     cursor: "pointer",
                   }}
+                  onDragOver={onDragOver}
+                  onDrop={(e) => onDrop(e, doc)}
                 >
                   <input
                     type="file"
                     accept=".pdf"
-                    onChange={(e) => handleFileChange(e, doc)}
+                    // onChange={(e) => handleFileChange(e, doc)}
+                    onChange={(e) => handleFileChange(e.target.files[0], doc)}
                     style={{ display: "none" }}
                     id={`file-${index}`}
                   />
