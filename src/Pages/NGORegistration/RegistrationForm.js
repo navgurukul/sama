@@ -71,6 +71,7 @@ function RegistrationForm() {
   const { donorId } = useParams();
   const [formFields, setFormFields] = useState([]);
   const [emailExists, setEmailExists] = useState(false);
+  // const [contactExists, setContactExists] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -142,6 +143,7 @@ function RegistrationForm() {
             return newErrors;
           });
         }
+        
       } else {
         console.error("Unexpected API response structure:", responseData);
       }
@@ -288,14 +290,14 @@ function RegistrationForm() {
       }
 
       // Registration number validation
-      if (field.name === "registrationNumber" && value) {
-        const numberPattern = /^\d+$/;
-        if (!numberPattern.test(value)) {
-          newErrors[field.name] = `${
-            field.label || field.name
-          } should contain only digits`;
-        }
-      }
+      // if (field.name === "registrationNumber" && value) {
+      //   const numberPattern = /^\d+$/;
+      //   if (!numberPattern.test(value)) {
+      //     newErrors[field.name] = `${
+      //       field.label || field.name
+      //     } should contain only digits`;
+      //   }
+      // }
     });
 
     // Add email existence validation

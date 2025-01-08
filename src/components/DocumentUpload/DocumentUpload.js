@@ -52,9 +52,10 @@ const DocumentUpload = () => {
       fileStates[label] && fileStates[label].file && fileStates[label].base64
     );
   };
-
-  const handleFileChange = (event, label) => {
-    const file = event.target.files[0];
+  const handleFileChange = (file, label) => {
+  // const handleFileChange = (event, label) => {
+    // event.preventDefault();
+    // const file = event.target.files[0];
     if (file && file.type === 'application/pdf') {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -75,6 +76,17 @@ const DocumentUpload = () => {
       });
     }
   };
+
+  const onDrop = (e, label) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    handleFileChange(file, label);
+  };
+
+  const onDragOver = (e) => {
+    e.preventDefault();
+  };
+
 
   const handleRemoveFile = (label) => {
     setFileStates((prev) => ({
@@ -225,11 +237,16 @@ const DocumentUpload = () => {
                     <span style={{ color: '#E53E3E' }}>*</span>
                   </Typography>
                   <Box sx={{ mb: 2 }}>
-                    <Box sx={dropZoneStyles}>
+                    <Box sx={dropZoneStyles}
+                    onDragOver={onDragOver}
+                    onDrop={(e) => onDrop(e, label)}
+                    >
                       <input
                         type="file"
                         accept=".pdf"
-                        onChange={(e) => handleFileChange(e, label)}
+                        // onChange={(e) => handleFileChange(e, label)}
+                        onChange={(e) => handleFileChange(e.target.files[0], label)}
+                        
                         style={{ display: 'none' }}
                         id={`file-${label}`}
                       />
