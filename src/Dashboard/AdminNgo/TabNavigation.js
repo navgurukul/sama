@@ -81,7 +81,7 @@ const TabNavigation = () => {
         <Tab key="beneficiary-data" label="Beneficiary Data" sx={tabStyle} />,
         <Tab key="manage-statuses" label="Manage Statuses" sx={tabStyle} />
       );
-    } else {
+    } else if(ngoDetails && ngoDetails[0]?.["Ngo Type"] === "1 to many") {
       tabs.push(
         <Tab
           key="pre-distribution"

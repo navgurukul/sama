@@ -93,6 +93,7 @@ const MonthlyReport = () => {
   const monthlyDates = generateMonthlyDates(monthlyReportingDate);
   const [extraLoader, setExtraLoader] = useState(true);
 
+
   // this is to get the preliminary data from the sheet
   const [metrics, setMetrics] = useState([]);
 
@@ -179,10 +180,10 @@ const MonthlyReport = () => {
             });
           setMonthlyMetrixGet(transformedData);
           setIsDataAvailabel(true);
-          setExtraLoader(false)
+          setExtraLoader(false);
         } else {
           console.error("Error fetching data:", result.message);
-          setExtraLoader(false)
+          setExtraLoader(false);
         }
       })
       .catch((error) => console.error("API error:", error));
@@ -242,10 +243,21 @@ const MonthlyReport = () => {
   return isDataAvailabel ? (
     <>
       {NgoId[0]?.role[0] === "admin" && (
-        <>
+        <Container Container maxWidth="md">
           <Typography variant="h6" gutterBottom sx={{ color: "#4A4A4A" }}>
             Monthly Report
           </Typography>
+          {!monthlyDates.length>0 && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "200px",
+              }}
+            >
+              <CircularProgress />
+            </Box>)}
           <Grid container spacing={3} mb={8}>
             {monthlyDates.map((report, index) => {
               const isEnabled = currentDate >= report; // Check if current date has passed the card's date
@@ -258,10 +270,18 @@ const MonthlyReport = () => {
                 <Grid item xs={12} sm={6} md={4} key={index}>
                   {monthlyMetrixGet[index] ? (
                     <Card
-                      style={{ height: "100%" }}
+                      // style={{ height: "100%" }}
+                      // sx={{
+                      //   backgroundColor: !isEnabled && "#E0E0E0",
+                      //   cursor: "pointer",
+                      // }}
                       sx={{
-                        backgroundColor: !isEnabled && "#E0E0E0",
+                        boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.1)",
+                        borderRadius: "8px",
                         cursor: "pointer",
+                        "&:hover": {
+                          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                        },
                       }}
                       onClick={() =>
                         handleCardClick(
@@ -299,12 +319,12 @@ const MonthlyReport = () => {
               );
             })}
           </Grid>
-        </>
+        </Container>
       )}
     </>
   ) : (
     <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
-      <h1>Monthly Report</h1>
+      {/* <h1>Monthly Report</h1> */}
       {loading ? (
         <Box
           sx={{
