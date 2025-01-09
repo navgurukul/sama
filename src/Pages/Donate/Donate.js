@@ -199,7 +199,7 @@ function Donation() {
                   <Typography
                     className="customSubtitle1"
                     variant="subtitle1"
-                    sx={{ mt: 2 }}
+                    sx={{ mt: 2 ,color: "#4A4A4A"}}
                   >
                     Corporate Impact Funding
                   </Typography>
@@ -239,8 +239,8 @@ function Donation() {
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
-                <InputLabel sx={{ marginBottom: "5px", color: "black" }}>
-                  First Name
+                <InputLabel sx={{ marginBottom: "5px", color: "#4A4A4A" }}>
+                  <b>First Name</b>
                 </InputLabel>
                 <TextField
                   fullWidth
@@ -256,8 +256,8 @@ function Donation() {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <InputLabel sx={{ marginBottom: "5px", color: "black" }}>
-                  Last Name
+                <InputLabel sx={{ marginBottom: "5px", color: "#4A4A4A" }}>
+                  <b>Last Name</b>
                 </InputLabel>
                 <TextField
                   fullWidth
@@ -273,8 +273,8 @@ function Donation() {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <InputLabel sx={{ marginBottom: "5px", color: "black" }}>
-                  Email Address
+                <InputLabel sx={{ marginBottom: "5px", color: "#4A4A4A" }}>
+                  <b>Email Address</b>
                 </InputLabel>
                 <TextField
                   fullWidth
@@ -291,8 +291,8 @@ function Donation() {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <InputLabel sx={{ marginBottom: "5px", color: "black" }}>
-                  Phone Number
+                <InputLabel sx={{ marginBottom: "5px", color: "#4A4A4A" }}>
+                  <b>Phone Number</b>
                 </InputLabel>
                 <TextField
                   fullWidth
@@ -346,8 +346,8 @@ function Donation() {
 
               {formData.contributionType === "company" && (
                 <Grid item xs={12} md={6}>
-                  <InputLabel sx={{ marginBottom: "5px" }}>
-                    Company Name
+                  <InputLabel sx={{ marginBottom: "5px", color : "#4A4A4A" }}>
+                    <b>Company Name</b>
                   </InputLabel>
                   <TextField
                     fullWidth
@@ -408,8 +408,8 @@ function Donation() {
 
               {formData.donationType === "donate-laptops" && (
                 <Grid item xs={12} md={6}>
-                  <InputLabel sx={{ marginBottom: "5px" }}>
-                    Estimated number of laptops
+                  <InputLabel sx={{ marginBottom: "5px",color : "#4A4A4A" }}>
+                    <b>Estimated number of laptops</b>
                   </InputLabel>
                   <TextField
                     fullWidth
@@ -427,8 +427,8 @@ function Donation() {
 
               {formData.donationType === "financial-contribution" && (
                 <Grid item xs={12} md={6}>
-                  <InputLabel sx={{ marginBottom: "5px" }}>
-                    Donate Amount
+                  <InputLabel sx={{ marginBottom: "5px", color : "#4A4A4A" }}>
+                   <b>Donate Amount</b>
                   </InputLabel>
                   <TextField
                     fullWidth
@@ -447,8 +447,8 @@ function Donation() {
               {formData.donationType === "both" && (
                 <>
                   <Grid item xs={12} md={6}>
-                    <InputLabel sx={{ marginBottom: "5px" }}>
-                      Estimated number of laptops
+                    <InputLabel sx={{ marginBottom: "5px", color : "#4A4A4A" }}>
+                      <b>Estimated number of laptops</b>
                     </InputLabel>
                     <TextField
                       fullWidth
@@ -463,8 +463,8 @@ function Donation() {
                     />
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <InputLabel sx={{ marginBottom: "5px" }}>
-                      Donate Amount
+                    <InputLabel sx={{ marginBottom: "5px", color : "#4A4A4A" }}>
+                      <b>Donate Amount</b>
                     </InputLabel>
                     <TextField
                       fullWidth

@@ -8,6 +8,7 @@ import {
   Menu,
   MenuItem,
   Box,
+  Button,
   Link as MuiLink,
   Container,
 } from "@mui/material";
@@ -216,12 +217,15 @@ const Navbar = () => {
                 component={Link}
                 to="/login"
               >
-                <Typography variant="body1" className="Login"
+                <Button  type="submit"
+                  variant="contained"
+                  color="primary"
                   sx={{
-                    fontWeight: activeTab === "/login" ? "bold" : "normal",
-                  }} >
+                    fontWeight: activeTab === "/login" ? "bold" : "normal", borderRadius: "100px"
+                  }} 
+                  >
                   Dashboard Login
-                </Typography>
+                </Button>
               </MuiLink>
             )}
           </Box>
