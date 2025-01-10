@@ -477,7 +477,7 @@ const DataUpload = () => {
               fullWidth
               multiline
               rows={4}
-              label="Description"
+              label="Reason for Declining"
               value={description}
               onChange={handleDescriptionChange}
               sx={{ marginTop: "16px" }}
