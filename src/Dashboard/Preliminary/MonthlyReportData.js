@@ -39,6 +39,7 @@ function MonthlyReportData() {
             padding: '32px',
             backgroundColor: 'primary.light',
             textAlign: 'left',
+            mt:"25px"
           }}
         >
           <Typography variant="h6" fontWeight="bold" color="primary.main" mb={2}>
