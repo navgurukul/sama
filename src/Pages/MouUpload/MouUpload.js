@@ -84,20 +84,19 @@ const MOUCard = (ngoid) => {
       return;
     }
 
-
     setLoading(true);
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = async () => {
       const base64File = reader.result.split(",")[1];
-      const idToBeSent = ngoid?.ngoid;      
+      const idToBeSent = ngoid?.ngoid;
       const payload = {
         status: "Signed MOU",
         ngoId: idToBeSent,
         file: base64File,
         fileName: file.name,
         mimeType: file.type,
-        type: "MouUpload"
+        type: "MouUpload",
       };
 
       try {
@@ -119,6 +118,7 @@ const MOUCard = (ngoid) => {
           setFileUrl(result.fileUrl);
           setFile(null);
           setDialogOpen(false); // Close dialog after success
+          window.location.reload();
         } else {
           setMessage("Upload failed. Please try again.");
           // throw new Error(result.message || "Upload failed. Please try again.");
@@ -126,6 +126,7 @@ const MOUCard = (ngoid) => {
       } catch (error) {
         setMessage("File uploaded successfully!");
         setDialogOpen(false);
+        window.location.reload();
         // setMessage(error.message);
       } finally {
         setLoading(false);
@@ -136,11 +137,11 @@ const MOUCard = (ngoid) => {
   return (
     <>
       <Container
-       sx={{
-         my: 3, 
-        ml: "0px" 
-      }}
-       >
+        sx={{
+          my: 3,
+          ml: "0px",
+        }}
+      >
         <Paper
           elevation={0}
           sx={{
@@ -163,7 +164,7 @@ const MOUCard = (ngoid) => {
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button
               variant="contained"
-                color="primary"
+              color="primary"
               startIcon={<DownloadIcon />}
               sx={{ textTransform: "none", px: 3 }}
               onClick={() =>
@@ -228,7 +229,7 @@ const MOUCard = (ngoid) => {
             </Button>
           </DialogActions>
         </Dialog>
-      </Container>     
+      </Container>
     </>
   );
 };

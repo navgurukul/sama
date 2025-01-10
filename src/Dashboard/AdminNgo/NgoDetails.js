@@ -4,7 +4,6 @@ import "./style.css";
 import { Container } from "@mui/system";
 
 const NGODetails = ({ ngo }) => {
-  console.log(ngo, "ngo");
   return (
     <Container maxWidth="lg" sx={{ padding: "24px" }}>
       <Grid container spacing={4}>

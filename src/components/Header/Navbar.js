@@ -8,6 +8,7 @@ import {
   Menu,
   MenuItem,
   Box,
+  Button,
   Link as MuiLink,
   Container,
 } from "@mui/material";
@@ -18,8 +19,22 @@ import "./Navbar.css";
 import ProfileImg from "./profile.png";
 import logo from "./samalogo.png";
 import useMediaQuery from "@mui/material/useMediaQuery";
-
 import { breakpoints } from "../../theme/constant";
+import BackButton from "./BackButton";
+import { matchPath } from 'react-router-dom';
+
+const isRouteMatch = (pathname, patterns) => {
+  return patterns.some(pattern => 
+    matchPath(
+      {
+        path: pattern,
+        exact: true,
+        strict: false
+      },
+      pathname
+    )
+  );
+};
 
 const Navbar = () => {
   const location = useLocation();
@@ -29,6 +44,21 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
+
+  const routArr = ["/user-details","/userdetails/:id"]
+  const routePatterns = [
+    "/user-details",
+    "/userdetails/:id",
+    "ngo/:id",
+    "edit-yearly-form/:id",
+    "yearly-reporting/:id",
+    "/monthly-reporting/:id",
+    "/edit-form/:id",
+    "monthly-reporting",
+    "yearly-reporting",
+    "monthly-report",
+    "yearly-report",
+  ];
 
   const menuItems = [
     { text: "About Us", href: "/about" },
@@ -45,14 +75,16 @@ const Navbar = () => {
   const handleMenuToggle = () => {
     setMenuVisible(!menuVisible);
   };
+
   const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
     console.log('Avatar clicked');
-
   };
+
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
   const handleTabClick = (href) => {
     setActiveTab(href);
     if (href === "/") {
@@ -69,10 +101,12 @@ const Navbar = () => {
     navigate('/');
     handleMenuClose();
   };
+
   const handleProfile = () => {
     navigate('/ngoprofile');
     handleMenuClose();
   };
+
   const role = JSON.parse(localStorage.getItem('role') || '[]');
   console.log("Retrieved Role from Local Storage:", role);
 
@@ -81,14 +115,14 @@ const Navbar = () => {
       position="sticky"
       sx={{
         backgroundColor: "white.main",
-        boxShadow: "0px -1px 0px 0px",
+        boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06)",
         justifyContent: "center",
         padding: 0,
         margin: 0,
       }}
       className="header"
     >
-      <Container sx={{ padding: 0, margin: 0 }}>
+      <Container sx={{ padding: 0, margin: 0}}>
         <Toolbar
           disableGutters
           sx={{
@@ -102,9 +136,14 @@ const Navbar = () => {
             },
           }}
         >
-          <Link to="/" style={{ textDecoration: "none" }}>
-            <Box component="img" src={logo} alt="Logo" className="header-logo" />
-          </Link>
+          {
+            isRouteMatch(location.pathname, routePatterns) ? 
+              <BackButton/> : 
+              <Link to="/" style={{ textDecoration: "none" }}>
+                <Box component="img" src={logo} alt="Logo" className="header-logo" />
+              </Link>
+          }
+          
           <Box className={`nav-links ${menuVisible ? "visible" : ""}`}>
             {!isLoggedIn && (
               menuItems.map((item, index) => (
@@ -132,18 +171,15 @@ const Navbar = () => {
                   </Typography>
                 </MuiLink>
               ))
-            
-              // Show only logout when logged in
-
             )}
           </Box>
 
-          {/* show only in mobile view when user will lob in (For Mobile Viwe Code) */}
+          {/* show only in mobile view when user will log in */}
           {isLoggedIn && (
             <Box className="drop">
               <Avatar
                 alt="Profile"
-                src={ProfileImg} // image for avatar
+                src={ProfileImg}
                 sx={{
                   width: 40,
                   height: 40,
@@ -154,7 +190,6 @@ const Navbar = () => {
                 }}
                 onClick={handleProfileClick}
               />
-              {/* Dropdown Menu */}
               <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
@@ -175,14 +210,11 @@ const Navbar = () => {
                   horizontal: 'right',
                 }}
               >
-                {/* Check the role from localStorage */}
-
                 {(() => {
                   const role = JSON.parse(localStorage.getItem('role') || '[]');
                   console.log('Parsed role:', role);
 
-                  if (role.includes('admin') || role.includes('ops') ) {
-
+                  if (role.includes('admin') || role.includes('ops')) {
                     return (
                       <MenuItem onClick={handleLogout} variant="body1" sx={{ color: 'red' }}>
                         Logout
@@ -206,7 +238,7 @@ const Navbar = () => {
 
           {/* Code for Dashboard Login */}
           <Box sx={{ marginLeft: "auto" }}>
-            {!isLoggedIn && (
+            {!isLoggedIn && !isActive && (
               <MuiLink
                 sx={{
                   margin: 1,
@@ -216,12 +248,17 @@ const Navbar = () => {
                 component={Link}
                 to="/login"
               >
-                <Typography variant="body1" className="Login"
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
                   sx={{
                     fontWeight: activeTab === "/login" ? "bold" : "normal",
-                  }} >
+                    borderRadius: "100px"
+                  }}
+                >
                   Dashboard Login
-                </Typography>
+                </Button>
               </MuiLink>
             )}
           </Box>
@@ -258,8 +295,8 @@ const Navbar = () => {
                 </Typography>
               </MuiLink>
             ))}
-            {/*Dashboard Login in mobile menu */}
-            {!isLoggedIn && (
+            {/* Dashboard Login in mobile menu - Hidden in mobile view */}
+            {!isLoggedIn && !isActive && (
               <MuiLink
                 sx={{
                   margin: 1,
@@ -279,7 +316,6 @@ const Navbar = () => {
                 >
                   Dashboard Login
                 </Typography>
-
               </MuiLink>
             )}
           </Box>
@@ -290,5 +326,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
 

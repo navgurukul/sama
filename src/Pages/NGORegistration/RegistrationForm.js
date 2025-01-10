@@ -71,7 +71,10 @@ function RegistrationForm() {
   const { donorId } = useParams();
   const [formFields, setFormFields] = useState([]);
   const [emailExists, setEmailExists] = useState(false);
+  const [contactExists, setContactExists] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
+  const [checkingContact, setCheckingContact] = useState(false); // New state for checking contact number
+
 
   const [formData, setFormData] = useState({
     organizationName: "",
@@ -142,6 +145,7 @@ function RegistrationForm() {
             return newErrors;
           });
         }
+        
       } else {
         console.error("Unexpected API response structure:", responseData);
       }
@@ -151,7 +155,47 @@ function RegistrationForm() {
       setCheckingEmail(false);
     }
   };
-
+  const verifyContactNumber = async (contactNumber) => {
+    if (!contactNumber) return;
+  
+    setCheckingContact(true);
+    try {
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration"
+      );
+      const responseData = await response.json();
+  
+      if (responseData.status === "success" && Array.isArray(responseData.data)) {
+        const exists = responseData.data.some(
+          (item) =>
+            String(item.contactNumber).replace(/\D/g, "") === contactNumber.replace(/\D/g, "")
+        );
+        console.log("Contact Number Exists:", exists);
+  
+        setContactExists(exists);
+  
+        if (exists) {
+          setErrors((prev) => ({
+            ...prev,
+            contactNumber: "This contact number is already registered",
+          }));
+        } else {
+          setErrors((prev) => {
+            const newErrors = { ...prev };
+            delete newErrors.contactNumber;
+            return newErrors;
+          });
+        }
+      } else {
+        console.error("Unexpected API response structure:", responseData);
+      }
+    } catch (error) {
+      console.error("Error checking contact number:", error);
+    } finally {
+      setCheckingContact(false);
+    }
+  };
+  
   useEffect(() => {
     async function fetchCompanies() {
       try {
@@ -196,6 +240,11 @@ function RegistrationForm() {
     // Check email when email field changes
     if (name === "email") {
       verifyEmail(value);
+    }
+
+    // Check contact number when contact number field changes
+    if (name === "contactNumber") {
+      verifyContactNumber(value);
     }
   };
 
@@ -288,19 +337,23 @@ function RegistrationForm() {
       }
 
       // Registration number validation
-      if (field.name === "registrationNumber" && value) {
-        const numberPattern = /^\d+$/;
-        if (!numberPattern.test(value)) {
-          newErrors[field.name] = `${
-            field.label || field.name
-          } should contain only digits`;
-        }
-      }
+      // if (field.name === "registrationNumber" && value) {
+      //   const numberPattern = /^\d+$/;
+      //   if (!numberPattern.test(value)) {
+      //     newErrors[field.name] = `${
+      //       field.label || field.name
+      //     } should contain only digits`;
+      //   }
+      // }
     });
 
     // Add email existence validation
     if (emailExists) {
       newErrors.email = "This email is already registered";
+    }
+
+    if (contactExists) {
+      newErrors.contactNumber = "This contact number is already registered";
     }
 
     setErrors(newErrors);
@@ -442,8 +495,13 @@ function RegistrationForm() {
                       ? {
                           endAdornment: <CircularProgress size={20} />,
                         }
+                      : field.name === "contactNumber" && checkingContact
+                      ? {
+                          endAdornment: <CircularProgress size={20} />,
+                        }
                       : undefined
                   }
+                  
                 />
               );
             } else if (field?.type === "radio") {
@@ -559,15 +617,16 @@ function RegistrationForm() {
           })}
 
           {formFields.length > 0 && (
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={!isFormValid || loading || emailExists}
-              sx={{ marginTop: 2 }}
-            >
-              {loading ? <CircularProgress size={24} /> : "Submit"}
-            </Button>
+           <Button
+           type="submit"
+           variant="contained"
+           color="primary"
+           disabled={!isFormValid || loading || emailExists || contactExists}
+           sx={{ marginTop: 2 }}
+         >
+           {loading ? <CircularProgress size={24} /> : "Submit"}
+         </Button>
+         
           )}
         </form>
       )}

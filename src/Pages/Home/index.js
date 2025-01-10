@@ -111,7 +111,7 @@ function Home() {
                 <Box>
                   <img src={item.src} alt={item.description} />
                   <Typography variant="h5" color="primary" marginTop="8px">{item.value}</Typography>
-                  <Typography variant="body1" color="primary">{item.description}</Typography>
+                  <Typography variant="body1" sx={{color: '#4A4A4A'}}>{item.description}</Typography>
                 </Box>
               </Grid>
             ))}
