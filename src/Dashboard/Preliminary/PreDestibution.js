@@ -293,7 +293,7 @@ const PreDistribution = ({ userId, preliminaryId }) => {
       )}
 
       <Box sx={{ mt: 5, backgroundColor: '#F0F4EF', borderRadius: 2, p: 4, mb: 5 }}>
-        <Typography variant="h6" color="primary" sx={{ mb: 3 }}>
+        <Typography variant="h6" color="primary" sx={{ mb: "2rem" }}>
           Pre-Distribution Metrics
         </Typography>
         <MetricsDisplay metrics={metrics} />

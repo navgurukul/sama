@@ -3,6 +3,7 @@ import { Box, Typography, Button, Paper, Stack } from '@mui/material';
 import { ReportProblem as WarningIcon } from '@mui/icons-material';
 import ErrorImagePng from '../../assets/Error1.png'
 import { useNavigate, useLocation } from 'react-router-dom';
+import ErrorIcon from '@mui/icons-material/Error';
 
 const AttentionNeeded = () => {
     const [documentsToReupload, setDocumentsToReupload] = React.useState([]);
@@ -96,7 +97,7 @@ const AttentionNeeded = () => {
             }}
           >
             <Typography>{doc}</Typography>
-            <WarningIcon color="error" />
+            <ErrorIcon  style={{ color: "#F44336"}}/>
           </Paper>
         ))}
       </Stack>
