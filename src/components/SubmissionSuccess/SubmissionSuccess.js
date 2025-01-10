@@ -16,7 +16,7 @@ const SubmissionSuccess = () => {
     // Fetch data from the API
     const fetchData = async () => {
       try {
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=MultipleDocsGet&userId=${storedUserId}`);
+        const response = await fetch(`https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec/exec?type=MultipleDocsGet&userId=${storedUserId}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

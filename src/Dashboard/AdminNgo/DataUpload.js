@@ -228,6 +228,7 @@ import {
   Box,
   Snackbar,
   Alert,
+  TextField,
 } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -246,13 +247,14 @@ const DataUpload = () => {
   });
   const [selectedAction, setSelectedAction] = useState("");
   const [selectedDocument, setSelectedDocument] = useState("");
+  const [description, setDescription] = useState(""); // Added description state
   const { id } = useParams();
 
   // Fetch documents
   useEffect(() => {
     axios
       .get(
-        `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=MultipleDocsGet&&userId=${id}`
+        `https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec/exec?type=MultipleDocsGet&&userId=${id}`
       )
       .then((response) => setDocuments(response.data))
       .catch((error) => console.error("Error fetching documents:", error));
@@ -263,6 +265,7 @@ const DataUpload = () => {
     setSelectedAction(action);
     setSelectedDocument(documentName);
     setOpen(true);
+    setDescription(""); // Clear description when opening dialog
   };
 
   // Close dialog
@@ -270,17 +273,22 @@ const DataUpload = () => {
     setOpen(false);
   };
 
+  // Handle description change
+  const handleDescriptionChange = (event) => {
+    setDescription(event.target.value);
+  };
+
   // Confirm Approve/Decline action
   const handleConfirmAction = () => {
-    console.log("Confirmingaction:", selectedAction);
     setOpen(false);
     const apiUrl =
-      "https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec";
+      "https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=updateDocStatus";
 
     const payload = {
       userId: id,
       documentName: selectedDocument,
       status: selectedAction === "Approve" ? "Success" : "Failed",
+      description: selectedAction === "Decline" ? description : "", // Add description for Decline
       type: "updateDocStatus",
     };
 
@@ -299,6 +307,7 @@ const DataUpload = () => {
           updatedDocuments[selectedDocument] = {
             ...updatedDocuments[selectedDocument],
             status: selectedAction === "Approve" ? "Success" : "Failed",
+            description: selectedAction === "Decline" ? description : "", // Update description
           };
           setDocuments(updatedDocuments);
         }
@@ -413,7 +422,7 @@ const DataUpload = () => {
                     </Typography>
                     {isDeclined && (
                       <Typography variant="body1" color="error">
-                      The document is not valid. Please upload a valid document.
+                      {doc.description? doc.description : "The document is not in a valid format."}
                       </Typography>
                     )}
                   </>
@@ -463,6 +472,17 @@ const DataUpload = () => {
             Are you sure you want to <strong>{selectedAction}</strong> the
             document <strong>{selectedDocument}</strong>?
           </DialogContentText>
+          {selectedAction === "Decline" && (
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              label="Description"
+              value={description}
+              onChange={handleDescriptionChange}
+              sx={{ marginTop: "16px" }}
+            />
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="secondary">
