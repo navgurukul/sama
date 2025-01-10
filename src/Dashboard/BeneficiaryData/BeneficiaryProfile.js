@@ -17,6 +17,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import UploadIcon from "@mui/icons-material/UploadFile";
 import HistoryStatusPopup from "./HistoryStatusPopup";
 
+
 const BeneficiaryProfile = () => {
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
   const [data, setData] = useState(null);
