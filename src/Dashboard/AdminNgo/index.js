@@ -395,7 +395,28 @@ const AdminNgo = () => {
                     >
                       <TableCell sx={classes.tablecell}>{ngo.Id}</TableCell>
                       <TableCell sx={classes.tablecell}>
-                        {ngo.organizationName}
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          {ngo.organizationName}
+                          {ngo["Ngo Type"] === "1 to many" && (
+                            <Box
+                              component="span"
+                              sx={{
+                                backgroundColor: "#FDDED7",
+                                color: "#3A3A3A",
+                                padding: "2px 8px",
+                                borderRadius: "16px",
+                                fontSize: "0.75rem",
+                                fontWeight: 400,
+                                whiteSpace: "nowrap",
+                                border: "1px solid #FEE9E9",
+                              }}
+                            >
+                              Large Scale
+                            </Box>
+                          )}
+                        </Box>
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
                         {ngo.primaryContactName}
