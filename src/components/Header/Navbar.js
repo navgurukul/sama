@@ -246,7 +246,7 @@ const Navbar = () => {
           )}
 
           {/* Code for Dashboard Login */}
-          <Box sx={{ marginLeft: "auto", }}>
+          <Box  className = "Login" sx={{ marginLeft: "auto", }}>
             {!isLoggedIn && (
               <MuiLink
                 sx={{

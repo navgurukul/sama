@@ -377,7 +377,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
             <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
               <TextField
                 sx={{ width: { lg: "480px", sm: "100%", xs: "100%" } }}
-                label="Search by Name, Contact"
+                placeholder="Search by Name, Contact"
                 variant="outlined"
                 value={searchTerm}
                 onChange={handleSearchChange}
