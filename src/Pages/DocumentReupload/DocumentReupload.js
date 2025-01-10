@@ -130,12 +130,12 @@ const DocumentReupload = () => {
       ngoName: ngoName,
       subfolderId: subfolderId,
       files,
-      type: "MultpleDocsUpdate"
+      type: "MultipleDocsUpdate"
     };
 
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec",
+        "https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=NewMultipleDocsUpload",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
