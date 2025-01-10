@@ -21,6 +21,24 @@ import logo from "./samalogo.png";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import { breakpoints } from "../../theme/constant";
+import BackButton from "./BackButton";
+
+
+import { matchPath } from 'react-router-dom';
+
+const isRouteMatch = (pathname, patterns) => {
+  return patterns.some(pattern => 
+    matchPath(
+      {
+        path: pattern,
+        exact: true,
+        strict: false
+      },
+      pathname
+    )
+  );
+};
+
 
 const Navbar = () => {
   const location = useLocation();
@@ -30,6 +48,23 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
+
+  const routArr = ["/user-details","/userdetails/:id"]
+  const routePatterns = [
+    "/user-details",
+    "/userdetails/:id" , // This will match any ID,
+    "ngo/:id",
+    "edit-yearly-form/:id",
+    "yearly-reporting/:id",
+    "/monthly-reporting/:id",
+    "/edit-form/:id",
+    "monthly-reporting",
+    "yearly-reporting",
+    "monthly-report",
+    "yearly-report",
+
+  ];
+
 
   const menuItems = [
     { text: "About Us", href: "/about" },
@@ -82,14 +117,15 @@ const Navbar = () => {
       position="sticky"
       sx={{
         backgroundColor: "white.main",
-        boxShadow: "0px -1px 0px 0px",
+        boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06)",
         justifyContent: "center",
         padding: 0,
         margin: 0,
+        // mb:"20px"
       }}
       className="header"
     >
-      <Container sx={{ padding: 0, margin: 0 }}>
+      <Container sx={{ padding: 0, margin: 0}}>
         <Toolbar
           disableGutters
           sx={{
@@ -103,9 +139,13 @@ const Navbar = () => {
             },
           }}
         >
-          <Link to="/" style={{ textDecoration: "none" }}>
+        {
+          isRouteMatch(location.pathname, routePatterns)?<BackButton/>:  <Link to="/" style={{ textDecoration: "none" }}>
             <Box component="img" src={logo} alt="Logo" className="header-logo" />
           </Link>
+        }
+        
+          
           <Box className={`nav-links ${menuVisible ? "visible" : ""}`}>
             {!isLoggedIn && (
               menuItems.map((item, index) => (
@@ -206,7 +246,7 @@ const Navbar = () => {
           )}
 
           {/* Code for Dashboard Login */}
-          <Box sx={{ marginLeft: "auto" }}>
+          <Box sx={{ marginLeft: "auto", }}>
             {!isLoggedIn && (
               <MuiLink
                 sx={{
