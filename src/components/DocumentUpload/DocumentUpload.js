@@ -125,7 +125,7 @@ const DocumentUpload = () => {
     
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbyXgpBdyC423mHLQ-hm5vh9yRCHxzAD03Opk3Pc6x4Nik865xH6GJCVt-LYI_7i4UPA/exec?type=MultipleDocsUpload",
+        "https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=MultipleDocsUpload",
         {
           method: "POST",
           mode: "no-cors",
