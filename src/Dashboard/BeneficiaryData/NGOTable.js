@@ -643,7 +643,7 @@ const NGOTable = ({
                               cursor: "pointer",
                             }}
                           >
-                            ✕
+                            -
                           </Typography>
                         </Box>
                         <Typography variant="body1" sx={{ color: "#666" }}>

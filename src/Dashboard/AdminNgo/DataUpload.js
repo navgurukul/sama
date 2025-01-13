@@ -338,7 +338,7 @@ const DataUpload = () => {
   };
 
   if (!documents) {
-    return <Typography>Loading...</Typography>;
+    return <Typography sx={{mt : 20 ,textAlign: "center"}}>Loading...</Typography>;
   }
 
   if (!documents.isDataAvailable) {
@@ -353,7 +353,7 @@ const DataUpload = () => {
         <img
           src={Update}
           alt="Centered Update"
-          style={{ maxWidth: "100%", height: "auto" }}
+          style={{ marginTop: "100px", marginBottom: "50px",maxWidth: "100%", height: "auto" }}
         />
       </Grid>
     );

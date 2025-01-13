@@ -249,7 +249,7 @@ const AdminNgo = () => {
                     xs: "100%",
                   },
                 }}
-                placeholder="Search by Name, Contact Number..."
+                placeholder="Search by Name, Loaction, Contact Number..."
                 variant="outlined"
                 maxWidth="lg"
                 value={searchTerm}
@@ -267,7 +267,7 @@ const AdminNgo = () => {
           <Grid container spacing={2} sx={{ mt: 2 }}>
             <Box sx={{ display: "flex" }}>
               <FilterListIcon sx={{ mt: 3, ml: 2 }} />
-              <Typography variant="subtitle1" sx={classes.filter}>
+              <Typography  sx={classes.filter}>
                 Filters
               </Typography>
             </Box>
@@ -591,7 +591,7 @@ const AdminNgo = () => {
             Cancel
           </Button>
           <Button onClick={handleConfirmStatusChange} color="primary" autoFocus>
-            Confirm
+            Approve
           </Button>
         </DialogActions>
       </Dialog>

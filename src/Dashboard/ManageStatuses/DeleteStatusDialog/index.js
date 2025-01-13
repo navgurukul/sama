@@ -106,9 +106,10 @@ const DeleteStatusDialog = ({ open, onClose, onDeleteSuccess, status }) => {
         <Box sx={{ mb: 2 }}>
           <Chip
             label={status?.name}
+            variant="body1"
             sx={{
-              backgroundColor: "#E8F5E9",
-              color: "#4CAF50",
+              color: "#4A4A4A",
+              backgroundColor: "#CED7CE",
               fontWeight: "600",
               fontSize: "14px",
               height: "auto",
