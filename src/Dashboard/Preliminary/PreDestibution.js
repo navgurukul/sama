@@ -283,7 +283,7 @@ const PreDistribution = ({ userId, preliminaryId }) => {
   }
 
   return (
-    <Container maxWidth="md" className="mt-10">
+    <Container maxWidth="lg" className="mt-10">
       {NgoId[0]?.role[0] === "ngo" && (
         showWelcome ? (
           <WelcomeMessage />
