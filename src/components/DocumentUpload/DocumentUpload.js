@@ -20,7 +20,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import SubmissionSuccess from '../SubmissionSuccess/SubmissionSuccess';
 
-const DocumentUpload = () => {
+const DocumentUpload = (filename) => {
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
   const location = useLocation();
   const { pendingStatuses } = location.state || {};

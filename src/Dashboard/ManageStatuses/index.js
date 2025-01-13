@@ -249,6 +249,7 @@ const ManageStatuses = () => {
                       color: "#F44336",
                       textTransform: "capitalize",
                       fontWeight: "bold",
+                      marginLeft:"150px",
                       // p: 0,
                       "&:hover": {
                         background: "none !important",
