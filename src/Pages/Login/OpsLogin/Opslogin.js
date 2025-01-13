@@ -19,6 +19,7 @@ function Opslogin() {
     const fetchData = async () => {
       try {
         const response = await fetch(
+          // url: `${process.env.REACT_APP_UserDetailApi}`,
           'https://script.google.com/macros/s/AKfycbzuFPeG0cosIEGBocwuJ72DWUH6zcg7MtawkOuvOifXqHnm1QlaR7ESxiLKzGua-WQp/exec'
         );
         const result = await response.json();
