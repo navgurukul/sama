@@ -94,7 +94,7 @@ const BeneficiaryProfile = () => {
       <Typography variant="h6" gutterBottom>
         Status History
       </Typography>
-      <Divider sx={{ mb: 2 }} />
+      {/* <Divider sx={{ mb: 2 }} /> */}
 
       <Grid container spacing={2}>
         {Array.from({ length: 12 }, (_, index) => (

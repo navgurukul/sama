@@ -505,11 +505,13 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                             variant="body1"
                             component="span"
                             sx={{
-                              bgcolor: "#f5f5f5",
+                              color: "#f5f5f5",
                               p: 0.5,
                               borderRadius: "4px",
                               fontWeight: "medium",
                               cursor: "pointer",
+                              bgcolor:"primary.main",
+                              paddingInline:"10px"
                             }}
                           >
                             ✕

@@ -396,7 +396,7 @@ const AdminNgo = () => {
                       <TableCell sx={classes.tablecell}>{ngo.Id}</TableCell>
                       <TableCell sx={classes.tablecell}>
                         <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                          sx={{ display: "flex", alignItems: "center", gap: 1,justifyContent:"space-between" }}
                         >
                           {ngo.organizationName}
                           {ngo["Ngo Type"] === "1 to many" && (
