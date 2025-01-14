@@ -252,6 +252,10 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
     }
   };
 
+  const handleEditRowClick = (id)=>{
+    navigate(`/edit-user/${id}`);
+  }
+
   const handleCheckboxChange = (id, event) => {
     event.stopPropagation();
     const newSelectedRows = new Set(selectedRows);
@@ -622,7 +626,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                         <EditIcon
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleRowClick(ngo.ID);
+                            handleEditRowClick(ngo.ID);
                           }}
                         />
                       </TableCell>
