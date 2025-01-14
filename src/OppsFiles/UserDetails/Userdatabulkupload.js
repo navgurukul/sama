@@ -22,6 +22,7 @@ function Userdatabulkupload({ user }) {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadComplete, setUploadComplete] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const expectedHeaders = [
     "name",
@@ -43,15 +44,7 @@ function Userdatabulkupload({ user }) {
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
-    if (
-      uploadedFile &&
-      uploadedFile.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    ) {
-      setFile(uploadedFile);
-    } else {
-      alert("Please upload an Excel file (.xlsx format).");
-    }
+    validateAndSetFile(uploadedFile);
   };
 
   const handleSnackbarClose = () => {
@@ -139,6 +132,39 @@ function Userdatabulkupload({ user }) {
     reader.readAsBinaryString(file);
   };
 
+  const validateAndSetFile = (uploadedFile) => {
+    if (
+      uploadedFile &&
+      uploadedFile.type ===
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ) {
+      setFile(uploadedFile);
+    } else {
+      alert("Please upload an Excel file (.xlsx format).");
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const droppedFile = e.dataTransfer.files[0];
+    validateAndSetFile(droppedFile);
+  };
+
   return (
     <>
       <Box mt={3}>
@@ -146,9 +172,17 @@ function Userdatabulkupload({ user }) {
           variant="body2"
           align="left"
           backgroundColor="#F8F3F0"
-          sx={{ padding: "10px", mt: 3, mb: 2, height: "80px", borderRadius: "8px", alignContent: "center" }}
+          sx={{
+            padding: "10px",
+            mt: 3,
+            mb: 2,
+            height: "80px",
+            borderRadius: "8px",
+            alignContent: "center",
+          }}
         >
-          Please upload an Excel file (.xlsx format). You can download the sample file to understand the required format.
+          Please upload an Excel file (.xlsx format). You can download the
+          sample file to understand the required format.
         </Typography>
         <Box
           sx={{
@@ -156,14 +190,22 @@ function Userdatabulkupload({ user }) {
             borderRadius: 1,
             padding: 6,
             textAlign: "center",
-            backgroundColor: "#f9f9f9",
+            backgroundColor: isDragging ? "#edf7ed" : "#f9f9f9",
             cursor: "pointer",
+            transition: "background-color 0.3s ease",
           }}
           onClick={() => document.getElementById("upload-file").click()}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
         >
           <CloudUploadIcon sx={{ fontSize: 40, color: "#5C785A" }} />
-          <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "700" }}>
-            Upload or Drag File
+          <Typography
+            variant="subtitle1"
+            color="primary"
+            sx={{ fontWeight: "700" }}
+          >
+            {isDragging ? "Drop File Here" : "Upload or Drag File"}
           </Typography>
           {file && (
             <Typography variant="body2" mt={1}>
@@ -179,29 +221,47 @@ function Userdatabulkupload({ user }) {
           id="upload-file"
         />
         <Box mt={2} align="left">
-          <Typography color="textPrimary" sx={{ display: "inline", textAlign: "left", fontSize: "14px" }}>
+          <Typography
+            color="textPrimary"
+            sx={{ display: "inline", textAlign: "left", fontSize: "14px" }}
+          >
             Format for learner data:{" "}
           </Typography>
           <Link
             href="https://docs.google.com/spreadsheets/d/1rhsK-Hir7J8HQgDCZHsoFNnpONu14tLP3Jp3d5pGuAs/edit?gid=1579348065#gid=1579348065"
             download
             target="_blank"
-            sx={{ display: "inline", color: "primary.main", textDecoration: "none" }}
+            sx={{
+              display: "inline",
+              color: "primary.main",
+              textDecoration: "none",
+            }}
           >
             Sample_Beneficiary_Data.xlsx
           </Link>
         </Box>
         <Box display="flex" justifyContent="center" mt={4}>
-          <Button variant="contained" color="primary" onClick={handleUpload} disabled={!file || loading}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleUpload}
+            disabled={!file || loading}
+          >
             {loading ? <CircularProgress size={24} /> : "Upload"}
           </Button>
         </Box>
         {loading && (
           <Card sx={{ mt: 2 }}>
             <CardContent>
-              <Typography variant="subtitle1">{file ? file.name : ""}</Typography>
+              <Typography variant="subtitle1">
+                {file ? file.name : ""}
+              </Typography>
               <Box display="flex" alignItems="center" my={2}>
-                <LinearProgress variant="determinate" value={progress} sx={{ flexGrow: 1, mr: 2 }} />
+                <LinearProgress
+                  variant="determinate"
+                  value={progress}
+                  sx={{ flexGrow: 1, mr: 2 }}
+                />
                 <Typography variant="body2" color="textSecondary">
                   {progress}%
                 </Typography>
@@ -209,8 +269,16 @@ function Userdatabulkupload({ user }) {
             </CardContent>
           </Card>
         )}
-        <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
-          <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+        >
+          <Alert
+            onClose={handleSnackbarClose}
+            severity={snackbarSeverity}
+            sx={{ width: "100%" }}
+          >
             {snackbarMessage}
           </Alert>
         </Snackbar>
@@ -219,7 +287,7 @@ function Userdatabulkupload({ user }) {
             <Button
               variant="contained"
               color="primary"
-              sx={{ mt: 2}}
+              sx={{ mt: 2 }}
               onClick={() => (window.location.href = "/beneficiarydata")}
             >
               Return to Dashboard
