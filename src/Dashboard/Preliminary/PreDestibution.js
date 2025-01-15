@@ -283,7 +283,7 @@ const PreDistribution = ({ userId, preliminaryId }) => {
   }
 
   return (
-    <Container maxWidth="md" className="mt-10">
+    <Container maxWidth="lg" className="mt-10">
       {NgoId[0]?.role[0] === "ngo" && (
         showWelcome ? (
           <WelcomeMessage />
@@ -293,7 +293,7 @@ const PreDistribution = ({ userId, preliminaryId }) => {
       )}
 
       <Box sx={{ mt: 5, backgroundColor: '#F0F4EF', borderRadius: 2, p: 4, mb: 5 }}>
-        <Typography variant="h6" color="primary" sx={{ mb: 3 }}>
+        <Typography variant="h6" color="primary" sx={{ mb: "2rem" }}>
           Pre-Distribution Metrics
         </Typography>
         <MetricsDisplay metrics={metrics} />

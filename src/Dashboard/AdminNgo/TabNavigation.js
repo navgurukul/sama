@@ -50,6 +50,8 @@ const TabNavigation = () => {
       );
     }
     const tabStyle = {
+      width:"17.5rem",
+      padding:"0.5rem 1.5rem",
       fontSize: "18px",
       fontFamily: "Raleway",
       fontWeight: 700,
@@ -153,7 +155,7 @@ const TabNavigation = () => {
       >
         {renderTabs()}
       </Tabs>
-      <Box sx={{ mt: 2 }}>{renderTabContent()}</Box>
+      <Box sx={{ mt: 2}}>{renderTabContent()}</Box>
     </Container>
   );
 };
