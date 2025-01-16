@@ -27,6 +27,7 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
   
   // Function to send a POST request to Google Apps Script Web App
   const AssignToUser = async () => {
+    // const url =  `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`;
     const url = "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec";  // Replace with the Web App URL
     setSumbitLoading(true);
     const requestBody = JSON.stringify({
@@ -78,7 +79,8 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
         method: 'GET',
       });
       const result = await response.json(); 
-           
+          console.log(result);
+          
       if (result.length === 0 ||result.length > 1) {
         setSnackbarMessage('No Tagged data available for the given Laptop ID or MAC Address');
         setSnackbarOpen(true);
@@ -116,8 +118,7 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
         setUserLoading(true);
 
     try {
-            const response = await fetch(`https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${userIdQuery}`)
-
+      const response = await fetch(`https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${userIdQuery}`)
       const result = await response.json();
 
     //   setUserData(result);
