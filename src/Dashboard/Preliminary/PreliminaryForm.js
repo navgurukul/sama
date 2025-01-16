@@ -145,6 +145,8 @@ const PreliminaryForm = ({ userId }) => {
       return { ...prev, courses: updatedCourses };
     });
   };
+
+  
   const handleSubmit = async () => {
     if (!validateForm()) {
       setSnackbar({
@@ -162,9 +164,12 @@ const PreliminaryForm = ({ userId }) => {
       ...formData,
       courses: transformedCourses, // Replace the courses array with the transformed format
     };
+    console.log(payload, "payload");
+    
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbw9O-rLkIeTtQGQvQhtoK4XPS9F710xckxRJxe_V02FrOssJnYs89HuiMjQgU3QDhxtnQ/exec",
+        `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
+        // "https://script.google.com/macros/s/AKfycbw9O-rLkIeTtQGQvQhtoK4XPS9F710xckxRJxe_V02FrOssJnYs89HuiMjQgU3QDhxtnQ/exec",
         {
           method: "POST",
           headers: {
@@ -174,7 +179,7 @@ const PreliminaryForm = ({ userId }) => {
           body: JSON.stringify(payload),
         }
       );
-
+      
       // alert("Form submited successfully!");
       setSnackbar({
         open: true,

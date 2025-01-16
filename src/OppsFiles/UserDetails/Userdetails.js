@@ -230,8 +230,8 @@ const FormComponent = ({ user }) => {
         };
 
         const response = await fetch(
-          //test "https://script.google.com/macros/s/AKfycbxX4RHRWdYMxaW2uYB5rTgoGh3GDV3e8AudBWXj4027IzCwlsAC3QmqgJY-s7u9Je9V/exec",
-          "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+            process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi,
+          // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
           {
             method: "POST",
             headers: {
