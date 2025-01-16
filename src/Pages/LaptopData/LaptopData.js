@@ -27,8 +27,8 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
   
   // Function to send a POST request to Google Apps Script Web App
   const AssignToUser = async () => {
-    // const url =  `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`;
-    const url = "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec";  // Replace with the Web App URL
+    const url =  `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`;
+    // const url = "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec";  // Replace with the Web App URL
     setSumbitLoading(true);
     const requestBody = JSON.stringify({
       laptopId: selectedLaptopId,
@@ -72,7 +72,8 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
 
 //   // Fetch the laptop data based on the search query (ID or MAC address)
   const fetchLaptopData = async () => {
-    const url = "https://script.google.com/macros/s/AKfycbzoDFfHvdHiX4P6UqzTr_ZZZ7ouaSRHIjmfT5cNEgZLHruYDTUP2QlfqqimeokdLEhP/exec";
+    const url =  `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`;
+    // const url = "https://script.google.com/macros/s/AKfycbzoDFfHvdHiX4P6UqzTr_ZZZ7ouaSRHIjmfT5cNEgZLHruYDTUP2QlfqqimeokdLEhP/exec";
     setLoading(true);
     try {
       const response = await fetch(`${url}?idQuery=${idQuery}&macQuery=${macQuery}&type=getLaptopData`, {
@@ -118,7 +119,9 @@ const [selectedUserId, setSelectedUserId] = useState(null); // Store selected us
         setUserLoading(true);
 
     try {
-      const response = await fetch(`https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${userIdQuery}`)
+      const response = await fetch(
+        `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData&userIdQuery=${userIdQuery}`)
+        // `https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${userIdQuery}`)
       const result = await response.json();
 
     //   setUserData(result);

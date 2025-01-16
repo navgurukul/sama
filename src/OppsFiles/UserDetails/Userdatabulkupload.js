@@ -112,7 +112,8 @@ function Userdatabulkupload({ user }) {
 
       try {
         await fetch(
-          "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
+          // "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
           {
             method: "POST",
             body: JSON.stringify(dataToSend),

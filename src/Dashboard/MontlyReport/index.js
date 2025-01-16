@@ -101,7 +101,8 @@ const MonthlyReport = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre"
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre`
+          // "https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre"
         ); // Replace with your API endpoint
         setMetrics(response.data); // Update according to API response structure
       } catch (err) {
@@ -125,7 +126,8 @@ const MonthlyReport = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre&id=${preliminaryId}`
+          // `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
         ); // Replace with your API endpoint
         const dateComparedData = response.data.map((metric) => {
           const unitDate = new Date(metric.Unit); // Parse unit as date
