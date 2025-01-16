@@ -293,6 +293,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
       localStorage.setItem("userStatuses", JSON.stringify(storedStatuses));
 
       await fetch(
+        //  `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
         "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
         {
           method: "POST",
