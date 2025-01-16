@@ -168,7 +168,7 @@ const YearlyReport = () => {
     if (user) {
       axios
         .get(
-          `https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=GetYearlyReport&ngoId=${user}`
+          `${process.env.REACT_APP_NgoInformationApi}?type=GetYearlyReport&ngoId=${user}`
         )
         .then((response) => {
           setYearlyMetrixGet(response.data.data || []);
@@ -200,7 +200,7 @@ const YearlyReport = () => {
     const checkFormCreation = async () => {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbzv3DzoZThej1kzBT6x3IqEJkQT1r9xUClPUbb3LA62QJ-43DUxhUlZzrC7JABuABlb/exec?type=Yearly&id=${id}`
+          `${process.env.REACT_APP_NgoInformationApi}?type=Yearly&id=${id}`
         );
         setIsFormCreated(response.data?.status === "success");
       } catch (err) {

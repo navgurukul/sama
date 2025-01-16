@@ -50,7 +50,7 @@ const BeneficiaryProfile = () => {
 
         // Fetch status history
         const userStatusHistory = await fetch(
-          `https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?email=${email}&type=getMonthlyStatusUpdate`
+          `${process.env.REACT_APP_NgoInformationApi}?email=${email}&type=getMonthlyStatusUpdate`
         );
 
         if (!userStatusHistory.ok) {

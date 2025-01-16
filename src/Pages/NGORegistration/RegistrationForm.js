@@ -118,7 +118,7 @@ function RegistrationForm() {
     setCheckingEmail(true);
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration"
+        `${process.env.REACT_APP_NgoInformationApi}?type=registration`
       );
       const responseData = await response.json();
 
@@ -161,7 +161,7 @@ function RegistrationForm() {
     setCheckingContact(true);
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration"
+        `${process.env.REACT_APP_NgoInformationApi}?type=registration`
       );
       const responseData = await response.json();
   
@@ -200,7 +200,7 @@ function RegistrationForm() {
     async function fetchCompanies() {
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorID"
+          `${process.env.REACT_APP_NgoInformationApi}?type=donorID`
         );
         const data = await response.json();
         setCompanies(data);
@@ -219,7 +219,7 @@ function RegistrationForm() {
     const fetchFormFields = async () => {
       try {
         const baseURL =
-          "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorQuestion";
+          `${process.env.REACT_APP_NgoInformationApi}?type=donorQuestion`;
         const apiUrl = donorIDs ? `${baseURL}&donorId=${donorIDs}` : baseURL;
 
         const response = await fetch(apiUrl);
@@ -405,7 +405,7 @@ function RegistrationForm() {
 
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=NGO",
+          `${process.env.REACT_APP_NgoInformationApi}?type=NGO`,
           {
             method: "POST",
             headers: {

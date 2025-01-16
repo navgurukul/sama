@@ -7,7 +7,6 @@ function NgoProfile() {
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
   const id = NgoId[0]?.NgoId;
   const dispatch = useDispatch();
-  console.log ("id", id)
   
   // Fetching state from Redux
   const { ngoDetails, status, error } = useSelector((state) => state.ngo);

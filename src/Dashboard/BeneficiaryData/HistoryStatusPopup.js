@@ -56,7 +56,7 @@ const HistoryStatusPopup = ({ open, onClose, id, email, monthYear  }) => {
       if (id) {
         axios
           .get(
-            `https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=manageStatus`
+            `${process.env.REACT_APP_NgoInformationApi}?type=manageStatus`
           )
           .then((response) => {
             const filteredData = response.data.filter(
@@ -103,7 +103,7 @@ const HistoryStatusPopup = ({ open, onClose, id, email, monthYear  }) => {
       );
 
       await fetch(
-        "https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=updateStatusHistory",
+        `${process.env.REACT_APP_NgoInformationApi}?type=updateStatusHistory`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -39,7 +39,7 @@ const DocumentReupload = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=MultipleDocsGet&userId=${storedUserId}`
+          `${process.env.REACT_APP_NgoInformationApi}?type=MultipleDocsGet&userId=${storedUserId}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -132,7 +132,7 @@ const DocumentReupload = () => {
 
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=NewMultipleDocsUpload",
+        `${process.env.REACT_APP_NgoInformationApi}?type=NewMultipleDocsUpload`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

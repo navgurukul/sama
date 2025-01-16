@@ -158,7 +158,7 @@ const MonthlyReport = () => {
   useEffect(() => {
     // Fetch data when the component mounts
     fetch(
-      `https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec?type=GetMonthlyReport&id=${user}`
+      `${process.env.React_APP_NgoInformationApi}?type=GetMonthlyReport&id=${user}`
     )
       .then((response) => response.json())
       .then((result) => {
@@ -195,7 +195,7 @@ const MonthlyReport = () => {
     });
   };
 
-  const API_URL = `https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=Monthly&&id=${id}`;
+  const API_URL = `${process.env.REACT_APP_NgoInformationApi}?type=Monthly&&id=${id}`;
 
   useEffect(() => {
     const fetchData = async () => {

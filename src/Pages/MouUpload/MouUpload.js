@@ -7,33 +7,15 @@ import {
   Paper,
   CircularProgress,
   Typography,
-  Grid,
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Box,
 } from "@mui/material";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import InputAdornment from "@mui/material/InputAdornment";
-import SearchIcon from "@mui/icons-material/Search";
-import TablePagination from "@mui/material/TablePagination";
+
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import EditIcon from "@mui/icons-material/Edit";
 
 const MOUCard = (ngoid) => {
   const [file, setFile] = useState(null);
@@ -102,7 +84,7 @@ const MOUCard = (ngoid) => {
       try {
         const response = await fetch(
           // "https://script.google.com/macros/s/AKfycbzgUvcOyW8LsNyErDVcrJy-p_Jm5Oqa9FjTqnYjGe3avEzRlJm4w9c8JO7i3SPb-pAHSQ/exec",
-          "https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=MouUpload",
+          `${process.env.REACT_APP_NgoInformationApi}?type=MouUpload`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

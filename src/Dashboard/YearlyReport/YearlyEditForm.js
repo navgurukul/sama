@@ -31,15 +31,18 @@ const YearlyEditForm = () => {
     severity: "",
   });
 
-  const API_GET_URL = `https://script.google.com/macros/s/AKfycbxs0SUYi40w506ODB351wZ28AYCGatKjhJtIjywP9sueeqXPGu_PmKnsN2qZhiPC8el/exec?type=Yearly&&id=${id}`;
-  const API_POST_URL = `https://script.google.com/macros/s/AKfycbzv3DzoZThej1kzBT6x3IqEJkQT1r9xUClPUbb3LA62QJ-43DUxhUlZzrC7JABuABlb/exec`;
+  const API_GET_URL = `${process.env.REACT_APP_NgoInformationApi}?type=Yearly&&id=${id}`;
+  const API_POST_URL = `${process.env.REACT_APP_NgoInformationApi}?type=UpdateYearly`;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(API_GET_URL);
-        if (response.data.success) {
-          setFields(response.data.data);
+        if (response.data.status === "success") {
+          setFields(response.data.questions.map((q) => ({ 
+            Question: q.question, 
+            Type: q.type 
+          })));
         } else {
           throw new Error("No data found");
         }
@@ -63,7 +66,6 @@ const YearlyEditForm = () => {
     setFields([
       ...fields,
       {
-        Id: id,
         Question: "",
         Type: "text",
       },
@@ -89,7 +91,6 @@ const YearlyEditForm = () => {
         body: JSON.stringify(payload),
         mode: "no-cors",
       });
-      // Show success message
       setSnackbar({
         open: true,
         message: "Form updated successfully!",
@@ -107,7 +108,6 @@ const YearlyEditForm = () => {
     }
   };
 
-  // Snackbar close handler
   const handleCloseSnackbar = () => {
     setSnackbar({ open: false, message: "", severity: "" });
   };
@@ -116,27 +116,34 @@ const YearlyEditForm = () => {
     <Container maxWidth="sm" sx={{ mt: 5 }}>
       {loading ? (
         <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "50vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "50vh",
+          }}
+        >
+          <CircularProgress />
+        </Box>
       ) : error ? (
         <Alert severity="error">{error}</Alert>
       ) : (
         <>
           <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold" }}>
-            Edit Monthly Form
+            Edit Yearly Form
           </Typography>
           {fields.map((field, index) => (
-            <Paper elevation={1} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
+            <Paper
+              key={index}
+              elevation={1}
+              sx={{ p: 3, borderRadius: 2, mb: 4 }}
+            >
               <Box
-                key={index}
-                sx={{ mb: 3, display: "flex", justifyContent: "space-between" }}
+                sx={{
+                  mb: 3,
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
               >
                 <RadioGroup
                   row
@@ -172,9 +179,11 @@ const YearlyEditForm = () => {
                   handleFieldChange(index, "Question", e.target.value)
                 }
                 sx={{ mb: 2 }}
+                fullWidth
               />
             </Paper>
           ))}
+
           <Button
             variant="outlined"
             startIcon={<AddIcon />}
@@ -188,7 +197,7 @@ const YearlyEditForm = () => {
             color="primary"
             fullWidth
             onClick={handleSubmit}
-            sx={{mb:"20px"}}
+            sx={{ mb: "20px" }}
           >
             Update Form
           </Button>
@@ -208,3 +217,4 @@ const YearlyEditForm = () => {
 };
 
 export default YearlyEditForm;
+

@@ -74,7 +74,7 @@ const AdminNgo = () => {
     async function fetchData() {
       try {
         const response = await axios.get(
-          "https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration"
+          `${process.env.REACT_APP_NgoInformationApi}?type=registration`
         );
         const data = response.data.data;
 
@@ -131,7 +131,7 @@ const AdminNgo = () => {
 
       // Await axios delete request
       const response = await fetch(
-        `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec`,
+        `${process.env.REACT_APP_NgoInformationApi}?type=deleteNgo`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -174,7 +174,7 @@ const AdminNgo = () => {
 
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=NGO",
+        `${process.env.REACT_APP_NgoInformationApi}?type=NGO`,
         {
           method: "POST",
           headers: {
@@ -507,19 +507,7 @@ const AdminNgo = () => {
             </Table>
           </TableContainer>
           <Divider />
-          {/* <TablePagination
-        sx={{ mt: 3, mb: 8 }}
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={filteredData.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(event, newPage) => setPage(newPage)}
-        onRowsPerPageChange={(event) => {
-          setRowsPerPage(parseInt(event.target.value, 10));
-          setPage(0);
-        }}
-      /> */}
+
           <TablePagination
             sx={{ mt: 3, mb: 8 }}
             rowsPerPageOptions={[10, 25, 100]}

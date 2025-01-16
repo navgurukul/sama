@@ -216,7 +216,7 @@ const NGOTable = ({
     const fetchStatuses = async () => {
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=manageStatus"
+          `${process.env.REACT_APP_NgoInformationApi}?type=manageStatus`
         );
         const data = await response.json();
         const currentNgoId = id ? id : NgoId[0].NgoId;
@@ -273,7 +273,7 @@ const NGOTable = ({
       }));
 
       await fetch(
-        "https://script.google.com/macros/s/AKfycbzAR35oDa2j26ifFya9cRcM4AlTV2vu124VsBNB04laz8AeOCReG95nej1J9gfWWAf6/exec?type=updateStatusHistory",
+        `${process.env.REACT_APP_NgoInformationApi}?type=updateStatusHistory`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -356,7 +356,7 @@ const NGOTable = ({
       );
 
       await fetch(
-        "https://script.google.com/macros/s/AKfycbxs0SUYi40w506ODB351wZ28AYCGatKjhJtIjywP9sueeqXPGu_PmKnsN2qZhiPC8el/exec?type=updateStatusHistory",
+        `${process.env.REACT_APP_NgoInformationApi}?type=updateStatusHistory`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
