@@ -167,7 +167,8 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
       }
 
       await fetch(
-        "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec",
+         `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
+        // "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -215,7 +216,8 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
       }
 
       await fetch(
-        "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec",
+        `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
+        // "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -293,8 +295,8 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
       localStorage.setItem("userStatuses", JSON.stringify(storedStatuses));
 
       await fetch(
-        //  `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
-        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+         `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
+        // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

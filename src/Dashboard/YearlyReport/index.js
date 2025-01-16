@@ -120,7 +120,8 @@ const YearlyReport = () => {
     const fetchPreliminaryData = async () => {
       try {
         const response = await axios.get(
-          "https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre"
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre`
+          // "https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre"
         );
         setMetrics(response.data);
       } catch (err) {
@@ -141,7 +142,8 @@ const YearlyReport = () => {
     const fetchPreliminaryDetails = async () => {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre&id=${preliminaryId}`
+          // `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
         );
         const updatedMetrics = response.data.map((metric) => {
           const unitDate = new Date(metric.Unit);
