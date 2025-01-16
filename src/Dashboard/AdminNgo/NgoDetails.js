@@ -11,7 +11,7 @@ const NGODetails = ({ ngo }) => {
           <React.Fragment key={item.Id}>
             <Grid item xs={12} sm={6} md={6}>
               <Paper
-                elevation={3}
+                elevation={2}
                 sx={{
                   padding: "20px",
                   marginBottom: "20px",
@@ -73,7 +73,7 @@ const NGODetails = ({ ngo }) => {
             </Grid>
             <Grid item xs={12} sm={6} md={6}>
               <Paper
-                elevation={3}
+                elevation={2}
                 style={{ padding: "20px", marginBottom: "20px" }}
               >
                 <Typography variant="h6" sx={{ margin: "32px 0px",color:"#5C785A" }}>

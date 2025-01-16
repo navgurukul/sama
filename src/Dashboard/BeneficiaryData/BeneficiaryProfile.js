@@ -394,7 +394,7 @@ const BeneficiaryProfile = () => {
           <Typography variant="h6" gutterBottom sx={{ mt: 6, mb: 3 }}>
             Status History
           </Typography>
-          <Divider sx={{ mb: 4 }} />
+          {/* <Divider sx={{ mb: 4 }} /> */}
 
           <Grid
             container

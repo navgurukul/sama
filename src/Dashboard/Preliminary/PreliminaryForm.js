@@ -218,7 +218,7 @@ const PreliminaryForm = ({ userId }) => {
   };
 
   return (
-    <Box sx={{ maxWidth: 592, margin: "auto", padding: 2 }}>
+    <Box sx={{ maxWidth: 592, margin: "auto", padding: 2 , mt:"4rem"}}>
       <Typography variant="h6" gutterBottom sx={{ color: "#4A4A4A" }}>
         Preliminary Distribution Data
       </Typography>

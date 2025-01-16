@@ -13,6 +13,8 @@ import {
   DialogContent,
   DialogTitle,
   Box,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
@@ -46,6 +48,24 @@ const MOUCard = (ngoid) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [ngoIdToChange, setNgoIdToChange] = useState(null);
 
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ open: false, message: "", severity: "" });
+  };
+
+  const showSnackbar = (message, severity) => {
+    setSnackbar({
+      open: true,
+      message,
+      severity,
+    });
+  };
+
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
@@ -62,7 +82,7 @@ const MOUCard = (ngoid) => {
 
   const handleUpload = async () => {
     if (!file) {
-      setMessage("Please select a PDF file to upload.");
+      showSnackbar("Please select a PDF file to upload.", "error");
       return;
     }
 
@@ -92,23 +112,17 @@ const MOUCard = (ngoid) => {
             body: JSON.stringify(payload),
           }
         );
+        setDialogOpen(false);
+        showSnackbar("File uploaded successfully!", "success");
 
-        const result = await response.json();
-        setDialogOpen(false);
-        if (result.status === "success") {
-          setMessage("File uploaded successfully!");
-          setFileUrl(result.fileUrl);
-          setFile(null);
-          setDialogOpen(false); // Close dialog after success
+        // Wait for snackbar to be visible before refreshing
+        setTimeout(() => {
           window.location.reload();
-        } else {
-          setMessage("Upload failed. Please try again.");
-          // throw new Error(result.message || "Upload failed. Please try again.");
-        }
+        }, 2000);
       } catch (error) {
-        setMessage("File uploaded successfully!");
-        setDialogOpen(false);
-        window.location.reload();
+        showSnackbar("An error occurred during upload.", "error");
+        // setDialogOpen(false);
+        // window.location.reload();
         // setMessage(error.message);
       } finally {
         setLoading(false);
@@ -118,16 +132,10 @@ const MOUCard = (ngoid) => {
 
   return (
     <>
-      <Container
-        sx={{
-          my: 3,
-          ml: "0px",
-        }}
-      >
+      <Box sx={{ mt: 5, background: "#F8F3F0", borderRadius: 2, p: "2rem" }}>
         <Paper
           elevation={0}
           sx={{
-            p: 3,
             display: "flex",
             flexDirection: "column",
             backgroundColor: "#f8f5f2",
@@ -211,7 +219,16 @@ const MOUCard = (ngoid) => {
             </Button>
           </DialogActions>
         </Dialog>
-      </Container>
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+        >
+          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      </Box>
     </>
   );
 };
