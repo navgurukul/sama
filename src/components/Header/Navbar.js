@@ -257,10 +257,31 @@ const Navbar = () => {
                     borderRadius: "100px"
                   }}
                 >
-                  Dashboard Login
+                  Login
                 </Button>
               </MuiLink>
             )}
+            {!isLoggedIn && !isActive &&  <MuiLink
+                sx={{
+                  margin: 1,
+                  color: "#4A4A4A",
+                  textDecoration: "none",
+                }}
+                component={Link}
+                to="/ngoregistration"
+              ><Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    fontWeight: activeTab === "/login" ? "bold" : "normal",
+                    borderRadius: "100px",
+                    bgcolor:"#453722",
+                    color:"#ffffff"
+
+                  }}
+                >
+                  NGO registration
+                </Button></MuiLink>}
           </Box>
           {!isLoggedIn && (
             <Box className="mobile-nav">

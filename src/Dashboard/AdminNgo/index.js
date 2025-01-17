@@ -440,7 +440,7 @@ const AdminNgo = () => {
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             // label="Request Submitted"
-                            value={ngo["Ngo Type"] || ""}
+                            value={ngo["Ngo Type"] || type}
                             onChange={(e) => {
                               e.stopPropagation();
                               e.preventDefault();

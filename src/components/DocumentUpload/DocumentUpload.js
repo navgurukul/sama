@@ -311,7 +311,7 @@ const DocumentUpload = (filename) => {
               <Button
                 variant="contained"
                 type="submit"
-                disabled={uploading || !areAllDocumentsUploaded()}
+                // disabled={uploading || !areAllDocumentsUploaded()}
                 startIcon={uploading ? <CircularProgress size={16} /> : undefined}
                 sx={{
                   minWidth: 180,
