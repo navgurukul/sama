@@ -158,7 +158,7 @@ const AdminNgo = () => {
   const handleStatusChange = (id, newStatus) => {
     setSelectedStatus(newStatus);
     setNgoIdToChange(id);
-    setOpenDialog(true); // Open confirmation dialog
+    setOpenDialog(true); 
   };
 
   const handleConfirmStatusChange = async (e) => {
