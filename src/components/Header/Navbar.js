@@ -261,7 +261,15 @@ const Navbar = () => {
                 </Button>
               </MuiLink>
             )}
-            {!isLoggedIn && !isActive && <Button
+            {!isLoggedIn && !isActive &&  <MuiLink
+                sx={{
+                  margin: 1,
+                  color: "#4A4A4A",
+                  textDecoration: "none",
+                }}
+                component={Link}
+                to="/login"
+              ><Button
                   type="submit"
                   variant="contained"
                   sx={{
@@ -273,7 +281,7 @@ const Navbar = () => {
                   }}
                 >
                   NGO registration
-                </Button>}
+                </Button></MuiLink>}
           </Box>
           {!isLoggedIn && (
             <Box className="mobile-nav">
