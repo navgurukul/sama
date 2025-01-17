@@ -464,8 +464,8 @@ function RegistrationForm() {
   };
 
   return (
-    <Box sx={{ maxWidth: 600, margin: "auto", padding: 3 }}>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ maxWidth: 600, margin: "auto", padding: 5 }}>
+      <Typography  variant="h5" gutterBottom>
         NGO Information Form
       </Typography>
       {formFields?.length == 0 ? (
