@@ -65,7 +65,7 @@ const AdminNgo = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [ngoIdToChange, setNgoIdToChange] = useState(null);
-  const [type, setType] = useState("1 to one");
+  const [type, setType] = useState("");
 
   const dialogRef = useRef(null);
   const NgoType = ["1 to one", "1 to many"];
