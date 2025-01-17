@@ -268,7 +268,7 @@ const Navbar = () => {
                   textDecoration: "none",
                 }}
                 component={Link}
-                to="/login"
+                to="/ngoregistration"
               ><Button
                   type="submit"
                   variant="contained"
