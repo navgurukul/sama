@@ -161,7 +161,9 @@ const Ngodashboard = () => {
         };        
         
         // Send the payload to the Google Apps Script API
-        const response = await fetch('https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec', {
+        const response = await fetch(
+          `${process.env.REACT_APP_NgoInformationApi}`, {
+          // 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -179,6 +181,7 @@ const Ngodashboard = () => {
               ...acc,
               [label]: { file: null, status: 'completed' },
             }), {})
+            
           );
         } else {
           setError('Failed to upload files. Please try again.');

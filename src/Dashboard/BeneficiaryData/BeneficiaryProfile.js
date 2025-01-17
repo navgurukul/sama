@@ -32,8 +32,8 @@ const BeneficiaryProfile = () => {
 
   const user = Array.isArray(NgoId) && NgoId.length > 0 ? NgoId[0] : null;
 
-  const API_URL = `https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${id}`;
-
+  // const API_URL = `https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${id}`;
+  const API_URL =  `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData&userIdQuery=${id}`;
   useEffect(() => {
     const fetchData = async () => {
       try {

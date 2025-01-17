@@ -60,7 +60,8 @@ const BeneficiaryData = () => {
     async function fetchData() {
       try {
         const response = await axios.get(
-          "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec?type=getUserData"
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData` // to fetch the userdata
+          // "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec?type=getUserData"
         );
         const data = response.data;
 

@@ -34,8 +34,9 @@ const ManageStatuses = () => {
     severity: "success",
   });
 
-  const API_URL = `https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=manageStatus`;
-
+  // const API_URL = `https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=manageStatus`;
+  const API_URL = `${process.env.React_APP_NgoInformationApi}?type=manageStatus`;
+  
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") return;
     setSnackbar({ ...snackbar, open: false });

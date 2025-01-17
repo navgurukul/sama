@@ -135,7 +135,8 @@ const PreDistribution = ({ userId, preliminaryId }) => {
     const fetchPreliminaryData = async () => {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre&id=${preliminaryId}`
+          // `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
         );
         
         const processedData = response.data.map(metric => ({

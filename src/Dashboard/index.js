@@ -21,7 +21,9 @@ function DashboardPage() {
         const fetchData = async () => {
             try {
                 const response = await 
-                fetch('https://script.google.com/macros/s/AKfycbzWkc8lDkTquwsjj_--B4Qj2GHA_gc_L4ev8uxBsmlWha2vE62hTLNMRaHFbsw7bKzYlg/exec');
+                fetch(
+                  `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`);
+                  // 'https://script.google.com/macros/s/AKfycbzWkc8lDkTquwsjj_--B4Qj2GHA_gc_L4ev8uxBsmlWha2vE62hTLNMRaHFbsw7bKzYlg/exec');
                 const result = await response.json();
                 setData(result);
             } catch (error) {
