@@ -50,7 +50,7 @@ const TabNavigation = () => {
       );
     }
     const tabStyle = {
-      width:"17.5rem",
+      // width:"17.5rem",
       padding:"0.5rem 1.5rem",
       fontSize: "18px",
       fontFamily: "Raleway",
