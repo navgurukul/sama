@@ -160,7 +160,7 @@ const MonthlyReport = () => {
   useEffect(() => {
     // Fetch data when the component mounts
     fetch(
-      `${process.env.React_APP_NgoInformationApi}?type=GetMonthlyReport&id=${user}`
+      `${process.env.REACT_APP_NgoInformationApi}?type=GetMonthlyReport&id=${user}`
     )
       .then((response) => response.json())
       .then((result) => {
