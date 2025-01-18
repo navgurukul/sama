@@ -75,7 +75,6 @@ function RegistrationForm() {
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [checkingContact, setCheckingContact] = useState(false); // New state for checking contact number
 
-
   const [formData, setFormData] = useState({
     organizationName: "",
     registrationNumber: "",
@@ -100,7 +99,10 @@ function RegistrationForm() {
     previousProjects: "",
     sufficientStaff: "",
     impactReport: "",
+    orgLaptopRequire: "",
   });
+
+  console.log("Form Data:", formData);
 
   const [errors, setErrors] = useState({});
   const [fileName, setFileName] = useState("");
@@ -145,7 +147,6 @@ function RegistrationForm() {
             return newErrors;
           });
         }
-        
       } else {
         console.error("Unexpected API response structure:", responseData);
       }
@@ -157,23 +158,27 @@ function RegistrationForm() {
   };
   const verifyContactNumber = async (contactNumber) => {
     if (!contactNumber) return;
-  
+
     setCheckingContact(true);
     try {
       const response = await fetch(
         `${process.env.REACT_APP_NgoInformationApi}?type=registration`
       );
       const responseData = await response.json();
-  
-      if (responseData.status === "success" && Array.isArray(responseData.data)) {
+
+      if (
+        responseData.status === "success" &&
+        Array.isArray(responseData.data)
+      ) {
         const exists = responseData.data.some(
           (item) =>
-            String(item.contactNumber).replace(/\D/g, "") === contactNumber.replace(/\D/g, "")
+            String(item.contactNumber).replace(/\D/g, "") ===
+            contactNumber.replace(/\D/g, "")
         );
         console.log("Contact Number Exists:", exists);
-  
+
         setContactExists(exists);
-  
+
         if (exists) {
           setErrors((prev) => ({
             ...prev,
@@ -195,7 +200,7 @@ function RegistrationForm() {
       setCheckingContact(false);
     }
   };
-  
+
   useEffect(() => {
     async function fetchCompanies() {
       try {
@@ -288,8 +293,8 @@ function RegistrationForm() {
 
   const validate = () => {
     const newErrors = {};
-    console.log("Form Data:", formData);
-    console.log("Validation Errors:", newErrors);
+    // console.log("Form Data:", formData);
+    // console.log("Validation Errors:", newErrors);
 
     formfields.forEach((field) => {
       const value = formData[field.name];
@@ -335,16 +340,6 @@ function RegistrationForm() {
           } should contain only letters and spaces`;
         }
       }
-
-      // Registration number validation
-      // if (field.name === "registrationNumber" && value) {
-      //   const numberPattern = /^\d+$/;
-      //   if (!numberPattern.test(value)) {
-      //     newErrors[field.name] = `${
-      //       field.label || field.name
-      //     } should contain only digits`;
-      //   }
-      // }
     });
 
     // Add email existence validation
@@ -401,7 +396,10 @@ function RegistrationForm() {
         fileName: updatedFormData.impactReport.name || "",
         mimeType: updatedFormData.impactReport.type || "",
         type: "NGO",
+        orgLaptopRequire: updatedFormData.orgLaptopRequire,
       };
+
+      console.log("Submitting form data:", formDataWithType);
 
       try {
         const response = await fetch(
@@ -444,6 +442,7 @@ function RegistrationForm() {
           previousProjects: "",
           sufficientStaff: "",
           impactReport: "",
+          orgLaptopRequire: "",
         });
         setFileName("");
         setErrors({});
@@ -464,8 +463,8 @@ function RegistrationForm() {
   };
 
   return (
-    <Box sx={{ maxWidth: 600, margin: "auto", padding: 3 }}>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ maxWidth: 600, margin: "auto", padding: 5 }}>
+      <Typography variant="h5" gutterBottom>
         NGO Information Form
       </Typography>
       {formFields?.length == 0 ? (
@@ -501,7 +500,6 @@ function RegistrationForm() {
                         }
                       : undefined
                   }
-                  
                 />
               );
             } else if (field?.type === "radio") {
@@ -617,16 +615,15 @@ function RegistrationForm() {
           })}
 
           {formFields.length > 0 && (
-           <Button
-           type="submit"
-           variant="contained"
-           color="primary"
-           disabled={!isFormValid || loading || emailExists || contactExists}
-           sx={{ marginTop: 2 }}
-         >
-           {loading ? <CircularProgress size={24} /> : "Submit"}
-         </Button>
-         
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={!isFormValid || loading || emailExists || contactExists}
+              sx={{ marginTop: 2 }}
+            >
+              {loading ? <CircularProgress size={24} /> : "Submit"}
+            </Button>
           )}
         </form>
       )}

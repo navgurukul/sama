@@ -65,7 +65,7 @@ const AdminNgo = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [ngoIdToChange, setNgoIdToChange] = useState(null);
-  const [type, setType] = useState("1 to one");
+  const [type, setType] = useState("");
 
   const dialogRef = useRef(null);
   const NgoType = ["1 to one", "1 to many"];
@@ -158,7 +158,7 @@ const AdminNgo = () => {
   const handleStatusChange = (id, newStatus) => {
     setSelectedStatus(newStatus);
     setNgoIdToChange(id);
-    setOpenDialog(true); // Open confirmation dialog
+    setOpenDialog(true); 
   };
 
   const handleConfirmStatusChange = async (e) => {
@@ -440,7 +440,7 @@ const AdminNgo = () => {
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             // label="Request Submitted"
-                            value={ngo["Ngo Type"] || ""}
+                            value={ngo["Ngo Type"] || type}
                             onChange={(e) => {
                               e.stopPropagation();
                               e.preventDefault();
