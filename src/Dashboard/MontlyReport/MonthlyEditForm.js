@@ -38,8 +38,12 @@ const MonthlyEditForm = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(API_GET_URL);
-        if (response.data.success) {
-          setFields(response.data.data);
+        if (response.data.status === "success") {
+         
+          setFields(response.data.questions.map((item) => ({
+            Question: item.question,
+            Type: item.type,
+          })));
         } else {
           throw new Error("No data found");
         }
@@ -52,6 +56,7 @@ const MonthlyEditForm = () => {
 
     fetchData();
   }, [id]);
+  console.log("fields", fields)
 
   const handleFieldChange = (index, key, value) => {
     const updatedFields = [...fields];
@@ -63,7 +68,6 @@ const MonthlyEditForm = () => {
     setFields([
       ...fields,
       {
-        Id: id,
         Question: "",
         Type: "text",
       },
@@ -107,7 +111,7 @@ const MonthlyEditForm = () => {
       });
     }
   };
-  // Snackbar close handler
+
   const handleCloseSnackbar = () => {
     setSnackbar({ open: false, message: "", severity: "" });
   };
@@ -116,15 +120,15 @@ const MonthlyEditForm = () => {
     <Container maxWidth="sm" sx={{ mt: 5 }}>
       {loading ? (
         <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "50vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "50vh",
+          }}
+        >
+          <CircularProgress />
+        </Box>
       ) : error ? (
         <Alert severity="error">{error}</Alert>
       ) : (
@@ -133,9 +137,12 @@ const MonthlyEditForm = () => {
             Edit Monthly Form
           </Typography>
           {fields.map((field, index) => (
-            <Paper elevation={1} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
+            <Paper
+              key={index}
+              elevation={1}
+              sx={{ p: 3, borderRadius: 2, mb: 4 }}
+            >
               <Box
-                key={index}
                 sx={{ mb: 3, display: "flex", justifyContent: "space-between" }}
               >
                 <RadioGroup
@@ -171,6 +178,7 @@ const MonthlyEditForm = () => {
                 onChange={(e) =>
                   handleFieldChange(index, "Question", e.target.value)
                 }
+                fullWidth
                 sx={{ mb: 2 }}
               />
             </Paper>
@@ -188,7 +196,6 @@ const MonthlyEditForm = () => {
             color="primary"
             fullWidth
             onClick={handleSubmit}
-            sx={{mb:"20px"}}
           >
             Update Form
           </Button>

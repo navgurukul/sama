@@ -206,7 +206,7 @@ const MonthlyReport = () => {
 
         // Assuming the API returns { success: true, exists: true/false }
         if (response.data) {
-          setIsFormCreated(response.data.success);
+          setIsFormCreated(response.data.status==="success");
         } else {
           throw new Error("Invalid response from server");
         }
