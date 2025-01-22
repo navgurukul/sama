@@ -7,12 +7,33 @@ const YearlyReportingForm = () => {
   const [questions, setQuestions] = useState([]); // Holds fetched questions and their types
   const [error, setError] = useState(""); // For error handling
   const [formData, setFormData] = useState({}); // For storing answers
+    const [isFormValid, setIsFormValid] = useState(false);
+    const [loading, setLoading] = useState(true);
 
   const location = useLocation();
   const { month, year } = location.state || {};
   const navigate = useNavigate();
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
   const ngoId = NgoId[0]?.NgoId;
+
+
+    useEffect(() => {
+      const checkFormValidity = () => {
+        if (questions.length === 0) return false;
+  
+        // Check if all questions have been answered
+        const allQuestionsAnswered = questions.every(
+          (question) =>
+            formData[question.question] &&
+            formData[question.question].toString().trim() !== ""
+        );
+  
+        setIsFormValid(allQuestionsAnswered);
+      };
+  
+      checkFormValidity();
+    }, [formData, questions]);
+
 
   useEffect(() => {
     async function fetchData() {
@@ -25,6 +46,7 @@ const YearlyReportingForm = () => {
         console.error('Error fetching data:', error);
         setError("Failed to load questions.");
       }
+      setLoading(false);
     }
     if (ngoId) fetchData();
   }, [ngoId]);
@@ -68,6 +90,15 @@ const YearlyReportingForm = () => {
     }
   };
 
+    if (loading) {
+      return (
+        <Typography align="center" mt={4}>
+          Loading...
+        </Typography>
+      );
+    }
+  
+
   return (
     <Container maxWidth="sm">
       <Paper
@@ -79,7 +110,7 @@ const YearlyReportingForm = () => {
         }}
         elevation={0}
       >
-        <Typography variant="h5" align="center" gutterBottom>
+        <Typography variant="h5" gutterBottom>
           {month && month} {year && year} Report
         </Typography>
 
@@ -87,7 +118,7 @@ const YearlyReportingForm = () => {
           <Box component="form" sx={{ mt: 2 }} onSubmit={handleSubmit} noValidate>
             {questions.map((question, index) => (
               <Box key={index} sx={{ mb: 2 }}>
-                <FormLabel>{question.question}</FormLabel>
+                <FormLabel sx={{ color: "#4A4A4A" ,fontSize: "1.125rem",fontFamily:"Raleway",fontWeight:"700",lineHeight:"170%", }}>{question.question}</FormLabel>
                 {question.type === "number" ? (
                   <TextField
                     name={question.question}
@@ -127,7 +158,8 @@ const YearlyReportingForm = () => {
               <Button
                 type="submit"
                 variant="contained"
-                color="success"
+                // color="success"
+                disabled={!isFormValid}
                 sx={{ paddingX: 4, textTransform: 'none', fontSize: '16px' }}
               >
                 Submit Answers
@@ -136,7 +168,7 @@ const YearlyReportingForm = () => {
           </Box>
         ) : (
           <Typography align="center" color="error">
-            {error || "Questions Unavailable..."}
+            Questions Unavailable...
           </Typography>
         )}
       </Paper>

@@ -18,24 +18,24 @@ import Survey from "./assets/Survey 1.svg";
 // Helper functions
 const parseDate = (dateString) => {
   // Handle ISO format dates (e.g., "2025-01-31T19:51:34.000Z")
-  if (dateString.includes('T')) {
+  if (dateString.includes("T")) {
     return new Date(dateString);
   }
-  
+
   // Handle format "DD/MM/YYYY, HH:mm:ss"
-  const [datePart, timePart] = dateString.split(', ');
+  const [datePart, timePart] = dateString.split(", ");
   if (!datePart || !timePart) return null;
-  
-  const [day, month, year] = datePart.split('/');
+
+  const [day, month, year] = datePart.split("/");
   if (!day || !month || !year) return null;
-  
+
   // JavaScript months are 0-based
   return new Date(year, parseInt(month) - 1, day);
 };
 
 const generateMonthlyDates = (startDate) => {
   if (!startDate) return [];
-  
+
   const parsedStartDate = parseDate(startDate);
   if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
     console.error("Invalid start date:", startDate);
@@ -48,13 +48,13 @@ const generateMonthlyDates = (startDate) => {
     newDate.setMonth(parsedStartDate.getMonth() + i + 1); // Start from next month
     dates.push(newDate);
   }
-  
+
   return dates;
 };
 
 const generateYearlyDates = (startDate) => {
   if (!startDate) return [];
-  
+
   const parsedStartDate = parseDate(startDate);
   if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
     console.error("Invalid start date:", startDate);
@@ -67,17 +67,15 @@ const generateYearlyDates = (startDate) => {
 };
 
 const formatDate = (date) => {
-  if (!date || isNaN(date.getTime())) return '';
-  
+  if (!date || isNaN(date.getTime())) return "";
+
   const day = date.getDate();
   const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
   return `${day} ${month} ${year}`;
 };
 
-
 const formatDateCurrent = (input) => {
-
   // Create a Date object directly from the ISO 8601 input
   const date = new Date(input);
 
@@ -87,11 +85,9 @@ const formatDateCurrent = (input) => {
   }
 
   // Format the month and year
-  const options = { month: 'long', year: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+  const options = { month: "long", year: "numeric" };
+  return date.toLocaleDateString("en-US", options);
 };
-
-
 
 const YearlyReport = () => {
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
@@ -109,7 +105,6 @@ const YearlyReport = () => {
   const [currentDate] = useState(new Date());
   const [isDataAvailable, setIsDataAvailable] = useState(false);
   const [extraLoader, setExtraLoader] = useState(true);
-
 
   const yearlyDates =
     YearlyReportingDate && generateYearlyDates(YearlyReportingDate);
@@ -175,12 +170,12 @@ const YearlyReport = () => {
         .then((response) => {
           setYearlyMetrixGet(response.data.data || []);
           setIsDataAvailable(response.data.success);
-          setExtraLoader(false)
+          setExtraLoader(false);
         })
         .catch((err) => {
           console.error("Error fetching yearly reports:", err);
           setError("Failed to fetch yearly reports.");
-          setExtraLoader(false)
+          setExtraLoader(false);
         });
     }
   }, [user]);
@@ -232,54 +227,78 @@ const YearlyReport = () => {
 
   return isDataAvailable ? (
     <>
-      <Typography variant="h6" gutterBottom>
-        Yearly Report
-      </Typography>
-      <Grid container spacing={3}>
-        {yearlyDates &&
-          yearlyDates?.map((report, index) => {
-            const isEnabled = currentDate >= report;
-            const monthName = report.toLocaleString("default", {
-              month: "long",
-            });
-            const year = report.getFullYear();
+      <Container Container maxWidth="md">
+        <Typography variant="h6" gutterBottom sx={{ color: "#4A4A4A" }}>
+          Yearly Report
+        </Typography>
+        {!yearlyDates.length > 0 && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "200px",
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
+        <Grid container spacing={3}>
+          {yearlyDates &&
+            yearlyDates?.map((report, index) => {
+              const isEnabled = currentDate >= report;
+              const monthName = report.toLocaleString("default", {
+                month: "long",
+              });
+              const year = report.getFullYear();
 
-            return (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card
-                  sx={{
-                    backgroundColor: !isEnabled && "#E0E0E0",
-                    cursor: isEnabled ? "pointer" : "default", border: '2px solid black',
-                  }}
-                  onClick={() =>
-                    isEnabled &&
-                    handleCardClick(
-                      yearlyMetrixGet,
-                      monthName,
-                      year,
-                      formattedstartDate
-                    )
-                  }
-                >
-                  <CardContent>
-                    <Typography variant="subtitle1">
-                      {monthName} {year}
-                    </Typography>
-                    {isEnabled && (
-                      <Box display="flex" alignItems="center">
-                        <CheckCircleIcon color="success" />
-                        <Typography color="green">Submitted</Typography>
-                      </Box>
-                    )}
-                  </CardContent>
-                </Card>
-              </Grid>
-            );
-          })}
-      </Grid>
+              return (
+                <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Card
+                    sx={{
+                      boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.1)",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      "&:hover": {
+                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                      },
+                    }}
+                    onClick={() =>
+                      isEnabled &&
+                      handleCardClick(
+                        yearlyMetrixGet,
+                        monthName,
+                        year,
+                        formattedstartDate
+                      )
+                    }
+                  >
+                    <CardContent>
+                      <Typography variant="subtitle1">
+                        {monthName} {year}
+                      </Typography>
+                      {isEnabled && (
+                        <Box display="flex" alignItems="center" mt={1} ml={2}>
+                          <CheckCircleIcon color="success" />
+                          <Typography
+                            color="#48A145"
+                            variant="subtitle1"
+                            ml={1}
+                          >
+                            Submitted
+                          </Typography>
+                        </Box>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            })}
+        </Grid>
+      </Container>
     </>
   ) : (
-    <Container maxWidth="md" sx={{ mt: 5 , mb: 5}}>
+    <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
       {/* <h1>Yearly Report</h1> */}
       {loading ? (
         <Box

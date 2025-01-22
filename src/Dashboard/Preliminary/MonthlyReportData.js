@@ -36,10 +36,10 @@ function MonthlyReportData() {
         <Paper
           sx={{
             width: '528px',
-            padding: '32px',
+            padding: '2rem',
             backgroundColor: 'primary.light',
             textAlign: 'left',
-            mt:"25px"
+            mt:"2rem"
           }}
         >
           <Typography variant="h6" fontWeight="bold" color="primary.main" mb={2}>
@@ -63,11 +63,6 @@ function MonthlyReportData() {
        <Box display="flex" justifyContent="center" mt="32PX">
             <Button
               variant="contained"
-              // sx={{
-              //   backgroundColor: '#2e523c',
-              //   color: '#ffffff',
-              //   '&:hover': { backgroundColor: '#3a6e4b' },
-              // }}
              onClick={() =>  (gettingStored === "admin") ? navigate(`/ngo`) : navigate('/preliminary')} 
             >
               Go to Dashboard

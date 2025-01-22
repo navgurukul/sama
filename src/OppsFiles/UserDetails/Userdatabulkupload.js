@@ -166,6 +166,10 @@ function Userdatabulkupload({ user }) {
     validateAndSetFile(droppedFile);
   };
 
+  const previousRoute = () => {
+    window.history.back();
+  }
+
   return (
     <>
       <Box mt={3}>
@@ -289,7 +293,7 @@ function Userdatabulkupload({ user }) {
               variant="contained"
               color="primary"
               sx={{ mt: 2 }}
-              onClick={() => (window.location.href = "/beneficiarydata")}
+              onClick={previousRoute}
             >
               Return to Dashboard
             </Button>

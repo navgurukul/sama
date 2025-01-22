@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -68,12 +69,13 @@ const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
 };
 
 function RegistrationForm() {
+  const navigate = useNavigate();
   const { donorId } = useParams();
   const [formFields, setFormFields] = useState([]);
   const [emailExists, setEmailExists] = useState(false);
   const [contactExists, setContactExists] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
-  const [checkingContact, setCheckingContact] = useState(false); // New state for checking contact number
+  const [checkingContact, setCheckingContact] = useState(false);
 
   const [formData, setFormData] = useState({
     organizationName: "",
@@ -102,8 +104,6 @@ function RegistrationForm() {
     orgLaptopRequire: "",
   });
 
-  console.log("Form Data:", formData);
-
   const [errors, setErrors] = useState({});
   const [fileName, setFileName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -113,7 +113,6 @@ function RegistrationForm() {
   const [companies, setCompanies] = useState([]);
   const [isFormValid, setIsFormValid] = useState(false);
 
-  // Updated email verification function for new API response structure
   const verifyEmail = async (email) => {
     if (!email) return;
 
@@ -124,12 +123,10 @@ function RegistrationForm() {
       );
       const responseData = await response.json();
 
-      // Check if response has the expected structure
       if (
         responseData.status === "success" &&
         Array.isArray(responseData.data)
       ) {
-        // Check if email exists in the data array
         const exists = responseData.data.some(
           (item) => item.email?.toLowerCase() === email.toLowerCase()
         );
@@ -147,8 +144,6 @@ function RegistrationForm() {
             return newErrors;
           });
         }
-      } else {
-        console.error("Unexpected API response structure:", responseData);
       }
     } catch (error) {
       console.error("Error checking email:", error);
@@ -156,6 +151,7 @@ function RegistrationForm() {
       setCheckingEmail(false);
     }
   };
+
   const verifyContactNumber = async (contactNumber) => {
     if (!contactNumber) return;
 
@@ -175,8 +171,6 @@ function RegistrationForm() {
             String(item.contactNumber).replace(/\D/g, "") ===
             contactNumber.replace(/\D/g, "")
         );
-        console.log("Contact Number Exists:", exists);
-
         setContactExists(exists);
 
         if (exists) {
@@ -191,8 +185,6 @@ function RegistrationForm() {
             return newErrors;
           });
         }
-      } else {
-        console.error("Unexpected API response structure:", responseData);
       }
     } catch (error) {
       console.error("Error checking contact number:", error);
@@ -242,12 +234,10 @@ function RegistrationForm() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    // Check email when email field changes
     if (name === "email") {
       verifyEmail(value);
     }
 
-    // Check contact number when contact number field changes
     if (name === "contactNumber") {
       verifyContactNumber(value);
     }
@@ -293,8 +283,6 @@ function RegistrationForm() {
 
   const validate = () => {
     const newErrors = {};
-    // console.log("Form Data:", formData);
-    // console.log("Validation Errors:", newErrors);
 
     formfields.forEach((field) => {
       const value = formData[field.name];
@@ -308,8 +296,7 @@ function RegistrationForm() {
       if (field.name === "contactNumber" && value) {
         const contactNumberPattern = /^\d{10}$/;
         if (!contactNumberPattern.test(value)) {
-          newErrors[field.name] =
-            "Contact number must be a valid 10-digit number";
+          newErrors[field.name] = "Contact number must be a valid 10-digit number";
         }
       }
 
@@ -325,24 +312,35 @@ function RegistrationForm() {
       if (field.name === "organizationName" && value) {
         const textPattern = /^[A-Za-z\s]+$/;
         if (!textPattern.test(value)) {
-          newErrors[field.name] = `${
-            field.label || field.name
-          } should contain only letters and spaces`;
+          newErrors[field.name] = "Organization name should contain only letters and spaces";
         }
       }
 
-      // Primary contact name validation
+      // Registration number validation - only numbers
+      if (field.name === "registrationNumber" && value) {
+        const numberPattern = /^\d+$/;
+        if (!numberPattern.test(value)) {
+          newErrors[field.name] = "Registration number must contain only numbers";
+        }
+      }
+
+      // Primary contact name validation - allow letters
       if (field.name === "primaryContactName" && value) {
-        const textPattern = /^[A-Za-z\s]+$/;
+        const textPattern = /^[A-Za-z\s]+$/;;  
         if (!textPattern.test(value)) {
-          newErrors[field.name] = `${
-            field.label || field.name
-          } should contain only letters and spaces`;
+          newErrors[field.name] = "Name should contain only letters";
         }
       }
     });
 
-    // Add email existence validation
+    // Validate orgLaptopRequire field - only numbers
+    if (formData.orgLaptopRequire) {
+      const numberPattern = /^\d+$/;
+      if (!numberPattern.test(formData.orgLaptopRequire)) {
+        newErrors.orgLaptopRequire = "Please enter only numbers";
+      }
+    }
+
     if (emailExists) {
       newErrors.email = "This email is already registered";
     }
@@ -399,8 +397,6 @@ function RegistrationForm() {
         orgLaptopRequire: updatedFormData.orgLaptopRequire,
       };
 
-      console.log("Submitting form data:", formDataWithType);
-
       try {
         const response = await fetch(
           `${process.env.REACT_APP_NgoInformationApi}?type=NGO`,
@@ -415,37 +411,15 @@ function RegistrationForm() {
         );
 
         setLoading(false);
-        setSnackbarMessage("Form submitted successfully!");
+        setSnackbarMessage("Thank you for submitting! We will contact you soon.");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
-        setFormData({
-          organizationName: "",
-          registrationNumber: "",
-          primaryContactName: "",
-          contactNumber: "",
-          email: "",
-          operatingState: "",
-          location: [],
-          yearsOperating: "",
-          focusArea: "",
-          worksWithWomen: "",
-          infrastructure: "",
-          beneficiarySelection: [],
-          beneficiarySelectionOther: "",
-          numberOfBeneficiaries: "",
-          ageGroup: "",
-          primaryUse: [],
-          primaryUseOther: "",
-          expectedOutcome: "",
-          laptopTracking: "",
-          jobsCreated: "",
-          previousProjects: "",
-          sufficientStaff: "",
-          impactReport: "",
-          orgLaptopRequire: "",
-        });
-        setFileName("");
-        setErrors({});
+
+        // Delay navigation to show the success message
+        setTimeout(() => {
+          navigate('/'); // Navigate to home page after 2 seconds
+        }, 2000);
+
       } catch (error) {
         console.error("Error submitting form:", error);
         setSnackbarMessage("Error submitting form. Please try again.");

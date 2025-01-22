@@ -340,7 +340,7 @@ const NGOTable = ({
           alignItems: "center",
         }}
       >
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" mt={2} gutterBottom>
           {filteredData.length > 0
             ? `All Beneficiaries (${filteredData.length})`
             : `All Beneficiaries`}
