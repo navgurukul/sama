@@ -118,7 +118,7 @@ const YearlyReportingForm = () => {
           <Box component="form" sx={{ mt: 2 }} onSubmit={handleSubmit} noValidate>
             {questions.map((question, index) => (
               <Box key={index} sx={{ mb: 2 }}>
-                <FormLabel sx={{ color: "#4A4A4A" ,fontSize: "1.125rem",fontFamily:"normal",fontWeight:"700",lineHeight:"170%", }}>{question.question}</FormLabel>
+                <FormLabel sx={{ color: "#4A4A4A" ,fontSize: "1.125rem",fontFamily:"Raleway",fontWeight:"700",lineHeight:"170%", }}>{question.question}</FormLabel>
                 {question.type === "number" ? (
                   <TextField
                     name={question.question}

@@ -156,7 +156,7 @@ const MonthlyReportingForm = () => {
           >
             {questions.map((question, index) => (
               <Box key={index} sx={{ mb: 2 }}>
-                <FormLabel sx={{ color: "#4A4A4A" ,fontSize: "1.125rem",fontFamily:"normal",fontWeight:"700",lineHeight:"170%", }}>
+                <FormLabel sx={{ color: "#4A4A4A" ,fontSize: "1.125rem",fontFamily:"Raleway",fontWeight:"700",lineHeight:"170%", }}>
                   {question.question}
                 </FormLabel>
                 {renderInputField(question, index)}

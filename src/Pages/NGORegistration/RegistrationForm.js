@@ -326,7 +326,7 @@ function RegistrationForm() {
 
       // Primary contact name validation - allow letters
       if (field.name === "primaryContactName" && value) {
-        const textPattern = /^[A-Za-z]+$/;  
+        const textPattern = /^[A-Za-z\s]+$/;;  
         if (!textPattern.test(value)) {
           newErrors[field.name] = "Name should contain only letters";
         }
