@@ -25,7 +25,7 @@ const DonorManager = () => {
   useEffect(() => {
     const fetchFormFields = async () => {
       try {
-        const baseURL = 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorQuestion';
+        const baseURL = `${process.env.REACT_APP_NgoInformationApi}?type=donorQuestion`;
         const response = await fetch(baseURL);
         const data = await response.json();
         setQuestionsListId(data);
@@ -36,7 +36,7 @@ const DonorManager = () => {
 
     const fetchDonorList = async () => {
       try {
-        const donorURL = 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorID';
+        const donorURL = `${process.env.REACT_APP_NgoInformationApi}?type=donorID`;
         const response = await fetch(donorURL);
         const donors = await response.json();
         setDonorList(donors);
@@ -77,7 +77,7 @@ const DonorManager = () => {
     };
 
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec', {
+      const response = await fetch(`${process.env.REACT_APP_NgoInformationApi}?type=Donor`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

@@ -59,7 +59,11 @@ function LaptopTagging() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getLaptopData");
+        const response = await fetch(
+                          `${
+                  process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi
+                }?type=getLaptopData`);
+          // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getLaptopData");
         const result = await response.json();
         setAllData(result);
         // setFilteredData(result); // Set filteredData to the fetched data initially
@@ -286,7 +290,9 @@ function LaptopTagging() {
         manufacturingDate: rowIndex["Manufacturing Date"],
       };
       try {
-        await fetch("https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
+        await fetch(
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,{
+          // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

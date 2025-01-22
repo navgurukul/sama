@@ -135,7 +135,8 @@ const PreDistribution = ({ userId, preliminaryId }) => {
     const fetchPreliminaryData = async () => {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre&id=${preliminaryId}`
+          // `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
         );
         
         const processedData = response.data.map(metric => ({
@@ -158,7 +159,7 @@ const PreDistribution = ({ userId, preliminaryId }) => {
 
   useEffect(() => {
     // Fetch data when the component mounts
-    fetch(`https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec?type=GetMonthlyReport&id=${gettingStoredData}`)
+    fetch(`${process.env.REACT_APP_NgoInformationApi}?type=GetMonthlyReport&id=${gettingStoredData}`)
       .then((response) => response.json())
       .then((result) => {
         if (result.status === 'success') {
@@ -191,7 +192,7 @@ const PreDistribution = ({ userId, preliminaryId }) => {
     async function fetchData() {
       const id = gettingStoredData;      
       try {
-        const response = await axios.get(`https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=GetMou&id=${id}`);
+        const response = await axios.get(`${process.env.REACT_APP_NgoInformationApi}?type=GetMou&id=${id}`);
         const data = response.data;
         setMouFound(data);
 
@@ -205,7 +206,7 @@ const PreDistribution = ({ userId, preliminaryId }) => {
 
   useEffect(() => {
     if (gettingStoredData) {
-      fetch(`https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=GetYearlyReport&ngoId=${gettingStoredData}`)
+      fetch(`${process.env.REACT_APP_NgoInformationApi}?type=GetYearlyReport&ngoId=${gettingStoredData}`)
         .then((response) => response.json())
         .then((result) => {
           

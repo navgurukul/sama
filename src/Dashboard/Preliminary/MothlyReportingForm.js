@@ -50,7 +50,7 @@ const MonthlyReportingForm = () => {
     async function fetchData() {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=Monthly&id=${gettingStoredData}`
+          `${process.env.REACT_APP_NgoInformationApi}?type=Monthly&id=${gettingStoredData}`
         );
         const data = response.data;
         setQuestions(data.questions || []); // Assuming questions include text and type
@@ -73,7 +73,7 @@ const MonthlyReportingForm = () => {
     setSubmittedData(formData); // Save submitted data
 
     fetch(
-      "https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec",
+      `${process.env.REACT_APP_NgoInformationApi}?type=SendMonthlyReport`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

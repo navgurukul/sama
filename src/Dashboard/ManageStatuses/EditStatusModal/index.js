@@ -39,7 +39,7 @@ const handleSubmit = async (e) => {
     };
 
     await fetch(
-      "https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec/exec?type=editManageStatus",
+      `${process.env.REACT_APP_NgoInformationApi}?type=editManageStatus`,
       {
         method: "POST",
         mode: "no-cors",

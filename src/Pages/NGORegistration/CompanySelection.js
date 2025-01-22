@@ -12,7 +12,7 @@ const CompanySelection = () => {
   useEffect(() => {
     async function fetchCompanies() {
       try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=donorID'); // Replace with your API URL
+        const response = await fetch(`${process.env.REACT_APP_NgoInformationApi}?type=donorID`); // Replace with your API URL
         const data = await response.json();
         setCompanies(data); // Assuming data is an array of company names
       } catch (error) {
