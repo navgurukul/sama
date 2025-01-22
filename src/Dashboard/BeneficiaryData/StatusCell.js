@@ -22,6 +22,7 @@ const StatusCell = ({
       const currentDate = new Date();
       const dayOfMonth = currentDate.getDate();
       setIsDateEnabled(dayOfMonth >= 1 && dayOfMonth <= 10);
+      // setIsDateEnabled(dayOfMonth < 1 || dayOfMonth > 10);
     };
 
     const checkTimeElapsed = () => {

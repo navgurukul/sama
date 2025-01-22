@@ -243,10 +243,12 @@ const NGOTable = ({
           headers: { "Content-Type": "application/json" },
           mode: "no-cors",
           body: JSON.stringify({
-            ngoid: currentNgo.Ngo,
+            ngoId: currentNgo.Ngo,
             email: rowEmail,
-            statusName: newStatus,
+            newStatus: newStatus,
             monthYear: formatDate(new Date())
+            // newStatus: bulkStatus,
+            
           }),
         }
       );
