@@ -125,7 +125,7 @@ const DocumentUpload = (filename) => {
     
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=MultipleDocsUpload",
+        `${process.env.REACT_APP_NgoInformationApi}?type=MultipleDocsUpload`,
         {
           method: "POST",
           mode: "no-cors",

@@ -27,7 +27,7 @@ const BeneficiaryData = () => {
     async function fetchStatusData() {
       try {
         const response = await axios.get(
-          "https://script.googleusercontent.com/macros/echo?user_content_key=wv8VgYNObxKOXzwh7eYpr7WRm84TtrCHR7zoWSfmZw2KNkt--9Rxkf3HTwOYt_8cvsYsJ7w8dl_hZvskwAfXU4KE1GXBo2xROJmA1Yb3SEsKFZqtv3DaNYcMrmhZHmUMWojr9NvTBuBLhyHCd5hHa_xWSu8paSCnPnaAM16cnG-kggZ3WOGCpaClMcmKPzyT2alPYERGSlYOY2xBKzUS12dhwjPmtw4aVs9yjGKgHZOFxkGhWQqq2sJyjT23HAXrpnNe1hZwoqUj0XHTI1iIww&lib=MM8bm_jOfbRbuGHeV6mIUCZ0pnl9Mx4Z2"
+          `${process.env.REACT_APP_NgoInformationApi}?type=manageStatus`
         );
         setFilterOptions((prevOptions) => ({
           ...prevOptions,
@@ -45,7 +45,7 @@ const BeneficiaryData = () => {
     async function fetchMouData() {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=GetMou&id=${gettingStoredData}`
+          `${process.env.REACT_APP_NgoInformationApi}?type=GetMou&id=${gettingStoredData}`
         );
         setMouFound(response.data);
       } catch (error) {
@@ -60,7 +60,8 @@ const BeneficiaryData = () => {
     async function fetchData() {
       try {
         const response = await axios.get(
-          "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec?type=getUserData"
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData` // to fetch the userdata
+          // "https://script.google.com/macros/s/AKfycbwDr-yNesiGwAhqvv3GYNe7SUBKSGvXPRX1uPjbOdal7Z8ctV5H2x4y4T_JuQPMlMdjeQ/exec?type=getUserData"
         );
         const data = response.data;
 

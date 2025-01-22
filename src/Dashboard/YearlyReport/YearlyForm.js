@@ -55,7 +55,7 @@ const YearlyForm = () => {
 
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbzv3DzoZThej1kzBT6x3IqEJkQT1r9xUClPUbb3LA62QJ-43DUxhUlZzrC7JABuABlb/exec",
+        `${process.env.REACT_APP_NgoInformationApi}?type=yearlyQuestion`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -120,7 +120,8 @@ const YearlyReport = () => {
     const fetchPreliminaryData = async () => {
       try {
         const response = await axios.get(
-          "https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre"
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre`
+          // "https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre"
         );
         setMetrics(response.data);
       } catch (err) {
@@ -141,7 +142,8 @@ const YearlyReport = () => {
     const fetchPreliminaryDetails = async () => {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre&id=${preliminaryId}`
+          // `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
         );
         const updatedMetrics = response.data.map((metric) => {
           const unitDate = new Date(metric.Unit);
@@ -168,7 +170,7 @@ const YearlyReport = () => {
     if (user) {
       axios
         .get(
-          `https://script.google.com/macros/s/AKfycbwnIYg5R0CIPmTNfy-XDJJoVOwEH34LlDlomCD3sCeMA4mnzt-vLqITkXuaj_FzuO75/exec?type=GetYearlyReport&ngoId=${user}`
+          `${process.env.REACT_APP_NgoInformationApi}?type=GetYearlyReport&ngoId=${user}`
         )
         .then((response) => {
           setYearlyMetrixGet(response.data.data || []);
@@ -200,7 +202,7 @@ const YearlyReport = () => {
     const checkFormCreation = async () => {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbzv3DzoZThej1kzBT6x3IqEJkQT1r9xUClPUbb3LA62QJ-43DUxhUlZzrC7JABuABlb/exec?type=Yearly&id=${id}`
+          `${process.env.REACT_APP_NgoInformationApi}?type=Yearly&id=${id}`
         );
         setIsFormCreated(response.data?.status === "success");
       } catch (err) {

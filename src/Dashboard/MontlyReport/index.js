@@ -101,7 +101,8 @@ const MonthlyReport = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre"
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre`
+          // "https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre"
         ); // Replace with your API endpoint
         setMetrics(response.data); // Update according to API response structure
       } catch (err) {
@@ -125,7 +126,8 @@ const MonthlyReport = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre&id=${preliminaryId}`
+          // `https://script.google.com/macros/s/AKfycbyVi1UX63tdxatOS4-21DytCvYvD2v9fdYH72JD5LHHe1P_qd3SpZqO88mbMM_PXgsJGQ/exec?type=getpre&id=${preliminaryId}`
         ); // Replace with your API endpoint
         const dateComparedData = response.data.map((metric) => {
           const unitDate = new Date(metric.Unit); // Parse unit as date
@@ -158,7 +160,7 @@ const MonthlyReport = () => {
   useEffect(() => {
     // Fetch data when the component mounts
     fetch(
-      `https://script.google.com/macros/s/AKfycby4zd74Zl-sQYN5b8940ZgOVQEcb5Jam-SNayOzevsrtQmH4nhHFLu936Nwr0-uZVZh/exec?type=GetMonthlyReport&id=${user}`
+      `${process.env.REACT_APP_NgoInformationApi}?type=GetMonthlyReport&id=${user}`
     )
       .then((response) => response.json())
       .then((result) => {
@@ -195,7 +197,7 @@ const MonthlyReport = () => {
     });
   };
 
-  const API_URL = `https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=Monthly&&id=${id}`;
+  const API_URL = `${process.env.REACT_APP_NgoInformationApi}?type=Monthly&&id=${id}`;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -204,7 +206,7 @@ const MonthlyReport = () => {
 
         // Assuming the API returns { success: true, exists: true/false }
         if (response.data) {
-          setIsFormCreated(response.data.success);
+          setIsFormCreated(response.data.status==="success");
         } else {
           throw new Error("Invalid response from server");
         }

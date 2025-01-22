@@ -18,7 +18,7 @@ const YearlyReportingForm = () => {
     async function fetchData() {
       try {
         const response = await axios.get(
-          `https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=Yearly&id=${ngoId}`
+          `${process.env.REACT_APP_NgoInformationApi}?type=Yearly&id=${ngoId}`
         );
         setQuestions(response.data.questions || []);
       } catch (error) {
@@ -45,7 +45,7 @@ const YearlyReportingForm = () => {
 
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=SendYearlyReport",
+        `${process.env.REACT_APP_NgoInformationApi}?type=SendYearlyReport`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
