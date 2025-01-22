@@ -19,9 +19,10 @@ function Opslogin() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          'https://script.google.com/macros/s/AKfycbzuFPeG0cosIEGBocwuJ72DWUH6zcg7MtawkOuvOifXqHnm1QlaR7ESxiLKzGua-WQp/exec'
+          `${process.env.REACT_APP_UserDetailApi}`,
+          // 'https://script.google.com/macros/s/AKfycbzuFPeG0cosIEGBocwuJ72DWUH6zcg7MtawkOuvOifXqHnm1QlaR7ESxiLKzGua-WQp/exec'
         );
-        const result = await response.json();
+        const result = await response.json();        
         setData(result);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -59,7 +60,8 @@ function Opslogin() {
         try {
           // First API call to fetch registration data
           const response = await fetch(
-            'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
+            `${process.env.REACT_APP_NgoInformationApi}?type=registration`
+            // 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
           );
           const result = await response.json();
           const finduser = result.data.find(item => item.Id === user["Ngo Id"]);
@@ -68,7 +70,8 @@ function Opslogin() {
             try {
               // Second API call to check document status
               const documentResponse = await fetch(
-                `https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
+                `${process.env.REACT_APP_NgoInformationApi}?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
+                // `https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
               );
               const documentResult = await documentResponse.json();
       

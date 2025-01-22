@@ -27,7 +27,7 @@ const DeleteStatusDialog = ({ open, onClose, onDeleteSuccess, status }) => {
         statusName: status.name // Send only the status name
       };
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=deleteManageStatus",
+        `${process.env.REACT_APP_NgoInformationApi}?type=deleteManageStatus`,
         {
           method: "POST",
           headers: {

@@ -101,7 +101,8 @@ const Upload = () => {
       // Post data to Google Apps Script
       try {
         await fetch(
-          "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
+          // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
           {
             method: "POST",
             body: JSON.stringify(dataToSend),

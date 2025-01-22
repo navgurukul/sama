@@ -32,13 +32,14 @@ function YearlyReportData() {
         <Paper
           sx={{
             width: "700px",
-            padding: "24px",
+            padding: "2rem",
             backgroundColor: "#f2f8f2",
             textAlign: "left",
+            mt:"2rem"
           }}
           elevation={0}
         >
-          <Typography variant="h6" fontWeight="bold" color="#2e523c" mb={2}>
+          <Typography variant="h6" fontWeight="bold" color="primary.main" mb={2}>
             {formattedstartDate && formattedstartDate} -{" "}
             {monthCurrent && monthCurrent} {year && year} Yearly Report
           </Typography>
@@ -48,7 +49,7 @@ function YearlyReportData() {
                 <Box key={qIndex} mb={1}>
                   {Object.entries(questionObj).map(([key, value]) => (
                     <>
-                      <Typography variant="body1" key={key}>
+                      <Typography variant="subtitle1" key={key}>
                         {key}
                       </Typography>
                       <Typography variant="body1" key={value}>
@@ -65,11 +66,6 @@ function YearlyReportData() {
       <Box display="flex" justifyContent="center" mt={2}>
         <Button
           variant="contained"
-          sx={{
-            backgroundColor: "#2e523c",
-            color: "#ffffff",
-            "&:hover": { backgroundColor: "#3a6e4b" },
-          }}
           onClick={() =>
             gettingStored === "admin"
               ? navigate(`/ngo`)

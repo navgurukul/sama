@@ -105,7 +105,8 @@ function Userdatabulkupload({ user }) {
 
       try {
         await fetch(
-          "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
+          // "https://script.google.com/macros/s/AKfycbxamFLfoY7ME3D6xCQ9f9z5UrhG2Nui5gq06bR1g4aiidMj3djQ082dM56oYnuPFb2PuA/exec",
           {
             method: "POST",
             body: JSON.stringify(dataToSend),
@@ -164,6 +165,10 @@ function Userdatabulkupload({ user }) {
     const droppedFile = e.dataTransfer.files[0];
     validateAndSetFile(droppedFile);
   };
+
+  const previousRoute = () => {
+    window.history.back();
+  }
 
   return (
     <>
@@ -288,7 +293,7 @@ function Userdatabulkupload({ user }) {
               variant="contained"
               color="primary"
               sx={{ mt: 2 }}
-              onClick={() => (window.location.href = "/beneficiarydata")}
+              onClick={previousRoute}
             >
               Return to Dashboard
             </Button>

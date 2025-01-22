@@ -33,7 +33,7 @@ const AddStatusModal = ({ open, onClose, onAdd }) => {
 
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbywiddDzBjgYDbNEz_O27XoJFq6d1AtYzggk8qdt_7YziUl7xaVS0K65Hyb_8vfKs4j/exec?type=addManageStatus",
+        `${process.env.REACT_APP_NgoInformationApi}?type=addManageStatus`,
         {
           method: "POST",
           body: JSON.stringify(formData),

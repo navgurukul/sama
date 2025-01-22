@@ -8,7 +8,7 @@ export const fetchNgoDetails = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration&orgName=${id}`
+        `${process.env.REACT_APP_NgoInformationApi}?type=registration&orgName=${id}`
       );
       if (response.data && response.data.data) {
         return response.data.data;

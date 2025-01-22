@@ -31,137 +31,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import MOUCard from "../../Pages/MouUpload/MouUpload";
 import MouReviewd from "../../Pages/MouUpload/MouReviewd";
 import EmptyBeneficiary from "./EmptyBeneficiary";
+import StatusCell from "./StatusCell"
 
 // StatusCell Component
-const StatusCell = ({
-  status,
-  id,
-  handleIndividualStatusChange,
-  statusDisabled,
-  defaultStatus,
-  dateTime,
-  additionalStatuses = [],
-}) => {
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [isDateEnabled, setIsDateEnabled] = useState(false);
 
-  useEffect(() => {
-    const checkDateEnabled = () => {
-      const currentDate = new Date();
-      const dayOfMonth = currentDate.getDate();
-      setIsDateEnabled(dayOfMonth >= 1 && dayOfMonth <= 10);
-    };
-
-    const checkTimeElapsed = () => {
-      if (status === "Laptop Assigned" && dateTime) {
-        const assignedTime = new Date(dateTime).getTime();
-        const currentTime = new Date().getTime();
-        const minutesDiff = (currentTime - assignedTime) / (1000 * 60);
-        // setIsEnabled(minutesDiff >= 48 * 60); // 48 hours = 48 * 60 minutes
-        setIsEnabled(minutesDiff >= 1);
-      }
-    };
-
-    checkDateEnabled();
-    checkTimeElapsed();
-
-    const dateInterval = setInterval(checkDateEnabled, 1000 * 60 * 60);
-    const timeInterval = setInterval(checkTimeElapsed, 10000);
-
-    return () => {
-      clearInterval(dateInterval);
-      clearInterval(timeInterval);
-    };
-  }, [status, dateTime]);
-
-  const additionalStatusNames = additionalStatuses.map((status) => status.name);
-
-  const getAvailableStatuses = () => {
-    if (status === "Data Uploaded") {
-      return defaultStatus;
-    }
-    if (status === "Laptop Assigned" && !isEnabled) {
-      return ["Laptop Assigned"];
-    }
-    if (
-      (status === "Laptop Assigned" && isEnabled) ||
-      additionalStatusNames.includes(status)
-    ) {
-      return additionalStatusNames;
-    }
-    if (!status) {
-      return defaultStatus;
-    }
-    return additionalStatusNames;
-  };
-
-  const availableStatuses = getAvailableStatuses();
-
-  const shouldDisableDropdown = () => {
-    if (status === "Data Uploaded") {
-      return true;
-    }
-    if (status === "Laptop Assigned" && !isEnabled) {
-      return true;
-    }
-    if (additionalStatusNames.includes(status) && !isDateEnabled) {
-      return true;
-    }
-    return false;
-  };
-
-  const isDropdownDisabled = shouldDisableDropdown();
-
-  if (isDropdownDisabled) {
-    return (
-      <TextField
-        value={status || ""}
-        disabled
-        fullWidth
-        variant="outlined"
-        size="small"
-        sx={{
-          backgroundColor: "rgb(243, 243, 243)",
-          "& .MuiInputBase-input.Mui-disabled": {
-            WebkitTextFillColor: "rgb(115, 115, 115)",
-            backgroundColor: "rgb(243, 243, 243)",
-            borderRadius: "8px",
-          },
-          "& .MuiOutlinedInput-root": {
-            borderRadius: "8px",
-            "&.Mui-disabled": {
-              backgroundColor: "rgb(243, 243, 243)",
-            },
-          },
-        }}
-      />
-    );
-  }
-
-  return (
-    <FormControl fullWidth size="small">
-      <Select
-        value={status || ""}
-        onChange={(e) => handleIndividualStatusChange(id, e.target.value, e)}
-        onClick={(e) => e.stopPropagation()}
-        sx={{
-          backgroundColor: "rgb(243, 243, 243)",
-          borderRadius: "8px",
-          "& .MuiSelect-select": {
-            backgroundColor: "rgb(243, 243, 243)",
-            padding: "4px 8px",
-          },
-        }}
-      >
-        {availableStatuses.map((option) => (
-          <MenuItem key={option} value={option}>
-            {option}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  );
-};
 const NGOTable = ({
   ngoData,
   setNgoData,
@@ -201,6 +74,11 @@ const NGOTable = ({
     );
   };
 
+  const formatDate = (date) => {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(date).toLocaleDateString('en-US', options);
+    };  
+
   const clearAllFilters = () => {
     setFilters({
       "ID Proof type": "",
@@ -216,7 +94,7 @@ const NGOTable = ({
     const fetchStatuses = async () => {
       try {
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbxTda3e4lONdLRT13N2lVj7Z-P0q-ITSe1mvh-n9x9BG8wZo9nvnT7HXytpscigB0fm/exec?type=manageStatus"
+          `${process.env.REACT_APP_NgoInformationApi}?type=manageStatus`
         );
         const data = await response.json();
         const currentNgoId = id ? id : NgoId[0].NgoId;
@@ -270,10 +148,11 @@ const NGOTable = ({
         email: ngo.email,
         ngoId: AuthUser[0].NgoId,
         newStatus: bulkStatus,
+        monthYear: formatDate(new Date())
       }));
 
       await fetch(
-        "https://script.google.com/macros/s/AKfycbzAR35oDa2j26ifFya9cRcM4AlTV2vu124VsBNB04laz8AeOCReG95nej1J9gfWWAf6/exec?type=updateStatusHistory",
+        `${process.env.REACT_APP_NgoInformationApi}?type=updateStatusHistory`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -298,7 +177,8 @@ const NGOTable = ({
       }
 
       await fetch(
-        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+        `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
+        // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -346,7 +226,8 @@ const NGOTable = ({
       }
 
       await fetch(
-        "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
+        `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
+        // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -356,15 +237,18 @@ const NGOTable = ({
       );
 
       await fetch(
-        "https://script.google.com/macros/s/AKfycbxs0SUYi40w506ODB351wZ28AYCGatKjhJtIjywP9sueeqXPGu_PmKnsN2qZhiPC8el/exec?type=updateStatusHistory",
+        `${process.env.REACT_APP_NgoInformationApi}?type=updateStatusHistory`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           mode: "no-cors",
           body: JSON.stringify({
-            ngoid: currentNgo.Ngo,
+            ngoId: currentNgo.Ngo,
             email: rowEmail,
-            statusName: newStatus,
+            newStatus: newStatus,
+            monthYear: formatDate(new Date())
+            // newStatus: bulkStatus,
+            
           }),
         }
       );
@@ -456,7 +340,7 @@ const NGOTable = ({
           alignItems: "center",
         }}
       >
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" mt={2} gutterBottom>
           {filteredData.length > 0
             ? `All Beneficiaries (${filteredData.length})`
             : `All Beneficiaries`}
@@ -884,6 +768,7 @@ const NGOTable = ({
           </Button>
         </DialogActions>
       </Dialog>
+     
     </Container>
   );
 };
