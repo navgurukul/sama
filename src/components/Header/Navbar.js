@@ -58,6 +58,7 @@ const Navbar = () => {
     "yearly-reporting",
     "monthly-report",
     "yearly-report",
+    "corpretedb/DataViewDetail"
   ];
 
   const menuItems = [
