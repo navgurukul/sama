@@ -89,7 +89,7 @@ const MonthlyReportingForm = () => {
       .then((data) => console.log("Success:", data))
       .catch((error) => console.error("Error:", error));
 
-    setFormData({}); // Clear the form
+    setFormData({}); 
     navigate("/preliminary");
   };
 
