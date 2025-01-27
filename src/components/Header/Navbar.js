@@ -108,7 +108,7 @@ const Navbar = () => {
     handleMenuClose();
   };
 
-  const role = JSON.parse(localStorage.getItem("role") || "[]");
+  const role = JSON.parse(localStorage.getItem('role') || '[]');
   console.log("Retrieved Role from Local Storage:", role);
 
   return (
