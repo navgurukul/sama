@@ -67,6 +67,7 @@ theme = createTheme(theme, {
       fontFamily: "Montserrat",
       fontStyle: "normal",
       fontWeight: 700,
+      color:"#4A4A4A"
     },
 
     captions: {

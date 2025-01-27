@@ -137,7 +137,7 @@ const DetailView = () => {
             </Box>
 
             <Button
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/corpretedb")}
                 sx={{
                     bgcolor: "primary.main",
                     color: "#fff",
