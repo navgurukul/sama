@@ -24,7 +24,7 @@ const DocumentUpload = (filename) => {
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
   const location = useLocation();
   const { pendingStatuses } = location.state || {};
-  
+
   const userid = NgoId[0].NgoId;
   const navigate = useNavigate();
   const [uploading, setUploading] = useState(false);
@@ -47,13 +47,16 @@ const DocumentUpload = (filename) => {
     "Financial Report FY 2021-22"
   ];
 
+  const requiredDocuments = fileLabels.filter(label => label !== "FCRA Approval");
+
   const areAllDocumentsUploaded = () => {
-    return fileLabels.every(label => 
+    return requiredDocuments.every(label =>
       fileStates[label] && fileStates[label].file && fileStates[label].base64
     );
   };
+
   const handleFileChange = (file, label) => {
-  // const handleFileChange = (event, label) => {
+      // const handleFileChange = (event, label) => {
     // event.preventDefault();
     // const file = event.target.files[0];
     if (file && file.type === 'application/pdf') {
@@ -87,7 +90,6 @@ const DocumentUpload = (filename) => {
     e.preventDefault();
   };
 
-
   const handleRemoveFile = (label) => {
     setFileStates((prev) => ({
       ...prev,
@@ -104,7 +106,7 @@ const DocumentUpload = (filename) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!areAllDocumentsUploaded()) {
       setSnackbar({
         open: true,
@@ -122,7 +124,7 @@ const DocumentUpload = (filename) => {
       file: fileStates[label].base64,
     }));
     const payload = { name: formData.name, files, type: "MultipleDocsUpload", ngoId: userid };
-    
+
     try {
       await fetch(
         `${process.env.REACT_APP_NgoInformationApi}?type=MultipleDocsUpload`,
@@ -138,7 +140,7 @@ const DocumentUpload = (filename) => {
         message: 'Documents uploaded successfully!',
         severity: 'success'
       });
-      
+
       setTimeout(() => {
         navigate('/submission-success', { replace: true });
       }, 2000);
@@ -189,12 +191,12 @@ const DocumentUpload = (filename) => {
 
       <Container maxWidth="sm" sx={{ py: 2 }}>
         <Paper elevation={0} sx={{ p: 3 }}>
-          <Typography 
-            variant="h6" 
-            component="h1" 
-            align="center" 
-            sx={{ 
-              mb: 2, 
+          <Typography
+            variant="h6"
+            component="h1"
+            align="center"
+            sx={{
+              mb: 2,
               fontWeight: 500,
               fontSize: '20px',
               color: '#333333'
@@ -203,12 +205,12 @@ const DocumentUpload = (filename) => {
             Upload Documents
           </Typography>
 
-          <Typography 
-            align="center" 
-            sx={{ 
-              mb: 3, 
-              color: '#6E6E6E', 
-              bgcolor: "#F8F3F0", 
+          <Typography
+            align="center"
+            sx={{
+              mb: 3,
+              color: '#6E6E6E',
+              bgcolor: "#F8F3F0",
               p: "12px",
               fontSize: '14px',
               borderRadius: '4px'
@@ -221,10 +223,10 @@ const DocumentUpload = (filename) => {
             <Stack spacing={2}>
               {fileLabels.map((label) => (
                 <Box key={label}>
-                  <Typography 
-                    variant="subtitle2" 
-                    sx={{ 
-                      mb: 1, 
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      mb: 1,
                       color: '#4B4B4B',
                       fontSize: '14px',
                       fontWeight: 500,
@@ -234,28 +236,31 @@ const DocumentUpload = (filename) => {
                     }}
                   >
                     {label}
-                    <span style={{ color: '#E53E3E' }}>*</span>
+                    {label !== "FCRA Approval" ? (
+                      <span style={{ color: '#E53E3E' }}>*</span>
+                    ) : (
+                      <span style={{ color: '#666666', fontSize: '12px' }}>(Optional)</span>
+                    )}
                   </Typography>
                   <Box sx={{ mb: 2 }}>
                     <Box sx={dropZoneStyles}
-                    onDragOver={onDragOver}
-                    onDrop={(e) => onDrop(e, label)}
+                      onDragOver={onDragOver}
+                      onDrop={(e) => onDrop(e, label)}
                     >
                       <input
                         type="file"
                         accept=".pdf"
                         // onChange={(e) => handleFileChange(e, label)}
                         onChange={(e) => handleFileChange(e.target.files[0], label)}
-                        
                         style={{ display: 'none' }}
                         id={`file-${label}`}
                       />
                       <label htmlFor={`file-${label}`} style={{ cursor: 'pointer', width: '100%' }}>
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                           <UploadIcon sx={{ fontSize: 24, color: '#678761', mb: 0.5 }} />
-                          <Typography 
-                            color="#678761" 
-                            fontSize="13px" 
+                          <Typography
+                            color="#678761"
+                            fontSize="13px"
                             sx={{ fontWeight: 500 }}
                           >
                             Upload or Drag File
@@ -282,10 +287,10 @@ const DocumentUpload = (filename) => {
                           <Typography variant='body2' color="#666666">
                             Uploaded File:
                           </Typography>
-                          <Typography 
-                            noWrap 
-                            sx={{ 
-                              maxWidth: 200, 
+                          <Typography
+                            noWrap
+                            sx={{
+                              maxWidth: 200,
                               color: "#678761",
                               fontSize: '13px'
                             }}
@@ -293,8 +298,8 @@ const DocumentUpload = (filename) => {
                             {fileStates[label].file.name}
                           </Typography>
                         </Box>
-                        <IconButton 
-                          onClick={() => handleRemoveFile(label)} 
+                        <IconButton
+                          onClick={() => handleRemoveFile(label)}
                           size="small"
                           sx={{ padding: '4px' }}
                         >
