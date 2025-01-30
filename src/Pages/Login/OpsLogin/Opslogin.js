@@ -83,17 +83,22 @@ function Opslogin() {
                 // Check for unsuccessful statuses in submitted documents
                 const failed = [];
                 const pending = [];
+                const emptyStatuses = [];
                 for (const [key, value] of Object.entries(documentResult)) {
                   if (value && typeof value === "object" && "status" in value) {
                     if (value.status !== "Success" && value.status !== "Pending Verification") {
+                      if (value.status === "") {
+                        emptyStatuses.push(key);
+                      } 
                       failed.push(key); // Collect keys with failed statuses
+                      
                     } else if (value.status === "Pending Verification") {
                       pending.push(key); // Collect keys with pending verification statuses
                     }
                   }
                 }
                 if (failed.length > 0) {
-                  if (failed.includes("FCRA Approval") && failed.length === 1) {
+                  if (failed.includes("FCRA Approval") && failed.length === 1 && emptyStatuses.length === 1) {
                     if (finduser["Ngo Type"] === "1 to one") {
                       navigate('/beneficiarydata'); // Navigate to beneficiary data
                       return

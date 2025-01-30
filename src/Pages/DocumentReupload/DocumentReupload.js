@@ -58,14 +58,15 @@ const DocumentReupload = () => {
               key !== "User-Id" &&
               key !== "NGO Name" &&
               key !== "isDataAvailable" &&
-              key !== "subfolderId"
+              key !== "subfolderId" &&
+              // key !== "FCRA Approval"
+               apiResponse[key]?.status !== ""
           )
           .map((key) => ({
             name: key,
             reason: apiResponse[key]?.description,
             link: apiResponse[key]?.link,
           }));
-
         setDocumentsToReupload(failedDocuments);
       } catch (error) {
         console.error("Error fetching data:", error);
