@@ -13,6 +13,8 @@ const AttentionNeeded = () => {
     const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
     const storedUserId= NgoId[0].NgoId;
 
+    let filteredFailedStatuses;
+
   // Static data representing the failed documents for re-upload
   //   below useeffect is full working
     useEffect(() => {
@@ -29,6 +31,7 @@ const AttentionNeeded = () => {
           // setSubfolderId(apiResponse.subfolderId);
           // setNgoName(apiResponse['NGO Name']);
           // Extract failed documents
+
           
           const failedDocuments = Object.keys(apiResponse)
             .filter(
@@ -38,9 +41,18 @@ const AttentionNeeded = () => {
                 key !== "User-Id" &&
                 key !== "NGO Name" &&
                 key !== "isDataAvailable" &&
-                key !== "subfolderId"
+                key !== "subfolderId"  &&
+                apiResponse[key]?.status !== "" 
+                // key !== "FCRA Approval" 
             )
-            .map((key) => ([key]));            
+            .map((key) => ([key]));  
+            filteredFailedStatuses = failedStatuses?.filter(status => {
+              if (status === "FCRA Approval" && apiResponse) {
+                return apiResponse["FCRA Approval"]?.status !== ""; 
+              }
+              return true; 
+            }) || [];  
+            console.log("filteredFailedStatuses",filteredFailedStatuses);        
           setDocumentsToReupload(failedDocuments);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -51,7 +63,10 @@ const AttentionNeeded = () => {
       fetchData();
     }, [storedUserId]);
 
-    const documents = failedStatuses || documentsToReupload;
+
+
+
+    const documents = filteredFailedStatuses || documentsToReupload;
   return (
     <Box
       sx={{
@@ -68,11 +83,9 @@ const AttentionNeeded = () => {
         alt="Attention Illustration"
         style={{ width: '150px', marginBottom: '20px' }}
       />
-
       <Typography variant="h6" color="error" gutterBottom>
         Attention Needed!
       </Typography>
-
       <Typography sx={{ mb: 3, color: 'text.secondary' }}>
         We couldn't verify the documents below. Please re-upload them to <br/> proceed forward.
       </Typography>
@@ -125,5 +138,3 @@ const AttentionNeeded = () => {
 };
 
 export default AttentionNeeded;
-
-

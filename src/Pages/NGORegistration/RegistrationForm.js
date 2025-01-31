@@ -316,13 +316,13 @@ function RegistrationForm() {
         }
       }
 
-      // Registration number validation - only numbers
+      // Registration number validation - only numbers and letters
       if (field.name === "registrationNumber" && value) {
-        const numberPattern = /^\d+$/;
-        if (!numberPattern.test(value)) {
-          newErrors[field.name] = "Registration number must contain only numbers";
+        const alphanumericPattern = /^[a-zA-Z0-9]+$/;
+        if (!alphanumericPattern.test(value)) {
+          newErrors[field.name] = "Registration number must contain only letters and numbers";
         }
-      }
+      }      
 
       // Primary contact name validation - allow letters
       if (field.name === "primaryContactName" && value) {

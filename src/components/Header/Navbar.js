@@ -78,7 +78,7 @@ const Navbar = () => {
 
   const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
-    console.log("Avatar clicked");
+    // console.log("Avatar clicked");
   };
 
   const handleMenuClose = () => {
@@ -107,8 +107,8 @@ const Navbar = () => {
     handleMenuClose();
   };
 
-  const role = JSON.parse(localStorage.getItem("role") || "[]");
-  console.log("Retrieved Role from Local Storage:", role);
+  const role = JSON.parse(localStorage.getItem('role') || '[]');
+  // console.log("Retrieved Role from Local Storage:", role);
 
   return (
     <AppBar
@@ -219,7 +219,7 @@ const Navbar = () => {
               >
                 {(() => {
                   const role = JSON.parse(localStorage.getItem("role") || "[]");
-                  console.log("Parsed role:", role);
+                  // console.log("Parsed role:", role);
 
                   if (role.includes("admin") || role.includes("ops")) {
                     return (

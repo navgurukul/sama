@@ -68,6 +68,8 @@ const MonthlyReportingForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  console.log(formData);
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmittedData(formData); // Save submitted data
@@ -79,6 +81,8 @@ const MonthlyReportingForm = () => {
         headers: { "Content-Type": "application/json" },
         mode: "no-cors",
         body: JSON.stringify({
+          month: month,
+          year: year, 
           id: gettingStoredData,
           data: { ...formData },
           type: "SendMonthlyReport",
@@ -93,6 +97,7 @@ const MonthlyReportingForm = () => {
     navigate("/preliminary");
   };
 
+  
   const renderInputField = (question, index) => {
     switch (question.type) {
       case "number":

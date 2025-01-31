@@ -165,22 +165,23 @@ const PreDistribution = ({ userId, preliminaryId }) => {
         if (result.status === 'success') {
 
           const rawData = result.data;
-          const parsedData = Array.isArray(rawData)
-            ? rawData
-            : JSON.parse(rawData);
-
-          // Filter out empty values and transform strings into objects
-          const transformedData = parsedData
-            .filter((item) => item.trim() !== '')
-            .map((item) => {
-              return item.split(',').reduce((acc, pair) => {
-                const [key, value] = pair.split(':').map((str) => str.trim());
-                acc[key] = value; // Create key-value pairs
-                return acc;
-              }, {});
-            });
-          setMonthlyMetrixGet(transformedData);
-
+          // const parsedData = Array.isArray(rawData)
+          //   ? rawData
+          //   : JSON.parse(rawData);
+          // // Filter out empty values and transform strings into objects
+          // console.log(parsedData);
+          // const transformedData = parsedData
+          //   .filter((item) => item.trim() !== '')
+          //   .map((item) => {
+          //     return item.split(',').reduce((acc, pair) => {
+          //       const [key, value] = pair.split(':').map((str) => str.trim());
+          //       acc[key] = value; // Create key-value pairs
+          //       return acc;
+          //     }, {});
+          //   });
+          setMonthlyMetrixGet(rawData);
+            
+            
         } else {
           console.error('Error fetching data:', result.message);
         }
