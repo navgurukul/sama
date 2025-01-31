@@ -166,21 +166,21 @@ const MonthlyReport = () => {
       .then((result) => {
         if (result.status === "success") {
           const rawData = result.data;
-          const parsedData = Array.isArray(rawData)
-            ? rawData
-            : JSON.parse(rawData);
+          // const parsedData = Array.isArray(rawData)
+          //   ? rawData
+          //   : JSON.parse(rawData);
 
-          // Filter out empty values and transform strings into objects
-          const transformedData = parsedData
-            .filter((item) => item.trim() !== "")
-            .map((item) => {
-              return item.split(",").reduce((acc, pair) => {
-                const [key, value] = pair.split(":").map((str) => str.trim());
-                acc[key] = value; // Create key-value pairs
-                return acc;
-              }, {});
-            });
-          setMonthlyMetrixGet(transformedData);
+          // // Filter out empty values and transform strings into objects
+          // const transformedData = parsedData
+          //   .filter((item) => item.trim() !== "")
+          //   .map((item) => {
+          //     return item.split(",").reduce((acc, pair) => {
+          //       const [key, value] = pair.split(":").map((str) => str.trim());
+          //       acc[key] = value; // Create key-value pairs
+          //       return acc;
+          //     }, {});
+          //   });
+          setMonthlyMetrixGet(rawData);
           setIsDataAvailabel(true);
           setExtraLoader(false);
         } else {
@@ -267,10 +267,13 @@ const MonthlyReport = () => {
                 month: "long",
               }); // Get full month name
               const year = report.getFullYear(); // Get the year
+              const monthKey = `${monthName} ${year}`; // Generate the key for `monthlyMetrixGet`
+              const reportData = monthlyMetrixGet[monthKey]; // Get the corresponding data from `monthlyMetrixGet`
+                    
 
               return (
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                  {monthlyMetrixGet[index] ? (
+                  {reportData ? (
                     <Card
                       // style={{ height: "100%" }}
                       // sx={{
@@ -287,7 +290,7 @@ const MonthlyReport = () => {
                       }}
                       onClick={() =>
                         handleCardClick(
-                          monthlyMetrixGet[index],
+                          monthlyMetrixGet[monthKey],
                           monthName,
                           year
                         )
