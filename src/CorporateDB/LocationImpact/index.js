@@ -4,8 +4,6 @@ import { Typography, Box } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
 import './LocationWiseImpact.css'
 import Location from './../Image/location_on.png'
-import { positions } from '@mui/system';
-
 
 const stateData = {
   Maharashtra: {
@@ -127,15 +125,17 @@ const LocationWiseImpact = () => {
   
 
   return (
-    <Box p={3} style={{position:"relative",height:"130vh", bottom:"30px"}}>
+    <Box p={3} style={{position:"relative",height:"130vh"}}>
       <Typography variant="h6">State Wise NGO Presence Across India</Typography>
       <MapContainer
-            center={[23.5, 82]}
+            center={[23.5, 83]}
             zoom={4.5}
             style={{
-              height: "99%",
-              width: "100%",
-              backgroundColor: "#f7f5f5",
+              height: "757px",
+              width: "675px",
+              backgroundColor: "#ffff",
+              top:"20px",
+              left: "350px",
             }}
             zoomControl={false}
             dragging={false}
@@ -144,6 +144,7 @@ const LocationWiseImpact = () => {
             touchZoom={false}
             boxZoom={false}
             keyboard={false}
+            attributionControl={false}
           >
     
         {geoData && (
@@ -158,58 +159,58 @@ const LocationWiseImpact = () => {
         <div className="hover-dialog">
           <div className="dialog-header">
             <img src={Location} alt="State Location" className="state-icon" />
-            <Typography variant="subtitle1">{hoveredState.name}</Typography>
+            <Typography color="primary" variant="subtitle1">{hoveredState.name}</Typography>
           </div>
 
           <div className="dialog-body">
             <div className="ngo-data">
               <div className="ngo-data-in">
                 <div>
-                  <Typography variant="subtitle2">Total NGOs </Typography>
+                  <Typography color= "#4A4A4A" variant="subtitle2">Total NGOs </Typography>
                 </div>
                 <div>
-                  <span variant="subtitle2">{hoveredState.ngoNum}</span>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.ngoNum}</span>
                 </div>
               </div>
               <div className="ngo-data-in">
                 <div>
-                  <Typography variant="subtitle2">Number of Teachers Trained</Typography>
+                  <Typography color= "#4A4A4A" variant="subtitle2">Number of Teachers Trained</Typography>
                 </div >
                 <div>
-                  <span variant="subtitle2">{hoveredState.teachersTrained}</span>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.teachersTrained}</span>
                 </div>
 
               </div>
               <div className="ngo-data-in">
                 <div>
-                  <Typography variant="subtitle2">Number of School Visits</Typography>
+                  <Typography color= "#4A4A4A" variant="subtitle2">Number of School Visits</Typography>
                 </div>
                 <div>
-                  <span  variant="subtitle2">{hoveredState.schoolVisits}</span>
-                </div>
-              </div>
-              <div className="ngo-data-in">
-                <div>
-                  <Typography variant="subtitle2">Number of Sessions Conducted</Typography>
-                </div>
-                <div>
-                  <span variant="subtitle2">{hoveredState.sessionConducted}</span>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.schoolVisits}</span>
                 </div>
               </div>
               <div className="ngo-data-in">
                 <div>
-                  <Typography variant="subtitle2">Number of Modules Completed</Typography>
+                  <Typography color= "#4A4A4A" variant="subtitle2">Number of Sessions Conducted</Typography>
                 </div>
                 <div>
-                  <span variant="subtitle2">{hoveredState.modules}</span>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.sessionConducted}</span>
                 </div>
               </div>
               <div className="ngo-data-in">
                 <div>
-                  <Typography variant="subtitle2">Total Learning Hours</Typography>
+                  <Typography color= "#4A4A4A" variant="subtitle2">Number of Modules Completed</Typography>
                 </div>
                 <div>
-                  <span variant="subtitle2">{hoveredState.learningHour}</span>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.modules}</span>
+                </div>
+              </div>
+              <div className="ngo-data-in">
+                <div>
+                  <Typography color= "#4A4A4A" variant="subtitle2">Total Learning Hours</Typography>
+                </div>
+                <div>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.learningHour}</span>
                 </div>
               </div>
             </div>
