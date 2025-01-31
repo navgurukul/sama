@@ -1,42 +1,42 @@
 .monthly-impact-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 16px;
-  }
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
 
-  .monthly-impact-card {
-    cursor: pointer;
-    border-radius: 0.5rem;
-    border: 1px solid #E0E0E0;
-    background: #FFF;
-    box-shadow: 
-      0px 1px 2px 0px rgba(74, 74, 74, 0.06), 
-      0px 2px 1px 0px rgba(74, 74, 74, 0.04), 
-      0px 1px 5px 0px rgba(74, 74, 74, 0.08);
-  }
-  
-  .monthly-impact-card:hover {
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
-  }
-  
-  .monthly-impact-value {
-    font-size: 36px;
-    font-weight: 600;
-    color: #333;
-  }
-  
-  .monthly-impact-increase {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  
-  .monthly-impact-increase-text {
-    color: #27AE60;
-    font-size: 12px;
-    font-weight: 500;
-  }
-  
-  .monthly-impact-subtitle {
-    color: #828282;
-  }
+.monthly-impact-card {
+  cursor: pointer;
+  border-radius: 0.5rem;
+  border: 1px solid #E0E0E0;
+  background: #FFF;
+  box-shadow:
+    0px 1px 2px 0px rgba(74, 74, 74, 0.06),
+    0px 2px 1px 0px rgba(74, 74, 74, 0.04),
+    0px 1px 5px 0px rgba(74, 74, 74, 0.08);
+}
+
+.monthly-impact-card:hover {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.monthly-impact-value {
+  font-size: 36px;
+  font-weight: 600;
+  color: #333;
+}
+
+.monthly-impact-increase {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.monthly-impact-increase-text {
+  color: #27AE60;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.monthly-impact-subtitle {
+  color: #828282;
+}

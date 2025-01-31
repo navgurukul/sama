@@ -105,9 +105,9 @@ const MonthlyImpact = () => {
               January
             </Typography>
           </Box>
-          <IconButton sx={{ color: "#828282" }}>
-            <KeyboardArrowDownIcon />
-          </IconButton>
+          {/* <IconButton sx={{ color: "#828282" }}> */}
+            <KeyboardArrowDownIcon sx={{ color: "#828282" }}/>
+          {/* </IconButton> */}
           <IconButton sx={{ color: "#828282" }}>
             <SaveAltIcon />
           </IconButton>
@@ -145,7 +145,7 @@ const MonthlyImpact = () => {
                     >
                       {metric.value}
                     </Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                       <TrendingUp sx={{ color: "#27AE60", fontSize: 16 }} />
                       <Typography
                         sx={{
@@ -156,7 +156,7 @@ const MonthlyImpact = () => {
                       >
                         {metric.increase}
                       </Typography>
-                    </Box>
+                    </Box> */}
                   </Box>
                   <Typography
                     variant="body2"

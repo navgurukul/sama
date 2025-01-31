@@ -51,6 +51,7 @@ import YearlyReportingForm from './Dashboard/Preliminary/YearlyReportingForm';
 import YearlyReportData from './Dashboard/Preliminary/YearlyReportData';
 import CorporateteDb from './CorporateDB/index';
 import DetailView from './CorporateDB/MonthlyImpact/DetailView';
+import NGOTrainedTable from './CorporateDB/YearlyImpact/NGOTrainedTable';
 
 
 
@@ -76,6 +77,7 @@ function App() {
               <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
               <Route path="corpretedb" element={<CorporateteDb />} />
               <Route path="/corpretedb/DataViewDetail" element={<DetailView/>}/>
+              <Route path="/corpretedb/NGOTrainedTable" element={<NGOTrainedTable/>} />
 
               <Route path="/question-selection" element={    
                 <PrivateRoute reqired={'ops'}>
