@@ -49,7 +49,7 @@ import YearlyEditForm from './Dashboard/YearlyReport/YearlyEditForm';
 import YearlyForm from './Dashboard/YearlyReport/YearlyForm';
 import YearlyReportingForm from './Dashboard/Preliminary/YearlyReportingForm';
 import YearlyReportData from './Dashboard/Preliminary/YearlyReportData';
-
+import OurTeam from './Pages/About/OurTeam/OurTeam';
 
 
 
@@ -129,7 +129,7 @@ function App() {
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
                <Route path = "/ngoprofile" element= {<NgoProfile/>} />
-
+               <Route path = "/ourteam" element= {<OurTeam/>} />
               <Route path="/documentreupload" element={<DocumentReupload />} />
               <Route path="/attentionneeded" element={<AttentionNeeded />} />
                 <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
