@@ -1,6 +1,7 @@
 import React from "react";
-import { Button, Box, Container, Typography, Grid, Card, CardMedia } from "@mui/material";
-import TeamImg from './StudentImg.png'
+import { Button, Box, Container, Typography, Grid, Card, CardMedia, TextField } from "@mui/material";
+import TeamImg from './StudentImg.png';
+import TeamImg2 from './Being Patient 1.png';
 import ourteam from './style';
 
 
@@ -74,7 +75,34 @@ const OurTeam = () => {
                     </Box>
                 </Grid>
             </Grid>
+            <Grid container sx={ourteam.mainGrid}>
+                {/* Left Side Content */}
+                <Grid item xs={12} md={7} sx={ourteam.leftGrid}>
+                    <Typography variant="h6" sx={ourteam.headingText}>
+                        Stay Connected with Sama’s Journey
+                    </Typography>
+                    <Typography variant="body1" sx={ourteam.paragraphText}>
+                        Subscribe to our monthly newsletter,<b>Ripplez</b> , bringing you 
+                        from the latest inspiring impact stories to updates from our 
+                        mission to empower underserved communities. Don’t miss out 
+                        and join the conversation!                    
+                    </Typography>
+                    <TextField
+                        variant="outlined"
+                        placeholder="Email ID"
+                        fullWidth
+                        sx={ourteam.inputField}
+                    />
+                    <Button variant="contained" sx={ourteam.subscribeButton}>
+                        Subscribe
+                    </Button>
+                </Grid>
 
+                {/* Right Side Image */}
+                <Grid item xs={12} md={5} sx={ourteam.rightGrid}>
+                    <img src={TeamImg2} alt="Newsletter" style={ourteam.image} />
+                </Grid>
+            </Grid>
         </Container>
     );
 };
