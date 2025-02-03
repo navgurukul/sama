@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Box, Container, Typography, Grid, Card, CardMedia, TextField } from "@mui/material";
 import TeamImg from './StudentImg.png';
-import TeamImg2 from './Being Patient 1.png';
+import TeamImg2 from './Email Campaign 1.png';
 import ourteam from './style';
 
 

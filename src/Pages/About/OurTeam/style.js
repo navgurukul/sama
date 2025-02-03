@@ -81,7 +81,7 @@ const ourteam = {
     rightGrid: {
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        marginBottom: "50px",
     },
     image: {
         width: "100%",
