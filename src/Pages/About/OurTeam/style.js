@@ -51,6 +51,8 @@ const ourteam = {
         justifyContent: "space-between",
         alignItems: "center",
         backgroundColor: "#fff",
+        marginTop: { xs: "50px", md: "0px" },
+        marginBottom : {xs : "300px", md: "0px"}
     },
     leftGrid: {
         width: "1121px",
@@ -79,9 +81,9 @@ const ourteam = {
         fontSize: "16px",
     },
     rightGrid: {
-        display: "flex",
         justifyContent: "center",
-        marginBottom: "50px",
+        marginBottom: { xs: "100px", md: "50px" },
+        marginTop: { xs: "50px", md: "0px" },
     },
     image: {
         width: "100%",
