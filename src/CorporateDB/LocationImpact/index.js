@@ -4,6 +4,7 @@ import { Typography, Box } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
 import './LocationWiseImpact.css'
 import Location from './../Image/location_on.png'
+import { Container } from 'lucide-react';
 
 
 const stateData = {
@@ -63,16 +64,16 @@ const stateData = {
     modules: 21,
     learningHour: 670,
   },
- 
+
 };
 
 
 const LocationWiseImpact = () => {
   const [geoData, setGeoData] = useState(null);
   const [hoveredState, setHoveredState] = useState(null);
-  
+
   useEffect(() => {
-    fetch('/india-geo.json') 
+    fetch('/india-geo.json')
       .then((response) => response.json())
       .then((data) => setGeoData(data))
       .catch((error) => console.error('Error loading GeoJSON:', error));
@@ -80,19 +81,19 @@ const LocationWiseImpact = () => {
 
   const onEachState = (feature, layer) => {
     const stateName = feature.properties.st_nm;
-  
+
     const hasData = stateData[stateName] && stateData[stateName].ngoNum;
-  
+
     const defaultColor = hasData ? '#CED7CE' : '#E0E0E0';
 
     layer.setStyle({
       fillColor: defaultColor,
       weight: 2,
-      opacity: 1, 
-      color: '#FFF', 
-      fillOpacity: 1, 
+      opacity: 1,
+      color: '#FFF',
+      fillOpacity: 1,
     });
-    
+
     layer.on({
       mouseover: (e) => {
         if (hasData) {
@@ -101,124 +102,125 @@ const LocationWiseImpact = () => {
             ...stateData[stateName],
           });
           e.target.setStyle({
-            fillColor: '#5C785A', 
-            fillOpacity: 1, 
-            opacity: 1, 
+            fillColor: '#5C785A',
+            fillOpacity: 1,
+            opacity: 1,
           });
         } else {
           e.target.setStyle({
-            opacity: 1, 
+            opacity: 1,
           });
         }
       },
       mouseout: (e) => {
-        setHoveredState(null); 
+        setHoveredState(null);
         const resetColor = hasData ? '#CED7CE' : '#E0E0E0';
         e.target.setStyle({
-          fillColor: resetColor, 
-          fillOpacity: 1, 
-          opacity: 1, 
-          color: '#FFF', 
+          fillColor: resetColor,
+          fillOpacity: 1,
+          opacity: 1,
+          color: '#FFF',
         });
       },
     });
-      };
-  
+  };
+
 
   return (
-    <Box p={3} style={{position:"relative",height:"130vh"}}>
+    <>
+
       <Typography variant="h6">State Wise NGO Presence Across India</Typography>
       <MapContainer
-            center={[23.5, 83]}
-            zoom={4.5}
-            style={{
-              height: "757px",
-              width: "675px",
-              backgroundColor: "#ffff",
-              top:"20px",
-              left: "350px",
-            }}
-            zoomControl={false}
-            dragging={false}
-            doubleClickZoom={false}
-            scrollWheelZoom={false}
-            touchZoom={false}
-            boxZoom={false}
-            keyboard={false}
-            attributionControl={false}
-          >
-    
+        center={[23.5, 83]}
+        zoom={4.5}
+        style={{
+          height: "757px",
+          width: "675px",
+          backgroundColor: "#ffff",
+          top: "20px",
+          left: "350px",
+        }}
+        zoomControl={false}
+        dragging={false}
+        doubleClickZoom={false}
+        scrollWheelZoom={false}
+        touchZoom={false}
+        boxZoom={false}
+        keyboard={false}
+        attributionControl={false}
+      >
+
         {geoData && (
           <GeoJSON
-            data={geoData} 
+            data={geoData}
             style={{ weight: 2, opacity: 1, color: 'white', fillOpacity: 1 }}
-            onEachFeature={onEachState} 
+            onEachFeature={onEachState}
           />
         )}
       </MapContainer>
-        {hoveredState && (
-        <div className="hover-dialog">
-          <div className="dialog-header">
+      {hoveredState && (
+        <Box className="hover-dialog">
+          <Box className="dialog-header">
             <img src={Location} alt="State Location" className="state-icon" />
             <Typography color="primary" variant="subtitle1">{hoveredState.name}
-          </Typography>          
-        </div>
-          <div className="dialog-body">
-            <div className="ngo-data">
-              <div className="ngo-data-in">
-                <div>
+            </Typography>
+          </Box>
+          <Box className="dialog-body">
+            <Box className="ngo-data">
+              <Box className="ngo-data-in">
+                <Box>
                   <Typography variant="subtitle2">Total NGOs </Typography>
-                </div>
-                <div>
-                <span color="text.secondary" variant="subtitle2">{hoveredState.ngoNum}</span>
-                </div>
-              </div>
-              <div className="ngo-data-in">
-                <div>
-                  <Typography color= "#4A4A4A" variant="subtitle2">Number of Teachers Trained</Typography>
-                </div >
-                <div>
-                  <span  variant="subtitle2">{hoveredState.teachersTrained}</span>
-                </div>
+                </Box>
+                <Box>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.ngoNum}</span>
+                </Box>
+              </Box>
+              <Box className="ngo-data-in">
+                <Box>
+                  <Typography color="#4A4A4A" variant="subtitle2">Number of Teachers Trained</Typography>
+                </Box >
+                <Box>
+                  <span variant="subtitle2">{hoveredState.teachersTrained}</span>
+                </Box>
 
-              </div>
-              <div className="ngo-data-in">
-                <div>
-                  <Typography color= "#4A4A4A" variant="subtitle2">Number of School Visits</Typography>
-                </div>
-                <div>
+              </Box>
+              <Box className="ngo-data-in">
+                <Box>
+                  <Typography color="#4A4A4A" variant="subtitle2">Number of School Visits</Typography>
+                </Box>
+                <Box>
                   <span color="text.secondary" variant="subtitle2">{hoveredState.schoolVisits}</span>
-                </div>
-              </div>
-              <div className="ngo-data-in">
-                <div>
-                  <Typography color= "#4A4A4A" variant="subtitle2">Number of Sessions Conducted</Typography>
-                </div>
-                <div>
+                </Box>
+              </Box>
+              <Box className="ngo-data-in">
+                <Box>
+                  <Typography color="#4A4A4A" variant="subtitle2">Number of Sessions Conducted</Typography>
+                </Box>
+                <Box>
                   <span color="text.secondary" variant="subtitle2">{hoveredState.sessionConducted}</span>
-                </div>
-              </div>
-              <div className="ngo-data-in">
-                <div>
-                  <Typography color= "#4A4A4A" variant="subtitle2">Number of Modules Completed</Typography>
-                </div>
-                <div>
+                </Box>
+              </Box>
+              <Box className="ngo-data-in">
+                <Box>
+                  <Typography color="#4A4A4A" variant="subtitle2">Number of Modules Completed</Typography>
+                </Box>
+                <Box>
                   <span color="text.secondary" variant="subtitle2">{hoveredState.modules}</span>
-                </div>
-              </div>
-              <div className="ngo-data-in">
-                <div>
-                  <Typography color= "#4A4A4A" variant="subtitle2">Total Learning Hours</Typography>
-                </div>
-                <div>
+                </Box>
+              </Box>
+              <Box className="ngo-data-in">
+                <Box>
+                  <Typography color="#4A4A4A" variant="subtitle2">Total Learning Hours</Typography>
+                </Box>
+                <Box>
                   <span color="text.secondary" variant="subtitle2">{hoveredState.learningHour}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-       )}
-    </Box>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      )}
+    </>
   );
 };
 
