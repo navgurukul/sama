@@ -128,7 +128,6 @@ const LocationWiseImpact = () => {
 
   return (
     <>
-
       <Typography variant="h6">State Wise NGO Presence Across India</Typography>
       <MapContainer
         center={[23.5, 83]}
