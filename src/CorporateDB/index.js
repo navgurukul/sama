@@ -4,6 +4,7 @@ import MonthlyImpact from "./MonthlyImpact";
 import YearlyImpact from "./YearlyImpact";
 import { Box, Tab, Tabs, Container, Typography, Select, MenuItem ,TabStyle} from "@mui/material";
 import AmazonLogo from "./Image/amzon.png";
+import DateRangeSelector from './DateRangeSelector';
 
 
 const CorporateDb = () => {
@@ -23,6 +24,9 @@ const CorporateDb = () => {
     }
   };
 
+  const handleDateChange = (newDateRange) => {
+    console.log('Tamanna', newDateRange);
+  };
 
 
 const TabStyle = (index) => ({
@@ -66,19 +70,8 @@ const TabStyle = (index) => ({
           </Box>
         </Box>
         
-        <Select
-          value={dateRange}
-          size="small"
-          sx={{ 
-            minWidth: 150,
-            bgcolor: 'white',
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#e0e0e0'
-            }
-          }}
-        >
-          <MenuItem value="Sep24-Dec24">Sep'24 - Dec'24</MenuItem>
-        </Select>
+       <DateRangeSelector onDateRangeChange={handleDateChange} />
+   
       </Box>
 
       <Box sx={{ 
