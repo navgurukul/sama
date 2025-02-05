@@ -50,6 +50,8 @@ import YearlyForm from './Dashboard/YearlyReport/YearlyForm';
 import YearlyReportingForm from './Dashboard/Preliminary/YearlyReportingForm';
 import YearlyReportData from './Dashboard/Preliminary/YearlyReportData';
 import OurTeam from './Pages/About/OurTeam/OurTeam';
+import OurGoverment from './Pages/About/OurGoverment/OurGoverment';
+import CommunityPartners from './Pages/About/CommunityPartners/CommunityPartners';
 
 
 
@@ -130,6 +132,8 @@ function App() {
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
                <Route path = "/ngoprofile" element= {<NgoProfile/>} />
                <Route path = "/ourteam" element= {<OurTeam/>} />
+               <Route path = "/ourgoverment" element= {<OurGoverment/>} />
+               <Route path = "/communitypartners" element= {<CommunityPartners/>} />
               <Route path="/documentreupload" element={<DocumentReupload />} />
               <Route path="/attentionneeded" element={<AttentionNeeded />} />
                 <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
