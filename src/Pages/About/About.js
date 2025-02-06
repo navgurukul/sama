@@ -1,6 +1,7 @@
 import BgVideoPage from "./BgVideoPage";
 import Overview from "./Overview/index";
 import SamaGoals from "./SamaGoals";
+import ServicesSection from "./Service";
 
 
 
@@ -8,8 +9,9 @@ function About() {
   return (
     <>
       <BgVideoPage></BgVideoPage>
-      <Overview></Overview>
-      <SamaGoals></SamaGoals>
+      <ServicesSection></ServicesSection>
+      {/* <Overview></Overview> */}
+      {/* <SamaGoals></SamaGoals> */}
       
     </>
   )
