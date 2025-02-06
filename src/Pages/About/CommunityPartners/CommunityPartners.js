@@ -1,7 +1,9 @@
-import { Button, Box, Container, Typography, Grid, Card, CardMedia, TextField } from "@mui/material";
+import { Container, Typography} from "@mui/material";
 import StayConnected from '../../../common/StayConnected'
 import ourteam from '../OurTeam/style';
-import Quote from './quote.png'
+import GreenBox from './GreenBox';
+import CommunityForm from './CommunityForm'
+import ImageBox from "./ImageBox";
 
 const CommunityPartners = () => {
     return (
@@ -14,9 +16,9 @@ const CommunityPartners = () => {
                     Our community partners bring local insights and on-the-ground support,
                     helping us<br /> connect with and empower the individuals who need it most
                 </Typography>
-                <Box sx={ourteam.GreenBox}>
-                    <h1>gyg</h1>
-                </Box>
+                <ImageBox />
+                <GreenBox />
+                <CommunityForm />
                 <StayConnected />
             </Container>
         </>
