@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, GeoJSON } from 'react-leaflet';
-import { Typography, Box } from '@mui/material';
+import { Typography, Box,Container } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
 import './LocationWiseImpact.css'
 import Location from './../Image/location_on.png'
@@ -126,7 +126,8 @@ const LocationWiseImpact = () => {
   
 
   return (
-    <Box p={3} style={{position:"relative",height:"130vh"}}>
+  <Container maxWidth="lg">
+    {/* <Box p={3} style={{position:"relative",height:"130vh"}}> */}
       <Typography variant="h6">State Wise NGO Presence Across India</Typography>
       <MapContainer
             center={[23.5, 83]}
@@ -218,7 +219,8 @@ const LocationWiseImpact = () => {
           </div>
         </div>
        )}
-    </Box>
+    {/* </Box> */}
+  </Container>
   );
 };
 
