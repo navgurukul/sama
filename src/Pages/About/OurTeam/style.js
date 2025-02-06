@@ -62,12 +62,11 @@ const ourteam = {
     },
     headingText: {
         color: "#4A4A4A",
-        textAlign: "left"
+        textAlign:{sx:"center", md: "left" }
     },
     paragraphText: {
         color: "#666",
-        textAlign: "left"
-    },
+        textAlign:{sx:"center", md: "left" }    },
     inputField: {
         width: "100%",
         maxWidth: "360px",
@@ -94,9 +93,9 @@ const ourteam = {
 
     //OurGoverment
     GovBox: {
-        width: "750px",
-        height: "1050px",
-        marginLeft: "200px",
+        width: { xs: "100%", md:  "750px" },
+        height: { xs: "100%", md:  "1050px" },
+        marginLeft: { xs: "0px", md:  "200px" },
     },
     Para: {
         marginTop: "32px",
@@ -117,15 +116,111 @@ const ourteam = {
 
     //CommunityPartners
     GreenBox: {
-        border: "1px solid black",
-        height: "1121px",
-        width: "1470px", 
+        height:"100%",
+        width:{ xs: "100%", md:  "1470px" }, 
         backgroundColor: "#5C785A",
         marginLeft: "calc(-50vw + 50%)",  // Aligns it to full width
-        padding: "50px 0",  // Adjust padding
+        padding: { xs: "30px 16px", md: "50px 0" },
         marginTop: "50px",
-    }
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center", // Center content on smaller screens
 
+    },
+
+    Box1: {
+        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
+        height: { xs: "auto", md: "237px" },
+        padding: { xs: "20px", md: "24px" },
+        borderRadius: "8px",
+        backgroundColor: "#F7F7F7",
+        marginLeft:{xs: "0px", md:  "160px" },
+        marginRight: { xs: "auto", md: "0px" },
+        marginTop: "32px",
+    },
+    Box2: {
+        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
+        height: { xs: "auto", md: "392px" }, // Auto height on small screens
+        padding: { xs: "20px", md: "24px" },
+        borderRadius: "8px",
+        backgroundColor: "#F7F7F7",        
+        marginTop: { xs: "auto", md: "32px" },
+        marginRight: { xs: "auto", md: "0px" },
+        marginLeft: {xs: "0px", md: "-17px" },
+    },
+    Box3: {
+        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
+        height: { xs: "auto", md: "516px" }, // Auto height on small screens
+        padding: { xs: "20px", md: "24px" },
+        borderRadius: "8px",
+        backgroundColor: "#F7F7F7",        
+        marginLeft: {xs: "0px", md: "160px" },
+        marginRight: { xs: "auto", md: "0px" },
+        marginTop: { xs: "auto", md: "-155px" },
+    },
+    Box4: {
+        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
+        height: { xs: "auto", md: "206px" }, // Auto height on small screens
+        padding: { xs: "20px", md: "24px" },
+        borderRadius: "8px",
+        backgroundColor: "#F7F7F7",
+        marginRight: { xs: "auto", md: "0px" },
+        marginLeft: {xs: "0px", md: "-17px" },
+    },
+    ComForm : {
+        width: { xs: "100%", md:  "750px" },
+        height: { xs: "100%", md:  "1050px" },
+        marginLeft: { xs: "0px", md:  "200px" },
+        marginBottom:{xs: "0px", md: "160px"},
+    },
+
+    //ImgBox
+
+    Main : {
+        width: "100%", 
+        padding: "20px", 
+        marginTop: "32px", 
+    },
+    Image1 : {
+        width: "94.4", 
+        height: "88px",
+        padding: "16px"   ,    
+    },
+    Image2 : {
+        width: "88px", 
+        height: "88px",
+        padding: "16px"
+    },
+    Image3 : {
+        width: "306px", 
+        height: "88px",
+        padding: "16px"
+    },
+    Image4 : {
+        width: "85.3px", 
+        height: "88px",
+        padding: "16px"
+    },
+    Image5 : {
+        width: "97.3px", 
+        height: "88px",
+        padding: "16px"
+    },
+    Image6 : {
+        width: "91.4px", 
+        height: "88px",
+        padding: "16px"
+    },
+    Image7 : {
+        width: "417px", 
+        height: "88px",
+        padding: "16px"
+    },
+    Image8 : {
+        width: "143", 
+        height: "88px",
+        padding: "16px"
+    },
 };
 
 export default ourteam;
