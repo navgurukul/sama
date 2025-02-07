@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import ourteam from '../OurTeam/style';
 
-const CommunityForm = () => {
+const CorporateForm = () => {
 
     const [selectedState, setSelectedState] = useState("");
 
@@ -28,12 +28,12 @@ const CommunityForm = () => {
         setShowOtherField(event.target.value === "other");
     };
 
-
     return (
 
         <Box sx={ourteam.ComForm} >
             <Typography variant="h6" gutterBottom sx={ourteam.secondhead}>
-                Help Sama in fostering innovation and addressing<br /> grassroot challenges
+                Maximize Social and Environmental Impact via Strategic<br />
+                CSR Partnership with Sama
             </Typography>
             <Box sx={ourteam.Form}>
                 <form >
@@ -158,64 +158,43 @@ const CommunityForm = () => {
                                     className="customSubtitle1"
                                     sx={{ marginBottom: "10px" }}
                                 >
-                                    Communities you serve
+                                    Which of the following outcomes is most important for your organization?
                                 </Typography>
                                 <RadioGroup
                                     row
                                     name="hearAbout"
                                 >
                                     <FormControlLabel
-                                        value="women"
+                                        value="Fund Utilization"
                                         control={<Radio />}
-                                        label="Women"
+                                        label="Fund Utilization"
                                     />
                                     <FormControlLabel
-                                        value="children"
+                                        value="Sustainability and Environmental Impact"
                                         control={<Radio />}
-                                        label="Children"
+                                        label="Sustainability and Environmental Impact"
                                     />
                                     <FormControlLabel
-                                        value="sex workers"
+                                        value="Social Impact"
                                         control={<Radio />}
-                                        label="Sex Workers"
+                                        label="Social Impact"
                                     />
-                                    <FormControlLabel
-                                        value="physically challenged"
-                                        control={<Radio />}
-                                        label="Physically Challenged"
-                                    />
-
                                 </RadioGroup>
-                                <RadioGroup
-                                    row
-                                    name="hearAbout"
-                                >
-                                    <FormControlLabel
-                                        value="mentally challenged"
-                                        control={<Radio />}
-                                        label="Mentally Challenged"
-                                    />
-                                    <FormControlLabel
-                                        value="enviroment"
-                                        control={<Radio />}
-                                        label="Enviroment"
-                                    />
-                                    <RadioGroup row name="hearAbout" onChange={handleRadioChange}>
-                                        <FormControlLabel value="other" control={<Radio />} label="Other" />
-                                    </RadioGroup>
-
-                                    {showOtherField && (
-                                        <Grid item xs={12} md={6} sx={{ marginTop: "10px" }}>
-                                            <TextField
-                                                fullWidth
-                                                variant="outlined"
-                                                name="numberOfLaptops"
-                                                placeholder="Other"
-                                                sx={{ backgroundColor: "white" }}
-                                            />
-                                        </Grid>
-                                    )}
+                                <RadioGroup row name="hearAbout" onChange={handleRadioChange}>
+                                    <FormControlLabel value="other" control={<Radio />} label="Other" />
                                 </RadioGroup>
+
+                                {showOtherField && (
+                                    <Grid item xs={12} md={6} sx={{ marginTop: "10px" }}>
+                                        <TextField
+                                            fullWidth
+                                            variant="outlined"
+                                            name="numberOfLaptops"
+                                            placeholder="Other"
+                                            sx={{ backgroundColor: "white" }}
+                                        />
+                                    </Grid>
+                                )}
                             </FormControl>
                         </Grid>
                         <Grid item xs={12}>
@@ -257,4 +236,4 @@ const CommunityForm = () => {
 };
 
 
-export default CommunityForm;
+export default CorporateForm;

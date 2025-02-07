@@ -31,7 +31,7 @@ const OurApproach = () => {
         }}
       >
         <Container maxWidth="lg" style={lgContainer} sx={{}}>
-          <Grid container sx={{paddingTop:"80px"}} >
+          <Grid container sx={{paddingTop:"80px", justifyContent: "center"}} >
             <Grid item xs={12} md={7} sm={12} sx={{px:{lg:0,sm:5,md:3,sx:5}}}>
               <Typography sx={styleh5} variant="h5">
                 Our Rationale
@@ -45,7 +45,7 @@ const OurApproach = () => {
               </Typography>
             </Grid>
           </Grid>
-          <Grid container color="#fff"  paddingTop="40px" sx={{px:{lg:0,sm:5,md:3,sx:5}}}>
+          <Grid container color="#fff"  paddingTop="40px" sx={{px:{lg:0,sm:5,md:3,sx:5}, justifyContent: "center"}}>
             {data.map((section, sectionIndex) => (
               <React.Fragment key={sectionIndex}>
                 <Typography

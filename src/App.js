@@ -52,6 +52,7 @@ import YearlyReportData from './Dashboard/Preliminary/YearlyReportData';
 import OurTeam from './Pages/About/OurTeam/OurTeam';
 import OurGoverment from './Pages/About/OurGoverment/OurGoverment';
 import CommunityPartners from './Pages/About/CommunityPartners/CommunityPartners';
+import CorporatePartner from './Pages/About/CorporatePartners/CorporatePartners'
 
 
 
@@ -130,10 +131,13 @@ function App() {
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
+  
                <Route path = "/ngoprofile" element= {<NgoProfile/>} />
                <Route path = "/ourteam" element= {<OurTeam/>} />
                <Route path = "/ourgoverment" element= {<OurGoverment/>} />
                <Route path = "/communitypartners" element= {<CommunityPartners/>} />
+               <Route path = "/corporatepartner" element= {<CorporatePartner/>} />
+        
               <Route path="/documentreupload" element={<DocumentReupload />} />
               <Route path="/attentionneeded" element={<AttentionNeeded />} />
                 <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />
