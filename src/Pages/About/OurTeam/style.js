@@ -221,6 +221,21 @@ const ourteam = {
         height: "88px",
         padding: "16px"
     },
+    
+    //Coroporate Logo Box
+    Logo1: {
+        widht:"288px",
+        height: "116px",
+        padding: "32px",
+        borderRadius: "8px",
+        overflow: "hidden",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        boxShadow: "0px 1px 5px 0px #4A4A4A14",
+        boxShadow: "0px 2px 1px 0px #4A4A4A0A",
+        boxShadow: "0px 1px 2px 0px #4A4A4A0F",  
+    },
 };
 
 export default ourteam;
