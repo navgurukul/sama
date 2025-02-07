@@ -1,72 +1,93 @@
+import React from "react";
+import { 
+  Grid, 
+  Box, 
+  Typography,
+  List,
+  ListItem,
+  ListItemText 
+} from "@mui/material";
+import Image1 from "./assets/1.png"; // Replace with your actual image paths
+import Image2 from "./assets/2.png";
+import Image3 from "./assets/3.png";
 
-import React from 'react';
-import { Grid, Box, Typography, Container, styled } from '@mui/material';
-import { Flag as MissionIcon, Visibility as VisionIcon, Diamond as ValuesIcon } from '@mui/icons-material';
-
-const IconContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  textAlign: 'center',
-  padding: theme.spacing(2),
-}));
-
-const IconWrapper = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
-  '& svg': {
-    width: 32,
-    height: 32,
-    color: '#1976d2',
+const services = [
+  {
+    image: Image1,
+    title: "Mission",
+    description: "Empower 1 million women and youth by 2030 through technology, equipping them with the resources needed for education, livelihoods, and growth promoting a circular economy by integrating environmental responsibility into digital inclusion efforts",
   },
-}));
-
-const ServiceDescription = styled(Typography)(({ theme }) => ({
-  color: '#666',
-  fontSize: '0.9rem',
-  lineHeight: 1.5,
-  maxWidth: '280px',
-  margin: '0 auto',
-}));
+  {
+    image: Image2,
+    title: "Vision",
+    description: "To bridge the digital divide and empower underserved communities by providing access to technology, fostering education, and promoting environmental sustainability",
+  },
+  {
+    image: Image3,
+    title: "Service Three",
+    description: [
+      "• Women and Youth",
+      "• Empowerment",
+      "• Sustainability",
+      "• Impact-driven",
+      "• Collaboration",
+      "• Transparency",
+      "• Community-centric approach"
+    ],
+  },
+];
 
 const ServiceIcons = () => {
-  const services = [
-    {
-      icon: MissionIcon,
-      title: "Mission",
-      description: "Empower billions of users start to finish through our products, and focusing on simplicity"
-    },
-    {
-      icon: VisionIcon,
-      title: "Vision",
-      description: "To help you decide about your financial goals based on expertise gained over our vast experience"
-    },
-    {
-      icon: ValuesIcon,
-      title: "Values",
-      description: "Ethics and trust, Empowerment, Passion at heart, Sustainability, Partnership, Service with a smile approach"
-    }
-  ];
-
   return (
-    <Container maxWidth="lg" sx={{ px: "5rem"}}>
-      <Grid container spacing={3}>
+    <Box sx={{ width: "100%", padding: "20px" }}>
+      <Grid container spacing={4} justifyContent="center">
         {services.map((service, index) => (
-          <Grid item xs={12} md={4} key={index}>
-            <IconContainer>
-              <IconWrapper>
-                <service.icon />
-              </IconWrapper>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 500, fontSize: '1.1rem' }}>
-                {service.title}
-              </Typography>
-              <ServiceDescription sx={{textAlign:"left"}}>
-                {service.description}
-              </ServiceDescription>
-            </IconContainer>
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Box
+              sx={{
+                width: "304px",
+                height: "412px",
+                textAlign: "center",
+                padding: "20px",
+                borderRadius: "8px",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                backgroundColor: "white",
+              }}
+            >
+              <Box
+                component="img"
+                src={service.image}
+                alt="image"
+              />
+              <Box>
+                <Typography mt={2} variant="h6" fontWeight="bold" gutterBottom>
+                  {service.title}
+                </Typography>
+              </Box>
+              {index === 2 ? (
+                <List dense>
+                  {service.description.map((point, i) => (
+                     <ListItem key={i} sx={{ padding: "0px 0" }}>
+                     <ListItemText
+                       primary={point}
+                       primaryTypographyProps={{
+                        variant: "body1", 
+                        color: "textSecondary", 
+                       }}
+                     />
+                   </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Typography variant="body1" color="textSecondary" mt={3} sx={{textAlign: "left" }}>
+                  {service.description}
+                </Typography>
+              )}
+            </Box>
           </Grid>
         ))}
       </Grid>
-    </Container>
+    </Box>
   );
 };
 

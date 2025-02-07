@@ -1,31 +1,28 @@
-
 import React from 'react';
-import { Typography, Container, Box} from '@mui/material';
+import { 
+  Box,
+  Container,
+  Typography,
+ } from '@mui/material';
+import ourteam from '../OurTeam/style';
 
 const HeaderText = () => {
     return (
-        <Container maxWidth="lg" sx={{ px: "5rem",py:2 }}>
-            <Box
-                sx={{
-                    // width: '500px', 
-                    paddingInline: "200px",
-                    margin: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                }}
-            >
-                <Typography variant="h5" align="center" gutterBottom>
-                    What We Do
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                    Start to begin the digital storm by solving one of 100 specific tech milestones,
-                    and sorting data that is providing and surrounding with solution. And Team built startup
-                    belongs to communicate certificate, skill certificate and PMP certification.
-                    We focused on community building concepts, social media marketing, and sustainable growth - when
-                    delivering a more challenge!
-                </Typography>
-            </Box>
-        </Container>
+        <Container maxWidth="lg" sx={ourteam.container}>
+        <Box>
+            <Typography variant="h5" gutterBottom>
+                What We Do
+            </Typography>
+            <Typography variant="body1" paragraph sx={{textAlign: "left", justifySelf:"center"}} >
+                Sama bridges the digital divide by collecting end-of-life 
+                laptops from corporates,<br/> refurbishing them and preloading 
+                with educational content, and finally distributing<br/> laptops 
+                to underserved communities. We empower women and youth with 
+                access to<br/> technology, enabling education, career opportunities, 
+                and sustainable growth, while <br/>addressing e-waste challenges
+            </Typography>
+        </Box>
+    </Container>
     );
 };
 

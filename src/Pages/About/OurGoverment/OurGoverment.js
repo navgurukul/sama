@@ -1,27 +1,13 @@
-import { useState } from "react";
 import {
-    Button,
     Box,
     Container,
     Typography,
-    Grid,
-    InputLabel,
-    TextField,
-    Select,
-    MenuItem,
-    FormControl,
 } from "@mui/material";
 import StayConnected from '../../../common/StayConnected'
 import ourteam from '../OurTeam/style';
 import OurGovermentForm from "./OurGovermentForm";
 
 const OurGoverment = () => {
-
-    const [selectedState, setSelectedState] = useState("");
-
-    const handleStateChange = (event) => {
-        setSelectedState(event.target.value);
-    };
 
     return (
         <Container maxWidth="lg" sx={ourteam.container}>

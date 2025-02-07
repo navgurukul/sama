@@ -221,6 +221,21 @@ const ourteam = {
         height: "88px",
         padding: "16px"
     },
+
+
+    //About Us
+    FullBox:{
+        height:{ xs: "100%", md:  "237px" },
+        width:{ xs: "100%", md:  "1470px" }, 
+        backgroundColor: " #F0F4EF",
+        marginLeft: "calc(-50vw + 50%)",  // Aligns it to full width
+        padding: { xs: "30px 16px", md: "80px 0" },
+        marginTop: "50px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center", // Center content on smaller screens
+
+    },
 };
 
 export default ourteam;
