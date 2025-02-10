@@ -10,6 +10,7 @@ import {
 import Image1 from "./assets/1.png"; // Replace with your actual image paths
 import Image2 from "./assets/2.png";
 import Image3 from "./assets/3.png";
+import ourteam from "../OurTeam/style";
 
 const services = [
   {
@@ -44,16 +45,7 @@ const ServiceIcons = () => {
         {services.map((service, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Box
-              sx={{
-                width: "304px",
-                height: "412px",
-                textAlign: "center",
-                padding: "20px",
-                borderRadius: "8px",
-                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                backgroundColor: "white",
-              }}
-            >
+              sx={ourteam.AboutCard}>
               <Box
                 component="img"
                 src={service.image}

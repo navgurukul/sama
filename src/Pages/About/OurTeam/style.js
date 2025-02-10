@@ -228,14 +228,23 @@ const ourteam = {
         height:{ xs: "100%", md:  "237px" },
         width:{ xs: "100%", md:  "1470px" }, 
         backgroundColor: " #F0F4EF",
-        marginLeft: "calc(-50vw + 50%)",  // Aligns it to full width
+        marginLeft: "calc(-50vw + 50%)", 
         padding: { xs: "30px 16px", md: "80px 0" },
         marginTop: "50px",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center", // Center content on smaller screens
+        alignItems: "center", 
 
     },
+    AboutCard: {
+        width: "304px",
+        height: "412px",
+        textAlign: "center",
+        padding: "20px",
+        borderRadius: "8px",
+        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+        backgroundColor: "white",       
+    }
 };
 
 export default ourteam;
