@@ -65,7 +65,7 @@ function Home() {
       </Box>
       <LaptopDonor />
 
-      <Box sx={{ my: 10}} >
+      <Box sx={{ my: 10 }} >
         <Container maxWidth="lg">
           <Typography variant="h5" align="left" mb={4}></Typography>
           <Grid container spacing={4}>
@@ -98,35 +98,47 @@ function Home() {
       </Box>
       <Box sx={{ backgroundColor: "#F0F4EF", py: 6, }}>
         <Container maxWidth="lg" >
-          <Typography variant="h5" margin="32px 0px" sx={{textAlign: "center"}}>Our Goals for 2030</Typography>
-          <Grid container spacing={4} sx={{justifyItems:"center" }}>
+          <Typography variant="h5" margin="32px 0px" sx={{ textAlign: "center" }}>Our Goals for 2030</Typography>
+          <Grid container spacing={4} sx={{ justifyContent: "center" }}>
+            {/* First Row - Three Items */}
             {[
               { src: require("./assets/image 9.svg").default, value: "2.4 M", description: "kgs of Resource Waste Reduction" },
               { src: require("./assets/image 11.svg").default, value: "8.6 M", description: "grams of Toxic Waste Reduction" },
               { src: require("./assets/image 10.svg").default, value: "400 M", description: "kgs of Carbon Footprint Reduction" },
             ].map((item, index) => (
               <Grid item xs={12} md={4} key={index}>
-                <Box  sx={{justifyItems:"center" }}>
+                <Box sx={{ textAlign: "center" }}>
                   <img src={item.src} alt={item.description} />
-                  <Typography variant="h5" color="primary" marginTop="8px">{item.value}</Typography>
-                  <Typography variant="body1" sx={{color: '#4A4A4A'}}>{item.description}</Typography>
+                  <Typography variant="h5" color="primary" mt={1}>{item.value}</Typography>
+                  <Typography variant="body1" sx={{ color: '#4A4A4A' }}>{item.description}</Typography>
                 </Box>
               </Grid>
             ))}
-          </Grid>
-          <Grid container spacing={4} sx={{marginLeft:{ xs: "-40px", md: "165px" }, mt: { xs: 0, md: 4 } }}>
-            {[
-              { src: require("./assets/image 9 (1).svg").default, value: "1 M", description: "Beneficiaries of Digital Inclusion" },
-              { src: require("./assets/image 12.svg").default, value: "4 M", description: "Hours average per day of Learning Hours" },
-            ].map((item, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Box  sx={{justifyItems:"center" }}>
+
+            <Grid
+              item
+              xs={12}
+              md={8}
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' }, 
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 4,
+               
+              }}
+            >
+              {[
+                { src: require("./assets/image 9 (1).svg").default, value: "1 M", description: "Beneficiaries of Digital Inclusion" },
+                { src: require("./assets/image 12.svg").default, value: "4 M", description: "Hours average per day of Learning Hours" },
+              ].map((item, index) => (
+                <Box key={index} sx={{ textAlign: "center", width: "100%", maxWidth: "400px" }}>
                   <img src={item.src} alt={item.description} />
-                  <Typography variant="h5" color="primary" marginTop="8px">{item.value}</Typography>
-                  <Typography variant="body1" sx={{color: '#4A4A4A'}}>{item.description}</Typography>
+                  <Typography variant="h5" color="primary" mt={1}>{item.value}</Typography>
+                  <Typography variant="body1" sx={{ color: '#4A4A4A' }}>{item.description}</Typography>
                 </Box>
-              </Grid>
-            ))}
+              ))}
+            </Grid>
           </Grid>
           <Typography variant="body2"
             color="#4A4A4A"
@@ -170,7 +182,7 @@ function Home() {
           </Typography>
         </Box>
       </Container> */}
-      <Container maxWidth="xxl" style={{ padding: 0,background:"#F0F4EF" }}>
+      <Container maxWidth="xxl" style={{ padding: 0, background: "#F0F4EF" }}>
         <img
           src={BGIMG}
           alt="Sama Group"
@@ -179,7 +191,7 @@ function Home() {
       </Container>
 
 
-      <Container maxWidth="lg" sx={{py:"80px",backgroundColor: "#FFFAF8"}}>
+      <Container maxWidth="lg" sx={{ py: "80px", backgroundColor: "#FFFAF8" }}>
         <Typography variant="h5">Metrics that Matter</Typography>
         <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
         <Box sx={!isActive && { display: 'flex', my: 4 }} spacing={3}>
@@ -205,28 +217,16 @@ function Home() {
       </Container>
 
       <Box>
-        <Container maxWidth="lg" sx={{py:"80px", justifyItems:"center" }}>
-          <Typography variant="h5">Sustainability Development Goals</Typography>
-          <Typography variant="body1" style={{ width: "65%", margin: "16px 0px", textAlign:"center" }}>
+        <Container maxWidth="lg" sx={{ py: "80px", justifyItems: "center" }}>
+          <Typography variant="h5" sx={{ textAlign: "center" }}>Sustainability Development Goals</Typography>
+          <Typography variant="body1" style={{ width: "65%", margin: "16px 0px", textAlign: "center" }}>
             Sama's mission of repurposing e-waste for educational use by underserved women aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
           </Typography>
-          <Grid container spacing={4} sx={{mt: { xs: 0, md: 2 } }}>
+          <Grid container spacing={4} sx={{ mt: { xs: 0, md: 2 } }}>
             {[
-              { src: "./assets/sub_1.jpg", overlaySrc: require("./assets/E_GIF_04.gif"), alt: "Gender Equality" },
-              { src: "./assets/sub_2.jpg", overlaySrc: require("./assets/E_GIF_05.gif"), alt: "Gender Equality" },
-              { src: "./assets/sub_4.jpg", overlaySrc: require("./assets/E_GIF_08.gif"), alt: "quality education" },            ].map((item, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Box sx={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-                  <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
-                  <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-          <Grid container spacing={4} sx={{marginLeft:{ xs: "-30px", md: "400px" }, mt: { xs: 0, md: 0 } }}>
-            {[
-              { src: "./assets/laptop_1.jpg", overlaySrc: require("./assets/E_GIF_12.gif"), alt: "growth" },
-              { src: "./assets/ngStudent.jpg", overlaySrc: require("./assets/E_GIF_13.gif"), alt: "climate action" },
+              { src: "./assets/sub_1.jpg", overlaySrc: require("./assets/h1.png"), alt: "Gender Equality" },
+              { src: "./assets/sub_2.jpg", overlaySrc: require("./assets/h2.png"), alt: "Gender Equality" },
+              { src: "./assets/sub_4.jpg", overlaySrc: require("./assets/h3.png"), alt: "Quality Education" },
             ].map((item, index) => (
               <Grid item xs={12} md={4} key={index}>
                 <Box sx={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
@@ -235,6 +235,30 @@ function Home() {
                 </Box>
               </Grid>
             ))}
+
+            <Grid
+              item
+              xs={12}
+              md={8}
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 4,
+                marginLeft: { xs: "0px", md: "200px" }
+              }}
+            >
+              {[
+                { src: "./assets/laptop_1.jpg", overlaySrc: require("./assets/h4.png"), alt: "Growth" },
+                { src: "./assets/ngStudent.jpg", overlaySrc: require("./assets/h5.png"), alt: "Climate Action" },
+              ].map((item, index) => (
+                <Box key={index} sx={{ position: 'relative', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+                  <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
+                  <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
+                </Box>
+              ))}
+            </Grid>
           </Grid>
         </Container>
       </Box>

@@ -226,7 +226,7 @@ function ContactForm() {
             </form>
           </Grid>
           <Grid item xs={12} sm={12} md={4}>
-            <Box sx={{height:"385px", width:"533px"}}>
+            <Box sx={{height:{ xs: '100%', md: "385px" }, width: { xs: '100%', md: "533px"}}}>
             <img
               src={require("./assets/Frame outer.svg").default}
               alt="Contact"
