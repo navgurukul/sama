@@ -171,7 +171,7 @@ const ourteam = {
         width: { xs: "100%", md:  "750px" },
         height: { xs: "100%", md:  "1050px" },
         marginLeft: { xs: "0px", md:  "200px" },
-        marginBottom:{xs: "0px", md: "160px"},
+        marginBottom:{xs: "0px", md: "0px"},
     },
 
     //ImgBox
