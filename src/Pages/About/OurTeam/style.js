@@ -246,6 +246,10 @@ const ourteam = {
         borderRadius: "8px",
         boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
         backgroundColor: "white",       
+    },
+    //OurApproach
+    ApproachBox:{
+        justifyItems:"center",
     }
 };
 
