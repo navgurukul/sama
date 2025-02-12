@@ -31,7 +31,6 @@ import axios from "axios";
 import TablePagination from "@mui/material/TablePagination";
 import Divider from "@mui/material/Divider";
 import { useNavigate } from "react-router-dom";
-
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import { classes } from "./style";
@@ -66,10 +65,15 @@ const AdminNgo = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [ngoIdToChange, setNgoIdToChange] = useState(null);
   const [type, setType] = useState("");
-
+  const [donor, setDonor] = useState(null);
+  const [typeSelections, setTypeSelections] = useState({});
+  const [donorSelections, setDonorSelections] = useState({});
+  const [open, setOpen] = useState(false);
   const dialogRef = useRef(null);
   const NgoType = ["1 to one", "1 to many"];
-
+  const AssociatedDoner = ["Accenture", "Amazon"];
+  
+  
   useEffect(() => {
     async function fetchData() {
       try {
@@ -187,7 +191,7 @@ const AdminNgo = () => {
             type: "NGO",
             ngoType: type,
           }),
-        }
+        }  
       );
 
       if (response.ok) {
@@ -231,6 +235,42 @@ const AdminNgo = () => {
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
+
+  const handleDonerChange = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setDonor(e.target.value);
+    setOpen(true); // Open confirmation modal
+  };
+
+  const handleDonerConfirm = async () => {
+    if (ngoIdToChange && donor) {
+      setDonor(donor); // Update state
+      await sendToBackend(ngoIdToChange, donor); // Send data to backend
+      setOpen(false);
+    }
+  };
+  
+  const sendToBackend = async (id, donor) => {
+    
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_NgoInformationApi}?type=donorUpdate`,
+         {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id : id, donor: donor, type : "donorUpdate" }),
+      });
+  
+      const result = await response.json();
+      console.log("Success:", result);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
@@ -377,6 +417,7 @@ const AdminNgo = () => {
                   </TableCell>
                   <TableCell sx={classes.tableHeader}>Type</TableCell>
                   <TableCell sx={classes.tableHeader}>Status</TableCell>
+                  <TableCell sx={classes.tableHeader}>Donor</TableCell>
                   <TableCell sx={classes.tableHeader}></TableCell>
                 </TableRow>
               </TableHead>
@@ -435,15 +476,17 @@ const AdminNgo = () => {
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
                         <FormControl fullWidth>
-                          {/* <InputLabel id="demo-simple-select-label"> type</InputLabel> */}
                           <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            // label="Request Submitted"
-                            value={ngo["Ngo Type"] || type}
+                            value={ngo["Ngo Type"] || typeSelections[ngo.Id] || ""}
                             onChange={(e) => {
                               e.stopPropagation();
                               e.preventDefault();
+                              setTypeSelections(prev => ({
+                                ...prev,
+                                [ngo.Id]: e.target.value
+                              }));
                               setType(e.target.value);
                             }}
                             disabled={ngo["Ngo Type"] ? true : false}
@@ -471,14 +514,12 @@ const AdminNgo = () => {
                           </Select>
                         </FormControl>
                       </TableCell>
+                      
                       <TableCell sx={classes.tablecell}>
                         <FormControl fullWidth>
-                          {/* <InputLabel id="demo-simple-select-label">
-                     Status</InputLabel> */}
                           <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            // label="Request Submitted"
                             value={ngo.Status}
                             onChange={(e) => {
                               e.stopPropagation();
@@ -504,7 +545,34 @@ const AdminNgo = () => {
                           </Select>
                         </FormControl>
                       </TableCell>
+                      <>
+                      <TableCell sx={classes.tablecell}>
+                        <FormControl fullWidth>
+                          <Select
+                          value={ngo["Doner"] || donorSelections[ngo.Id]}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setDonorSelections(prev => ({
+                              ...prev,
+                              [ngo.Id]: e.target.value
+                            }));
+                            handleDonerChange(e);
+                            setNgoIdToChange(ngo.Id);
+                          }}
 
+                            disabled={!!ngo["Doner"]}
+                            IconComponent={ngo["Doner"] ? () => null : undefined}
+                          >
+                            {AssociatedDoner.map((option) => (
+                              <MenuItem key={option} value={option} onClick={(e) => e.stopPropagation()}>
+                                {option}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                    </>
                       <TableCell sx={{ border: "none" }}>
                         <IconButton
                           onClick={(e) => {
@@ -528,7 +596,6 @@ const AdminNgo = () => {
             </Table>
           </TableContainer>
           <Divider />
-
           <TablePagination
             sx={{ mt: 3, mb: 8 }}
             rowsPerPageOptions={[10, 25, 100]}
@@ -580,6 +647,18 @@ const AdminNgo = () => {
           </Button>
           <Button onClick={handleConfirmStatusChange} color="primary" autoFocus>
             Approve
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>Confirm Selection</DialogTitle>
+        <DialogContent>
+          Are you sure you want to assign "{donor}" as the donor?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={handleDonerConfirm} color="primary">
+            Confirm
           </Button>
         </DialogActions>
       </Dialog>
