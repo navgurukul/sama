@@ -1,4 +1,4 @@
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Container} from "@mui/material";
 import Ama from "./assets/Amazon Logo.png";
 import Mac from "./assets/image 1.png";
 import DXC from "./assets/image 5.png";
@@ -7,7 +7,7 @@ import ourteam from "../OurTeam/style";
 
 const CompanyLogo = () => {
     return (
-        <Box sx={ourteam.Main}>
+        <Container maxWidth="lg" sx={ourteam.container} style={{marginTop:"0px"}}>
             <Grid container spacing={2} justifyContent="center">
                 <Grid item xs={12} sm={6} md={4}>
                     <Box sx={ourteam.Logo1}>
@@ -34,7 +34,7 @@ const CompanyLogo = () => {
                     </Box>
                 </Grid>
             </Grid>
-        </Box>
+    </Container>
     );
 };
 

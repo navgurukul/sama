@@ -102,7 +102,6 @@ const ourteam = {
     },
     secondhead: {
         color: "#4A4A4A",
-        marginTop: "80px",
         textAlign : "left",
     },
     Form: {
@@ -171,7 +170,6 @@ const ourteam = {
         width: { xs: "100%", md:  "750px" },
         height: { xs: "100%", md:  "1050px" },
         marginLeft: { xs: "0px", md:  "200px" },
-        marginBottom:{xs: "0px", md: "0px"},
     },
 
     //ImgBox
