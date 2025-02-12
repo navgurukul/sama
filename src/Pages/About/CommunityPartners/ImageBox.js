@@ -1,4 +1,4 @@
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Container } from "@mui/material";
 import ourteam from '../OurTeam/style';
 import img1 from "./assests/1.png";  
 import img2 from "./assests/2.png";
@@ -12,8 +12,9 @@ import img8 from "./assests/8.png";
 
 const ImageBox = () => {
     return (
+        <Container maxWidth="lg" sx={ourteam.container}>
         <Box sx={ourteam.Main}>
-            <Grid container spacing={2} justifyContent="center" sx={{gap: "32px"}}>
+            <Grid container spacing={7} justifyContent="center" sx={{gap: "32px"}}>
                     <Box sx={ourteam.Image1}>
                         <img src={img1} alt="img1"  />
                     </Box>
@@ -42,6 +43,7 @@ const ImageBox = () => {
                     </Box>
             </Grid>
         </Box>
+    </Container>
     );
 };
 

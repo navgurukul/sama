@@ -48,6 +48,7 @@ function Home() {
           justifyContent: "center",
           alignItems: "center",
           textAlign: "center",
+          width:"100%"
         }}
         paddingY={isActive ? 5 : 28}
       >

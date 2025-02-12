@@ -22,6 +22,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 import BackButton from "./BackButton";
 import { matchPath } from "react-router-dom";
+import DropdownMenu from "./DropdownMenu";
 
 const isRouteMatch = (pathname, patterns) => {
   return patterns.some((pattern) =>
@@ -35,7 +36,18 @@ const isRouteMatch = (pathname, patterns) => {
     )
   );
 };
+const discoverUsItems = [
+  { text: "About Us", href: "/about" },
+  { text: "Our Approach", href: "/our-approach" },
+  { text: "Our Team", href: "/ourteam" },
+  { text: "Donate", href: "/donate" },
+];
 
+const getInvolvedItems = [
+  { text: "Corporate Partners", href: "/corporatepartner" },
+  { text: "Government Partners", href: "/ourgoverment" },
+  { text: "Community Partners", href: "/communitypartners" },
+];
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -59,12 +71,12 @@ const Navbar = () => {
     "monthly-report",
     "yearly-report",
   ];
-
   const menuItems = [
     { text: "About Us", href: "/about" },
     { text: "Our Approach", href: "/our-approach" },
     { text: "Donate", href: "/donate" },
   ];
+  
 
   useEffect(() => {
     const authData = localStorage.getItem("_AuthSama_");
@@ -149,37 +161,12 @@ const Navbar = () => {
             </Link>
           )}
 
-          <Box className={`nav-links ${menuVisible ? "visible" : ""}`}>
-            {!isLoggedIn &&
-              menuItems.map((item, index) => (
-                <MuiLink
-                  sx={{
-                    margin: 1,
-                    color: "#4A4A4A",
-                    textDecoration: "none",
-                  }}
-                  component={Link}
-                  to={item.href}
-                  className={`nav-link ${
-                    activeTab === item.href ? "active" : ""
-                  }`}
-                  key={index}
-                  onClick={() => handleTabClick(item.href)}
-                >
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      textTransform: "none",
-                      color:
-                        activeTab === item.href ? "primary.main" : "inherit",
-                      fontWeight: activeTab === item.href ? "bold" : "normal",
-                    }}
-                  >
-                    {item.text}
-                  </Typography>
-                </MuiLink>
-              ))}
+          {!isLoggedIn && (
+          <Box className={`nav-links ${menuVisible ? "visible" : ""}`}  sx={{ display: {xs:"none", md:"flex"}, gap: "32px" }}>
+            <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
+            <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
           </Box>
+        )}
 
           {/* show only in mobile view when user will log in */}
           {isLoggedIn && (
@@ -320,26 +307,8 @@ const Navbar = () => {
               isActive && menuVisible ? "visible" : ""
             }`}
           >
-            {menuItems.map((item, index) => (
-              <MuiLink
-                component={Link}
-                to={item.href}
-                className={`nav-link ${
-                  activeTab === item.href ? "active" : ""
-                }`}
-                key={index}
-                onClick={() => handleTabClick(item.href)}
-              >
-                <Typography
-                  variant="body1"
-                  sx={{
-                    fontWeight: activeTab === item.href ? "bold" : "normal",
-                  }}
-                >
-                  {item.text}
-                </Typography>
-              </MuiLink>
-            ))}
+            <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
+            <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
             {/* Dashboard Login in mobile menu - Hidden in mobile view */}
             {!isLoggedIn && !isActive && (
               <MuiLink

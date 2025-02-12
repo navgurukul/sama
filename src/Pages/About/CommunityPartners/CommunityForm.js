@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+    Container,
     Button,
     Box,
     RadioGroup,
@@ -24,7 +25,8 @@ const CommunityForm = () => {
     };
 
     return (
-        
+        <Container maxWidth="lg" sx={ourteam.container}>
+
         <Box sx={ourteam.ComForm} >
             <Typography variant="h6" gutterBottom sx={ourteam.secondhead}>
                 Help Sama in fostering innovation and addressing<br /> grassroot challenges                
@@ -246,6 +248,7 @@ const CommunityForm = () => {
                 </form>
             </Box>
         </Box>
+        </Container>
     );
 };
 

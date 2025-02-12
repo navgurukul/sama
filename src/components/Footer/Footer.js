@@ -34,17 +34,17 @@ const Footer = () => {
                   </Typography>
                   <Box display="flex" flexDirection="column" gap={2} mt={2}>
                     <Typography variant="body2" >
-                      <Link href="/about" underline="none">
+                      <Link href="/about" underline="none" color="#4A4A4A">
                         About Us
                       </Link>
                     </Typography>
                     <Typography variant="body2" >
-                      <Link href="/our-approach" underline="none">
+                      <Link href="/our-approach" underline="none" color="#4A4A4A">
                         Our Approach
                       </Link>
                     </Typography>
                     <Typography variant="body2" >
-                      <Link href="/ourteam" underline="none">
+                      <Link href="/ourteam" underline="none" color="#4A4A4A">
                         Our Team
                       </Link>
                     </Typography>
@@ -56,18 +56,18 @@ const Footer = () => {
                     Get Involved
                   </Typography>
                   <Box display="flex" flexDirection="column" gap={2} mt={2}>
-                    <Typography variant="body2" >
-                      <Link href="/corporatepartner" underline="none">
+                    <Typography variant="body2"  >
+                      <Link href="/corporatepartner" underline="none" color="#4A4A4A">
                         Corporate Partners
                       </Link>
                     </Typography>
                     <Typography variant="body2" >
-                      <Link href="/ourgoverment" underline="none">
+                      <Link href="/ourgoverment" underline="none" color="#4A4A4A">
                         Government Partners
                       </Link>
                     </Typography>
                     <Typography variant="body2" >
-                      <Link href="/communitypartners" underline="none">
+                      <Link href="/communitypartners" underline="none" color="#4A4A4A">
                         Community Partners
                       </Link>
                     </Typography>
@@ -78,7 +78,7 @@ const Footer = () => {
                   <Typography variant="subtitle2" fontWeight="bold" color="#4A4A4A">
                     Support
                   </Typography>
-                  <Box display="flex" justifyContent="center" alignItems="center" mt={1}>
+                  <Box display="flex" justifyContent="center" alignItems="center" mt={1} gap={1}>
                     <img src={Email} fontSize="small" sx={{ mr: 1 }} />
                     <Typography variant="body2" >support@example.com</Typography>
                   </Box>

@@ -1,4 +1,4 @@
-import { border, height, maxWidth, textAlign, width } from "@mui/system";
+import { border, height, margin, maxWidth, textAlign, width } from "@mui/system";
 
 const ourteam = {
     container: {
@@ -72,12 +72,12 @@ const ourteam = {
         maxWidth: "360px",
         height :"55px",
         borderRadius: "8px",
-        textAlign :"left",
     },
     subscribeButton: {
         width: "150px",
         height: "48px",
         fontSize: "16px",
+        textAlign:"right"
     },
     rightGrid: {
         justifyContent: "center",
@@ -120,8 +120,7 @@ const ourteam = {
         width:{ xs: "100%", md:  "1470px" }, 
         backgroundColor: "#5C785A",
         marginLeft: "calc(-50vw + 50%)",  // Aligns it to full width
-        padding: { xs: "30px 16px", md: "50px 0" },
-        marginTop: "50px",
+        padding: { xs: "30px 32px", md: "50px 0" },
         display: "flex",
         flexDirection: "column",
         alignItems: "center", // Center content on smaller screens
@@ -177,9 +176,10 @@ const ourteam = {
     //ImgBox
 
     Main : {
-        width: "100%", 
+        width:"100%",
         padding: "20px", 
-        marginTop: "32px", 
+        marginTop: "32px",
+        alignItems:"center"
     },
     Image1 : {
         width: "94.4", 
@@ -212,14 +212,16 @@ const ourteam = {
         padding: "16px"
     },
     Image7 : {
-        width: "417px", 
+        width:{xs:"100%", md: "417px"}, 
         height: "88px",
-        padding: "16px"
+        padding: "16px",
+        marginRight:"30px"
     },
     Image8 : {
-        width: "143", 
+        width: "143px", 
         height: "88px",
-        padding: "16px"
+        padding: "16px",
+
     },
 
 
@@ -229,7 +231,7 @@ const ourteam = {
         width:{ xs: "100%", md:  "1470px" }, 
         backgroundColor: " #F0F4EF",
         marginLeft: "calc(-50vw + 50%)", 
-        padding: { xs: "30px 16px", md: "80px 0" },
+        padding: { xs: "30px 35px", md: "80px 0" },
         marginTop: "50px",
         display: "flex",
         flexDirection: "column",

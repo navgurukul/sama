@@ -13,9 +13,11 @@ import {
   styles,
 } from "./style.js";
 import { data } from "./data.js";
+import Model from './3D Model.png'
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 import we from "./we.svg";
+import { Mode } from "@mui/icons-material";
 const OurApproach = () => {
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
 
@@ -28,15 +30,19 @@ const OurApproach = () => {
           ...container,
           paddingLeft: isActive ? "16px" : "0px",
           paddingRight: isActive ? "16px" : "0px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Container maxWidth="lg" style={lgContainer} sx={{}}>
-          <Grid container sx={{paddingTop:"80px"}} >
+          <Grid container sx={{paddingTop:"80px", textAlign: "center", justifyContent: "center"}} >
             <Grid item xs={12} md={7} sm={12} sx={{px:{lg:0,sm:5,md:3,sx:5}}}>
               <Typography sx={styleh5} variant="h5">
                 Our Rationale
               </Typography>
-              <Typography variant="body1" sx={{color: "var(--white, #FFF)" }} paddingTop="16px">
+              <Typography variant="body1" sx={{color: "var(--white, #FFF)" , textAlign: "left"}} paddingTop="16px">
                 We strongly believe that investing in women's digital education
                 can reap multifold benefits for society as a whole. As we
                 rapidly advance in technology, it's crucial to ensure that
@@ -45,17 +51,17 @@ const OurApproach = () => {
               </Typography>
             </Grid>
           </Grid>
-          <Grid container color="#fff"  paddingTop="40px" sx={{px:{lg:0,sm:5,md:3,sx:5}}}>
+          <Grid container color="#fff"  paddingTop="40px" sx={{px:{lg:0,sm:5,md:3,sx:5},justifyContent: "center" }}>
             {data.map((section, sectionIndex) => (
               <React.Fragment key={sectionIndex}>
                 <Typography
                   variant="h6"
                   mt={3}
                   sx={{
+                    textAlign: "center",
                     ...container,
                     paddingTop: isActive && 6,
                     mt: sectionIndex === 1 ? 8 : 4,
-
 
                   }}
                 >
@@ -63,7 +69,6 @@ const OurApproach = () => {
                 </Typography>
                 <Grid
                   container
-
                 >
                   {section.statistics.map((stat, statIndex) => (
                     <Grid
@@ -108,12 +113,10 @@ const OurApproach = () => {
         </Container>
       </Box >
       <Container>
-        <Typography variant="h5" my={6} sx={{ align: "left" }} >
-          This is how we transform your donated laptops into tools of impact!
-        </Typography>
+       
         <Box
           component="img"
-          src={we}
+          src={Model}
           alt="Logo"
           sx={{
             width: '100%',

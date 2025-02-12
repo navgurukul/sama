@@ -9,17 +9,17 @@ import ourteam from '../OurTeam/style';
 const HeaderText = () => {
     return (
         <Container maxWidth="lg" sx={ourteam.container}>
-        <Box>
+        <Box sx={{width:{xs:"auto",md:"756px"}, justifySelf:"center"}} >
             <Typography variant="h5" gutterBottom>
                 What We Do
             </Typography>
-            <Typography variant="body1" paragraph sx={{textAlign: "left", justifySelf:"center"}} >
+            <Typography variant="body1" paragraph textAlign="justify">
                 Sama bridges the digital divide by collecting end-of-life 
-                laptops from corporates,<br/> refurbishing them and preloading 
-                with educational content, and finally distributing<br/> laptops 
+                laptops from corporates, refurbishing them and preloading 
+                with educational content, and finally distributing laptops 
                 to underserved communities. We empower women and youth with 
-                access to<br/> technology, enabling education, career opportunities, 
-                and sustainable growth, while <br/>addressing e-waste challenges
+                access to technology, enabling education, career opportunities, 
+                and sustainable growth, while addressing e-waste challenges
             </Typography>
         </Box>
     </Container>
