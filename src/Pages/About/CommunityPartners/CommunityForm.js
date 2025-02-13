@@ -192,7 +192,7 @@ function CommunityForm() {
             <Box sx={ourteam.Form}>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} md={6} >
                             <InputLabel sx={ourteam.InputLabel}>
                                 <b>First Name</b>
                             </InputLabel>
@@ -204,7 +204,7 @@ function CommunityForm() {
                                 placeholder="First Name"
                                 value={formData.firstName}
                                 onChange={handleChange}
-                                sx={{ backgroundColor: "white" }}
+                                sx={ourteam.TextField}                           
                                 error={!!errors.firstName}
                                 helperText={errors.firstName} />
                         </Grid>
@@ -220,7 +220,7 @@ function CommunityForm() {
                                 name="lastName"
                                 value={formData.lastName}
                                 onChange={handleChange}
-                                sx={{ backgroundColor: "white" }}
+                                sx={ourteam.TextField}                           
                                 error={!!errors.lastName}
                                 helperText={errors.lastName}
                             />
@@ -236,7 +236,7 @@ function CommunityForm() {
                                 placeholder="Company Name"
                                 value={formData.companyName}
                                 onChange={handleChange}
-                                sx={{ backgroundColor: "white" }}
+                                sx={ourteam.TextField}                           
                                 error={!!errors.companyName}
                                 helperText={errors.companyName}
                             />
@@ -254,7 +254,7 @@ function CommunityForm() {
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
-                                sx={{ backgroundColor: "white" }}
+                                sx={ourteam.TextField}                           
                                 error={!!errors.phone}
                                 helperText={errors.phone}
                             />
@@ -273,7 +273,7 @@ function CommunityForm() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                sx={{ backgroundColor: "white" }}
+                                sx={ourteam.TextField}                           
                                 error={!!errors.email}
                                 helperText={errors.email}
                             />
@@ -290,7 +290,7 @@ function CommunityForm() {
                                 placeholder="Enter City"
                                 value={formData.city}
                                 onChange={handleChange}
-                                sx={{ backgroundColor: "white" }}
+                                sx={ourteam.TextField}                           
                                 error={!!errors.city}
                                 helperText={errors.city}
                             />
@@ -305,8 +305,9 @@ function CommunityForm() {
                                     name="state"
                                     variant="outlined"
                                     displayEmpty
-                                    sx={{ textAlign: "left" }}
-                                >
+                                    sx={ourteam.TextField}
+                                    style={{textAlign:"left", color:"#828282"}}                           
+                                    >
                                     <MenuItem value="" disabled>Select State</MenuItem>
                                     {stateOptions.map((state, index) => (
                                         <MenuItem key={index} value={state}>{state}</MenuItem>
@@ -326,7 +327,7 @@ function CommunityForm() {
                                 placeholder="Enter number of years"
                                 value={formData.operation}
                                 onChange={handleChange}
-                                sx={{ backgroundColor: "white" }}
+                                sx={ourteam.TextField}
                                 error={!!errors.operation}
                                 helperText={errors.operation}
 
@@ -360,7 +361,7 @@ function CommunityForm() {
                                             placeholder="Other"
                                             value={formData.other}
                                             onChange={handleChange}
-                                            sx={{ backgroundColor: "white" }}
+                                            sx={ourteam.TextField}
                                             error={!!errors.other}
                                             helperText={errors.other}
                                         />
@@ -381,7 +382,7 @@ function CommunityForm() {
                                     placeholder="message"
                                     value={formData.message}
                                     onChange={handleChange}
-                                    sx={{ backgroundColor: "white" }}
+                                    sx={ourteam.TextField}
                                     error={!!errors.message}
                                     helperText={errors.message}
                                     multiline

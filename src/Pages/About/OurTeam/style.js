@@ -45,12 +45,18 @@ const ourteam = {
         width: { xs: "75%", md: "287px" },
         fontSize: { xs: "14px", md: "17px" }
     },
+    StayConnectedGrid:{
+        width: "100%", 
+        backgroundColor: "#FFFAF8", 
+        padding: {xs:"40px 20px 40px 10px",md:"80px 159px 80px 160px"} , 
+        marginLeft: "calc(-50vw + 50%)",
+    },
     mainGrid: {
         height: "456px",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor: "#fff",
+        backgroundColor: "#FFFAF8",        
         marginTop: { xs: "50px", md: "0px" },
         marginBottom : {xs : "300px", md: "0px"}
     },
@@ -73,6 +79,20 @@ const ourteam = {
         height :"55px",
         borderRadius: "8px",
         textAlign :"left",
+        backgroundColor: "white",
+        borderRadius: "8px",
+        "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+                borderColor: "#E0E0E0",
+                borderRadius: "8px",
+            },
+            "&:hover fieldset": {
+                borderColor: "#BDBDBD", 
+            },
+            "&.Mui-focused fieldset": {
+                borderColor: "primary", 
+            },
+        },
     },
     subscribeButton: {
         width: "150px",
@@ -172,7 +192,23 @@ const ourteam = {
         width: { xs: "100%", md:  "750px" },
         height: { xs: "100%", md:  "1050px" },
         marginLeft: { xs: "0px", md:  "200px" },
-        marginBottom: "0px"
+    },
+    TextField:{
+        backgroundColor: "white",
+        borderRadius: "8px",
+        "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+                borderColor: "#E0E0E0",
+                borderRadius: "8px",
+            },
+            "&:hover fieldset": {
+                borderColor: "#BDBDBD", 
+            },
+            "&.Mui-focused fieldset": {
+                borderColor: "primary", 
+            },
+        },
+            
     },
 
     //ImgBox

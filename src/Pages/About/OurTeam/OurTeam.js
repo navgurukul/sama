@@ -28,29 +28,26 @@ const OurTeam = () => {
                 shared vision of creating lasting impact through our work
             </Typography>
             <Grid container spacing={0.5} justifyContent="center" sx={ourteam.gridContainer}>
-    {videoSources.map((video, index) => (
-        <Grid item xs={12} sm={6} md={4} key={index} sx={ourteam.gridItem}>
-            <Card sx={{ ...ourteam.card}}> {/* Ensure Card takes full height */}
-                <video
-                    src={video}
-                    style={{
-                        width: "100%",
-                        height: "100%",  // Force video to fill card height
-                        objectFit: "cover", // Crop the video to fill the space
-                    }}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    controls={false}
-                />
-            </Card>
-        </Grid>
-    ))}
-</Grid>
-
-
-
+                {videoSources.map((video, index) => (
+                    <Grid item xs={12} sm={6} md={4} key={index} sx={ourteam.gridItem}>
+                        <Card sx={{ ...ourteam.card }}> {/* Ensure Card takes full height */}
+                            <video
+                                src={video}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",  // Force video to fill card height
+                                    objectFit: "cover", // Crop the video to fill the space
+                                }}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                controls={false}
+                            />
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
             <Grid container spacing={2} sx={{ marginTop: "60px", marginLeft: { xs: "0px", md: "140px" } }}>
                 <Grid item xs={12} md={6}>
                     <Box
