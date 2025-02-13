@@ -231,7 +231,7 @@ const ourteam = {
         width:{ xs: "100%", md:  "1470px" }, 
         backgroundColor: " #F0F4EF",
         marginLeft: "calc(-50vw + 50%)", 
-        padding: { xs: "30px 35px", md: "80px 0" },
+        padding: { xs: "30px 32.1px", md: "80px 0" },
         marginTop: "50px",
         display: "flex",
         flexDirection: "column",

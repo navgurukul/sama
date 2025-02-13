@@ -1,5 +1,6 @@
 import React from "react";
 import { 
+  Container,
   Grid, 
   Box, 
   Typography,
@@ -40,10 +41,10 @@ const services = [
 
 const ServiceIcons = () => {
   return (
-    <Box sx={{ width: "100%", padding: "20px" }}>
+    <Container maxWidth="lg" sx={ourteam.container}>
       <Grid container spacing={4} justifyContent="center">
         {services.map((service, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
+          <Grid item xs={14} sm={6} md={4} key={index}>
             <Box
               sx={ourteam.AboutCard}>
               <Box
@@ -79,7 +80,7 @@ const ServiceIcons = () => {
           </Grid>
         ))}
       </Grid>
-    </Box>
+    </Container>
   );
 };
 

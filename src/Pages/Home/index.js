@@ -193,17 +193,19 @@ function Home() {
 
 
       <Container maxWidth="lg" sx={{ py: "80px", backgroundColor: "#FFFAF8" }}>
-        <Typography variant="h5">Metrics that Matter</Typography>
-        <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
-        <Box sx={!isActive && { display: 'flex', my: 4 }} spacing={3}>
+        <Typography variant="h5" textAlign="center">Metrics that Matter</Typography>
+        <Typography variant="body1" textAlign="center" mt={2}>Here’s how the impact is measured through data driven insights</Typography>
+        <Box sx={!isActive && { display: 'flex', my: 4 , justifyContent:"center", alignItems:"center"}} spacing={3}>
           <Button color="primary" variant={impact === "environmental" ? "contained" : "outlined"}
             style={isActive ? { marginTop: "16px" } : { borderRadius: "100px" }}
-            onClick={() => setImpact("environmental")}>
+            onClick={() => setImpact("environmental")}
+            sx={{ width:{xs:"100%",sm:"280px"}}}>
             Environmental Impact
           </Button>
           <Button color="primary" variant={impact === "social" ? "contained" : "outlined"}
-            style={isActive ? { margin: "16px 0px" } : { borderRadius: "100px", marginLeft: "32px" }}
-            onClick={() => setImpact("social")}>
+            style={isActive ? { margin: "16px 0px" } : { borderRadius: "100px", marginLeft: "24px" }}
+            onClick={() => setImpact("social")}
+            sx={{ width:{xs:"100%",sm:"280px"}}}>
             Social Impact
           </Button>
         </Box>

@@ -2,8 +2,8 @@ import React from "react";
 import { Container, Grid, Typography, Link, Box } from "@mui/material";
 import samalogo from "../../assets/samalogo.png";
 import Email from "./email.png";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import TwitterIcon from "./twitter.png";
+import LinkedInIcon from "./linkdin.png";
 import { matchPath, useLocation } from "react-router-dom";
 
 const isRouteMatch = (pathname, patterns) => {
@@ -82,13 +82,10 @@ const Footer = () => {
                     <img src={Email} fontSize="small" sx={{ mr: 1 }} />
                     <Typography variant="body2" >support@example.com</Typography>
                   </Box>
-                  <Box display="flex" justifyContent="center" mt={2} gap={2}>
-                    <Link href="https://twitter.com" target="_blank">
-                      <TwitterIcon />
-                    </Link>
-                    <Link href="https://linkedin.com" target="_blank">
-                      <LinkedInIcon />
-                    </Link>
+                  <Box display="flex" justifyContent="center" mt={2} gap={1}>
+                   
+                    <img src={LinkedInIcon}  />
+                    <img src={TwitterIcon}  />
                   </Box>
                 </Grid>
               </Grid>

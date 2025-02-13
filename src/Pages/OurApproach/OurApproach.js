@@ -39,12 +39,12 @@ const OurApproach = () => {
         }}
       >
         <Container maxWidth="lg" style={lgContainer} sx={{}}>
-          <Grid container sx={{ paddingTop: "80px", textAlign: "center", justifyContent: "center" }} >
+          <Grid container sx={{ paddingTop: "80px", textAlign: {xs:"left", md:"center"}, justifyContent: "center" }} >
             <Grid item xs={12} md={7} sm={12} sx={{ px: { lg: 0, sm: 5, md: 3, sx: 5 } }}>
               <Typography sx={styleh5} variant="h5">
                 Our Rationale
               </Typography>
-              <Typography variant="body1" sx={{ color: "var(--white, #FFF)", textAlign: "left" }} paddingTop="16px">
+              <Typography variant="body1" sx={{ color: "var(--white, #FFF)", textAlign: {xs:"left", md:"left"} }} paddingTop="16px">
                 We strongly believe that investing in women's digital education
                 can reap multifold benefits for society as a whole. As we
                 rapidly advance in technology, it's crucial to ensure that
