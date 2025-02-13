@@ -29,11 +29,10 @@ function CommunityForm() {
         city: "",
         email: "",
         message: "",
-        operation:"",
+        operation: "",
         other: "",
     });
     const [errors, setErrors] = useState({});
-    const [otherText, setOtherText] = useState("");
     const [successMessage, setSuccessMessage] = useState(false);
     const [selectedOutcome, setSelectedOutcome] = useState("");
     const [otherValue, setOtherValue] = useState("");
@@ -49,10 +48,6 @@ function CommunityForm() {
             setShowOtherField(false);
             setOtherValue(""); // Reset other field when another option is selected
         }
-    };
-
-    const handleOtherChange = (event) => {
-        setOtherValue(event.target.value);
     };
 
     const handleChange = (e) => {
@@ -110,9 +105,9 @@ function CommunityForm() {
                 return !contactRegex.test(value) ? "Contact must be 10 digits" : "";
             case "state":
                 return value ? "" : "Please select a state";
-                case "operation":
-                    const operationRegex = /^[0-9]+$/;  // Allows only digits with no length limit
-                    return !operationRegex.test(value) ? "Contact must be in digits" : "";
+            case "operation":
+                const operationRegex = /^[0-9]+$/;  // Allows only digits with no length limit
+                return !operationRegex.test(value) ? "Contact must be in digits" : "";
             default:
                 return "";
         }
@@ -120,7 +115,7 @@ function CommunityForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         const newErrors = {};
         Object.keys(formData).forEach((field) => {
             const errorMessage = validateField(field, formData[field]);
@@ -128,13 +123,13 @@ function CommunityForm() {
                 newErrors[field] = errorMessage;
             }
         });
-    
+
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             console.log("Form has errors:", newErrors);
             return;
         }
-    
+
         const capitalizedData = {
             firstName: capitalizeFirstLetter(formData.firstName),
             lastName: capitalizeFirstLetter(formData.lastName),
@@ -148,7 +143,7 @@ function CommunityForm() {
             other: formData.other,
             outcome: selectedOutcome === "other" ? otherValue : selectedOutcome,
         };
-    
+
         try {
             await fetch(
                 "https://script.google.com/macros/s/AKfycbw0KIFPoyRJjjUGzal2vg11sNMnHnTclDEc1eHu5pP0b_gElJ3M9K9kGz5CQWihrCc72w/exec",
@@ -161,7 +156,7 @@ function CommunityForm() {
                     mode: "no-cors",
                 }
             );
-    
+
             setFormData({
                 firstName: "",
                 lastName: "",
@@ -171,8 +166,8 @@ function CommunityForm() {
                 city: "",
                 email: "",
                 message: "",
-                outcome: "", 
-                operation:"",
+                outcome: "",
+                operation: "",
             });
             setSelectedOutcome("");
             setOtherValue("");
@@ -185,13 +180,13 @@ function CommunityForm() {
             console.error("Error:", error);
         }
     };
-    
+
 
     console.log(formData)
 
     return (
         <Box sx={ourteam.ComForm} >
-            <Typography variant="h6" gutterBottom sx={ourteam.secondhead}>
+            <Typography variant="h6" gutterBottom sx={ourteam.secondhead} mt={5}>
                 Help Sama in fostering innovation and addressing<br /> grassroot challenges
             </Typography>
             <Box sx={ourteam.Form}>
@@ -351,7 +346,7 @@ function CommunityForm() {
                                     <FormControlLabel value="Sex Workers" control={<Radio />} label="Sex Workers" />
                                     <FormControlLabel value="Physically Challenged" control={<Radio />} label="Physically Challenged" />
                                     <FormControlLabel value="Mentally Challenged" control={<Radio />} label="Mentally Challenged" />
-                                    <FormControlLabel value="Enviroment" control={<Radio />} label="Enviroment" />                                    
+                                    <FormControlLabel value="Enviroment" control={<Radio />} label="Enviroment" />
                                     <FormControlLabel value="other" control={<Radio />} label="Other" />
                                 </RadioGroup>
 
@@ -395,7 +390,7 @@ function CommunityForm() {
                             </Grid>
                         </Grid>
 
-                        
+
                         <Grid
                             item
                             xs={12}
@@ -403,18 +398,27 @@ function CommunityForm() {
                                 paddingBottom: "4%",
                                 display: "flex",
                                 justifyContent: "center",
+                                alignItems: "center",
+                                gap: "16px",
+                                flexWrap: "wrap",
                             }}
                         >
-                            <Button type="submit" variant="contained" color="primary" style={{ width: "227px", height: "48px", alignItems: "center" }}>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                style={{
+                                    width: "227px",
+                                    height: "48px",
+                                    alignItems: "center",
+                                }}
+                            >
                                 Become a Partner
                             </Button>
+
                             {successMessage && (
-                                <Typography
-                                    className="customSubtitle1"
-                                    sx={{ marginLeft: "22px", color: "#5C785A" }}
-                                >
-                                    Your donation details have been successfully submitted. We
-                                    will reach out to you soon.
+                                <Typography className="customSubtitle1" sx={{ color: "#5C785A" }}>
+                                    Your Form details have been successfully submitted.
                                 </Typography>
                             )}
                         </Grid>

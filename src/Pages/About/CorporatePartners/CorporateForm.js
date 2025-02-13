@@ -188,7 +188,7 @@ function CorporateForm() {
     console.log(formData)
 
     return (
-        <Container maxWidth="lg" sx={ourteam.container} style={{marginTop:"0px"}}>
+        <Container maxWidth="lg" sx={ourteam.container} style={{ marginTop: "0px" }}>
 
             <Box sx={ourteam.ComForm}  >
                 <Typography variant="h6" gutterBottom sx={ourteam.secondhead}>
@@ -384,18 +384,27 @@ function CorporateForm() {
                                     paddingBottom: "4%",
                                     display: "flex",
                                     justifyContent: "center",
+                                    alignItems: "center",
+                                    gap: "16px",
+                                    flexWrap: "wrap",
                                 }}
                             >
-                                <Button type="submit" variant="contained" color="primary" style={{ width: "227px", height: "48px", alignItems: "center" }}>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    style={{
+                                        width: "227px",
+                                        height: "48px",
+                                        alignItems: "center",
+                                    }}
+                                >
                                     Become a Partner
                                 </Button>
+
                                 {successMessage && (
-                                    <Typography
-                                        className="customSubtitle1"
-                                        sx={{ marginLeft: "22px", color: "#5C785A" }}
-                                    >
-                                        Your donation details have been successfully submitted. We
-                                        will reach out to you soon.
+                                    <Typography className="customSubtitle1" sx={{ color: "#5C785A" }}>
+                                        Your Form details have been successfully submitted.
                                     </Typography>
                                 )}
                             </Grid>

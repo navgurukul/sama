@@ -92,7 +92,7 @@ function OurGovermentForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         const newErrors = {};
         Object.keys(formData).forEach((field) => {
             const errorMessage = validateField(field, formData[field]);
@@ -100,14 +100,14 @@ function OurGovermentForm() {
                 newErrors[field] = errorMessage;
             }
         });
-    
+
         setErrors(newErrors);
-    
+
         if (Object.keys(newErrors).length > 0) {
             console.log("Form has errors:", newErrors);
             return;
         }
-    
+
         const capitalizedData = {
             firstName: capitalizeFirstLetter(formData.firstName),
             lastName: capitalizeFirstLetter(formData.lastName),
@@ -118,48 +118,48 @@ function OurGovermentForm() {
             state: formData.state,
             city: formData.city,
         };
-    
+
         const validationErrors = validateField();
 
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
-          } else {
+        } else {
             try {
-              const response = await fetch(
-              "https://script.google.com/macros/s/AKfycbxsl620RVQhDhsMDejHtQEGeQMi2PgepO_Wo6nh0oZWACgaUwpv_nUTbTDst6l32Mlo3Q/exec",
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(capitalizedData),
-                  mode: "no-cors",
-                }
-              );
-      
-      
-              setFormData({
-                firstName: "",
-                lastName: "",
-                companyName: "",
-                phone: "",
-                state: "",
-                city: "",
-                email: "",
-                message: "",
-              });
-              setOtherText("");
-              setSuccessMessage(true);
-              setTimeout(() => {
-                setSuccessMessage(false);
-              }, 5000);
+                const response = await fetch(
+                    "https://script.google.com/macros/s/AKfycbxsl620RVQhDhsMDejHtQEGeQMi2PgepO_Wo6nh0oZWACgaUwpv_nUTbTDst6l32Mlo3Q/exec",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(capitalizedData),
+                        mode: "no-cors",
+                    }
+                );
+
+
+                setFormData({
+                    firstName: "",
+                    lastName: "",
+                    companyName: "",
+                    phone: "",
+                    state: "",
+                    city: "",
+                    email: "",
+                    message: "",
+                });
+                setOtherText("");
+                setSuccessMessage(true);
+                setTimeout(() => {
+                    setSuccessMessage(false);
+                }, 5000);
             } catch (error) {
-              console.error("Error:", error);
+                console.error("Error:", error);
             }
-          }
-        
+        }
+
     };
-    
+
     console.log(formData)
 
     return (
@@ -318,21 +318,31 @@ function OurGovermentForm() {
                             paddingBottom: "4%",
                             display: "flex",
                             justifyContent: "center",
+                            alignItems: "center", 
+                            gap: "16px", 
+                            flexWrap: "wrap", 
                         }}
                     >
-                        <Button type="submit" variant="contained" color="primary" style={{ width: "227px", height: "48px", alignItems: "center" }}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            style={{
+                                width: "227px",
+                                height: "48px",
+                                alignItems: "center",
+                            }}
+                        >
                             Become a Partner
                         </Button>
+
                         {successMessage && (
-                            <Typography
-                                className="customSubtitle1"
-                                sx={{ marginLeft: "22px", color: "#5C785A" }}
-                            >
-                                Your donation details have been successfully submitted. We
-                                will reach out to you soon.
+                            <Typography className="customSubtitle1" sx={{ color: "#5C785A" }}>
+                                Your Form details have been successfully submitted.
                             </Typography>
                         )}
                     </Grid>
+
                 </Grid>
             </form>
         </Box>

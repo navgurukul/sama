@@ -1,8 +1,20 @@
 import React from "react";
 import { Button, Box, Container, Typography, Grid, Card, CardMedia, TextField } from "@mui/material";
-import TeamImg from './StudentImg.png';
 import ourteam from './style';
 import StayConnected from '../../../common/StayConnected'
+
+const videoSources = [
+    "/videos/video1.mp4",
+    "/videos/video3.mp4",
+    "/videos/video2.mp4",
+    "/videos/video4.mp4",
+    "/videos/video5.mp4",
+    "/videos/video3.mp4",
+    "/videos/video1.mp4",
+    "/videos/video6.mp4",
+    "/videos/video7.mp4",
+];
+
 
 const OurTeam = () => {
     return (
@@ -15,20 +27,30 @@ const OurTeam = () => {
                 excellence to every project.<br /> Together, we're driven by a
                 shared vision of creating lasting impact through our work
             </Typography>
-            <Grid container spacing={0.3} justifyContent="center" sx={ourteam.gridContainer}>
-                {[...Array(9)].map((_, index) => (
-                    <Grid item xs={12} sm={6} md={4} key={index} sx={ourteam.gridItem}>
-                        <Card sx={ourteam.card}>
-                            <CardMedia
-                                component="img"
-                                image={TeamImg}
-                                alt={`Team member ${index + 1}`}
-                                sx={ourteam.cardMedia}
-                            />
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
+            <Grid container spacing={0.5} justifyContent="center" sx={ourteam.gridContainer}>
+    {videoSources.map((video, index) => (
+        <Grid item xs={12} sm={6} md={4} key={index} sx={ourteam.gridItem}>
+            <Card sx={{ ...ourteam.card}}> {/* Ensure Card takes full height */}
+                <video
+                    src={video}
+                    style={{
+                        width: "100%",
+                        height: "100%",  // Force video to fill card height
+                        objectFit: "cover", // Crop the video to fill the space
+                    }}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    controls={false}
+                />
+            </Card>
+        </Grid>
+    ))}
+</Grid>
+
+
+
             <Grid container spacing={2} sx={{ marginTop: "60px", marginLeft: { xs: "0px", md: "140px" } }}>
                 <Grid item xs={12} md={6}>
                     <Box
