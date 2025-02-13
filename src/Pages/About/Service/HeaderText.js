@@ -8,9 +8,9 @@ import ourteam from '../OurTeam/style';
 
 const HeaderText = () => {
     return (
-        <Container maxWidth="lg" sx={ourteam.container}>
+        <Container maxWidth="lg" >
         <Box sx={{width:{xs:"auto",md:"756px"}, justifySelf:"center"}} >
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h5" gutterBottom marginTop="80px">
                 What We Do
             </Typography>
             <Typography variant="body1" paragraph textAlign="justify">

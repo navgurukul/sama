@@ -1,12 +1,12 @@
 import React from "react";
-import { 
+import {
   Container,
-  Grid, 
-  Box, 
+  Grid,
+  Box,
   Typography,
   List,
   ListItem,
-  ListItemText 
+  ListItemText
 } from "@mui/material";
 import Image1 from "./assets/1.png"; // Replace with your actual image paths
 import Image2 from "./assets/2.png";
@@ -41,8 +41,8 @@ const services = [
 
 const ServiceIcons = () => {
   return (
-    <Container maxWidth="lg" sx={ourteam.container}>
-      <Grid container spacing={4} justifyContent="center">
+    <Container maxWidth="lg">
+      <Grid container spacing={8} justifyContent="center" mt={2}>
         {services.map((service, index) => (
           <Grid item xs={14} sm={6} md={4} key={index}>
             <Box
@@ -58,21 +58,21 @@ const ServiceIcons = () => {
                 </Typography>
               </Box>
               {index === 2 ? (
-                <List dense>
+                <List dense sx={{ padding: 0 }}>
                   {service.description.map((point, i) => (
-                     <ListItem key={i} sx={{ padding: "0px 0" }}>
-                     <ListItemText
-                       primary={point}
-                       primaryTypographyProps={{
-                        variant: "body1", 
-                        color: "textSecondary", 
-                       }}
-                     />
-                   </ListItem>
+                    <ListItem key={i} sx={{ padding: "2px 0", minHeight: "unset" }}>
+                      <ListItemText
+                        primary={point}
+                        primaryTypographyProps={{
+                          variant: "body1", 
+                          lineHeight: "1.2", 
+                        }}
+                      />
+                    </ListItem>
                   ))}
                 </List>
               ) : (
-                <Typography variant="body1" color="textSecondary" mt={3} sx={{textAlign: "left" }}>
+                <Typography variant="body1" color="textSecondary" mt={2} sx={{ textAlign: "left" }}>
                   {service.description}
                 </Typography>
               )}

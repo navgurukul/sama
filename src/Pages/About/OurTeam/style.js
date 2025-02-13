@@ -228,11 +228,10 @@ const ourteam = {
     //About Us
     FullBox:{
         height:{ xs: "100%", md:  "237px" },
-        width:{ xs: "100%", md:  "1470px" }, 
+        width:{ xs: "100%", md:  "1140px" }, 
         backgroundColor: " #F0F4EF",
         marginLeft: "calc(-50vw + 50%)", 
-        padding: { xs: "30px 32.1px", md: "80px 0" },
-        marginTop: "50px",
+        padding: { xs: "30px 48px", md: "80px 166px" },
         display: "flex",
         flexDirection: "column",
         alignItems: "center", 
@@ -240,9 +239,9 @@ const ourteam = {
     },
     AboutCard: {
         width: "304px",
-        height: "412px",
-        textAlign: "center",
-        padding: "20px",
+        height: "364px",
+        textAlign:{ xs: "center", md:  "center" },
+        padding: "24px",
         borderRadius: "8px",
         boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
         backgroundColor: "white",       
