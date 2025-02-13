@@ -9,8 +9,8 @@ const CompanyLogo = () => {
     return (
         <Container maxWidth="lg" sx={ourteam.container} style={{marginTop:"0px"}}>
             <Grid container spacing={2} justifyContent="center">
-                <Grid item xs={12} sm={6} md={4}>
-                    <Box sx={ourteam.Logo1}>
+                <Grid item xs={12} sm={6} md={4} >
+                    <Box sx={ourteam.Logo1} boxShadow={3}>
                         <img src={Ama} alt="Logo 1" />
                     </Box>
                 </Grid>

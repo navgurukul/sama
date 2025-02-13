@@ -1,4 +1,4 @@
-import { border, height, maxWidth, textAlign, width } from "@mui/system";
+import { border, height, maxWidth, spacing, textAlign, width } from "@mui/system";
 
 const ourteam = {
     container: {
@@ -7,7 +7,7 @@ const ourteam = {
         marginTop: "80px",
     },
     gridContainer: {
-        marginTop: "40px"
+        marginTop: "40px",
     },
     gridItem: {
         display: "flex", 
@@ -20,7 +20,7 @@ const ourteam = {
         alignItems: "center", 
         justifyContent: "center", 
         overflow: "hidden", 
-        borderRadius: "0px"
+        borderRadius: "0px",
     },
     cardMedia: {
         width: "100%", 
@@ -114,13 +114,16 @@ const ourteam = {
     },
 
     //CommunityPartners
+    Communitycontainer: {
+        textAlign: "center", 
+        py: 4, 
+    },
     GreenBox: {
         height:"100%",
         width:{ xs: "100%", md:  "1470px" }, 
         backgroundColor: "#5C785A",
         marginLeft: "calc(-50vw + 50%)",  // Aligns it to full width
-        padding: { xs: "30px 16px", md: "50px 0" },
-        marginTop: "50px",
+        padding: { xs: "30px 32px", md: "50px 0" },
         display: "flex",
         flexDirection: "column",
         alignItems: "center", // Center content on smaller screens
@@ -164,12 +167,12 @@ const ourteam = {
         borderRadius: "8px",
         backgroundColor: "#F7F7F7",
         marginRight: { xs: "auto", md: "0px" },
-        marginLeft: {xs: "0px", md: "-17px" },
     },
     ComForm : {
         width: { xs: "100%", md:  "750px" },
         height: { xs: "100%", md:  "1050px" },
         marginLeft: { xs: "0px", md:  "200px" },
+        marginBottom: "0px"
     },
 
     //ImgBox
@@ -177,7 +180,6 @@ const ourteam = {
     Main : {
         width: "100%", 
         padding: "20px", 
-        marginTop: "32px", 
     },
     Image1 : {
         width: "94.4", 
@@ -210,14 +212,15 @@ const ourteam = {
         padding: "16px"
     },
     Image7 : {
-        width: "417px", 
         height: "88px",
-        padding: "16px"
+        padding: "16px",
+        marginLeft:"9px",
     },
     Image8 : {
         width: "143", 
         height: "88px",
-        padding: "16px"
+        padding: "16px",
+
     },
     
     //Coroporate Logo Box
@@ -230,9 +233,8 @@ const ourteam = {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        boxShadow: "0px 1px 5px 0px #4A4A4A14",
-        boxShadow: "0px 2px 1px 0px #4A4A4A0A",
-        boxShadow: "0px 1px 2px 0px #4A4A4A0F",  
+        boxShadow: "2",
+        
     },
 };
 

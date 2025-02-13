@@ -5,14 +5,14 @@ import StayConnected from '../../../common/StayConnected'
 
 const videoSources = [
     "/videos/video1.mp4",
-    "/videos/video3.mp4",
+    "/videos/video8.mp4",
     "/videos/video2.mp4",
-    "/videos/video4.mp4",
-    "/videos/video5.mp4",
     "/videos/video3.mp4",
-    "/videos/video1.mp4",
+    "/videos/video9.mp4",
     "/videos/video6.mp4",
     "/videos/video7.mp4",
+    "/videos/video4.mp4",
+    "/videos/video8.mp4",
 ];
 
 
@@ -24,7 +24,7 @@ const OurTeam = () => {
             </Typography>
             <Typography variant="body1" paragraph>
                 Meet the passionate individuals who bring innovation and
-                excellence to every project.<br /> Together, we're driven by a
+                excellence to every project. Together, we're driven by a
                 shared vision of creating lasting impact through our work
             </Typography>
             <Grid container spacing={0.5} justifyContent="center" sx={ourteam.gridContainer}>

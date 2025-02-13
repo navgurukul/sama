@@ -189,7 +189,6 @@ function CorporateForm() {
 
     return (
         <Container maxWidth="lg" sx={ourteam.container} style={{ marginTop: "0px" }}>
-
             <Box sx={ourteam.ComForm}  >
                 <Typography variant="h6" gutterBottom sx={ourteam.secondhead}>
                     Maximize Social and Environmental Impact via Strategic<br />
