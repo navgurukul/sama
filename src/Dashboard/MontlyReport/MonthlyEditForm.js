@@ -56,7 +56,7 @@ const MonthlyEditForm = () => {
 
     fetchData();
   }, [id]);
-  console.log("fields", fields)
+
 
   const handleFieldChange = (index, key, value) => {
     const updatedFields = [...fields];

@@ -219,7 +219,7 @@ const Navbar = () => {
               >
                 {(() => {
                   const role = JSON.parse(localStorage.getItem("role") || "[]");
-                  // console.log("Parsed role:", role);
+                
 
                   if (role.includes("admin") || role.includes("ops")) {
                     return (

@@ -157,37 +157,32 @@ const PreDistribution = ({ userId, preliminaryId }) => {
     preliminaryId && fetchPreliminaryData();
   }, [preliminaryId]);
 
+
+
+
   useEffect(() => {
-    // Fetch data when the component mounts
     fetch(`${process.env.REACT_APP_NgoInformationApi}?type=GetMonthlyReport&id=${gettingStoredData}`)
       .then((response) => response.json())
       .then((result) => {
         if (result.status === 'success') {
-
           const rawData = result.data;
-          // const parsedData = Array.isArray(rawData)
-          //   ? rawData
-          //   : JSON.parse(rawData);
-          // // Filter out empty values and transform strings into objects
-          // console.log(parsedData);
-          // const transformedData = parsedData
-          //   .filter((item) => item.trim() !== '')
-          //   .map((item) => {
-          //     return item.split(',').reduce((acc, pair) => {
-          //       const [key, value] = pair.split(':').map((str) => str.trim());
-          //       acc[key] = value; // Create key-value pairs
-          //       return acc;
-          //     }, {});
-          //   });
+     
+          
           setMonthlyMetrixGet(rawData);
-            
-            
         } else {
           console.error('Error fetching data:', result.message);
         }
       })
       .catch((error) => console.error('API error:', error));
-  }, [gettingStoredData]);  
+  }, [gettingStoredData]);
+  
+  // Add a separate useEffect to log monthlyMetrixGet when it changes
+  useEffect(() => {
+    // console.log('Updated monthlyMetrixGet:', monthlyMetrixGet);
+  }, [monthlyMetrixGet]);
+
+
+
 
   useEffect(() => {
     async function fetchData() {
@@ -218,8 +213,6 @@ const PreDistribution = ({ userId, preliminaryId }) => {
           // if (result.success) {
           //   const rawData = result.data;
           //   const parsedData = Array.isArray(rawData) ? rawData : JSON.parse(rawData);
-
-            
           //   const transformedData = parsedData
           //     .filter((item) => item.trim() !== '')
           //     .map((item) => {
