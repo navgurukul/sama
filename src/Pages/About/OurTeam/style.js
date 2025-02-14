@@ -192,6 +192,7 @@ const ourteam = {
         width: { xs: "100%", md:  "750px" },
         height: { xs: "100%", md:  "1050px" },
         marginLeft: { xs: "0px", md:  "200px" },
+        marginBottom:"50px"
     },
     TextField:{
         backgroundColor: "white",
