@@ -171,8 +171,8 @@ const ourteam = {
         marginLeft: {xs: "0px", md: "-17px" },
     },
     Box3: {
-        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
-        height: { xs: "auto", md: "516px" }, // Auto height on small screens
+        width: { xs: "90%", sm: "80%", md: "496px" }, 
+        height: { xs: "auto", md: "516px" }, 
         padding: { xs: "20px", md: "24px" },
         borderRadius: "8px",
         backgroundColor: "#F7F7F7",        
