@@ -1,4 +1,4 @@
-import { border, height, margin, maxWidth, textAlign, width } from "@mui/system";
+import { border, height, maxWidth, spacing, textAlign, width } from "@mui/system";
 
 const ourteam = {
     container: {
@@ -7,7 +7,7 @@ const ourteam = {
         marginTop: "80px",
     },
     gridContainer: {
-        marginTop: "40px"
+        marginTop: "40px",
     },
     gridItem: {
         display: "flex", 
@@ -20,7 +20,7 @@ const ourteam = {
         alignItems: "center", 
         justifyContent: "center", 
         overflow: "hidden", 
-        borderRadius: "0px"
+        borderRadius: "0px",
     },
     cardMedia: {
         width: "100%", 
@@ -45,12 +45,18 @@ const ourteam = {
         width: { xs: "75%", md: "287px" },
         fontSize: { xs: "14px", md: "17px" }
     },
+    StayConnectedGrid:{
+        width: "100%", 
+        backgroundColor: "#FFFAF8", 
+        padding: {xs:"40px 20px 40px 10px",md:"80px 159px 80px 160px"} , 
+        marginLeft: "calc(-50vw + 50%)",
+    },
     mainGrid: {
         height: "456px",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor: "#fff",
+        backgroundColor: "#FFFAF8",        
         marginTop: { xs: "50px", md: "0px" },
         marginBottom : {xs : "300px", md: "0px"}
     },
@@ -72,12 +78,26 @@ const ourteam = {
         maxWidth: "360px",
         height :"55px",
         borderRadius: "8px",
+        textAlign :"left",
+        backgroundColor: "white",
+        borderRadius: "8px",
+        "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+                borderColor: "#E0E0E0",
+                borderRadius: "8px",
+            },
+            "&:hover fieldset": {
+                borderColor: "#BDBDBD", 
+            },
+            "&.Mui-focused fieldset": {
+                borderColor: "primary", 
+            },
+        },
     },
     subscribeButton: {
         width: "150px",
         height: "48px",
         fontSize: "16px",
-        textAlign:"right"
     },
     rightGrid: {
         justifyContent: "center",
@@ -102,7 +122,6 @@ const ourteam = {
     },
     secondhead: {
         color: "#4A4A4A",
-        marginTop: "80px",
         textAlign : "left",
     },
     Form: {
@@ -115,6 +134,10 @@ const ourteam = {
     },
 
     //CommunityPartners
+    Communitycontainer: {
+        textAlign: "center", 
+        py: 4, 
+    },
     GreenBox: {
         height:"100%",
         width:{ xs: "100%", md:  "1470px" }, 
@@ -148,8 +171,8 @@ const ourteam = {
         marginLeft: {xs: "0px", md: "-17px" },
     },
     Box3: {
-        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
-        height: { xs: "auto", md: "516px" }, // Auto height on small screens
+        width: { xs: "90%", sm: "80%", md: "496px" }, 
+        height: { xs: "auto", md: "516px" }, 
         padding: { xs: "20px", md: "24px" },
         borderRadius: "8px",
         backgroundColor: "#F7F7F7",        
@@ -164,22 +187,53 @@ const ourteam = {
         borderRadius: "8px",
         backgroundColor: "#F7F7F7",
         marginRight: { xs: "auto", md: "0px" },
-        marginLeft: {xs: "0px", md: "-17px" },
     },
     ComForm : {
         width: { xs: "100%", md:  "750px" },
         height: { xs: "100%", md:  "1050px" },
         marginLeft: { xs: "0px", md:  "200px" },
-        marginBottom:{xs: "0px", md: "160px"},
+        marginBottom:"50px"
+    },
+    TextField:{
+        backgroundColor: "white",
+        borderRadius: "8px",
+        "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+                borderColor: "#E0E0E0",
+                borderRadius: "8px",
+            },
+            "&:hover fieldset": {
+                borderColor: "#BDBDBD", 
+            },
+            "&.Mui-focused fieldset": {
+                borderColor: "primary", 
+            },
+        },
+            
+    },
+    TextField:{
+        backgroundColor: "white",
+        borderRadius: "8px",
+        "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+                borderColor: "#E0E0E0",
+                borderRadius: "8px",
+            },
+            "&:hover fieldset": {
+                borderColor: "#BDBDBD", 
+            },
+            "&.Mui-focused fieldset": {
+                borderColor: "primary", 
+            },
+        },
+            
     },
 
     //ImgBox
 
     Main : {
-        width:"100%",
+        width: "100%", 
         padding: "20px", 
-        marginTop: "32px",
-        alignItems:"center"
     },
     Image1 : {
         width: "94.4", 
@@ -212,44 +266,30 @@ const ourteam = {
         padding: "16px"
     },
     Image7 : {
-        width:{xs:"100%", md: "417px"}, 
         height: "88px",
         padding: "16px",
-        marginRight:"30px"
+        marginLeft:"9px",
     },
     Image8 : {
-        width: "143px", 
+        width: "143", 
         height: "88px",
         padding: "16px",
 
     },
-
-
-    //About Us
-    FullBox:{
-        height:{ xs: "100%", md:  "237px" },
-        width:{ xs: "100%", md:  "1140px" }, 
-        backgroundColor: " #F0F4EF",
-        marginLeft: "calc(-50vw + 50%)", 
-        padding: { xs: "30px 48px", md: "80px 166px" },
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center", 
-
-    },
-    AboutCard: {
-        width: "304px",
-        height: "364px",
-        textAlign:{ xs: "center", md:  "center" },
-        padding: "24px",
+    
+    //Coroporate Logo Box
+    Logo1: {
+        widht:"288px",
+        height: "116px",
+        padding: "32px",
         borderRadius: "8px",
-        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-        backgroundColor: "white",       
+        overflow: "hidden",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        boxShadow: "2",
+        
     },
-    //OurApproach
-    ApproachBox:{
-        justifyItems:"center",
-    }
 };
 
 export default ourteam;

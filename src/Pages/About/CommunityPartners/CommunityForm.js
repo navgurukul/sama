@@ -1,6 +1,5 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-    Container,
     Button,
     Box,
     RadioGroup,
@@ -13,28 +12,181 @@ import {
     Select,
     MenuItem,
     FormControl,
+    FormHelperText,
 } from "@mui/material";
 import ourteam from '../OurTeam/style';
 
-const CommunityForm = () => {
+const stateOptions = ["Maharashtra", "New Delhi", "Gujarat", "Punjab", "Karnataka", "Tamil Nadu"];
 
-    const [selectedState, setSelectedState] = useState("");
 
-    const handleStateChange = (event) => {
-        setSelectedState(event.target.value);
+function CommunityForm() {
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        companyName: "",
+        phone: "",
+        state: "",
+        city: "",
+        email: "",
+        message: "",
+        operation: "",
+        other: "",
+    });
+    const [errors, setErrors] = useState({});
+    const [successMessage, setSuccessMessage] = useState(false);
+    const [selectedOutcome, setSelectedOutcome] = useState("");
+    const [otherValue, setOtherValue] = useState("");
+    const [showOtherField, setShowOtherField] = useState(false);
+
+    const handleRadioChange = (event) => {
+        const value = event.target.value;
+        setSelectedOutcome(value);
+
+        if (value === "other") {
+            setShowOtherField(true);
+        } else {
+            setShowOtherField(false);
+            setOtherValue(""); // Reset other field when another option is selected
+        }
     };
 
-    return (
-        <Container maxWidth="lg" sx={ourteam.container}>
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+            otherValue: e.target.value,
+            outcome: selectedOutcome === "other" ? e.target.value : selectedOutcome,
+        });
 
+        setErrors({
+            ...errors,
+            [name]: validateField(name, value),
+        });
+    };
+
+    const capitalizeFirstLetter = (str) => {
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    };
+    const handleStateChange = (event) => {
+        setFormData({
+            ...formData,
+            state: event.target.value,  // Correctly updating state
+        });
+
+        setErrors({
+            ...errors,
+            state: validateField("state", event.target.value),
+        });
+    };
+
+
+
+
+    const validateField = (name, value) => {
+        const lettersOnlyRegex = /^[A-Za-z\s]+$/;
+        switch (name) {
+            case "firstName":
+            case "lastName":
+            case "message":
+            case "companyName":
+            case "city":
+                if (!lettersOnlyRegex.test(value)) {
+                    return "Must contain letters only";;
+                } else if (value.length < 3) {
+                    return `${name} must be at least 3 characters long`;
+                }
+                return "";
+            case "email":
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return !emailRegex.test(value) ? "Invalid Gmail address" : "";
+            case "phone":
+                const contactRegex = /^[0-9]{10}$/;
+                return !contactRegex.test(value) ? "Contact must be 10 digits" : "";
+            case "state":
+                return value ? "" : "Please select a state";
+            case "operation":
+                const operationRegex = /^[0-9]+$/;  // Allows only digits with no length limit
+                return !operationRegex.test(value) ? "Contact must be in digits" : "";
+            default:
+                return "";
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const newErrors = {};
+        Object.keys(formData).forEach((field) => {
+            const errorMessage = validateField(field, formData[field]);
+            if (errorMessage) {
+                newErrors[field] = errorMessage;
+            }
+        });
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            console.log("Form has errors:", newErrors);
+            return;
+        }
+        const capitalizedData = {
+            firstName: capitalizeFirstLetter(formData.firstName),
+            lastName: capitalizeFirstLetter(formData.lastName),
+            email: formData.email.toLowerCase(),
+            message: capitalizeFirstLetter(formData.message),
+            phone: formData.phone,
+            companyName: formData.companyName,
+            state: formData.state,
+            city: formData.city,
+            operation: formData.operation,
+            other: formData.other,
+            outcome: selectedOutcome === "other" ? otherValue : selectedOutcome,
+        };
+        try {
+            await fetch(
+                "https://script.google.com/macros/s/AKfycbw0KIFPoyRJjjUGzal2vg11sNMnHnTclDEc1eHu5pP0b_gElJ3M9K9kGz5CQWihrCc72w/exec",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(capitalizedData),
+                    mode: "no-cors",
+                }
+            );
+            setFormData({
+                firstName: "",
+                lastName: "",
+                companyName: "",
+                phone: "",
+                state: "",
+                city: "",
+                email: "",
+                message: "",
+                outcome: "",
+                operation: "",
+            });
+            setSelectedOutcome("");
+            setOtherValue("");
+            setShowOtherField(false);
+            setSuccessMessage(true);
+            setTimeout(() => {
+                setSuccessMessage(false);
+            }, 5000);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    console.log(formData)
+
+    return (
         <Box sx={ourteam.ComForm} >
-            <Typography variant="h6" gutterBottom sx={ourteam.secondhead}>
-                Help Sama in fostering innovation and addressing<br /> grassroot challenges                
+            <Typography variant="h6" gutterBottom sx={ourteam.secondhead} mt={5}>
+                Help Sama in fostering innovation and addressing<br /> grassroot challenges
             </Typography>
             <Box sx={ourteam.Form}>
-                <form >
+                <form onSubmit={handleSubmit}>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} md={6} >
                             <InputLabel sx={ourteam.InputLabel}>
                                 <b>First Name</b>
                             </InputLabel>
@@ -44,8 +196,11 @@ const CommunityForm = () => {
                                 variant="outlined"
                                 name="firstName"
                                 placeholder="First Name"
-                                sx={{ backgroundColor: "white" }}
-                            />
+                                value={formData.firstName}
+                                onChange={handleChange}
+                                sx={ourteam.TextField}                           
+                                error={!!errors.firstName}
+                                helperText={errors.firstName} />
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <InputLabel sx={ourteam.InputLabel}>
@@ -57,7 +212,11 @@ const CommunityForm = () => {
                                 placeholder="Last Name"
                                 variant="outlined"
                                 name="lastName"
-                                sx={{ backgroundColor: "white" }}
+                                value={formData.lastName}
+                                onChange={handleChange}
+                                sx={ourteam.TextField}                           
+                                error={!!errors.lastName}
+                                helperText={errors.lastName}
                             />
                         </Grid>
                         <Grid item xs={12} md={12}>
@@ -69,7 +228,11 @@ const CommunityForm = () => {
                                 variant="outlined"
                                 name="companyName"
                                 placeholder="Company Name"
-                                sx={{ backgroundColor: "white" }}
+                                value={formData.companyName}
+                                onChange={handleChange}
+                                sx={ourteam.TextField}                           
+                                error={!!errors.companyName}
+                                helperText={errors.companyName}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -83,7 +246,11 @@ const CommunityForm = () => {
                                 variant="outlined"
                                 placeholder="+91xxxx xxx xxx"
                                 name="phone"
-                                sx={{ backgroundColor: "white" }}
+                                value={formData.phone}
+                                onChange={handleChange}
+                                sx={ourteam.TextField}                           
+                                error={!!errors.phone}
+                                helperText={errors.phone}
                             />
                         </Grid>
 
@@ -98,7 +265,11 @@ const CommunityForm = () => {
                                 placeholder="E-mail"
                                 variant="outlined"
                                 name="email"
-                                sx={{ backgroundColor: "white" }}
+                                value={formData.email}
+                                onChange={handleChange}
+                                sx={ourteam.TextField}                           
+                                error={!!errors.email}
+                                helperText={errors.email}
                             />
                         </Grid>
 
@@ -109,31 +280,34 @@ const CommunityForm = () => {
                             <TextField
                                 fullWidth
                                 variant="outlined"
-                                name="numberOfLaptops"
+                                name="city"
                                 placeholder="Enter City"
-                                sx={{ backgroundColor: "white" }}
+                                value={formData.city}
+                                onChange={handleChange}
+                                sx={ourteam.TextField}                           
+                                error={!!errors.city}
+                                helperText={errors.city}
                             />
                         </Grid>
 
                         <Grid item xs={12} md={6}>
-                            <InputLabel sx={ourteam.InputLabel}>
-                                <b>State</b>
-                            </InputLabel>
-                            <FormControl fullWidth sx={{ backgroundColor: "white" }}>
+                            <InputLabel sx={ourteam.InputLabel}><b>State</b></InputLabel>
+                            <FormControl fullWidth sx={{ backgroundColor: "white" }} error={!!errors.state}>
                                 <Select
-                                    value={selectedState}
+                                    value={formData.state}
                                     onChange={handleStateChange}
+                                    name="state"
                                     variant="outlined"
                                     displayEmpty
-                                    sx={{ textAlign: "left" }}
-                                    renderValue={(selected) =>
-                                        selected ? selected : <span style={{ color: "#A9A9A9" }}>Select State</span> // Custom styling
-                                    }                                    >
-                                    <MenuItem value="Maharashtra">Maharashtra</MenuItem>
-                                    <MenuItem value="New Delhi">New Delhi</MenuItem>
-                                    <MenuItem value="Gujrat">Gujrat</MenuItem>
-                                    <MenuItem value="Punjab">Punjab</MenuItem>
+                                    sx={ourteam.TextField}
+                                    style={{textAlign:"left", color:"#828282"}}                           
+                                    >
+                                    <MenuItem value="" disabled>Select State</MenuItem>
+                                    {stateOptions.map((state, index) => (
+                                        <MenuItem key={index} value={state}>{state}</MenuItem>
+                                    ))}
                                 </Select>
+                                <FormHelperText>{errors.state}</FormHelperText>
                             </FormControl>
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -143,9 +317,14 @@ const CommunityForm = () => {
                             <TextField
                                 fullWidth
                                 variant="outlined"
-                                name="numberOfLaptops"
+                                name="operation"
                                 placeholder="Enter number of years"
-                                sx={{ backgroundColor: "white" }}
+                                value={formData.operation}
+                                onChange={handleChange}
+                                sx={ourteam.TextField}
+                                error={!!errors.operation}
+                                helperText={errors.operation}
+
                             />
                         </Grid>
                         <Grid item xs={12} sx={{ textAlign: "left" }}>
@@ -156,61 +335,32 @@ const CommunityForm = () => {
                                 >
                                     Communities you serve
                                 </Typography>
-                                <RadioGroup
-                                    row
-                                    name="hearAbout"
-                                >
-                                    <FormControlLabel
-                                        value="women"
-                                        control={<Radio />}
-                                        label="Women"
-                                    />
-                                    <FormControlLabel
-                                        value="children"
-                                        control={<Radio />}
-                                        label="Children"
-                                    />
-                                    <FormControlLabel
-                                        value="sex workers"
-                                        control={<Radio />}
-                                        label="Sex Workers"
-                                    />
-                                    <FormControlLabel
-                                        value="physically challenged"
-                                        control={<Radio />}
-                                        label="Physically Challenged"
-                                    />
-
+                                <RadioGroup row name="outcome" onChange={handleRadioChange} value={selectedOutcome}>
+                                    <FormControlLabel value="Women" control={<Radio />} label="Women" />
+                                    <FormControlLabel value="Children" control={<Radio />} label="Children Impact" />
+                                    <FormControlLabel value="Sex Workers" control={<Radio />} label="Sex Workers" />
+                                    <FormControlLabel value="Physically Challenged" control={<Radio />} label="Physically Challenged" />
+                                    <FormControlLabel value="Mentally Challenged" control={<Radio />} label="Mentally Challenged" />
+                                    <FormControlLabel value="Enviroment" control={<Radio />} label="Enviroment" />
+                                    <FormControlLabel value="other" control={<Radio />} label="Other" />
                                 </RadioGroup>
-                                <RadioGroup
-                                    row
-                                    name="hearAbout"
-                                >
-                                    <FormControlLabel
-                                        value="mentally challenged"
-                                        control={<Radio />}
-                                        label="Mentally Challenged"
-                                    />
-                                    <FormControlLabel
-                                        value="enviroment"
-                                        control={<Radio />}
-                                        label="Enviroment"
-                                    />
-                                    <FormControlLabel
-                                        value="other"
-                                        control={<Radio />}
-                                        label="Other"
-                                    />
+
+
+                                {showOtherField && (
                                     <Grid item xs={12} md={6} sx={{ marginTop: "10px" }}>
                                         <TextField
                                             fullWidth
                                             variant="outlined"
-                                            name="numberOfLaptops"
-                                            placeholder=" Other"
-                                            sx={{ backgroundColor: "white" }}
+                                            name="other"
+                                            placeholder="Other"
+                                            value={formData.other}
+                                            onChange={handleChange}
+                                            sx={ourteam.TextField}
+                                            error={!!errors.other}
+                                            helperText={errors.other}
                                         />
                                     </Grid>
-                                </RadioGroup>
+                                )}
                             </FormControl>
                         </Grid>
                         <Grid item xs={12}>
@@ -224,12 +374,17 @@ const CommunityForm = () => {
                                     variant="outlined"
                                     name="message"
                                     placeholder="message"
-                                    sx={{ backgroundColor: "white" }}
+                                    value={formData.message}
+                                    onChange={handleChange}
+                                    sx={ourteam.TextField}
+                                    error={!!errors.message}
+                                    helperText={errors.message}
                                     multiline
                                     rows={4}
                                 />
                             </Grid>
                         </Grid>
+
                         <Grid
                             item
                             xs={12}
@@ -237,20 +392,36 @@ const CommunityForm = () => {
                                 paddingBottom: "4%",
                                 display: "flex",
                                 justifyContent: "center",
+                                alignItems: "center",
+                                gap: "16px",
+                                flexWrap: "wrap",
                             }}
                         >
-                            <Button type="submit" variant="contained" color="primary" style={{ width: "227px", height: "48px", alignItems: "center" }}>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                style={{
+                                    width: "227px",
+                                    height: "48px",
+                                    alignItems: "center",
+                                }}
+                            >
                                 Become a Partner
                             </Button>
 
+                            {successMessage && (
+                                <Typography className="customSubtitle1" sx={{ color: "#5C785A" }}>
+                                    Your Form details have been successfully submitted.
+                                </Typography>
+                            )}
                         </Grid>
                     </Grid>
                 </form>
             </Box>
         </Box>
-        </Container>
     );
 };
-
-
 export default CommunityForm;
+
+
