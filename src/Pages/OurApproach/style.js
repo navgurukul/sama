@@ -1,4 +1,4 @@
-import { border } from "@mui/system";
+import { border, textAlign } from "@mui/system";
 
 export const container = {
     background: "var(--primary, #5C785A)",    
@@ -45,7 +45,6 @@ export const styleh5 = {
     fontWeight: 700,
     lineHeight: " 41.6px",
     fontStyle: "normal",
-    
 }
 export const Modelbody1 = {
     color: "var(--white, #FFF)",
@@ -59,7 +58,6 @@ export const Modelbody1 = {
 export const styles={
     h4:{
         color:"var(--white, #FFF)",
-        fontSize:"48px",
         fontStyle:"normal",
         lineHeight:"41.6px",
         fontWeight:700,
