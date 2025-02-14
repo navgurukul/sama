@@ -26,7 +26,7 @@ const services = [
   },
   {
     image: Image3,
-    title: "Service Three",
+    title: "Values",
     description: [
       "• Women and Youth",
       "• Empowerment",
