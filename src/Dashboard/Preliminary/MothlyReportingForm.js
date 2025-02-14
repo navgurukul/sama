@@ -19,6 +19,9 @@ import axios from "axios";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CircularProgress from "@mui/material/CircularProgress";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import PendingIcon from '@mui/icons-material/Pending';
+import { height } from "@mui/system";
 
 const MonthlyReportingForm = () => {
   const [questions, setQuestions] = useState([]);
@@ -180,7 +183,7 @@ const MonthlyReportingForm = () => {
     }));
   };
 
-   const handleFinalSubmit = async () => {
+  const handleFinalSubmit = async () => {
     setIsSubmitting(true); // Use isSubmitting instead of loading
     try {
       const submissionData = {
@@ -208,7 +211,7 @@ const MonthlyReportingForm = () => {
       setSnackbarSeverity("success");
       setOpenSnackbar(true);
 
-  
+
 
       // Add delay before navigation
       setTimeout(() => {
@@ -226,27 +229,33 @@ const MonthlyReportingForm = () => {
   };
 
   const getStatusChip = (stateName, status) => {
-    const styles = {
-      pending: { bgcolor: "#FFF3E0", color: "#FF9800" },
-      submitted: { bgcolor: "#E8F5E9", color: "#4CAF50" },
-    };
+    if (status === 'submitted') {
+      return (
+        <Box display="flex" alignItems="center" ml={2}>
+          <CheckCircleIcon sx={{ color: '#48A145', fontSize: 20 }} />
+          <Typography
+            color="#48A145"
+            variant="body1"
+            sx={{ ml: 1, cursor: 'pointer' }}
+            onClick={() => handleEditState(stateName)}
+          >
+            Submitted
+          </Typography>
+        </Box>
+      );
+    }
 
     return (
-      <Chip
-        label={status}
-        size="small"
-        sx={{
-          ...styles[status],
-          height: "24px",
-          fontSize: "0.75rem",
-          fontWeight: 500,
-          cursor: status === "submitted" ? "pointer" : "default",
-          ml: 2,
-        }}
-        onClick={
-          status === "submitted" ? () => handleEditState(stateName) : undefined
-        }
-      />
+      <Box display="flex" alignItems="center" ml={2}>
+        <PendingIcon sx={{ color: '#FFAD33', fontSize: 20 }} />
+        <Typography
+          color="#FFAD33"
+          variant="body1"
+          sx={{ ml: 1 }}
+        >
+          Pending
+        </Typography>
+      </Box>
     );
   };
 
@@ -275,17 +284,12 @@ const MonthlyReportingForm = () => {
           }
           title={
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography sx={{ fontWeight: 600, fontFamily: "Raleway" }}>
+              <Typography variant="h6">
                 {stateName}
               </Typography>
               {getStatusChip(stateName, stateStatus[stateName])}
             </Box>
           }
-          sx={{
-            borderBottom: stateExpanded[stateName]
-              ? "1px solid #E0E0E0"
-              : "none",
-          }}
         />
         <CardContent
           sx={{
@@ -297,15 +301,9 @@ const MonthlyReportingForm = () => {
             {questions.map((question, index) => (
               <Box key={index}>
                 <Typography
-                  variant="body1"
-                  sx={{
-                    mb: 1,
-                    color: "#4A4A4A",
-                    fontSize: "1.125rem",
-                    fontFamily: "Raleway",
-                    fontWeight: "700",
-                    lineHeight: "170%",
-                  }}
+                  variant="subtitle1"
+                  color="#4A4A4A"
+
                 >
                   {question.question}
                 </Typography>
@@ -315,6 +313,34 @@ const MonthlyReportingForm = () => {
                   type={question.type === "number" ? "number" : "text"}
                   value={formData[stateName]?.[question.question] || ""}
                   onChange={handleChange(stateName, question.question)}
+                  inputProps={
+                    question.type === "number"
+                      ? {
+                        min: 0,
+                        onKeyDown: (e) => {
+                          if (e.key === '-' || e.key === 'e') {
+                            e.preventDefault();
+                          }
+                        },
+                      }
+                      : {}
+                  }
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      // Hide border when state is submitted and field is not focused
+                      border: stateStatus[stateName] === 'submitted' ? 'none' : '1px solid rgba(0, 0, 0, 0.23)',
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        // Show border on hover only if not in submitted state
+                        border: stateStatus[stateName] === 'submitted' ? 'none' : '1px solid rgba(0, 0, 0, 0.23)',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        // Always show border when focused, regardless of state
+                        border: '1px solid #5C785A',
+                      },
+                    },
+                  }}
                 />
               </Box>
             ))}
@@ -322,9 +348,16 @@ const MonthlyReportingForm = () => {
               <Button
                 variant="contained"
                 onClick={() => handleSaveState(stateName)}
+                // disabled={
+                //   !stateEdited[stateName] || !stateValidation[stateName]
+                // }
                 disabled={
-                  !stateEdited[stateName] || !stateValidation[stateName]
+                  !stateValidation[stateName]
                 }
+                sx={{
+                  bgcolor: "#453722",
+                  color: "#ffffff",
+                }}
               >
                 {stateStatus[stateName] === "submitted"
                   ? "Update Data"
@@ -361,22 +394,27 @@ const MonthlyReportingForm = () => {
     states.every((state) => stateStatus[state] === "submitted");
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth={false}
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%',
+        minHeight: '100vh'
+      }} >
       <Paper
         elevation={0}
         sx={{
-          width: "100%",
+          width: "37rem",
           p: 4,
           borderRadius: 2,
+          mx: 'auto',
         }}
       >
         <Typography
-          variant="h5"
+          variant="h6"
           gutterBottom
           sx={{
             mb: 4,
-            fontFamily: "Raleway",
-            fontWeight: "700",
           }}
         >
           {month} {year} Report Data
@@ -389,7 +427,7 @@ const MonthlyReportingForm = () => {
             variant="contained"
             onClick={handleFinalSubmit}
             disabled={!allStatesSubmitted || isSubmitting}
-            sx={{ position: "relative", minWidth: "120px", minHeight: "36px" }}
+            sx={{ position: "relative", minWidth: "120px", minHeight: "36px", mt: "1.5rem" }}
           >
             {isSubmitting ? (
               <>
@@ -418,7 +456,7 @@ const MonthlyReportingForm = () => {
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        sx={{ zIndex: 9999 }} 
+        sx={{ zIndex: 9999 }}
       >
         <Alert
           onClose={handleCloseSnackbar}
