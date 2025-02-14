@@ -1,8 +1,21 @@
 import React from "react";
 import { Button, Box, Container, Typography, Grid, Card, CardMedia, TextField } from "@mui/material";
-import TeamImg from './StudentImg.png';
 import ourteam from './style';
 import StayConnected from '../../../common/StayConnected'
+
+const videoSources = [
+    "/videos/video1.mp4",
+    "/videos/video8.mp4",
+    "/videos/video2.mp4",
+    "/videos/video3.mp4",
+    "/videos/video9.mp4",
+    "/videos/video6.mp4",
+    "/videos/video7.mp4",
+    "/videos/video4.mp4",
+    "/videos/video8.mp4",
+
+];
+
 
 const OurTeam = () => {
     return (
@@ -12,18 +25,25 @@ const OurTeam = () => {
             </Typography>
             <Typography variant="body1" paragraph>
                 Meet the passionate individuals who bring innovation and
-                excellence to every project.<br /> Together, we're driven by a
+                excellence to every project. Together, we're driven by a
                 shared vision of creating lasting impact through our work
             </Typography>
-            <Grid container spacing={0.3} justifyContent="center" sx={ourteam.gridContainer}>
-                {[...Array(9)].map((_, index) => (
+            <Grid container spacing={0.5} justifyContent="center" sx={ourteam.gridContainer}>
+                {videoSources.map((video, index) => (
                     <Grid item xs={12} sm={6} md={4} key={index} sx={ourteam.gridItem}>
-                        <Card sx={ourteam.card}>
-                            <CardMedia
-                                component="img"
-                                image={TeamImg}
-                                alt={`Team member ${index + 1}`}
-                                sx={ourteam.cardMedia}
+                        <Card sx={{ ...ourteam.card }}> {/* Ensure Card takes full height */}
+                            <video
+                                src={video}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",  // Force video to fill card height
+                                    objectFit: "cover", // Crop the video to fill the space
+                                }}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                controls={false}
                             />
                         </Card>
                     </Grid>

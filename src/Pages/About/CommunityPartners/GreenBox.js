@@ -5,8 +5,7 @@ import Quote from './assests/quote.png'
 const GreenBox = () => {
     return (
         <>
-            <Container maxWidth="lg" sx={ourteam.container}>
-
+            <Container maxWidth="lg" sx={ourteam.Communitycontainer}>
                 <Box sx={ourteam.GreenBox}>
                     <Typography variant="h5" gutterBottom style={{ color: "white" }}>
                         Partner Testimonies
@@ -19,14 +18,14 @@ const GreenBox = () => {
                                     <img src={Quote} alt="Icon" />
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
-                                    <Typography variant="body1" paragraph>
+                                    <Typography variant="body1" paragraph color="#2E2E2E">
                                         Thank you, Sama, for strengthening our 15 Kishori<br />
                                         Resource Centres in Koppal with laptops for computer <br />
                                         classes. Your laptops enable us to train more adolescent<br /> girls in computers.
                                     </Typography>
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
-                                    <Typography variant="subtitle1">
+                                    <Typography variant="subtitle1" color="#4A4A4A">
                                         Vishthar
                                     </Typography>
                                 </Box>
@@ -40,7 +39,7 @@ const GreenBox = () => {
                                     <img src={Quote} alt="Icon" />
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
-                                    <Typography variant="body1" paragraph>
+                                    <Typography variant="body1" paragraph color="#2E2E2E">
                                         The Innovation Story sincerely thanks Sama for the<br /> generous
                                         laptop donation. These laptops are <br />empowering students from
                                         underserved communities to<br /> access quality Computer Science
@@ -52,7 +51,7 @@ const GreenBox = () => {
                                     </Typography>
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
-                                    <Typography variant="subtitle1">
+                                    <Typography variant="subtitle1" color="#4A4A4A">
                                         The Innovation Story
                                     </Typography>
                                 </Box>
@@ -66,7 +65,7 @@ const GreenBox = () => {
                                     <img src={Quote} alt="Icon" />
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
-                                    <Typography variant="body1" paragraph>
+                                    <Typography variant="body1" paragraph color="#2E2E2E">
                                         We received 5 refurbished laptops from SAMA for<br /> educational
                                         purposes and teaching computer skills to the <br />children we work
                                         with. We work at the Dongri<br /> Observation Home in Mumbai with
@@ -81,7 +80,7 @@ const GreenBox = () => {
                                     </Typography>
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
-                                    <Typography variant="subtitle1">
+                                    <Typography variant="subtitle1" color="#4A4A4A">
                                         Karan, Founder, Seedling Foundation
                                     </Typography>
                                 </Box>
@@ -95,13 +94,13 @@ const GreenBox = () => {
                                     <img src={Quote} alt="Icon" />
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
-                                    <Typography variant="body1" paragraph>
+                                    <Typography variant="body1" paragraph color="#2E2E2E">
                                         Refurbished laptops typically cost us ₹15,000 to ₹20,000<br /> each,
                                         making it challenging to equip our students <br />affordably.
                                     </Typography>
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
-                                    <Typography variant="subtitle1">
+                                    <Typography variant="subtitle1" color="#4A4A4A">
                                         Eklayva India Foundation
                                     </Typography>
                                 </Box>

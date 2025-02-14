@@ -13,7 +13,7 @@ import {
   styles,
 } from "./style.js";
 import { data } from "./data.js";
-import Model from './working model.png'
+import Model from '../OurApproach/working model.png'
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 import ourteam from "../../Pages/About/OurTeam/style.js";
