@@ -96,7 +96,6 @@ function CorporateForm() {
             case "message":
             case "companyName":
             case "city":
-
                 if (!lettersOnlyRegex.test(value)) {
                     return "Must contain letters only";;
                 } else if (value.length < 3) {
@@ -119,7 +118,6 @@ function CorporateForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const newErrors = {};
         Object.keys(formData).forEach((field) => {
             const errorMessage = validateField(field, formData[field]);
@@ -127,13 +125,11 @@ function CorporateForm() {
                 newErrors[field] = errorMessage;
             }
         });
-
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             console.log("Form has errors:", newErrors);
             return;
         }
-
         const capitalizedData = {
             firstName: capitalizeFirstLetter(formData.firstName),
             lastName: capitalizeFirstLetter(formData.lastName),
@@ -146,7 +142,6 @@ function CorporateForm() {
             other: formData.other,
             outcome: selectedOutcome === "other" ? otherValue : selectedOutcome,
         };
-
         try {
             await fetch(
                 "https://script.google.com/macros/s/AKfycbzBwnZJAPjjx1x33Sbwv_xc0SHqjYwhcHGxiWfkR7WCjtTS2gMSYa2K1sIUe-WOPTA/exec",
@@ -159,7 +154,6 @@ function CorporateForm() {
                     mode: "no-cors",
                 }
             );
-
             setFormData({
                 firstName: "",
                 lastName: "",
@@ -183,7 +177,6 @@ function CorporateForm() {
             console.error("Error:", error);
         }
     };
-
 
     console.log(formData)
 

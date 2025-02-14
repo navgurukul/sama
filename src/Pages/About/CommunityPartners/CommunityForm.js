@@ -115,7 +115,6 @@ function CommunityForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const newErrors = {};
         Object.keys(formData).forEach((field) => {
             const errorMessage = validateField(field, formData[field]);
@@ -123,13 +122,11 @@ function CommunityForm() {
                 newErrors[field] = errorMessage;
             }
         });
-
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             console.log("Form has errors:", newErrors);
             return;
         }
-
         const capitalizedData = {
             firstName: capitalizeFirstLetter(formData.firstName),
             lastName: capitalizeFirstLetter(formData.lastName),
@@ -143,7 +140,6 @@ function CommunityForm() {
             other: formData.other,
             outcome: selectedOutcome === "other" ? otherValue : selectedOutcome,
         };
-
         try {
             await fetch(
                 "https://script.google.com/macros/s/AKfycbw0KIFPoyRJjjUGzal2vg11sNMnHnTclDEc1eHu5pP0b_gElJ3M9K9kGz5CQWihrCc72w/exec",
@@ -156,7 +152,6 @@ function CommunityForm() {
                     mode: "no-cors",
                 }
             );
-
             setFormData({
                 firstName: "",
                 lastName: "",
@@ -180,7 +175,6 @@ function CommunityForm() {
             console.error("Error:", error);
         }
     };
-
 
     console.log(formData)
 
@@ -390,7 +384,6 @@ function CommunityForm() {
                                 />
                             </Grid>
                         </Grid>
-
 
                         <Grid
                             item

@@ -92,7 +92,6 @@ function OurGovermentForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const newErrors = {};
         Object.keys(formData).forEach((field) => {
             const errorMessage = validateField(field, formData[field]);
@@ -107,7 +106,6 @@ function OurGovermentForm() {
             console.log("Form has errors:", newErrors);
             return;
         }
-
         const capitalizedData = {
             firstName: capitalizeFirstLetter(formData.firstName),
             lastName: capitalizeFirstLetter(formData.lastName),
@@ -118,7 +116,6 @@ function OurGovermentForm() {
             state: formData.state,
             city: formData.city,
         };
-
         const validationErrors = validateField();
 
         if (Object.keys(validationErrors).length > 0) {
