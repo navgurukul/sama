@@ -55,12 +55,11 @@ const DropdownMenu = ({ title, menuItems }) => {
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
     >
-      {/* Fixed Title Alignment */}
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "flex-start", // Ensures title is always left-aligned
+          justifyContent: "flex-start", 
           width: "max-content",
           minWidth: "120px",
         }}
@@ -91,7 +90,6 @@ const DropdownMenu = ({ title, menuItems }) => {
           </Paper>
         </Collapse>
       ) : (
-        // Desktop Popper Dropdown
         <Popper open={open} anchorEl={anchorEl} placement="bottom-start" disablePortal>
           <Paper
             onMouseEnter={() => setOpen(true)}
@@ -100,7 +98,7 @@ const DropdownMenu = ({ title, menuItems }) => {
             sx={{
               mt: 1,
               borderRadius: 1,
-              minWidth: 200, // Dropdown width
+              minWidth: 200, 
             }}
           >
             <MenuList>
@@ -110,7 +108,7 @@ const DropdownMenu = ({ title, menuItems }) => {
                   component={Link}
                   to={item.href}
                   onClick={() => setOpen(false)}
-                  sx={{ textAlign: "left" }} // Ensures text is left-aligned inside dropdown
+                  sx={{ textAlign: "left" }} 
                 >
                   <Typography variant="body1">{item.text}</Typography>
                 </MenuItem>

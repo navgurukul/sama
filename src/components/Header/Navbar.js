@@ -40,7 +40,6 @@ const discoverUsItems = [
   { text: "About Us", href: "/about" },
   { text: "Our Approach", href: "/our-approach" },
   { text: "Our Team", href: "/ourteam" },
-  { text: "Donate", href: "/donate" },
 ];
 
 const getInvolvedItems = [
@@ -71,12 +70,12 @@ const Navbar = () => {
     "monthly-report",
     "yearly-report",
   ];
-  const menuItems = [
-    { text: "About Us", href: "/about" },
-    { text: "Our Approach", href: "/our-approach" },
-    { text: "Donate", href: "/donate" },
-  ];
-  
+  // const menuItems = [
+  //   { text: "About Us", href: "/about" },
+  //   { text: "Our Approach", href: "/our-approach" },
+  //   { text: "Donate", href: "/donate" },
+  // ];
+
 
   useEffect(() => {
     const authData = localStorage.getItem("_AuthSama_");
@@ -162,11 +161,11 @@ const Navbar = () => {
           )}
 
           {!isLoggedIn && (
-          <Box className={`nav-links ${menuVisible ? "visible" : ""}`}  sx={{ display: {xs:"none", md:"flex"}, gap: "32px" }}>
-            <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
-            <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
-          </Box>
-        )}
+            <Box className={`nav-links ${menuVisible ? "visible" : ""}`} sx={{ display: { xs: "none", md: "flex" }, gap: "32px" }}>
+              <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
+              <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
+            </Box>
+          )}
 
           {/* show only in mobile view when user will log in */}
           {isLoggedIn && (
@@ -244,7 +243,6 @@ const Navbar = () => {
               <MuiLink
                 sx={{
                   margin: 1,
-                  color: "#4A4A4A",
                   textDecoration: "none",
                 }}
                 component={Link}
@@ -252,18 +250,46 @@ const Navbar = () => {
               >
                 <Button
                   type="submit"
-                  variant="contained"
-                  color="primary"
                   sx={{
                     fontWeight: activeTab === "/login" ? "bold" : "normal",
                     borderRadius: "100px",
+                    backgroundColor: "#FFFFFF", 
+                    border: "1px solid",
+                    borderColor: "primary.main",
+                    "&:hover": {
+                      backgroundColor: "#FFFFFF", 
+                    },
                   }}
                 >
-                  Login
+                  <Typography variant="subtitle1" sx={{ color: "primary.main", }}> Dashboard Login</Typography>
+                </Button>
+              </MuiLink>
+
+            )}
+            {!isLoggedIn && !isActive && (
+              <MuiLink
+                sx={{
+                  margin: 1,
+                  color: "#4A4A4A",
+                  textDecoration: "none",
+                }}
+                component={Link}
+                to="/donate"
+              >
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    fontWeight: activeTab === "/login" ? "bold" : "normal",
+                    borderRadius: "100px",
+                    color: "#ffffff",
+                  }}
+                >
+                  <Typography variant="subtitle1" sx={{ color: "#ffff", }}>Donate</Typography>
                 </Button>
               </MuiLink>
             )}
-            {!isLoggedIn && !isActive && (
+            {/* {!isLoggedIn && !isActive && (
               <MuiLink
                 sx={{
                   margin: 1,
@@ -286,7 +312,7 @@ const Navbar = () => {
                   NGO registration
                 </Button>
               </MuiLink>
-            )}
+            )} */}
           </Box>
           {!isLoggedIn && (
             <Box className="mobile-nav">
@@ -303,13 +329,11 @@ const Navbar = () => {
         </Toolbar>
         {!isLoggedIn && (
           <Box
-            className={`mobile-menu ${
-              isActive && menuVisible ? "visible" : ""
-            }`}
+            className={`mobile-menu ${isActive && menuVisible ? "visible" : ""
+              }`}
           >
             <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
             <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
-            {/* Dashboard Login in mobile menu - Hidden in mobile view */}
             {!isLoggedIn && !isActive && (
               <MuiLink
                 sx={{
