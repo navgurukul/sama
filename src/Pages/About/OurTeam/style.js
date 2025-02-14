@@ -192,7 +192,23 @@ const ourteam = {
         width: { xs: "100%", md:  "750px" },
         height: { xs: "100%", md:  "1050px" },
         marginLeft: { xs: "0px", md:  "200px" },
-        marginBottom: "0px"
+    },
+    TextField:{
+        backgroundColor: "white",
+        borderRadius: "8px",
+        "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+                borderColor: "#E0E0E0",
+                borderRadius: "8px",
+            },
+            "&:hover fieldset": {
+                borderColor: "#BDBDBD", 
+            },
+            "&.Mui-focused fieldset": {
+                borderColor: "primary", 
+            },
+        },
+            
     },
     TextField:{
         backgroundColor: "white",
