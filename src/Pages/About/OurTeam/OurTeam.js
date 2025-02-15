@@ -124,65 +124,21 @@
 // export default OurTeam;
 
 
-// OurTeam.jsx
 import React, { useState, useEffect } from "react";
 import { Button, Box, Container, Typography, Grid, Card } from "@mui/material";
+import ourteam from "./style";
 import StayConnected from "../../../common/StayConnected";
 
-// Styles object
-const styles = {
-  container: {
-    py: 8,
-    textAlign: "center",
-  },
-  gridContainer: {
-    mt: 4,
-  },
-  gridItem: {
-    position: "relative",
-    "&:hover": {
-      transform: "scale(1.02)",
-      transition: "transform 0.3s ease-in-out",
-    },
-  },
-  card: {
-    height: 300,
-    position: "relative",
-    overflow: "hidden",
-    borderRadius: 2,
-    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-  },
-  box: {
-    textAlign: "left",
-    maxWidth: "600px",
-    padding: { xs: "20px", md: "0px" },
-  },
-  typographyBody: {
-    marginBottom: "24px",
-  },
-  button: {
-    marginTop: "32px",
-    padding: "12px 32px",
-    borderRadius: "4px",
-    textTransform: "none",
-    fontSize: "1rem",
-  },
-};
-
-// Video sources array
 const originalVideoSources = [
-  "./videos/video1.mp4",
-  "./videos/video2.mp4",
-  "./videos/video3.mp4",
-  "./videos/video4.mp4",
-  "./videos/video5.mp4",
-  "./videos/video6.mp4",
-  "./videos/video7.mp4",
-  "./videos/video8.mp4",
-  "./videos/video9.mp4"
+  "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video2.mp4",
+  "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video3.mp4",
+  "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video4.mp4",
+  "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video6.mp4",
+  "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video7.mp4",
+  "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video8.mp4",
+  "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video9.mp4",
 ];
 
-// Shuffle array utility function
 const shuffleArray = (array) => {
   let shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -209,7 +165,7 @@ const OurTeam = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={styles.container}>
+    <Container maxWidth="lg" sx={ourteam.container}>
       <Typography variant="h5" gutterBottom>
         Our Team
       </Typography>
@@ -218,17 +174,15 @@ const OurTeam = () => {
         every project. Together, we're driven by a shared vision of creating a
         lasting impact through our work.
       </Typography>
-      
-      {/* Video Grid */}
       <Grid
         container
         spacing={0.5}
         justifyContent="center"
-        sx={styles.gridContainer}
+        sx={ourteam.gridContainer}
       >
         {videoSources.map((video, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index} sx={styles.gridItem}>
-            <Card sx={styles.card}>
+          <Grid item xs={12} sm={6} md={4} key={index} sx={ourteam.gridItem}>
+            <Card sx={{ ...ourteam.card }}>
               {!videoErrors[index] ? (
                 <video
                   key={video}
@@ -266,19 +220,17 @@ const OurTeam = () => {
           </Grid>
         ))}
       </Grid>
-
-      {/* Grow With Us Section */}
       <Grid
         container
         spacing={2}
         sx={{ marginTop: "60px", marginLeft: { xs: "0px", md: "140px" } }}
       >
         <Grid item xs={12} md={6}>
-          <Box sx={styles.box}>
+          <Box sx={ourteam.box}>
             <Typography variant="h5" gutterBottom>
               Grow With Us
             </Typography>
-            <Typography variant="body1" paragraph sx={styles.typographyBody}>
+            <Typography variant="body1" paragraph sx={ourteam.typographyBody}>
               Your success is our success. We've built a workplace where your
               well-being matters and your growth is supported every step of the
               way. Discover the advantages of being part of our team.
@@ -311,17 +263,16 @@ const OurTeam = () => {
                 </Typography>
               </li>
             </ul>
-            <Button variant="contained" color="primary" sx={styles.button}>
+            <Button variant="contained" color="primary" sx={ourteam.button}>
               Explore Current Openings
             </Button>
           </Box>
         </Grid>
       </Grid>
-
-      {/* Stay Connected Component */}
       <StayConnected />
     </Container>
   );
 };
 
 export default OurTeam;
+
