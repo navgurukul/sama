@@ -181,8 +181,8 @@ function CorporateForm() {
     console.log(formData)
 
     return (
-        <Container maxWidth="lg" sx={ourteam.container} style={{ marginTop: "0px" }}>
-            <Box sx={ourteam.ComForm}  >
+        <Container maxWidth="lg"  style={{ marginTop: "0px" }}>
+            <Box sx={ourteam.ComForm} mt={5} >
                 <Typography variant="h6" gutterBottom sx={ourteam.secondhead}>
                     Maximize Social and Environmental Impact via Strategic<br />
                     CSR Partnership with Sama

@@ -48,7 +48,7 @@ const ourteam = {
     StayConnectedGrid:{
         width: "100%", 
         backgroundColor: "#FFFAF8", 
-        padding: {xs:"40px 20px 40px 10px",md:"80px 159px 80px 160px"} , 
+        padding: {xs:"40px 20px 40px 10px",md:"0px 159px 0px 160px"} , 
         marginLeft: "calc(-50vw + 50%)",
     },
     mainGrid: {
@@ -190,9 +190,7 @@ const ourteam = {
     },
     ComForm : {
         width: { xs: "100%", md:  "750px" },
-        height: { xs: "100%", md:  "1050px" },
         marginLeft: { xs: "0px", md:  "200px" },
-        marginBottom:"50px"
     },
     TextField:{
         backgroundColor: "white",
@@ -289,6 +287,31 @@ const ourteam = {
         alignItems: "center",
         boxShadow: "2",
         
+    },
+    //OurApproach
+    ApproachBox:{
+        justifyItems:"center",
+    },
+    //About Us
+    FullBox:{
+        height:{ xs: "100%", md:  "237px" },
+        width:{ xs: "100%", md:  "1140px" }, 
+        backgroundColor: " #F0F4EF",
+        marginLeft: "calc(-50vw + 50%)", 
+        padding: { xs: "30px 48px", md: "80px 166px" },
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center", 
+
+    },
+    AboutCard: {
+        width: "304px",
+        height: "364px",
+        textAlign:{ xs: "center", md:  "center" },
+        padding: "24px",
+        borderRadius: "8px",
+        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+        backgroundColor: "white",       
     },
 };
 
