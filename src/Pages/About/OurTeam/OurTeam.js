@@ -1,20 +1,188 @@
+// import React, { useState, useEffect } from "react";
+// import { Button, Box, Container, Typography, Grid, Card } from "@mui/material";
+// import ourteam from "./style";
+// import StayConnected from "../../../common/StayConnected";
+
+// const originalVideoSources = [
+//   "/videos/video1.mp4",
+//   "/videos/video8.mp4",
+//   "/videos/video2.mp4",
+//   "/videos/video3.mp4",
+//   "/videos/video9.mp4",
+//   "/videos/video6.mp4",
+//   "/videos/video7.mp4",
+//   "/videos/video4.mp4",
+//   "/videos/video8.mp4",
+// ];
+
+// const shuffleArray = (array) => {
+//   let shuffled = [...array];
+//   for (let i = shuffled.length - 1; i > 0; i--) {
+//     const j = Math.floor(Math.random() * (i + 1));
+//     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+//   }
+//   return shuffled;
+// };
+
+// const OurTeam = () => {
+//   const [videoSources, setVideoSources] = useState([]);
+
+//   useEffect(() => {
+//     setVideoSources(shuffleArray(originalVideoSources));
+//   }, []);
+
+//   return (
+//     <Container maxWidth="lg" sx={ourteam.container}>
+//       <Typography variant="h5" gutterBottom>
+//         Our Team
+//       </Typography>
+//       <Typography variant="body1" paragraph>
+//         Meet the passionate individuals who bring innovation and excellence to
+//         every project. Together, we're driven by a shared vision of creating a
+//         lasting impact through our work.
+//       </Typography>
+//       <Grid
+//         container
+//         spacing={0.5}
+//         justifyContent="center"
+//         sx={ourteam.gridContainer}
+//       >
+//         {videoSources.map((video, index) => (
+//           <Grid item xs={12} sm={6} md={4} key={index} sx={ourteam.gridItem}>
+//             <Card sx={{ ...ourteam.card }}>
+//               <video
+//                 src={video}
+//                 style={{
+//                   width: "100%",
+//                   height: "100%",
+//                   objectFit: "cover",
+//                 }}
+//                 autoPlay
+//                 loop
+//                 muted
+//                 playsInline
+//                 controls={false}
+//               />
+//             </Card>
+//           </Grid>
+//         ))}
+//       </Grid>
+//       <Grid
+//         container
+//         spacing={2}
+//         sx={{ marginTop: "60px", marginLeft: { xs: "0px", md: "140px" } }}
+//       >
+//         <Grid item xs={12} md={6}>
+//           <Box sx={ourteam.box}>
+//             <Typography variant="h5" gutterBottom>
+//               Grow With Us
+//             </Typography>
+//             <Typography variant="body1" paragraph sx={ourteam.typographyBody}>
+//               Your success is our success. We've built a workplace where your
+//               well-being matters and your growth is supported every step of the
+//               way. Discover the advantages of being part of our team.
+//             </Typography>
+//             <ul
+//               style={{
+//                 textAlign: "left",
+//                 paddingLeft: "20px",
+//                 listStyleType: "disc",
+//                 paddingTop: "0px",
+//                 marginTop: "0px",
+//               }}
+//             >
+//               <li>
+//                 <Typography variant="body1">
+//                   Be part of a mission-driven organization empowering
+//                   underserved women and youth through technology.
+//                 </Typography>
+//               </li>
+//               <li>
+//                 <Typography variant="body1">
+//                   Gain exposure to CSR initiatives, sustainability practices,
+//                   and community development projects.
+//                 </Typography>
+//               </li>
+//               <li>
+//                 <Typography variant="body1">
+//                   Work closely with NGOs, corporate partners, and industry
+//                   leaders, building a robust professional network.
+//                 </Typography>
+//               </li>
+//             </ul>
+//             <Button variant="contained" color="primary" sx={ourteam.button}>
+//               Explore Current Openings
+//             </Button>
+//           </Box>
+//         </Grid>
+//       </Grid>
+//       <StayConnected />
+//     </Container>
+//   );
+// };
+
+// export default OurTeam;
+
+
+// OurTeam.jsx
 import React, { useState, useEffect } from "react";
 import { Button, Box, Container, Typography, Grid, Card } from "@mui/material";
-import ourteam from "./style";
 import StayConnected from "../../../common/StayConnected";
 
+// Styles object
+const styles = {
+  container: {
+    py: 8,
+    textAlign: "center",
+  },
+  gridContainer: {
+    mt: 4,
+  },
+  gridItem: {
+    position: "relative",
+    "&:hover": {
+      transform: "scale(1.02)",
+      transition: "transform 0.3s ease-in-out",
+    },
+  },
+  card: {
+    height: 300,
+    position: "relative",
+    overflow: "hidden",
+    borderRadius: 2,
+    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+  },
+  box: {
+    textAlign: "left",
+    maxWidth: "600px",
+    padding: { xs: "20px", md: "0px" },
+  },
+  typographyBody: {
+    marginBottom: "24px",
+  },
+  button: {
+    marginTop: "32px",
+    padding: "12px 32px",
+    borderRadius: "4px",
+    textTransform: "none",
+    fontSize: "1rem",
+  },
+};
+
+// Video sources array
 const originalVideoSources = [
-  "/videos/video1.mp4",
-  "/videos/video8.mp4",
-  "/videos/video2.mp4",
-  "/videos/video3.mp4",
-  "/videos/video9.mp4",
-  "/videos/video6.mp4",
-  "/videos/video7.mp4",
-  "/videos/video4.mp4",
-  "/videos/video8.mp4",
+  "./videos/video1.mp4",
+  "./videos/video2.mp4",
+  "./videos/video3.mp4",
+  "./videos/video4.mp4",
+  "./videos/video5.mp4",
+  "./videos/video6.mp4",
+  "./videos/video7.mp4",
+  "./videos/video8.mp4",
+  "./videos/video9.mp4"
 ];
 
+// Shuffle array utility function
 const shuffleArray = (array) => {
   let shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -26,13 +194,22 @@ const shuffleArray = (array) => {
 
 const OurTeam = () => {
   const [videoSources, setVideoSources] = useState([]);
+  const [videoErrors, setVideoErrors] = useState({});
 
   useEffect(() => {
     setVideoSources(shuffleArray(originalVideoSources));
   }, []);
 
+  const handleVideoError = (index, videoSrc) => {
+    console.error(`Failed to load video at index ${index}: ${videoSrc}`);
+    setVideoErrors(prev => ({
+      ...prev,
+      [index]: true
+    }));
+  };
+
   return (
-    <Container maxWidth="lg" sx={ourteam.container}>
+    <Container maxWidth="lg" sx={styles.container}>
       <Typography variant="h5" gutterBottom>
         Our Team
       </Typography>
@@ -41,43 +218,67 @@ const OurTeam = () => {
         every project. Together, we're driven by a shared vision of creating a
         lasting impact through our work.
       </Typography>
+      
+      {/* Video Grid */}
       <Grid
         container
         spacing={0.5}
         justifyContent="center"
-        sx={ourteam.gridContainer}
+        sx={styles.gridContainer}
       >
         {videoSources.map((video, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index} sx={ourteam.gridItem}>
-            <Card sx={{ ...ourteam.card }}>
-              <video
-                src={video}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-                autoPlay
-                loop
-                muted
-                playsInline
-                controls={false}
-              />
+          <Grid item xs={12} sm={6} md={4} key={index} sx={styles.gridItem}>
+            <Card sx={styles.card}>
+              {!videoErrors[index] ? (
+                <video
+                  key={video}
+                  src={video}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  controls={false}
+                  onError={() => handleVideoError(index, video)}
+                />
+              ) : (
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    bgcolor: "grey.200",
+                    minHeight: "200px"
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Video unavailable
+                  </Typography>
+                </Box>
+              )}
             </Card>
           </Grid>
         ))}
       </Grid>
+
+      {/* Grow With Us Section */}
       <Grid
         container
         spacing={2}
         sx={{ marginTop: "60px", marginLeft: { xs: "0px", md: "140px" } }}
       >
         <Grid item xs={12} md={6}>
-          <Box sx={ourteam.box}>
+          <Box sx={styles.box}>
             <Typography variant="h5" gutterBottom>
               Grow With Us
             </Typography>
-            <Typography variant="body1" paragraph sx={ourteam.typographyBody}>
+            <Typography variant="body1" paragraph sx={styles.typographyBody}>
               Your success is our success. We've built a workplace where your
               well-being matters and your growth is supported every step of the
               way. Discover the advantages of being part of our team.
@@ -110,12 +311,14 @@ const OurTeam = () => {
                 </Typography>
               </li>
             </ul>
-            <Button variant="contained" color="primary" sx={ourteam.button}>
+            <Button variant="contained" color="primary" sx={styles.button}>
               Explore Current Openings
             </Button>
           </Box>
         </Grid>
       </Grid>
+
+      {/* Stay Connected Component */}
       <StayConnected />
     </Container>
   );
