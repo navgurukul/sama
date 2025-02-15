@@ -24,6 +24,7 @@ const OurGoverment = () => {
     };
 
     return (
+        <>
         <Container maxWidth="lg" sx={ourteam.container}>
             <Box sx={ourteam.GovBox}>
                 <Typography variant="h5" gutterBottom>
@@ -39,8 +40,9 @@ const OurGoverment = () => {
                 </Typography>
                 <OurGovermentForm />
             </Box>
-            <StayConnected />
         </Container>
+        <StayConnected />
+        </>
     );
 };
 

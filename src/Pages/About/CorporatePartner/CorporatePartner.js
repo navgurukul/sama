@@ -18,8 +18,8 @@ const CorporatePartner = () => {
                 </Typography>
                 <CompanyLogo />
                 <CorporateForm />
-                <StayConnected />
             </Container>
+            <StayConnected />
         </>
     )
 }
