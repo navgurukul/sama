@@ -49,10 +49,17 @@ import YearlyEditForm from './Dashboard/YearlyReport/YearlyEditForm';
 import YearlyForm from './Dashboard/YearlyReport/YearlyForm';
 import YearlyReportingForm from './Dashboard/Preliminary/YearlyReportingForm';
 import YearlyReportData from './Dashboard/Preliminary/YearlyReportData';
+<<<<<<< HEAD
 import CorporateteDb from './CorporateDB/index';
 import DetailView from './CorporateDB/MonthlyImpact/DetailView';
 import NGOTrainedTable from './CorporateDB/YearlyImpact/NGOTrainedTable';
 
+=======
+import OurTeam from './Pages/About/OurTeam/OurTeam';
+import OurGoverment from './Pages/About/OurGoverment/OurGoverment';
+import CommunityPartners from './Pages/About/CommunityPartners/CommunityPartners';
+import CorporatePartner from './Pages/About/CorporatePartner/CorporatePartner';
+>>>>>>> 5ab5b0f2bb4034dc582e5aec5887d3cbf3281762
 
 
 
@@ -75,9 +82,12 @@ function App() {
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/about-initiative" element={<LandingPage />} />
               <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
+<<<<<<< HEAD
               <Route path="corpretedb" element={<CorporateteDb />} />
               <Route path="/corpretedb/DataViewDetail" element={<DetailView/>}/>
               <Route path="/corpretedb/NGOTrainedTable" element={<NGOTrainedTable/>} />
+=======
+>>>>>>> 5ab5b0f2bb4034dc582e5aec5887d3cbf3281762
 
               <Route path="/question-selection" element={    
                 <PrivateRoute reqired={'ops'}>
@@ -135,7 +145,10 @@ function App() {
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
                <Route path = "/ngoprofile" element= {<NgoProfile/>} />
-
+               <Route path = "/ourteam" element= {<OurTeam/>} />
+               <Route path = "/ourgoverment" element= {<OurGoverment/>} />
+               <Route path = "/communitypartners" element= {<CommunityPartners/>} />
+               <Route path = "/corporatepartner" element= {<CorporatePartner/>} />
               <Route path="/documentreupload" element={<DocumentReupload />} />
               <Route path="/attentionneeded" element={<AttentionNeeded />} />
                 <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />

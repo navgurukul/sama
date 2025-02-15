@@ -33,10 +33,10 @@ const DataUpload = () => {
   });
   const [selectedAction, setSelectedAction] = useState("");
   const [selectedDocument, setSelectedDocument] = useState("");
-  const [description, setDescription] = useState(""); // Added description state
+  const [description, setDescription] = useState("");
   const { id } = useParams();
+   // Fetch documents
 
-  // Fetch documents
   useEffect(() => {
     axios
       .get(
@@ -45,8 +45,8 @@ const DataUpload = () => {
       .then((response) => setDocuments(response.data))
       .catch((error) => console.error("Error fetching documents:", error));
   }, [id, open]);
-
   // Open dialog
+
   const handleOpenDialog = (action, documentName) => {
     setSelectedAction(action);
     setSelectedDocument(documentName);
@@ -54,12 +54,12 @@ const DataUpload = () => {
     setDescription(""); // Clear description when opening dialog
   };
 
-  // Close dialog
+   // Close dialog
   const handleCloseDialog = () => {
     setOpen(false);
   };
-
   // Handle description change
+
   const handleDescriptionChange = (event) => {
     setDescription(event.target.value);
   };
@@ -74,7 +74,7 @@ const DataUpload = () => {
       userId: id,
       documentName: selectedDocument,
       status: selectedAction === "Approve" ? "Success" : "Failed",
-      description: selectedAction === "Decline" ? description : "", // Add description for Decline
+      description: selectedAction === "Decline" ? description : "",
       type: "updateDocStatus",
     };
 
@@ -87,18 +87,18 @@ const DataUpload = () => {
       body: JSON.stringify(payload),
     })
       .then(() => {
-        // Update local state to reflect the change
+          // Update local state to reflect the change
         if (documents) {
           const updatedDocuments = { ...documents };
           updatedDocuments[selectedDocument] = {
             ...updatedDocuments[selectedDocument],
             status: selectedAction === "Approve" ? "Success" : "Failed",
-            description: selectedAction === "Decline" ? description : "", // Update description
+            description: selectedAction === "Decline" ? description : "",// Update description
           };
           setDocuments(updatedDocuments);
         }
+         // Show success message
 
-        // Show success message
         setSnackbar({
           open: true,
           message:
@@ -118,13 +118,13 @@ const DataUpload = () => {
       });
   };
 
-  // Snackbar close handler
+   // Snackbar close handler
   const handleCloseSnackbar = () => {
     setSnackbar({ open: false, message: "", severity: "" });
   };
 
   if (!documents) {
-    return <Typography sx={{mt : 20 ,textAlign: "center"}}>Loading...</Typography>;
+    return <Typography sx={{mt: 20, textAlign: "center"}}>Loading...</Typography>;
   }
 
   if (!documents.isDataAvailable) {
@@ -139,16 +139,18 @@ const DataUpload = () => {
         <img
           src={Update}
           alt="Centered Update"
-          style={{ marginTop: "100px", marginBottom: "50px",maxWidth: "100%", height: "auto" }}
+          style={{ marginTop: "100px", marginBottom: "50px", maxWidth: "100%", height: "auto" }}
         />
       </Grid>
     );
   }
 
-  const documentKeys = Object.keys(documents).filter(
-    (key) =>
-      !["isDataAvailable", "User-Id", "NGO Name", "subfolderId"].includes(key)
-  );
+  const documentKeys = Object.keys(documents)
+    .filter(
+      (key) =>
+        !["isDataAvailable", "User-Id", "NGO Name", "subfolderId"].includes(key) &&
+        documents[key].link // Only include documents that have a link
+    );
 
   return (
     <Container maxWidth="sm" sx={{ padding: "24px" }}>
@@ -163,10 +165,8 @@ const DataUpload = () => {
         </Typography>
         {documentKeys.map((key, index) => {
           const doc = documents[key];
-          const isApproved =
-            doc.status === "Success" || doc.status === "Approved";
-          const isDeclined =
-            doc.status === "Failed" || doc.status === "Declined";
+          const isApproved = doc.status === "Success" || doc.status === "Approved";
+          const isDeclined = doc.status === "Failed" || doc.status === "Declined";
 
           return (
             <Grid item xs={12} key={index}>
@@ -208,7 +208,7 @@ const DataUpload = () => {
                     </Typography>
                     {isDeclined && (
                       <Typography variant="body1" color="error">
-                      {doc.description? doc.description : "The document is not in a valid format."}
+                        {doc.description ? doc.description : "The document is not in a valid format."}
                       </Typography>
                     )}
                   </>
