@@ -1,10 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Container, Grid, Typography, Link, Box } from "@mui/material";
 import samalogo from "../../assets/samalogo.png";
 import Email from "./email.png";
 import TwitterIcon from "./twitter.png";
 import LinkedInIcon from "./linkdin.png";
 import { matchPath, useLocation } from "react-router-dom";
+
+const routePatterns = [
+  "/user-details",
+  "/userdetails/:id",
+  "ngo/:id",
+  "edit-yearly-form/:id",
+  "yearly-reporting/:id",
+  "/monthly-reporting/:id",
+  "/edit-form/:id",
+  "monthly-reporting",
+  "yearly-reporting",
+  "monthly-report",
+  "yearly-report",
+  "ngo",
+  "beneficiarydata",
+  "preliminary"
+];
 
 const isRouteMatch = (pathname, patterns) => {
   return patterns.some((pattern) =>
@@ -14,42 +31,9 @@ const isRouteMatch = (pathname, patterns) => {
 
 const Footer = () => {
   const location = useLocation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // Define routes where footer should be shown when logged out
-  const footerRoutes = ['/', '/home']; // Add more routes as needed
-
-  useEffect(() => {
-    // Check localStorage for login status
-    const checkLoginStatus = () => {
-      const loggedInStatus = localStorage.getItem('isLoggedIn');
-      setIsLoggedIn(loggedInStatus === 'true');
-    };
-
-    // Initial check
-    checkLoginStatus();
-
-    // Listen for login state changes
-    window.addEventListener('loginStateChange', checkLoginStatus);
-    
-    // Listen for localStorage changes
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'isLoggedIn') {
-        checkLoginStatus();
-      }
-    });
-
-    return () => {
-      window.removeEventListener('loginStateChange', checkLoginStatus);
-      window.removeEventListener('storage', checkLoginStatus);
-    };
-  }, []);
-
-  // Check if current route should show footer
-  const shouldShowFooter = isRouteMatch(location.pathname, footerRoutes);
-
-  // Return null if user is logged in OR if not on a footer route
-  if (isLoggedIn || !shouldShowFooter) {
+  
+  // If current route matches any pattern in routePatterns, don't show footer
+  if (isRouteMatch(location.pathname, routePatterns)) {
     return null;
   }
  
