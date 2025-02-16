@@ -279,7 +279,7 @@ const Navbar = () => {
                     },
                   }}
                 >
-                  <Typography variant="subtitle1" sx={{ color: "primary.main", }}>NGO Beneficiary Registration</Typography>
+                  <Typography variant="subtitle1" sx={{ color: "primary.main", }}> Sumit your Requriment</Typography>
                 </Button>
               </MuiLink>
 

@@ -14,7 +14,7 @@ const originalTeamMembers = [
   },
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video4.mp4",
-    name: "Nitish Sharma",
+    name: "Nitesh Sharma",
   },
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video6.mp4",
@@ -112,7 +112,7 @@ const OurTeam = () => {
                       }}
                     >
                       <Typography
-                        variant="body2"
+                        variant="subtitle1"
                         sx={{
                           color: "#FFF",
                           // fontWeight: 500,
