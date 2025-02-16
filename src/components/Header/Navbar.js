@@ -161,11 +161,29 @@ const Navbar = () => {
           )}
 
           {!isLoggedIn && (
-            <Box className={`nav-links ${menuVisible ? "visible" : ""}`} sx={{ display: { xs: "none", md: "flex" }, gap: "32px" }}>
+            <Box className={`nav-links ${menuVisible ? "visible" : ""}`} sx={{ display: { xs: "none", md: "flex" }, gap: "20px" }}>
               <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
               <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
+
+              {/* Donate Text Link */}
+              <MuiLink
+                sx={{
+                  margin: "0 8px",
+                  textDecoration: "none",
+                  color: "#4A4A4A",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap", // Prevents wrapping
+                }}
+                component={Link}
+                to="/donate"
+                variant="body1"
+              >
+                Donate to Sama
+              </MuiLink>
             </Box>
           )}
+
+
 
           {/* show only in mobile view when user will log in */}
           {isLoggedIn && (
@@ -246,22 +264,22 @@ const Navbar = () => {
                   textDecoration: "none",
                 }}
                 component={Link}
-                to="/login"
+                to="/ngoregistration"
               >
                 <Button
                   type="submit"
                   sx={{
                     fontWeight: activeTab === "/login" ? "bold" : "normal",
                     borderRadius: "100px",
-                    backgroundColor: "#FFFFFF", 
+                    backgroundColor: "#FFFFFF",
                     border: "1px solid",
                     borderColor: "primary.main",
                     "&:hover": {
-                      backgroundColor: "#FFFFFF", 
+                      backgroundColor: "#FFFFFF",
                     },
                   }}
                 >
-                  <Typography variant="subtitle1" sx={{ color: "primary.main", }}> Dashboard Login</Typography>
+                  <Typography variant="subtitle1" sx={{ color: "primary.main", }}> Sumit your Requriment</Typography>
                 </Button>
               </MuiLink>
 
@@ -274,7 +292,7 @@ const Navbar = () => {
                   textDecoration: "none",
                 }}
                 component={Link}
-                to="/donate"
+                to="/login"
               >
                 <Button
                   type="submit"
@@ -285,7 +303,7 @@ const Navbar = () => {
                     color: "#ffffff",
                   }}
                 >
-                  <Typography variant="subtitle1" sx={{ color: "#ffff", }}>Donate</Typography>
+                  <Typography variant="subtitle1" sx={{ color: "#ffff", }}> Dashboard Login</Typography>
                 </Button>
               </MuiLink>
             )}
@@ -334,6 +352,21 @@ const Navbar = () => {
           >
             <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
             <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
+            <MuiLink
+                sx={{
+                  margin: "0 8px",
+                  textDecoration: "none",
+                  color: "#4A4A4A",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap", // Prevents wrapping
+                  marginRight:{xs:"210px", md:"0px"}
+                }}
+                component={Link}
+                to="/donate"
+                variant="body1"
+              >
+                Donate to Sama
+              </MuiLink>
             {!isLoggedIn && !isActive && (
               <MuiLink
                 sx={{

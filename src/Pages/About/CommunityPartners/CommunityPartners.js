@@ -19,8 +19,8 @@ const CommunityPartners = () => {
                 <ImageBox />
                 <GreenBox />
                 <CommunityForm />
-                <StayConnected />
             </Container>
+            <StayConnected />
         </>
     )
 }

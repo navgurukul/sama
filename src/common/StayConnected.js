@@ -54,7 +54,7 @@ const StayConnected = () => {
     };
 
     return (
-        <Box sx={ourteam.StayConnectedGrid} mt={5}>
+        <Box sx={ourteam.StayConnectedGrid}>
             <Grid container sx={ourteam.mainGrid}>
                 <Grid item xs={12} md={7} sx={ourteam.leftGrid}>
                     <Typography variant="h6" sx={ourteam.headingText}>

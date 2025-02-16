@@ -16,10 +16,10 @@ function About() {
       <Container maxWidth="lg" sx={ourteam.container}>
         <BgVideoPage></BgVideoPage>
         <ServicesSection></ServicesSection>
-        <StayConnected />
         {/* <Overview></Overview> */}
         {/* <SamaGoals></SamaGoals> */}
       </Container>
+      <StayConnected />
     </>
   )
 }

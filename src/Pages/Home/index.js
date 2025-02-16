@@ -192,7 +192,7 @@ function Home() {
       </Container>
 
 
-      <Container maxWidth="lg" sx={{ py: "80px", backgroundColor: "#FFFAF8" }}>
+      <Container maxWidth="lg" sx={{ py: "80px"}}>
         <Typography variant="h5" textAlign="center">Metrics that Matter</Typography>
         <Typography variant="body1" textAlign="center" mt={2}>Here’s how the impact is measured through data driven insights</Typography>
         <Box sx={!isActive && { display: 'flex', my: 4 , justifyContent:"center", alignItems:"center"}} spacing={3}>
@@ -220,7 +220,7 @@ function Home() {
       </Container>
 
       <Box>
-        <Container maxWidth="lg" sx={{ py: "80px", justifyItems: "center" }}>
+        <Container maxWidth="lg" sx={{ py: "80px",  justifyItems: "center" }}>
           <Typography variant="h5" sx={{ textAlign: "center" }}>Sustainability Development Goals</Typography>
           <Typography variant="body1" style={{ width: "65%", margin: "16px 0px", textAlign: "center" }}>
             Sama's mission of repurposing e-waste for educational use by underserved women aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
