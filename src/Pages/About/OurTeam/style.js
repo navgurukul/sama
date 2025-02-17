@@ -4,7 +4,7 @@ const ourteam = {
     container: {
         textAlign: "center", 
         py: 4, 
-        marginTop: "80px",
+        marginTop: "40px",
     },
     gridContainer: {
         marginTop: "40px",
@@ -46,7 +46,6 @@ const ourteam = {
         fontSize: { xs: "14px", md: "17px" }
     },
     StayConnectedGrid:{
-        width: "100%", 
         backgroundColor: "#FFFAF8", 
         padding: {xs:"40px 20px 40px 10px",md:"0px 159px 0px 160px"} , 
         marginLeft: "calc(-50vw + 50%)",
