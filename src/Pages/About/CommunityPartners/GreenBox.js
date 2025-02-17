@@ -5,9 +5,10 @@ import Quote from './assests/quote.png'
 const GreenBox = () => {
     return (
         <>
-            <Container maxWidth="lg" sx={ourteam.Communitycontainer}>
-                <Box sx={ourteam.GreenBox}>
-                    <Typography variant="h5" gutterBottom style={{ color: "white" }}>
+
+            <Container maxWidth="xl" sx={ourteam.GreenBox}>
+                <Box >
+                <Typography variant="h5" gutterBottom style={{ color: "white", textAlign:"center" }}>
                         Partner Testimonies
                     </Typography>
                     <Grid container spacing={3}>

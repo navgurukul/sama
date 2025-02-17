@@ -99,7 +99,6 @@ const ourteam = {
         fontSize: "16px",
     },
     rightGrid: {
-        justifyContent: "center",
         marginBottom: { xs: "100px", md: "50px" },
         marginTop: { xs: "50px", md: "0px" },
     },
@@ -107,9 +106,9 @@ const ourteam = {
         width: "100%",
         maxWidth: "278px",
         height: "auto",
+        marginLeft:"64px",
         borderRadius: "8px",
     },
-
     //OurGoverment
     GovBox: {
         width: { xs: "100%", md:  "750px" },
@@ -139,9 +138,7 @@ const ourteam = {
     },
     GreenBox: {
         height:"100%",
-        width:{ xs: "100%", md:  "1470px" }, 
         backgroundColor: "#5C785A",
-        marginLeft: "calc(-50vw + 50%)",  // Aligns it to full width
         padding: { xs: "30px 32px", md: "50px 0" },
         display: "flex",
         flexDirection: "column",
@@ -167,7 +164,7 @@ const ourteam = {
         backgroundColor: "#F7F7F7",        
         marginTop: { xs: "auto", md: "32px" },
         marginRight: { xs: "auto", md: "0px" },
-        marginLeft: {xs: "0px", md: "-17px" },
+        marginLeft: {xs: "0px", md: "-20px" },
     },
     Box3: {
         width: { xs: "90%", sm: "80%", md: "496px" }, 
@@ -185,7 +182,7 @@ const ourteam = {
         padding: { xs: "20px", md: "24px" },
         borderRadius: "8px",
         backgroundColor: "#F7F7F7",
-        marginRight: { xs: "auto", md: "0px" },
+        marginLeft: { xs: "auto", md: "-22px" },
     },
     ComForm : {
         width: { xs: "100%", md:  "750px" },
@@ -294,14 +291,12 @@ const ourteam = {
     //About Us
     FullBox:{
         height:{ xs: "100%", md:  "237px" },
-        width:{ xs: "100%", md:  "1140px" }, 
         backgroundColor: " #F0F4EF",
-        marginLeft: "calc(-50vw + 50%)", 
         padding: { xs: "30px 48px", md: "80px 166px" },
         display: "flex",
         flexDirection: "column",
         alignItems: "center", 
-
+        marginTop:"40px"
     },
     AboutCard: {
         width: "304px",

@@ -6,11 +6,14 @@ import {  Container} from '@mui/material';
 
 const Service = () => {
     return (
-        <Container maxWidth="lg">
-            <HeaderText />
-            <ServiceCards />
+        <>
+            <Container maxWidth="lg">
+                <HeaderText />
+                <ServiceCards />
+            </Container>
             <StatsSection />
-        </Container>
+
+        </>
     );
 };
 
