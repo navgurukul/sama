@@ -279,7 +279,7 @@ const Navbar = () => {
                     },
                   }}
                 >
-                  <Typography variant="subtitle1" sx={{ color: "primary.main", }}> Submit your Requriment</Typography>
+                  <Typography variant="subtitle1" sx={{ color: "primary.main", }}> Submit your requirements</Typography>
                 </Button>
               </MuiLink>
 
