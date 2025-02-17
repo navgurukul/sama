@@ -17,9 +17,10 @@ const CommunityPartners = () => {
                     helping us<br /> connect with and empower the individuals who need it most
                 </Typography>
                 <ImageBox />
-                <GreenBox />
-                <CommunityForm />
+                
             </Container>
+            <GreenBox />
+            <CommunityForm />
             <StayConnected />
         </>
     )
