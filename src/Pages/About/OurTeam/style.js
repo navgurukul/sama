@@ -291,14 +291,12 @@ const ourteam = {
     //About Us
     FullBox:{
         height:{ xs: "100%", md:  "237px" },
-        width:{ xs: "100%", md:  "1140px" }, 
         backgroundColor: " #F0F4EF",
-        marginLeft: "calc(-50vw + 50%)", 
         padding: { xs: "30px 48px", md: "80px 166px" },
         display: "flex",
         flexDirection: "column",
         alignItems: "center", 
-
+        marginTop:"40px"
     },
     AboutCard: {
         width: "304px",
