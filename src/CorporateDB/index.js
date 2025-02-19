@@ -4,19 +4,30 @@ import MonthlyImpact from "./MonthlyImpact";
 import YearlyImpact from "./YearlyImpact";
 import { Box, Tab, Tabs, Container, Typography, Select, MenuItem ,TabStyle} from "@mui/material";
 import AmazonLogo from "./Image/amzon.png";
+import CompactDateRangePicker from "./CompactDateRangePicker";
 
 
 const CorporateDb = () => {
   const [currentTab, setCurrentTab] = useState(0);
-  const [dateRange, setDateRange] = useState('Sep24-Dec24');
+  const [dateRange, setDateRange] = useState({
+    startDate: '',
+    endDate: '',
+  });
+
+
+  const handleDateRangeChange = (newDateRange) => {
+    setDateRange(newDateRange);
+  };
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
   };
 
   const renderContent = () => {
+    const formattedDateRange = `${dateRange.startDate} - ${dateRange.endDate}`;
+    console.log("tamanna",dateRange,formattedDateRange )
     switch (currentTab) {
-      case 0: return <LocationWiseImpact />;
+      case 0: return <LocationWiseImpact dateRange={formattedDateRange}/>;
       case 1: return <MonthlyImpact />;
       case 2: return <YearlyImpact />;
       default: return null;
@@ -65,20 +76,7 @@ const TabStyle = (index) => ({
             </Typography>
           </Box>
         </Box>
-        
-        <Select
-          value={dateRange}
-          size="small"
-          sx={{ 
-            minWidth: 150,
-            bgcolor: 'white',
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#e0e0e0'
-            }
-          }}
-        >
-          <MenuItem value="Sep24-Dec24">Sep'24 - Dec'24</MenuItem>
-        </Select>
+        <CompactDateRangePicker onDateRangeChange={handleDateRangeChange}/>
       </Box>
 
       <Box sx={{ 
