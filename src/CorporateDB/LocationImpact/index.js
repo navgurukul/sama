@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, GeoJSON } from 'react-leaflet';
-import { Typography, Box,Container } from '@mui/material';
+import { Box,Typography, Container } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
-import './LocationWiseImpact.css'
-import Location from './../Image/location_on.png'
-
+import './LocationWiseImpact.css';
+import Location from './../Image/location_on.png';
 
 const stateData = {
   Maharashtra: {
@@ -63,16 +62,15 @@ const stateData = {
     modules: 21,
     learningHour: 670,
   },
- 
 };
-
 
 const LocationWiseImpact = () => {
   const [geoData, setGeoData] = useState(null);
   const [hoveredState, setHoveredState] = useState(null);
-  
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
   useEffect(() => {
-    fetch('/india-geo.json') 
+    fetch('/india-geo.json')
       .then((response) => response.json())
       .then((data) => setGeoData(data))
       .catch((error) => console.error('Error loading GeoJSON:', error));
@@ -80,19 +78,19 @@ const LocationWiseImpact = () => {
 
   const onEachState = (feature, layer) => {
     const stateName = feature.properties.st_nm;
-  
-    const hasData = stateData[stateName] && stateData[stateName].ngoNum;
-  
+    const hasData = !!stateData[stateName];
+
     const defaultColor = hasData ? '#CED7CE' : '#E0E0E0';
 
     layer.setStyle({
       fillColor: defaultColor,
       weight: 2,
-      opacity: 1, 
-      color: '#FFF', 
-      fillOpacity: 1, 
+      opacity: 1,
+      color: '#FFF',
+      fillOpacity: 1,
+      cursor: hasData ? 'pointer' : 'default',
     });
-    
+
     layer.on({
       mouseover: (e) => {
         if (hasData) {
@@ -100,127 +98,156 @@ const LocationWiseImpact = () => {
             name: stateName,
             ...stateData[stateName],
           });
-          e.target.setStyle({
-            fillColor: '#5C785A', 
-            fillOpacity: 1, 
-            opacity: 1, 
+          setMousePosition({
+            x: e.originalEvent.clientX,
+            y: e.originalEvent.clientY,
           });
+          e.target.setStyle({
+            fillColor: '#5C785A',
+            fillOpacity: 1,
+            opacity: 1,
+          });
+          e.target.getElement().style.cursor = 'pointer';
         } else {
-          e.target.setStyle({
-            opacity: 1, 
-          });
+          e.target.getElement().style.cursor = 'default';
         }
       },
       mouseout: (e) => {
-        setHoveredState(null); 
+        setHoveredState(null);
         const resetColor = hasData ? '#CED7CE' : '#E0E0E0';
         e.target.setStyle({
-          fillColor: resetColor, 
-          fillOpacity: 1, 
-          opacity: 1, 
-          color: '#FFF', 
+          fillColor: resetColor,
+          fillOpacity: 1,
+          opacity: 1,
+          color: '#FFF',
         });
+        e.target.getElement().style.cursor = 'default';
       },
     });
-      };
-  
+  };
 
   return (
-  <Container maxWidth="lg">
-    {/* <Box p={3} style={{position:"relative",height:"130vh"}}> */}
+    <Box sx={{ marginBottom: '40px', marginLeft:"5px" }}>
       <Typography variant="h6">State Wise NGO Presence Across India</Typography>
       <MapContainer
-            center={[23.5, 83]}
-            zoom={4.5}
-            style={{
-              height: "757px",
-              width: "675px",
-              backgroundColor: "#ffff",
-              top:"20px",
-              left: "350px",
-            }}
-            zoomControl={false}
-            dragging={false}
-            doubleClickZoom={false}
-            scrollWheelZoom={false}
-            touchZoom={false}
-            boxZoom={false}
-            keyboard={false}
-            attributionControl={false}
-          >
-    
+        center={[23.5, 83]}
+        zoom={4.5}
+        style={{
+          height: '757px',
+          width: '675px',
+          top: '20px',
+          left: '350px',
+          backgroundColor: '#FFFAF8',
+        }}
+        zoomControl={false}
+        dragging={false}
+        doubleClickZoom={false}
+        scrollWheelZoom={false}
+        touchZoom={false}
+        boxZoom={false}
+        keyboard={false}
+        attributionControl={false}
+      >
         {geoData && (
           <GeoJSON
-            data={geoData} 
+            data={geoData}
             style={{ weight: 2, opacity: 1, color: 'white', fillOpacity: 1 }}
-            onEachFeature={onEachState} 
+            onEachFeature={onEachState}
           />
         )}
       </MapContainer>
-        {hoveredState && (
-        <div className="hover-dialog">
+      {hoveredState && (
+        <div
+          className="hover-dialog"
+          style={{
+            position: 'absolute',
+            left: `${mousePosition.x + 10}px`,
+            top: `${mousePosition.y + 320}px`,
+          }}
+        >
           <div className="dialog-header">
             <img src={Location} alt="State Location" className="state-icon" />
-            <Typography color="primary" variant="subtitle1">{hoveredState.name}
-          </Typography>          
-        </div>
+            <Typography color="primary" variant="subtitle1">
+              {hoveredState.name}
+            </Typography>
+          </div>
           <div className="dialog-body">
             <div className="ngo-data">
               <div className="ngo-data-in">
                 <div>
-                  <Typography variant="subtitle2">Total NGOs </Typography>
+                  <Typography color="#4A4A4A" variant="subtitle2">
+                    Total NGOs
+                  </Typography>
                 </div>
                 <div>
-                <span color="text.secondary" variant="subtitle2">{hoveredState.ngoNum}</span>
-                </div>
-              </div>
-              <div className="ngo-data-in">
-                <div>
-                  <Typography color= "#4A4A4A" variant="subtitle2">Number of Teachers Trained</Typography>
-                </div >
-                <div>
-                  <span  variant="subtitle2">{hoveredState.teachersTrained}</span>
-                </div>
-
-              </div>
-              <div className="ngo-data-in">
-                <div>
-                  <Typography color= "#4A4A4A" variant="subtitle2">Number of School Visits</Typography>
-                </div>
-                <div>
-                  <span color="text.secondary" variant="subtitle2">{hoveredState.schoolVisits}</span>
+                  <span color="text.secondary" variant="subtitle2">
+                    {hoveredState.ngoNum}
+                  </span>
                 </div>
               </div>
               <div className="ngo-data-in">
                 <div>
-                  <Typography color= "#4A4A4A" variant="subtitle2">Number of Sessions Conducted</Typography>
+                  <Typography color="#4A4A4A" variant="subtitle2">
+                    Number of Teachers Trained
+                  </Typography>
                 </div>
                 <div>
-                  <span color="text.secondary" variant="subtitle2">{hoveredState.sessionConducted}</span>
-                </div>
-              </div>
-              <div className="ngo-data-in">
-                <div>
-                  <Typography color= "#4A4A4A" variant="subtitle2">Number of Modules Completed</Typography>
-                </div>
-                <div>
-                  <span color="text.secondary" variant="subtitle2">{hoveredState.modules}</span>
+                  <span variant="subtitle2">{hoveredState.teachersTrained}</span>
                 </div>
               </div>
               <div className="ngo-data-in">
                 <div>
-                  <Typography color= "#4A4A4A" variant="subtitle2">Total Learning Hours</Typography>
+                  <Typography color="#4A4A4A" variant="subtitle2">
+                    Number of School Visits
+                  </Typography>
                 </div>
                 <div>
-                  <span color="text.secondary" variant="subtitle2">{hoveredState.learningHour}</span>
+                  <span color="text.secondary" variant="subtitle2">
+                    {hoveredState.schoolVisits}
+                  </span>
+                </div>
+              </div>
+              <div className="ngo-data-in">
+                <div>
+                  <Typography color="#4A4A4A" variant="subtitle2">
+                    Number of Sessions Conducted
+                  </Typography>
+                </div>
+                <div>
+                  <span color="text.secondary" variant="subtitle2">
+                    {hoveredState.sessionConducted}
+                  </span>
+                </div>
+              </div>
+              <div className="ngo-data-in">
+                <div>
+                  <Typography color="#4A4A4A" variant="subtitle2">
+                    Number of Modules Completed
+                  </Typography>
+                </div>
+                <div>
+                  <span color="text.secondary" variant="subtitle2">
+                    {hoveredState.modules}
+                  </span>
+                </div>
+              </div>
+              <div className="ngo-data-in">
+                <div>
+                  <Typography color="#4A4A4A" variant="subtitle2">
+                    Total Learning Hours
+                  </Typography>
+                </div>
+                <div>
+                  <span color="text.secondary" variant="subtitle2">
+                    {hoveredState.learningHour}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-       )}
-    {/* </Box> */}
-  </Container>
+      )}
+    </Box>
   );
 };
 

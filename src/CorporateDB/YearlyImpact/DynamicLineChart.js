@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Box, Typography, Radio } from '@mui/material';
+import { color } from '@mui/system';
 
 const DynamicLineChart = () => {
   const [activeMetric, setActiveMetric] = useState('Sessions Conducted');
@@ -58,8 +59,8 @@ const DynamicLineChart = () => {
 
   return (
     <Box sx={{
-      width: '100%',
       mt: "3rem",
+      mb: "3rem",
       borderRadius: "0.375rem",
       backgroundColor: "#fff",
       boxShadow: "0px 2px 10px 0px rgba(0, 0, 0, 0.10)",
@@ -100,6 +101,7 @@ const DynamicLineChart = () => {
               }}
             />
             <Typography
+              sx={{color:"#4A4A4A"}}
               variant={activeMetric === metric ? 'subtitle1' : "body1"}
             >
               {metric}
@@ -115,15 +117,15 @@ const DynamicLineChart = () => {
         position: 'relative'
       }}>
         <Typography
+          variant='secondary.text'
           sx={{
             position: 'absolute',
-            left: 0, 
-            top: '50%',
-            transform: 'translate(-20%, -50%) rotate(-90deg)', 
-            transformOrigin: 'center', 
-            color: '#666',
-            fontSize: '0.75rem',
-            whiteSpace: 'nowrap', 
+            left: -12,
+            top: '43%',
+            transform: 'translate(-20%, -50%) rotate(-90deg)',
+            transformOrigin: 'center',
+            color: "#828282",
+            whiteSpace: 'nowrap',
             textAlign: 'center',
           }}
         >
@@ -141,16 +143,18 @@ const DynamicLineChart = () => {
             />
             <XAxis
               dataKey="month"
-              tick={{ fill: '#666', fontSize: 12 }}
-              axisLine={{ stroke: '#E0E0E0' }}
-              tickLine={{ stroke: '#E0E0E0' }}
+              tick={{ fill: "#666", fontSize: 12 }}
+              axisLine={{ stroke: "#E0E0E0" }}
+              tickLine={{ stroke: "#E0E0E0" }}
               label={{
-                value: 'Months',
-                position: 'bottom',
+                value: "Months",
+                position: "bottom",
                 offset: 20,
-                style: { fill: '#666', fontSize: 12 }
+                style: { fill: "#828282", fontSize: "16px"}, // Replace with your secondary color
               }}
             />
+
+
             <YAxis
               tick={{ fill: '#666', fontSize: 12 }}
               axisLine={{ stroke: '#E0E0E0' }}

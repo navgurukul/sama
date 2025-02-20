@@ -3,6 +3,9 @@
   align-items: center;
   margin-bottom: 16px;
 }
+/* * {
+  outline: 1px solid red; 
+} */
 
 .monthly-impact-card {
   cursor: pointer;
@@ -39,4 +42,14 @@
 
 .monthly-impact-subtitle {
   color: #828282;
+}
+.MuiIconButton-root {
+  width: 40px;
+  height: 40px;
+  transition: none; /* Prevent size transitions */
+}
+.MuiIconButton-root:hover {
+  width: 40px;
+  height: 40px;
+  padding: 8px; /* Ensure consistent padding */
 }

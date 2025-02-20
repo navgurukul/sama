@@ -22,6 +22,8 @@ const MonthlyImpact = () => {
   const metrics = [
     {
       title: "TEACHERS TRAINED",
+      title1:"Teachers Trained",
+      about: "Number of Teacher’s Trained",
       value: "914",
       increase: "12.5%",
       subtitle: "numbers of teachers trained this month",
@@ -36,6 +38,8 @@ const MonthlyImpact = () => {
     },
     {
       title: "SCHOOL VISITS",
+      title1: "School Visits",
+      about: "Number of School's Visits",
       value: "314",
       increase: "12.5%",
       subtitle: "number of school visits this month",
@@ -48,6 +52,8 @@ const MonthlyImpact = () => {
     },
     {
       title: "MODULES COMPLETED",
+      title1: "Modules Completed",
+      about: "Number of Modules Completed This Month",
       value: "102",
       increase: "12.5%",
       subtitle: "number of modules completed this month",
@@ -59,6 +65,8 @@ const MonthlyImpact = () => {
     },
     {
       title: "LEARNING HOURS",
+      title1: "Learning Hours",
+      about: "Number of Sessions Conducted This Month",
       value: "3940",
       increase: "12.5%",
       subtitle: "number of sessions conducted this month",
@@ -76,13 +84,15 @@ const MonthlyImpact = () => {
         title: metric.title,
         data: metric.details,
         total: metric.value,
+        about: metric.about,
+        title1: metric.title1,
       },
     });
   };
 
   return (
     <div>
-      <Box p={3}>
+      <Box sx={{marginLeft: "5px"}}>
         <Box
           className="monthly-impact-header"
         >
@@ -96,7 +106,7 @@ const MonthlyImpact = () => {
               Report for the Month of
             </Typography>
             <Typography
-              component="h6"
+              variant="h6"
               sx={{
                 color: "primary.main",
                 textDecoration: "underline",
@@ -106,7 +116,7 @@ const MonthlyImpact = () => {
             </Typography>
           </Box>
           {/* <IconButton sx={{ color: "#828282" }}> */}
-            <KeyboardArrowDownIcon sx={{ color: "#828282" }}/>
+            <KeyboardArrowDownIcon sx={{ color: "#828282", }}/>
           {/* </IconButton> */}
           <IconButton sx={{ color: "#828282" }}>
             <SaveAltIcon />
@@ -128,6 +138,7 @@ const MonthlyImpact = () => {
                     variant="subtitle1"
                     sx={{
                       mb: 1,
+                      color:"#4A4A4A"
                     }}
                   >
                     {metric.title}
@@ -173,6 +184,7 @@ const MonthlyImpact = () => {
         </Grid>
       </Box>
     </div>
+    
   );
 };
 
