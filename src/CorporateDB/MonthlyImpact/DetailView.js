@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 const DetailView = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { title, data, total } = location.state || {};
+    const { title1, data, total, about } = location.state || {};
 
     if (!data) {
         return <Typography>No data available</Typography>;
@@ -35,7 +35,7 @@ const DetailView = () => {
                     // textAlign: "center",
                 }}
             >
-                NGO Wise {title} in the Month of January
+                NGO Wise {title1} in the Month of January
             </Typography></pre>
 
             <Box
@@ -43,7 +43,7 @@ const DetailView = () => {
                     width: "100%",
                     display: "flex",
                     flexDirection: "column",
-                    gap: 1.5,
+                    gap: 1,
 
                 }}
             >
@@ -55,10 +55,12 @@ const DetailView = () => {
                             gridTemplateColumns: "10fr 2fr",
                             gridGap: "5px",
                             alignItems: "left",
+                            
                         }}
                         onClick={changeRoute}
                     >
                         <Box
+                            
                             sx={{
                                 bgcolor: "primary.light",
                                 px: 3,
@@ -69,9 +71,10 @@ const DetailView = () => {
                                 justifyContent: "left",
                                 height: "63px",
                                 color: "#4A4A4A",
+                                
                             }}
                         >
-                            {item.name}
+                            <Typography >{item.name}</Typography>
                         </Box>
                         <Box
                             sx={{
@@ -88,7 +91,7 @@ const DetailView = () => {
                                 fontWeight: 500,
                             }}
                         >
-                            {item.count}
+                            <Typography>{item.count}</Typography>
                         </Box>
                     </Box>
                 ))}
@@ -102,6 +105,7 @@ const DetailView = () => {
                     }}
                 >
                     <Typography
+                        variant="body1"
                         sx={{
                             bgcolor: "#fff", 
                             px: 3,
@@ -115,7 +119,7 @@ const DetailView = () => {
                             boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
                         }}
                     >
-                        Total {title}
+                        <b>Total {about}</b>
                     </Typography>
                     <Typography
                         sx={{
@@ -126,18 +130,16 @@ const DetailView = () => {
                             alignItems: "center",
                             justifyContent: "center",
                             height: "63px",
-                            fontSize: "14px",
-                            fontWeight: 500,
                             boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
                         }}
                     >
-                        {total}
+                        <Typography><b>{total}</b></Typography>
                     </Typography>
                 </Box>
             </Box>
 
             <Button
-                onClick={() => navigate("/corpretedb")}
+                onClick={() =>  navigate(`/corpretedb?tab=monthly-impact`)}
                 sx={{
                     bgcolor: "primary.main",
                     color: "#fff",
