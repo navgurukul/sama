@@ -2,10 +2,14 @@ import {useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import NGODetails from './NgoDetails';
 import { fetchNgoDetails } from '../Redux/ngoSlice';
+import { useLocation } from "react-router-dom";
 
 function NgoProfile() {
+  const location = useLocation();
+  const { partnerId } = location.state || {};
+
   const NgoId = JSON.parse(localStorage.getItem('_AuthSama_'));
-  const id = NgoId[0]?.NgoId;
+  const id = partnerId || NgoId[0]?.NgoId;
   const dispatch = useDispatch();
   
   // Fetching state from Redux

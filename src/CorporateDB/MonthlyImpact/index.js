@@ -1,183 +1,221 @@
-import React from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Container,
-  Grid,
-  IconButton,
-  useTheme,
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, Typography,Box, Grid,useTheme, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText } from "@mui/material";
 import { TrendingUp, Download } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import "./styles/MonthlyImpact.css";
 
+// const dummydata = {
+//   "SAM-37": {
+//     "March-2024": {
+//       Bihar: {
+//         "Number of Teachers Trained": "1",
+//         "Number of School Visits": "1",
+//         "Number of Sessions Conducted": "1",
+//         "Number of Modules Completed": "1",
+//         "Intent to Pursue Rating per Module": "1"
+//       },
+//       Goa: {
+//         "Number of Teachers Trained": "1",
+//         "Number of School Visits": "1",
+//         "Number of Sessions Conducted": "1",
+//         "Number of Modules Completed": "1",
+//         "Intent to Pursue Rating per Module": "1"
+//       }
+//     },
+//     "April-2024": {
+//       Bihar: {
+//         "Number of Teachers Trained": "1",
+//         "Number of School Visits": "1",
+//         "Number of Sessions Conducted": "1",
+//         "Number of Modules Completed": "1",
+//         "Intent to Pursue Rating per Module": "1"
+//       }
+//     }
+//   },
+//   "SAM-39": {
+//     "March-2024": {
+//       Bihar: {
+//         "Number of Teachers Trained": "1",
+//         "Number of School Visits": "1",
+//         "Number of Sessions Conducted": "1",
+//         "Number of Modules Completed": "1",
+//         "Intent to Pursue Rating per Module": "1"
+//       }
+//     },
+//     "April-2024": {
+//       Bihar: {
+//         "Number of Teachers Trained": "1",
+//         "Number of School Visits": "1",
+//         "Number of Sessions Conducted": "1",
+//         "Number of Modules Completed": "1",
+//         "Intent to Pursue Rating per Module": "1"
+//       }
+//     }
+//   },
+//   "SAM-40": {
+//     "May-2024": {
+//       Bihar: {
+//         "Number of Teachers Trained": "1",
+//         "Number of School Visits": "1",
+//         "Number of Sessions Conducted": "1",
+//         "Number of Modules Completed": "1",
+//         "Intent to Pursue Rating per Module": "1"
+//       }
+//     },
+//     "June-2024": {
+//       Bihar: {
+//         "Number of Teachers Trained": "1",
+//         "Number of School Visits": "1",
+//         "Number of Sessions Conducted": "1",
+//         "Number of Modules Completed": "1",
+//         "Intent to Pursue Rating per Module": "1"
+//       }
+//     }
+//   }
+// };
+
+const monthMapping = {
+  January: 1, February: 2, March: 3, April: 4, May: 5, June: 6,
+  July: 7, August: 8, September: 9, October: 10, November: 11, December: 12
+};
+
 const MonthlyImpact = () => {
+  const [filteredData, setFilteredData] = useState({});
+  const [detailedData, setDetailedData] = useState({});
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [data, setData] = useState({});
   const theme = useTheme();
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    
+  useEffect(() => {
+    const fetchStateData = async () => {
+      try {
+        const response = await fetch(
+          'https://script.google.com/macros/s/AKfycbzjIvQJgBpdYwShV6LQOuyNtccmafG3iHFYzmEBQ6FBjiSeT3TuSEyAM46OMYMTsPBC/exec?type=corporatedbStatewise&doner=Amazon'
+        );
+        const Monthlydata = await response.json();
+        setData(Monthlydata);
+      }
+      catch (err) {
+        console.error('Error fetching state data:', err);
+      }}
+    fetchStateData();
+  }, []);
+  
+  useEffect(() => {    
+    const from = "March-2024";
+    const to = "April-2024";
 
-  const metrics = [
-    {
-      title: "TEACHERS TRAINED",
-      value: "914",
-      increase: "12.5%",
-      subtitle: "numbers of teachers trained this month",
-      details: [
-        { name: "Give India Foundations", count: 250 },
-        { name: "Asha Foundations", count: 250 },
-        { name: "Give India Foundations", count: 250 },
-        { name: "Give India Foundations", count: 250 },
-        { name: "Give India Foundations", count: 250 },
-        { name: "Give India Foundations", count: 250 },
-      ],
-    },
-    {
-      title: "SCHOOL VISITS",
-      value: "314",
-      increase: "12.5%",
-      subtitle: "number of school visits this month",
-      details: [
-        { name: "Delhi Schools", count: 100 },
-        { name: "Mumbai Schools", count: 89 },
-        { name: "Bangalore Schools", count: 75 },
-        { name: "Chennai Schools", count: 50 },
-      ],
-    },
-    {
-      title: "MODULES COMPLETED",
-      value: "102",
-      increase: "12.5%",
-      subtitle: "number of modules completed this month",
-      details: [
-        { name: "Basic Training", count: 40 },
-        { name: "Advanced Modules", count: 35 },
-        { name: "Specialized Training", count: 27 },
-      ],
-    },
-    {
-      title: "LEARNING HOURS",
-      value: "3940",
-      increase: "12.5%",
-      subtitle: "number of sessions conducted this month",
-      details: [
-        { name: "Classroom Hours", count: 2000 },
-        { name: "Self-Study Hours", count: 1240 },
-        { name: "Workshop Hours", count: 700 },
-      ],
-    },
-  ];
+    const [fromMonth, fromYear] = from.split("-");
+    const [toMonth, toYear] = to.split("-");
 
-  const handleCardClick = (metric) => {
-    navigate("/corpretedb/DataViewDetail", {
-      state: {
-        title: metric.title,
-        data: metric.details,
-        total: metric.value,
-      },
+    const fromDate = new Date(`${fromYear}-${monthMapping[fromMonth]}-01`);
+    const toDate = new Date(`${toYear}-${monthMapping[toMonth]}-01`);
+
+    let totalCounts = {};
+    let partnerBreakdown = {};
+    
+    Object.entries(data).forEach(([partnerId, monthsData]) => {
+      Object.keys(monthsData).forEach(monthYear => {
+        const [month, year] = monthYear.split("-");
+        const currentDate = new Date(`${year}-${monthMapping[month]}-01`);
+        
+        if (currentDate >= fromDate && currentDate <= toDate) {
+
+          Object.values(monthsData[monthYear]).forEach(stateData => {
+            Object.entries(stateData).forEach(([question, value]) => {
+              totalCounts[question] = (totalCounts[question] || 0) + parseInt(value);
+
+              if (!partnerBreakdown[question]) partnerBreakdown[question] = {};
+              partnerBreakdown[question][partnerId] = 
+                (partnerBreakdown[question][partnerId] || 0) + parseInt(value);
+            });
+          });
+        }
+      });
     });
-  };
+    
+    setFilteredData(totalCounts);
+    setDetailedData(partnerBreakdown);
+  }, [data]);
+
+  const handleCardClick = (question, value) => {    
+        navigate("/corpretedb/DataViewDetail", {
+          state: {
+            title: question,
+            total: value,
+            detailedData: detailedData[question],
+          },
+        });
+      };  
 
   return (
-    <div>
-      <Box p={3}>
-        <Box
-          className="monthly-impact-header"
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography
-              variant="h6"
-              sx={{
-                color: "#4A4A4A",
-              }}
-            >
-              Report for the Month of
-            </Typography>
-            <Typography
-              component="h6"
-              sx={{
-                color: "primary.main",
-                textDecoration: "underline",
-              }}
-            >
-              January
-            </Typography>
-          </Box>
-          {/* <IconButton sx={{ color: "#828282" }}> */}
-            <KeyboardArrowDownIcon sx={{ color: "#828282" }}/>
-          {/* </IconButton> */}
-          <IconButton sx={{ color: "#828282" }}>
-            <SaveAltIcon />
-          </IconButton>
-        </Box>
-
-        <Grid container spacing={3}>
-          {metrics.map((metric, index) => (
-            <Grid item xs={12} sm={6} lg={4} key={index}>
-              <Card
-              className="monthly-impact-card"
-              sx={{
-                borderRadius: '0.5rem',
-              }}
-                onClick={() => handleCardClick(metric)}
-              >
-                <CardContent sx={{ p: 3 }}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      mb: 1,
-                    }}
-                  >
-                    {metric.title}
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "baseline",
-                      gap: 1,
-                      mb: 1,
-                    }}
-                  >
-                    <Typography
-                      variant="h5"
-                    >
-                      {metric.value}
-                    </Typography>
-                    {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                      <TrendingUp sx={{ color: "#27AE60", fontSize: 16 }} />
-                      <Typography
-                        sx={{
-                          color: "#27AE60",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {metric.increase}
-                      </Typography>
-                    </Box> */}
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "#828282",
-                    }}
-                  >
-                    {metric.subtitle}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+    <div style={{ padding: "20px" }}>
+      <Grid container spacing={2}>
+        {Object.entries(filteredData).map(([question, value]) => (
+           <Grid item xs={12} sm={6} lg={4} key={question}>
+                          <Card
+                         className="monthly-impact-card"
+                         sx={{
+                          cursor: "pointer",
+                           borderRadius: '0.5rem',
+                         }}
+                         onClick={() => handleCardClick(question, value)}
+                         >
+                           <CardContent sx={{ p: 3 }}>
+                             <Typography
+                               variant="subtitle1"
+                               sx={{
+                                 mb: 1,
+                               }}
+                             >
+                               {question}
+                             </Typography>
+                             <Box
+                               sx={{
+                                 display: "flex",
+                                 alignItems: "baseline",
+                                 gap: 1,
+                                 mb: 1,
+                               }}
+                             >
+                               <Typography
+                                 variant="h5"
+                               >
+                                 {value}
+                               </Typography>
+                               {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                 <TrendingUp sx={{ color: "#27AE60", fontSize: 16 }} />
+                                 <Typography
+                                   sx={{
+                                     color: "#27AE60",
+                                     fontSize: "12px",
+                                     fontWeight: 500,
+                                   }}
+                                 >
+                                  
+                                 </Typography>
+                               </Box> */}
+                             </Box>
+                             <Typography
+                               variant="body2"
+                               sx={{
+                                 color: "#828282",
+                               }}
+                             >
+                              {question} this month
+                             </Typography>
+                           </CardContent>
+                         </Card>
+                       </Grid>
+        ))}
+      </Grid>
     </div>
   );
 };
 
+
+
 export default MonthlyImpact;
-
-
-
-
