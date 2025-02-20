@@ -17,6 +17,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.5",
     "date-fns": "^3.6.0",
+    "dayjs": "^1.11.13",
     "firebase": "^10.13.2",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.3",
