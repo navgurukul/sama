@@ -161,7 +161,6 @@ const OurTeam = () => {
               </Typography>
               <ul
                 style={{
-                  textAlign: "left",
                   paddingLeft: "20px",
                   listStyleType: "disc",
                   paddingTop: "0px",
@@ -169,19 +168,19 @@ const OurTeam = () => {
                 }}
               >
                 <li>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{textAlign:{ xs: "center", md: "left" }}}>
                     Be part of a mission-driven organization empowering
                     underserved women and youth through technology.
                   </Typography>
                 </li>
                 <li>
-                  <Typography variant="body1">
+                  <Typography variant="body1"  sx={{textAlign:{ xs: "center", md: "left" }}}>
                     Gain exposure to CSR initiatives, sustainability practices,
                     and community development projects.
                   </Typography>
                 </li>
                 <li>
-                  <Typography variant="body1">
+                  <Typography variant="body1"  sx={{textAlign:{ xs: "center", md: "left" }}}>
                     Work closely with NGOs, corporate partners, and industry
                     leaders, building a robust professional network.
                   </Typography>

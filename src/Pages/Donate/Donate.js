@@ -205,7 +205,7 @@ function Donation() {
                   </Typography>
                   <Typography variant="body1">
                     Partner with us to scale our impact and bridge the digital
-                    divide for underserved girls and women.
+                    divide for underserved girls and women and youth.
                   </Typography>
                 </Box>
               </Grid>
@@ -223,7 +223,7 @@ function Donation() {
                     Individual Contribution
                   </Typography>
                   <Typography variant="body1">
-                    Join our mission to empower girls and women through digital
+                    Join our mission to empower girls and women and youth through digital
                     access and volunteering.
                   </Typography>
                 </Box>

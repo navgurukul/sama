@@ -168,11 +168,12 @@ const Navbar = () => {
               {/* Donate Text Link */}
               <MuiLink
                 sx={{
-                  margin: "0 8px",
+                  
                   textDecoration: "none",
                   color: "#4A4A4A",
                   cursor: "pointer",
                   whiteSpace: "nowrap", // Prevents wrapping
+                  textAlign: "left",
                 }}
                 component={Link}
                 to="/donate"

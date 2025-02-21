@@ -141,7 +141,7 @@ function ContactForm() {
                     <b>First Name</b>
                   </InputLabel>
                   <TextField
-                    label="Ex : John"
+                    label="Ex : Rajesh"
                     margin="normal"
                     fullWidth
                     variant="outlined"
@@ -158,7 +158,7 @@ function ContactForm() {
                     <b>Last Name</b>
                   </InputLabel>
                   <TextField
-                    label="Ex :  Doe"
+                    label="Ex :  Kumar"
                     margin="normal"
                     fullWidth
                     variant="outlined"
@@ -176,7 +176,7 @@ function ContactForm() {
               </InputLabel>
               <TextField
                 fullWidth
-                label="Ex : John@gmail.com"
+                label="Ex : rajesh@gmail.com"
                 margin="normal"
                 variant="outlined"
                 name="email"

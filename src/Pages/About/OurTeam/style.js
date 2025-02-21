@@ -37,7 +37,7 @@ const ourteam = {
         gap: "16px"
     },
     typographyBody: {
-        textAlign: "left"
+        textAlign: { xs: "center", md: "left" }
     },
     button: {
         marginTop: "0px",
@@ -71,7 +71,8 @@ const ourteam = {
     },
     paragraphText: {
         color: "#666",
-        textAlign:{sx:"center", md: "left" }    },
+        textAlign:{sx:"center", md: "left" }    
+    },
     inputField: {
         width: "100%",
         maxWidth: "360px",

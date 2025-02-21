@@ -75,7 +75,9 @@ function Home() {
                 About Us
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Sama, a non-profit organisation, and a subsidiary of NavGurukul, helps modern businesses responsibly repurpose their e-waste for educational usage by underserved women. Our aim is to embed Net Zero Through Giving into the culture of a client organisation so that every member understands the role they can play in supporting the transition towards a greener and inclusive future.
+                Sama, a non-profit organisation, and a subsidiary of NavGurukul, 
+                helps modern businesses responsibly repurpose their e-waste for 
+                educational usage by underserved women & youth.
               </Typography>
               <a href="/about" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>
                 <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "bold", fontSize: "18px" }}>Know more</Typography>
@@ -87,7 +89,9 @@ function Home() {
                 Our Approach
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Sama is not just a laptop donation project; it's a comprehensive education initiative aimed at empowering 1 million girls and women by 2030 with cutting-edge devices and skills, leveraging the existing infrastructure of our corporate partners.
+                Sama is not just a laptop donation project; it's a comprehensive 
+                education initiative aimed at empowering 1 million girls and women 
+                by 2030 with cutting-edge devices and skills.
               </Typography>
               <a href="/our-approach" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>
                 <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "bold", fontSize: "18px" }}>Know more</Typography>
@@ -223,7 +227,7 @@ function Home() {
         <Container maxWidth="lg" sx={{ py: "40px",  justifyItems: "center",}}>
           <Typography variant="h5" sx={{ textAlign: "center" }}>Sustainability Development Goals</Typography>
           <Typography variant="body1" style={{ width: "65%", margin: "16px 0px", textAlign: "center" }}>
-            Sama's mission of repurposing e-waste for educational use by underserved women aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
+            Sama's mission of repurposing e-waste for educational use by underserved women & youth aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
           </Typography>
           <Grid container spacing={4} sx={{ mt: { xs: 0, md: 2 } }}>
             {[
