@@ -53,9 +53,6 @@ import CorporateteDb from './CorporateDB/index';
 import DetailView from './CorporateDB/MonthlyImpact/DetailView';
 import NGOTrainedTable from './CorporateDB/YearlyImpact/NGOTrainedTable';
 
-
-
-
 function App() {
   return (
     <ThemeProvider theme={theme}>
