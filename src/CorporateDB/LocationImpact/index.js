@@ -1,85 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, GeoJSON } from "react-leaflet";
-import {  Box, Container } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import "leaflet/dist/leaflet.css";
 import "./LocationWiseImpact.css";
 import Location from "./../Image/location_on.png";
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
 
-const LocationWiseImpact = () => {
+dayjs.extend(isBetween);
+
+const LocationWiseImpact = ({ dateRange, apiData }) => {
   const [geoData, setGeoData] = useState(null);
   const [stateData, setStateData] = useState({});
   const [hoveredState, setHoveredState] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // console.log(dateRange, 'dateRange');
+  // console.log(apiData, 'apiData');
 
   useEffect(() => {
-    const fetchStateData = async () => {
-      try {
-        const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbzjIvQJgBpdYwShV6LQOuyNtccmafG3iHFYzmEBQ6FBjiSeT3TuSEyAM46OMYMTsPBC/exec?type=corporatedbStatewise&doner=Amazon"
-        );
-        const data = await response.json();
-        console.log("API Response:", data);
-
-        // Transform the data structure
-        const transformedData = {};
-        
-        // Track which programs are present for each state
-        const statePrograms = {};
-        
-        // Iterate through each program (SAM-37, SAM-39, etc.)
-        Object.keys(data).forEach(programId => {
-          const program = data[programId];
-          // Iterate through each month in the program
-          Object.values(program).forEach(monthData => {
-            // Iterate through each state in the month
-            Object.keys(monthData).forEach(state => {
-              // Initialize tracking for this state if needed
-              if (!statePrograms[state]) {
-                statePrograms[state] = new Set();
-              }
-              // Add this program to the state's set
-              statePrograms[state].add(programId);
-
-              if (!transformedData[state]) {
-                transformedData[state] = {
-                  ngoNum: 0,  // Will be set after all programs are processed
-                  teachersTrained: 0,
-                  schoolVisits: 0,
-                  sessionConducted: 0,
-                  modules: 0,
-                  learningHour: 0
-                };
-              }
-              
-              // Sum up the metrics for each state
-              const metrics = monthData[state];
-              transformedData[state].teachersTrained += parseInt(metrics["Number of Teachers Trained"] || 0);
-              transformedData[state].schoolVisits += parseInt(metrics["Number of School Visits"] || 0);
-              transformedData[state].sessionConducted += parseInt(metrics["Number of Sessions Conducted"] || 0);
-              transformedData[state].modules += parseInt(metrics["Number of Modules Completed"] || 0);
-              transformedData[state].learningHour = transformedData[state].sessionConducted * 1;
-            });
-          });
-        });
-
-        // Set the final NGO count for each state
-        Object.keys(transformedData).forEach(state => {
-          transformedData[state].ngoNum = statePrograms[state].size;
-        });
-
-        console.log("Transformed Data:", transformedData);
-        setStateData(transformedData);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching state data:", err);
-        setError("Failed to load state data");
-        setLoading(false);
-      }
-    };
-
     const fetchGeoData = async () => {
       try {
         const response = await fetch("/india-geo.json");
@@ -91,18 +31,156 @@ const LocationWiseImpact = () => {
       }
     };
 
-    fetchStateData();
     fetchGeoData();
   }, []);
 
+  const parseMonthString = (monthStr) => {
+    if (monthStr.includes("March")) {
+      return dayjs(monthStr.replace("March", "Mar"), "MMM-YYYY");
+    } else if (monthStr.includes("April")) {
+      return dayjs(monthStr.replace("April", "Apr"), "MMM-YYYY");
+    }
+    return dayjs(monthStr, "MMM-YYYY");
+  };
+
+  useEffect(() => {
+    const processStateData = () => {
+      try {
+        if (!apiData) {
+          setStateData({});
+          return;
+        }
+
+        // If no date range is selected, show all available data
+        if (!dateRange.startDate || !dateRange.endDate) {
+          const transformedData = {};
+          const statePrograms = {};
+
+          // Process all data regardless of date
+          Object.keys(apiData).forEach(programId => {
+            const program = apiData[programId];
+            Object.entries(program).forEach(([monthStr, monthData]) => {
+              Object.entries(monthData).forEach(([state, metrics]) => {
+                if (!statePrograms[state]) {
+                  statePrograms[state] = new Set();
+                }
+                statePrograms[state].add(programId);
+
+                if (!transformedData[state]) {
+                  transformedData[state] = {
+                    ngoNum: 0,
+                    teachersTrained: 0,
+                    schoolVisits: 0,
+                    sessionConducted: 0,
+                    modules: 0,
+                    learningHour: 0
+                  };
+                }
+                
+                // Parse metrics with fallback to 0 if invalid
+                transformedData[state].teachersTrained += parseInt(metrics["Number of Teachers Trained"]) || 0;
+                transformedData[state].schoolVisits += parseInt(metrics["Number of School Visits"]) || 0;
+                transformedData[state].sessionConducted += parseInt(metrics["Number of Sessions Conducted"]) || 0;
+                transformedData[state].modules += parseInt(metrics["Number of Modules Completed"]) || 0;
+                transformedData[state].learningHour = transformedData[state].sessionConducted * 1;
+              });
+            });
+          });
+
+          // Set NGO counts
+          Object.keys(transformedData).forEach(state => {
+            if (statePrograms[state]) {
+              transformedData[state].ngoNum = statePrograms[state].size;
+            }
+          });
+
+          setStateData(transformedData);
+          setError(null);
+          return;
+        }
+
+        // If date range is selected, process data for that range
+        const selectedStartDate = dayjs(dateRange.startDate.replace("'", ""), "MMMYYYY");
+        const selectedEndDate = dayjs(dateRange.endDate.replace("'", ""), "MMMYYYY");
+
+        if (!selectedStartDate.isValid() || !selectedEndDate.isValid()) {
+          console.error("Invalid date format:", dateRange);
+          setStateData({});
+          setError(`Invalid date format`);
+          return;
+        }
+
+        const transformedData = {};
+        const statePrograms = {};
+        let hasDataInRange = false;
+
+        // Process data only for the selected range
+        Object.keys(apiData).forEach(programId => {
+          const program = apiData[programId];
+          Object.entries(program).forEach(([monthStr, monthData]) => {
+            const apiMonth = parseMonthString(monthStr);
+
+            if (apiMonth.isValid() && 
+                apiMonth.isBetween(selectedStartDate, selectedEndDate, 'month', '[]')) {
+              hasDataInRange = true;
+              
+              Object.entries(monthData).forEach(([state, metrics]) => {
+                if (!statePrograms[state]) {
+                  statePrograms[state] = new Set();
+                }
+                statePrograms[state].add(programId);
+
+                if (!transformedData[state]) {
+                  transformedData[state] = {
+                    ngoNum: 0,
+                    teachersTrained: 0,
+                    schoolVisits: 0,
+                    sessionConducted: 0,
+                    modules: 0,
+                    learningHour: 0
+                  };
+                }
+                
+                transformedData[state].teachersTrained += parseInt(metrics["Number of Teachers Trained"]) || 0;
+                transformedData[state].schoolVisits += parseInt(metrics["Number of School Visits"]) || 0;
+                transformedData[state].sessionConducted += parseInt(metrics["Number of Sessions Conducted"]) || 0;
+                transformedData[state].modules += parseInt(metrics["Number of Modules Completed"]) || 0;
+                transformedData[state].learningHour = transformedData[state].sessionConducted * 1;
+              });
+            }
+          });
+        });
+
+        if (!hasDataInRange) {
+          setStateData({});
+          setError(`No data available for selected date range`);
+          return;
+        }
+
+        // Set NGO counts
+        Object.keys(transformedData).forEach(state => {
+          if (statePrograms[state]) {
+            transformedData[state].ngoNum = statePrograms[state].size;
+          }
+        });
+
+        setStateData(transformedData);
+        setError(null);
+      } catch (err) {
+        console.error("Error processing state data:", err);
+        setError("Failed to process state data");
+      }
+    };
+
+    processStateData();
+  }, [apiData, dateRange]);
+
   const onEachState = (feature, layer) => {
     const stateName = feature.properties.st_nm;
-    const hasData = stateData[stateName];
-
-    const defaultColor = hasData ? "#CED7CE" : "#E0E0E0";
+    const hasData = stateData && Object.keys(stateData).includes(stateName);
 
     layer.setStyle({
-      fillColor: defaultColor,
+      fillColor: hasData ? "#CED7CE" : "#E0E0E0",
       weight: 2,
       opacity: 1,
       color: "#FFF",
@@ -121,17 +199,12 @@ const LocationWiseImpact = () => {
             fillOpacity: 1,
             opacity: 1,
           });
-        } else {
-          e.target.setStyle({
-            opacity: 1,
-          });
         }
       },
       mouseout: (e) => {
         setHoveredState(null);
-        const resetColor = hasData ? "#CED7CE" : "#E0E0E0";
         e.target.setStyle({
-          fillColor: resetColor,
+          fillColor: hasData ? "#CED7CE" : "#E0E0E0",
           fillOpacity: 1,
           opacity: 1,
           color: "#FFF",
@@ -140,17 +213,33 @@ const LocationWiseImpact = () => {
     });
   };
 
-  if (loading) {
-    return <Typography>Loading...</Typography>;
-  }
-
   if (error) {
-    return <Typography color="error">{error}</Typography>;
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          height: '400px',
+          backgroundColor: '#f5f5f5',
+          borderRadius: '8px'
+        }}
+      >
+        <Typography variant="h6" color="text.secondary">
+          {error}
+        </Typography>
+      </Box>
+    );
   }
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h6">State Wise NGO Presence Across India</Typography>
+      <Typography variant="h6">
+        State Wise NGO Presence Across India
+        {dateRange.startDate && dateRange.endDate && 
+          ` (${dateRange.startDate} - ${dateRange.endDate})`
+        }
+      </Typography>
       <MapContainer
         center={[23.5, 83]}
         zoom={4.5}
@@ -172,6 +261,7 @@ const LocationWiseImpact = () => {
       >
         {geoData && (
           <GeoJSON
+            key={JSON.stringify(stateData)}
             data={geoData}
             style={{ weight: 2, opacity: 1, color: "white", fillOpacity: 1 }}
             onEachFeature={onEachState}

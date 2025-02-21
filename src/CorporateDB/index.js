@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LocationWiseImpact from "./LocationImpact";
 import MonthlyImpact from "./MonthlyImpact";
 import YearlyImpact from "./YearlyImpact";
-import { Box, Tab, Tabs, Container, Typography, Select, MenuItem ,TabStyle} from "@mui/material";
+import { Box, Tab, Tabs, Container, Typography, CircularProgress } from "@mui/material";
 import AmazonLogo from "./Image/amzon.png";
 import CompactDateRangePicker from "./CompactDateRangePicker";
-
 
 const CorporateDb = () => {
   const [currentTab, setCurrentTab] = useState(0);
@@ -13,7 +12,37 @@ const CorporateDb = () => {
     startDate: '',
     endDate: '',
   });
+  const [apiData, setApiData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+  
+        const response = await fetch(
+          "https://script.google.com/macros/s/AKfycbzjIvQJgBpdYwShV6LQOuyNtccmafG3iHFYzmEBQ6FBjiSeT3TuSEyAM46OMYMTsPBC/exec?type=corporatedbStatewise&doner=Amazon"
+        );
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+  
+        const data = await response.json();
+       
+        setApiData(data);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError(err.message || "Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [dateRange]); // Keep the dependency on dateRange for when user selects dates
 
   const handleDateRangeChange = (newDateRange) => {
     setDateRange(newDateRange);
@@ -24,17 +53,50 @@ const CorporateDb = () => {
   };
 
   const renderContent = () => {
+    if (loading) {
+      return (
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+          <CircularProgress />
+        </Box>
+      );
+    }
+
+    if (error) {
+      return (
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          height: '400px',
+          backgroundColor: '#f5f5f5',
+          borderRadius: '8px'
+        }}>
+          <Typography variant="h6" color="text.secondary">
+            {error}
+          </Typography>
+        </Box>
+      );
+    }
+
     switch (currentTab) {
-      case 0: return <LocationWiseImpact dateRange={dateRange}/>;
-      case 1: return <MonthlyImpact />;
-      case 2: return <YearlyImpact />;
-      default: return null;
+      case 0: 
+        return <LocationWiseImpact 
+          dateRange={dateRange} 
+          apiData={apiData} 
+        />;
+      case 1: 
+        return <MonthlyImpact 
+          dateRange={dateRange}
+          apiData={apiData}
+        />;
+      case 2: 
+        return <YearlyImpact />;
+      default: 
+        return null;
     }
   };
 
-
-
-const TabStyle = (index) => ({
+  const TabStyle = (index) => ({
     textTransform: 'none',
     color: currentTab === index ? '#ffffff' : '#4A4A4A',
     backgroundColor: currentTab === index ? '#5C785A' : '#ffffff',
