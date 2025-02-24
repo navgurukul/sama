@@ -1,112 +1,66 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, Typography,Box, Grid,useTheme, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText } from "@mui/material";
-import { TrendingUp, Download } from "@mui/icons-material";
+// import { TrendingUp, Download } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import "./styles/MonthlyImpact.css";
-
-// const dummydata = {
-//   "SAM-37": {
-//     "March-2024": {
-//       Bihar: {
-//         "Number of Teachers Trained": "1",
-//         "Number of School Visits": "1",
-//         "Number of Sessions Conducted": "1",
-//         "Number of Modules Completed": "1",
-//         "Intent to Pursue Rating per Module": "1"
-//       },
-//       Goa: {
-//         "Number of Teachers Trained": "1",
-//         "Number of School Visits": "1",
-//         "Number of Sessions Conducted": "1",
-//         "Number of Modules Completed": "1",
-//         "Intent to Pursue Rating per Module": "1"
-//       }
-//     },
-//     "April-2024": {
-//       Bihar: {
-//         "Number of Teachers Trained": "1",
-//         "Number of School Visits": "1",
-//         "Number of Sessions Conducted": "1",
-//         "Number of Modules Completed": "1",
-//         "Intent to Pursue Rating per Module": "1"
-//       }
-//     }
-//   },
-//   "SAM-39": {
-//     "March-2024": {
-//       Bihar: {
-//         "Number of Teachers Trained": "1",
-//         "Number of School Visits": "1",
-//         "Number of Sessions Conducted": "1",
-//         "Number of Modules Completed": "1",
-//         "Intent to Pursue Rating per Module": "1"
-//       }
-//     },
-//     "April-2024": {
-//       Bihar: {
-//         "Number of Teachers Trained": "1",
-//         "Number of School Visits": "1",
-//         "Number of Sessions Conducted": "1",
-//         "Number of Modules Completed": "1",
-//         "Intent to Pursue Rating per Module": "1"
-//       }
-//     }
-//   },
-//   "SAM-40": {
-//     "May-2024": {
-//       Bihar: {
-//         "Number of Teachers Trained": "1",
-//         "Number of School Visits": "1",
-//         "Number of Sessions Conducted": "1",
-//         "Number of Modules Completed": "1",
-//         "Intent to Pursue Rating per Module": "1"
-//       }
-//     },
-//     "June-2024": {
-//       Bihar: {
-//         "Number of Teachers Trained": "1",
-//         "Number of School Visits": "1",
-//         "Number of Sessions Conducted": "1",
-//         "Number of Modules Completed": "1",
-//         "Intent to Pursue Rating per Module": "1"
-//       }
-//     }
-//   }
-// };
 
 const monthMapping = {
   January: 1, February: 2, March: 3, April: 4, May: 5, June: 6,
   July: 7, August: 8, September: 9, October: 10, November: 11, December: 12
 };
 
-const MonthlyImpact = () => {
+const MonthlyImpact = ({ dateRange, apiData }) => {
   const [filteredData, setFilteredData] = useState({});
   const [detailedData, setDetailedData] = useState({});
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [data, setData] = useState({});
   const theme = useTheme();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
     
-  useEffect(() => {
-    const fetchStateData = async () => {
-      try {
-        const response = await fetch(
-          'https://script.google.com/macros/s/AKfycbzjIvQJgBpdYwShV6LQOuyNtccmafG3iHFYzmEBQ6FBjiSeT3TuSEyAM46OMYMTsPBC/exec?type=corporatedbStatewise&doner=Amazon'
-        );
-        const Monthlydata = await response.json();
-        setData(Monthlydata);
-      }
-      catch (err) {
-        console.error('Error fetching state data:', err);
-      }}
-    fetchStateData();
-  }, []);
-  
-  useEffect(() => {    
-    const from = "March-2024";
-    const to = "April-2024";
+  const getCurrentMonthYear = () => {
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December"
+    ];
+    
+    const today = new Date();
+    today.setMonth(today.getMonth() - 1); // Move to last month
+
+    const month = monthNames[today.getMonth()];
+    const year = today.getFullYear();
+    
+    return `${month}-${year}`;
+};
+
+  useEffect(() => {   
+    const monthAbbreviationMapping = {
+      "Jan": "January",
+      "Feb": "February",
+      "Mar": "March",
+      "Apr": "April",
+      "May": "May",
+      "Jun": "June",
+      "Jul": "July",
+      "Aug": "August",
+      "Sep": "September",
+      "Oct": "October",
+      "Nov": "November",
+      "Dec": "December",
+    };
+
+    const formatMonthYear = (dateStr) => {
+      if (!dateStr) return ""; // Handle empty cases
+      const [monthAbbr, year] = dateStr.split("'");
+      return `${monthAbbreviationMapping[monthAbbr]}-${year}`;
+    };
+    
+    const formattedStartDate = formatMonthYear(dateRange.startDate);
+    const formattedEndDate = formatMonthYear(dateRange.endDate);
+     
+    const from = formattedStartDate || getCurrentMonthYear();
+    const to = formattedEndDate || getCurrentMonthYear();
 
     const [fromMonth, fromYear] = from.split("-");
     const [toMonth, toYear] = to.split("-");
@@ -117,7 +71,7 @@ const MonthlyImpact = () => {
     let totalCounts = {};
     let partnerBreakdown = {};
     
-    Object.entries(data).forEach(([partnerId, monthsData]) => {
+    Object.entries(apiData).forEach(([partnerId, monthsData]) => {
       Object.keys(monthsData).forEach(monthYear => {
         const [month, year] = monthYear.split("-");
         const currentDate = new Date(`${year}-${monthMapping[month]}-01`);
@@ -139,7 +93,7 @@ const MonthlyImpact = () => {
     
     setFilteredData(totalCounts);
     setDetailedData(partnerBreakdown);
-  }, [data]);
+  }, [apiData, dateRange]);
 
   const handleCardClick = (question, value) => {    
         navigate("/corpretedb/DataViewDetail", {
@@ -153,6 +107,22 @@ const MonthlyImpact = () => {
 
   return (
     <div style={{ padding: "20px" }}>
+      {Object.keys(filteredData).length === 0 ? (
+      <Box 
+             sx={{ 
+               display: 'flex', 
+               justifyContent: 'center', 
+               alignItems: 'center',
+               height: '400px',
+               backgroundColor: '#f5f5f5',
+               borderRadius: '8px'
+             }}
+           >
+             <Typography variant="h6" color="text.secondary">
+                Please Select the date range to view the data
+             </Typography>
+           </Box>
+    ) : (
       <Grid container spacing={2}>
         {Object.entries(filteredData).map(([question, value]) => (
            <Grid item xs={12} sm={6} lg={4} key={question}>
@@ -212,6 +182,7 @@ const MonthlyImpact = () => {
                        </Grid>
         ))}
       </Grid>
+      )}
     </div>
   );
 };

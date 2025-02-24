@@ -5,8 +5,6 @@ import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import { useNavigate } from "react-router-dom";
 import DynamicLineChart from "./DynamicLineChart";
 
-
-
 const YearlyImpact = () => {
   const [isEmpty, setIsEmpty] = useState(false);
   const navigate = useNavigate();
@@ -90,7 +88,7 @@ const YearlyImpact = () => {
                 sx={{
                   borderRadius: '0.5rem',
                 }}
-                onClick={() => handleCardClick(metric)}
+                // onClick={() => handleCardClick(metric)}
               >
                 <CardContent sx={{ p: 3 }}>
                   <Typography
@@ -111,8 +109,8 @@ const YearlyImpact = () => {
                   >
                     <Typography
                       variant="h5"
-                    >
-                      {metric.value}
+                    >00
+                      {/* {metric.value} */}
                     </Typography>
                   </Box>
                   <Typography
@@ -128,7 +126,7 @@ const YearlyImpact = () => {
             </Grid>
           ))}
         </Grid>
-        <DynamicLineChart/>
+        {/* <DynamicLineChart/> */}
         </>
       }
     </Box>
