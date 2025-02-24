@@ -14,6 +14,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
   const [geoData, setGeoData] = useState(null);
   const [stateData, setStateData] = useState({});
   const [hoveredState, setHoveredState] = useState(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [error, setError] = useState(null);
 
   // console.log(dateRange, 'dateRange');
@@ -185,6 +186,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
       opacity: 1,
       color: "#FFF",
       fillOpacity: 1,
+      cursor: hasData ? 'pointer' : 'default',
     });
 
     layer.on({
@@ -194,11 +196,18 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
             name: stateName,
             ...stateData[stateName],
           });
+          setMousePosition({
+            x: e.originalEvent.clientX,
+            y: e.originalEvent.clientY,
+          });
           e.target.setStyle({
             fillColor: "#5C785A",
             fillOpacity: 1,
             opacity: 1,
           });
+          e.target.getElement().style.cursor = 'pointer';
+        } else {
+          e.target.getElement().style.cursor = 'default';
         }
       },
       mouseout: (e) => {
@@ -209,22 +218,14 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
           opacity: 1,
           color: "#FFF",
         });
+        e.target.getElement().style.cursor = 'default';
       },
     });
   };
 
   if (error) {
     return (
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center',
-          height: '400px',
-          backgroundColor: '#f5f5f5',
-          borderRadius: '8px'
-        }}
-      >
+      <Box sx={{ marginBottom: '40px', marginLeft:"5px" }}>
         <Typography variant="h6" color="text.secondary">
           {error}
         </Typography>
@@ -233,8 +234,8 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
   }
 
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h6">
+    <Box sx={{ marginBottom: '40px', marginLeft:"5px" }}>      
+    <Typography variant="h6">
         State Wise NGO Presence Across India
         {dateRange.startDate && dateRange.endDate && 
           ` (${dateRange.startDate} - ${dateRange.endDate})`
@@ -246,7 +247,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
         style={{
           height: "757px",
           width: "675px",
-          backgroundColor: "#ffff",
+          backgroundColor: "none",
           top: "20px",
           left: "350px",
         }}
@@ -270,10 +271,15 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
       </MapContainer>
 
       {hoveredState && (
-        <div className="hover-dialog">
+        <div className="hover-dialog" style={{
+          position: 'absolute',
+          left: `${mousePosition.x + 10}px`,
+          top: `${mousePosition.y + 320}px`,
+        }}
+      >
           <div className="dialog-header">
             <img src={Location} alt="State Location" className="state-icon" />
-            <Typography color="primary" variant="subtitle1">
+            <Typography color="primary" variant="subtitle1" marginLeft={0.5}>
               {hoveredState.name}
             </Typography>
           </div>
@@ -281,10 +287,10 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
             <div className="ngo-data">
               <div className="ngo-data-in">
                 <div>
-                  <Typography variant="subtitle2">Total NGOs</Typography>
+                  <Typography color="#4A4A4A" variant="subtitle2">Total NGOs</Typography>
                 </div>
                 <div>
-                  <span>{hoveredState.ngoNum}</span>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.ngoNum}</span>
                 </div>
               </div>
               <div className="ngo-data-in">
@@ -294,7 +300,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
                   </Typography>
                 </div>
                 <div>
-                  <span>{hoveredState.teachersTrained}</span>
+                  <span variant="subtitle2">{hoveredState.teachersTrained}</span>
                 </div>
               </div>
               <div className="ngo-data-in">
@@ -304,7 +310,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
                   </Typography>
                 </div>
                 <div>
-                  <span>{hoveredState.schoolVisits}</span>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.schoolVisits}</span>
                 </div>
               </div>
               <div className="ngo-data-in">
@@ -314,7 +320,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
                   </Typography>
                 </div>
                 <div>
-                  <span>{hoveredState.sessionConducted}</span>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.sessionConducted}</span>
                 </div>
               </div>
               <div className="ngo-data-in">
@@ -324,7 +330,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
                   </Typography>
                 </div>
                 <div>
-                  <span>{hoveredState.modules}</span>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.modules}</span>
                 </div>
               </div>
               <div className="ngo-data-in">
@@ -334,14 +340,14 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
                   </Typography>
                 </div>
                 <div>
-                  <span>{hoveredState.learningHour}</span>
+                  <span color="text.secondary" variant="subtitle2">{hoveredState.learningHour}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
-    </Container>
+    </Box>
   );
 };
 

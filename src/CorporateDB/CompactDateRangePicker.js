@@ -39,7 +39,7 @@ const SingleInputDateRangePicker = ({ onDateRangeChange }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div>
+      <div >
         <TextField
           size="small"
           placeholder="Select Date Range"
@@ -53,7 +53,7 @@ const SingleInputDateRangePicker = ({ onDateRangeChange }) => {
               </InputAdornment>
             ):<ArrowDropUpIcon/>,
           }}
-          sx={{ width: '300px' }}
+          sx={{ width: '300px' ,backgroundColor: "#FFFAF8"}}
         />
         <Popover
           id={id}

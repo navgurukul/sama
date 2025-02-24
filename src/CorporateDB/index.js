@@ -5,9 +5,11 @@ import YearlyImpact from "./YearlyImpact";
 import { Box, Tab, Tabs, Container, Typography, CircularProgress } from "@mui/material";
 import AmazonLogo from "./Image/amzon.png";
 import CompactDateRangePicker from "./CompactDateRangePicker";
+import { useLocation } from "react-router-dom";
 
 const CorporateDb = () => {
-  const [currentTab, setCurrentTab] = useState(0);
+  const location = useLocation();  // Get the sent data
+  const [currentTab, setCurrentTab] = useState(location.state?.tabIndex || 0);
   const [dateRange, setDateRange] = useState({
     startDate: '',
     endDate: '',
@@ -99,24 +101,26 @@ const CorporateDb = () => {
   const TabStyle = (index) => ({
     textTransform: 'none',
     color: currentTab === index ? '#ffffff' : '#4A4A4A',
-    backgroundColor: currentTab === index ? '#5C785A' : '#ffffff',
+    backgroundColor: currentTab === index ? '#FFFAF8' : '#FFFAF8',
+    fontWeight: currentTab === index ? 'bold' : 'normal', // Bold selected tab
     borderRadius: '100px',
-    margin: '0 5px',
+    marginRight: '10px',
     minHeight: '38px',
     padding: "8px 24px",
     border: '1px solid #5C785A',
     '&.Mui-selected': {
       color: '#ffffff',
-      backgroundColor: '#5C785A'
+      backgroundColor: '#5C785A',
+      fontWeight: 'bold' // Ensures bold stays on selected tab
     },
     '&:hover': {
-      backgroundColor: currentTab === index ? '#5C785A' : '#ffffff',
-      opacity: 0.9
+      opacity: 0.9 // Prevents background color change on hover
     }
   });
+  
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 8 }}>
+    <Container maxWidth="lg" sx={{ mt: 8,backgroundColor: "#FFFAF8" }}>
       <Box sx={{ 
         display: 'flex',
         justifyContent: 'space-between',
@@ -141,7 +145,7 @@ const CorporateDb = () => {
 
       <Box sx={{ 
         "& .MuiTabs-indicator": {
-          display: "none"
+          display: "none",
         }
       }}>
         <Tabs 
