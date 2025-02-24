@@ -72,7 +72,7 @@ const YearlyImpact = () => {
   };
 
   return (
-    <Box sx={{marginLeft: "5px"}}>
+    <Box sx={{ marginLeft: "5px" }}>
       <Box className="yearly-impact-header" gap={1}>
         <Typography variant="h6">Report for 2023-2024</Typography>
         {
@@ -82,7 +82,7 @@ const YearlyImpact = () => {
         }
       </Box>
       {
-        isEmpty ? <EmptyReport /> :<> <Grid container spacing={3} >
+        isEmpty ? <EmptyReport /> : <> <Grid container spacing={3} >
           {metrics.map((metric, index) => (
             <Grid item xs={12} sm={6} lg={4} key={index}>
               <Card
@@ -97,7 +97,7 @@ const YearlyImpact = () => {
                     variant="subtitle1"
                     sx={{
                       mb: 1,
-                      color:"#4A4A4A"
+                      color: "#4A4A4A"
                     }}
                   >
                     {metric.title}
@@ -129,7 +129,7 @@ const YearlyImpact = () => {
             </Grid>
           ))}
         </Grid>
-        <DynamicLineChart/>
+          <DynamicLineChart />
         </>
       }
     </Box>

@@ -38,31 +38,31 @@ const NGOTrainedTable = () => {
             </Box>
 
             <Grid container spacing={1} wrap="nowrap" mt={3}>                <Grid item xs={3}>
-                    <Paper
-                        className='ngo-cell'
-                    >
-                        <Typography variant='subtitle1' color="#4A4A4A">NGO Name</Typography>                    </Paper>
-                </Grid>
+                <Paper
+                    className='ngo-cell'
+                >
+                    <Typography variant='subtitle1' color="#4A4A4A">NGO Name</Typography>                    </Paper>
+            </Grid>
                 {months.map((month, idx) => (
-                    <Grid item xs={1} key={idx}>
+                    <Grid item xs={1} key={idx} sx={{width:"37px"}}>
                         <Paper
-                            sx={{width:"37px"}}
+                            sx={{ width: "37px" }}
                             className='month-cell'
                         >
-<Typography variant='body1' >{month}</Typography>                        </Paper>
+                            <Typography variant='body1' >{month}</Typography>                        </Paper>
                     </Grid>
                 ))}
             </Grid>
 
             {ngoData.map((ngo, index) => (
                 <Grid container spacing={1} key={index} wrap="nowrap">                    <Grid item xs={3}>
-                        <Paper className='ngo-cell' sx={{
-                            bgcolor: "primary.light",
-                        }}><Typography variant='body1' >{ngo.name}</Typography></Paper>
-                    </Grid>
+                    <Paper className='ngo-cell' sx={{
+                        bgcolor: "primary.light",
+                    }}><Typography variant='body1' >{ngo.name}</Typography></Paper>
+                </Grid>
                     {ngo.monthly.map((value, idx) => (
                         <Grid item xs={1} key={idx}>
-                            <Paper className='month-cell' 
+                            <Paper className='month-cell'
                                 sx={{
                                     bgcolor: "#CED7CE",
                                 }}>
@@ -76,19 +76,21 @@ const NGOTrainedTable = () => {
             <Grid container spacing={1} wrap="nowrap">
                 <Grid item xs={3}>
                     <Paper
-                        sx={{width:"223px"}}
+                        sx={{ width: "223px" }}
                         className='ngo-cell'
                     >
-<Typography variant='subtitle1' color="#4A4A4A" textAlign="left">
+                        <Typography variant='subtitle1' color="#4A4A4A" textAlign="left">
                             Total Number of Teacher’s Trained
-                       </Typography>                    </Paper>
+                        </Typography>                    
+                    </Paper>
                 </Grid>
                 {total.map((value, idx) => (
-                    <Grid item xs={1} key={idx}>
+                    <Grid item xs={1} key={idx} sx={{width:"38px"}}>
                         <Paper
                             className='month-cell'
                         >
-<Typography variant='body1' >{value}</Typography>                        </Paper>
+                            <Typography variant='body1' >{value}</Typography>                        
+                        </Paper>
                     </Grid>
                 ))}
             </Grid>

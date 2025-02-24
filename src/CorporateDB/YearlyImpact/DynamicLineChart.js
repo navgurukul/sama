@@ -82,7 +82,7 @@ const DynamicLineChart = () => {
               gap: 1,
               cursor: 'pointer',
               whiteSpace: 'nowrap',
-              
+
             }}
             onClick={() => setActiveMetric(metric)}
           >
@@ -101,7 +101,7 @@ const DynamicLineChart = () => {
               }}
             />
             <Typography
-              sx={{color:"#4A4A4A"}}
+              sx={{ color: "#4A4A4A" }}
               variant={activeMetric === metric ? 'subtitle1' : "body1"}
             >
               {metric}
@@ -148,7 +148,7 @@ const DynamicLineChart = () => {
                 value: "Months",
                 position: "bottom",
                 offset: 20,
-                style: { fill: "#828282", fontSize: "16px"},
+                style: { fill: "#828282", fontSize: "16px" },
               }}
             />
             <YAxis
