@@ -58,7 +58,6 @@ const DynamicLineChart = () => {
 
   return (
     <Box sx={{
-      width: '100%',
       mt: "3rem",
       borderRadius: "0.375rem",
       backgroundColor: "#fff",
