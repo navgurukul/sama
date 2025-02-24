@@ -161,6 +161,7 @@ const MonthlyImpact = () => {
                          sx={{
                           cursor: "pointer",
                            borderRadius: '0.5rem',
+                           
                          }}
                          onClick={() => handleCardClick(question, value)}
                          >
