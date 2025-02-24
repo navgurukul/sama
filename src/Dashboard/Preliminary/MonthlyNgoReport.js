@@ -12,7 +12,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 
 const MonthlyNgoReport = ({ monthlyDates, onCardClick, monthlyReportingFormHandler, monthlyMetrixGet, currentDate,formatDate }) => {
-
  
   return (
     <Box sx={{ mt: 5}}>
@@ -24,10 +23,12 @@ const MonthlyNgoReport = ({ monthlyDates, onCardClick, monthlyReportingFormHandl
           const isEnabled = currentDate >= report; // Check if current date has passed the card's date
           const monthName = report.toLocaleString("default", { month: "long" }); // Get full month name
           const year = report.getFullYear(); // Get the year
-          
+          const monthKey = `${monthName} ${year}`; // Generate the key for `monthlyMetrixGet`
+          const reportData = monthlyMetrixGet[monthKey]; // Get the corresponding data from `monthlyMetrixGet`
+                    
           return (
           <Grid item xs={12} sm={6} md={4} key={index}>
-            {monthlyMetrixGet[index] ? 
+            {reportData ? 
             <Card  style={{ height: "100%" }} 
             sx={{backgroundColor: !isEnabled && "#E0E0E0"}}
             >
@@ -51,7 +52,7 @@ const MonthlyNgoReport = ({ monthlyDates, onCardClick, monthlyReportingFormHandl
                   }}
                   
                 disabled={!isEnabled}
-                onClick={() => onCardClick(monthlyMetrixGet[index], monthName, year)}
+                onClick={() => onCardClick(monthlyMetrixGet[monthKey], monthName, year)}
                 >
                   View Report &#62;
                 </Button>

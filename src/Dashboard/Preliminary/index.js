@@ -50,7 +50,7 @@ const Preliminary = () => {
   const isUserFound = NgoData.length > 0;
   const preliminaryId = NgoData && NgoData[0] && NgoData[0].Id;
   const prerole = JSON.parse(localStorage.getItem('role') || '[]');
-  console.log("Retrieved Role from Local Storage:", prerole);
+  // console.log("Retrieved Role from Local Storage:", prerole);
 
 
 

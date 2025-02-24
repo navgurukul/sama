@@ -22,6 +22,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 import BackButton from "./BackButton";
 import { matchPath } from "react-router-dom";
+import DropdownMenu from "./DropdownMenu";
 
 const isRouteMatch = (pathname, patterns) => {
   return patterns.some((pattern) =>
@@ -35,7 +36,17 @@ const isRouteMatch = (pathname, patterns) => {
     )
   );
 };
+const discoverUsItems = [
+  { text: "About Us", href: "/about" },
+  { text: "Our Approach", href: "/our-approach" },
+  { text: "Our Team", href: "/ourteam" },
+];
 
+const getInvolvedItems = [
+  { text: "Corporate Partners", href: "/corporatepartner" },
+  { text: "Government Partners", href: "/ourgoverment" },
+  { text: "Community Partners", href: "/communitypartners" },
+];
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -61,12 +72,12 @@ const Navbar = () => {
     "corpretedb/DataViewDetail",
     "/corpretedb/NGOTrainedTable"
   ];
+  // const menuItems = [
+  //   { text: "About Us", href: "/about" },
+  //   { text: "Our Approach", href: "/our-approach" },
+  //   { text: "Donate", href: "/donate" },
+  // ];
 
-  const menuItems = [
-    { text: "About Us", href: "/about" },
-    { text: "Our Approach", href: "/our-approach" },
-    { text: "Donate", href: "/donate" },
-  ];
 
   useEffect(() => {
     const authData = localStorage.getItem("_AuthSama_");
@@ -151,37 +162,30 @@ const Navbar = () => {
             </Link>
           )}
 
-          <Box className={`nav-links ${menuVisible ? "visible" : ""}`}>
-            {!isLoggedIn &&
-              menuItems.map((item, index) => (
-                <MuiLink
-                  sx={{
-                    margin: 1,
-                    color: "#4A4A4A",
-                    textDecoration: "none",
-                  }}
-                  component={Link}
-                  to={item.href}
-                  className={`nav-link ${
-                    activeTab === item.href ? "active" : ""
-                  }`}
-                  key={index}
-                  onClick={() => handleTabClick(item.href)}
-                >
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      textTransform: "none",
-                      color:
-                        activeTab === item.href ? "primary.main" : "inherit",
-                      fontWeight: activeTab === item.href ? "bold" : "normal",
-                    }}
-                  >
-                    {item.text}
-                  </Typography>
-                </MuiLink>
-              ))}
-          </Box>
+          {!isLoggedIn && (
+            <Box className={`nav-links ${menuVisible ? "visible" : ""}`} sx={{ display: { xs: "none", md: "flex" }, gap: "20px" }}>
+              <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
+              <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
+
+              {/* Donate Text Link */}
+              <MuiLink
+                sx={{
+                  margin: "0 8px",
+                  textDecoration: "none",
+                  color: "#4A4A4A",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap", // Prevents wrapping
+                }}
+                component={Link}
+                to="/donate"
+                variant="body1"
+              >
+                Donate to Sama
+              </MuiLink>
+            </Box>
+          )}
+
+
 
           {/* show only in mobile view when user will log in */}
           {isLoggedIn && (
@@ -259,6 +263,33 @@ const Navbar = () => {
               <MuiLink
                 sx={{
                   margin: 1,
+                  textDecoration: "none",
+                }}
+                component={Link}
+                to="/ngoregistration"
+              >
+                <Button
+                  type="submit"
+                  sx={{
+                    fontWeight: activeTab === "/login" ? "bold" : "normal",
+                    borderRadius: "100px",
+                    backgroundColor: "#FFFFFF",
+                    border: "1px solid",
+                    borderColor: "primary.main",
+                    "&:hover": {
+                      backgroundColor: "#FFFFFF",
+                    },
+                  }}
+                >
+                  <Typography variant="subtitle1" sx={{ color: "primary.main", }}> Submit your requirements</Typography>
+                </Button>
+              </MuiLink>
+
+            )}
+            {!isLoggedIn && !isActive && (
+              <MuiLink
+                sx={{
+                  margin: 1,
                   color: "#4A4A4A",
                   textDecoration: "none",
                 }}
@@ -268,17 +299,17 @@ const Navbar = () => {
                 <Button
                   type="submit"
                   variant="contained"
-                  color="primary"
                   sx={{
                     fontWeight: activeTab === "/login" ? "bold" : "normal",
                     borderRadius: "100px",
+                    color: "#ffffff",
                   }}
                 >
-                  Login
+                  <Typography variant="subtitle1" sx={{ color: "#ffff", }}> Dashboard Login</Typography>
                 </Button>
               </MuiLink>
             )}
-            {!isLoggedIn && !isActive && (
+            {/* {!isLoggedIn && !isActive && (
               <MuiLink
                 sx={{
                   margin: 1,
@@ -301,7 +332,7 @@ const Navbar = () => {
                   NGO registration
                 </Button>
               </MuiLink>
-            )}
+            )} */}
           </Box>
           {!isLoggedIn && (
             <Box className="mobile-nav">
@@ -318,31 +349,26 @@ const Navbar = () => {
         </Toolbar>
         {!isLoggedIn && (
           <Box
-            className={`mobile-menu ${
-              isActive && menuVisible ? "visible" : ""
-            }`}
+            className={`mobile-menu ${isActive && menuVisible ? "visible" : ""
+              }`}
           >
-            {menuItems.map((item, index) => (
-              <MuiLink
+            <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
+            <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
+            <MuiLink
+                sx={{
+                  margin: "0 8px",
+                  textDecoration: "none",
+                  color: "#4A4A4A",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap", // Prevents wrapping
+                  marginRight:{xs:"210px", md:"0px"}
+                }}
                 component={Link}
-                to={item.href}
-                className={`nav-link ${
-                  activeTab === item.href ? "active" : ""
-                }`}
-                key={index}
-                onClick={() => handleTabClick(item.href)}
+                to="/donate"
+                variant="body1"
               >
-                <Typography
-                  variant="body1"
-                  sx={{
-                    fontWeight: activeTab === item.href ? "bold" : "normal",
-                  }}
-                >
-                  {item.text}
-                </Typography>
+                Donate to Sama
               </MuiLink>
-            ))}
-            {/* Dashboard Login in mobile menu - Hidden in mobile view */}
             {!isLoggedIn && !isActive && (
               <MuiLink
                 sx={{
