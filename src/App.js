@@ -72,7 +72,7 @@ function App() {
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/about-initiative" element={<LandingPage />} />
               <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
-              <Route path="corpretedb" element={<CorporateteDb />} />
+              <Route path="corporate" element={<CorporateteDb />} />
               <Route path="/corpretedb/DataViewDetail" element={<DetailView/>}/>
               <Route path="/corpretedb/NGOTrainedTable" element={<NGOTrainedTable/>} />
 
