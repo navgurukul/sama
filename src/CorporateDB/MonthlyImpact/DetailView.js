@@ -119,7 +119,7 @@ const DetailView = () => {
                             boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
                         }}
                     >
-                        Total {title}
+                        <b>Total {title}</b>
                     </Typography>
                     <Typography
                         sx={{
@@ -135,7 +135,7 @@ const DetailView = () => {
                             boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
                         }}
                     >
-                        <Typography variant="body1">{total}</Typography>
+                        <Typography variant="body1"><b>{total}</b></Typography>
                     </Typography>
                 </Box>
             </Box>

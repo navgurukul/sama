@@ -87,6 +87,7 @@ const YearlyImpact = () => {
                 className="yearly-impact-card"
                 sx={{
                   borderRadius: '0.5rem',
+                  
                 }}
                 // onClick={() => handleCardClick(metric)}
               >
