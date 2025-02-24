@@ -37,63 +37,64 @@ const NGOTrainedTable = () => {
                 </IconButton>
             </Box>
 
-            <Grid container spacing={1} columnSpacing={1} wrap="nowrap">
-                <Grid item xs={3}>
+            <Grid container spacing={1} wrap="nowrap" mt={3}>                <Grid item xs={3}>
                     <Paper
                         className='ngo-cell'
                     >
-                        NGO Name
-                    </Paper>
+                        <Typography variant='subtitle1' color="#4A4A4A">NGO Name</Typography>                    </Paper>
                 </Grid>
                 {months.map((month, idx) => (
                     <Grid item xs={1} key={idx}>
                         <Paper
+                            sx={{width:"37px"}}
                             className='month-cell'
                         >
-                            {month}
-                        </Paper>
+<Typography variant='body1' >{month}</Typography>                        </Paper>
                     </Grid>
                 ))}
             </Grid>
 
             {ngoData.map((ngo, index) => (
-                <Grid container spacing={2} key={index} wrap="nowrap">
-                    <Grid item xs={3}>
+                <Grid container spacing={1} key={index} wrap="nowrap">                    <Grid item xs={3}>
                         <Paper className='ngo-cell' sx={{
                             bgcolor: "primary.light",
-                        }}>{ngo.name}</Paper>
+                        }}><Typography variant='body1' >{ngo.name}</Typography></Paper>
                     </Grid>
                     {ngo.monthly.map((value, idx) => (
                         <Grid item xs={1} key={idx}>
-                            <Paper className='month-cell' sx={{
-                                bgcolor: "#CED7CE",
-                            }}>{value}</Paper>
+                            <Paper className='month-cell' 
+                                sx={{
+                                    bgcolor: "#CED7CE",
+                                }}>
+                                <Typography variant='body1' >{value}</Typography>
+                            </Paper>
                         </Grid>
                     ))}
                 </Grid>
             ))}
 
-            <Grid container spacing={2} wrap="nowrap">
+            <Grid container spacing={1} wrap="nowrap">
                 <Grid item xs={3}>
                     <Paper
+                        sx={{width:"223px"}}
                         className='ngo-cell'
                     >
-                       Total Number of Teacher’s Trained
-                    </Paper>
+<Typography variant='subtitle1' color="#4A4A4A" textAlign="left">
+                            Total Number of Teacher’s Trained
+                       </Typography>                    </Paper>
                 </Grid>
                 {total.map((value, idx) => (
                     <Grid item xs={1} key={idx}>
                         <Paper
                             className='month-cell'
                         >
-                            {value}
-                        </Paper>
+<Typography variant='body1' >{value}</Typography>                        </Paper>
                     </Grid>
                 ))}
             </Grid>
             {/* Button */}
             <Button
-                onClick={() => navigate("/corpretedb")}
+                onClick={() => navigate("/corpretedb", { state: { tabIndex: 2 } })}
                 sx={{
                     bgcolor: "primary.main",
                     color: "#fff",

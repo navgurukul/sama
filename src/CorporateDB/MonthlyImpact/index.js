@@ -169,6 +169,7 @@ const MonthlyImpact = () => {
                                variant="subtitle1"
                                sx={{
                                  mb: 1,
+                                color:"#4A4A4A"
                                }}
                              >
                                {question}

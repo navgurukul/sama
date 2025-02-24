@@ -81,7 +81,8 @@ const DynamicLineChart = () => {
               alignItems: 'center',
               gap: 1,
               cursor: 'pointer',
-              whiteSpace: 'nowrap'
+              whiteSpace: 'nowrap',
+              
             }}
             onClick={() => setActiveMetric(metric)}
           >
@@ -100,6 +101,7 @@ const DynamicLineChart = () => {
               }}
             />
             <Typography
+              sx={{color:"#4A4A4A"}}
               variant={activeMetric === metric ? 'subtitle1' : "body1"}
             >
               {metric}
@@ -109,22 +111,20 @@ const DynamicLineChart = () => {
       </Box>
 
       <Box sx={{
-        width: '100%',
         height: 400,
         backgroundColor: '#fff',
         position: 'relative'
       }}>
         <Typography
+          variant='secondary.text'
           sx={{
             position: 'absolute',
-            left: 0, 
-            top: '50%',
-            transform: 'translate(-20%, -50%) rotate(-90deg)', 
-            transformOrigin: 'center', 
-            color: '#666',
-            fontSize: '0.75rem',
-            whiteSpace: 'nowrap', 
-            textAlign: 'center',
+            left: -12,
+            top: '43%',
+            transform: 'translate(-20%, -50%) rotate(-90deg)',
+            transformOrigin: 'center',
+            color: "#828282",
+            whiteSpace: 'nowrap',
           }}
         >
           Number of Sessions Conducted
@@ -141,14 +141,14 @@ const DynamicLineChart = () => {
             />
             <XAxis
               dataKey="month"
-              tick={{ fill: '#666', fontSize: 12 }}
-              axisLine={{ stroke: '#E0E0E0' }}
-              tickLine={{ stroke: '#E0E0E0' }}
+              tick={{ fill: "#666", fontSize: 12 }}
+              axisLine={{ stroke: "#E0E0E0" }}
+              tickLine={{ stroke: "#E0E0E0" }}
               label={{
-                value: 'Months',
-                position: 'bottom',
+                value: "Months",
+                position: "bottom",
                 offset: 20,
-                style: { fill: '#666', fontSize: 12 }
+                style: { fill: "#828282", fontSize: "16px"},
               }}
             />
             <YAxis
