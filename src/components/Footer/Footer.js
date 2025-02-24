@@ -30,9 +30,10 @@ const Footer = () => {
     "yearly-reporting",
     "monthly-report",
     "yearly-report",
-    "corpretedb",
+    "corporate",
     "/corpretedb/DataViewDetail",
     "/corpretedb/NGOTrainedTable",
+
   ];
 
   // Check if the current route matches any pattern
