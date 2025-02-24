@@ -70,7 +70,7 @@ const YearlyImpact = () => {
   };
 
   return (
-    <Box p={3}>
+    <Box sx={{ marginLeft: "5px" }}>
       {/* <Box className="yearly-impact-header" gap={1}>
         <Typography variant="h6">Report for 2023-2024</Typography>
         {
@@ -78,15 +78,16 @@ const YearlyImpact = () => {
             <SaveAltIcon />
           </IconButton>
         }
-      </Box> */}
+      </Box>  */}
       {
-        isEmpty ? <EmptyReport /> :<> <Grid container spacing={3} >
+        isEmpty ? <EmptyReport /> : <> <Grid container spacing={3} >
           {metrics.map((metric, index) => (
             <Grid item xs={12} sm={6} lg={4} key={index}>
               <Card
                 className="yearly-impact-card"
                 sx={{
                   borderRadius: '0.5rem',
+                  
                 }}
                 // onClick={() => handleCardClick(metric)}
               >
@@ -95,6 +96,7 @@ const YearlyImpact = () => {
                     variant="subtitle1"
                     sx={{
                       mb: 1,
+                      color: "#4A4A4A"
                     }}
                   >
                     {metric.title}

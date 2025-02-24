@@ -35,3 +35,13 @@
 .yearly-impact-card:hover {
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
 }
+.MuiIconButton-root {
+    width: 40px;
+    height: 40px;
+    transition: none; /* Prevent size transitions */
+  }
+  .MuiIconButton-root:hover {
+    width: 40px;
+    height: 40px;
+    padding: 8px; /* Ensure consistent padding */
+  }

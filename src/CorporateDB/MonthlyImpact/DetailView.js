@@ -51,7 +51,7 @@ const DetailView = () => {
                 minHeight: "100vh",
             }}
         >
-            <Typography variant="h6" sx={{ color: "#4A4A4A", mb: 3 }}>
+            <Typography variant="h6" sx={{ color: "#4A4A4A", mb: 3 , mt:5}}>
                 NGO Wise {title} in the Month of January
             </Typography>
             <Box
@@ -79,6 +79,7 @@ const DetailView = () => {
                             cursor: "pointer",
                             boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
                         }}
+                        variant="body1"
                         >{displayName}</Typography>
                         <Typography
                         sx={{
@@ -96,8 +97,9 @@ const DetailView = () => {
                             cursor: "pointer",
                             boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
                         }}
+                        variant="body1"
                         >
-                            {count}
+                            <Typography variant="body1">{count}</Typography>
                         </Typography>
                     </Box>
                 ))}
@@ -117,7 +119,7 @@ const DetailView = () => {
                             boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
                         }}
                     >
-                        Total {title}
+                        <b>Total {title}</b>
                     </Typography>
                     <Typography
                         sx={{
@@ -133,13 +135,13 @@ const DetailView = () => {
                             boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
                         }}
                     >
-                        {total}
+                        <Typography variant="body1"><b>{total}</b></Typography>
                     </Typography>
                 </Box>
             </Box>
 
             <Button
-                onClick={() => navigate("/corpretedb")}
+                onClick={() => navigate("/corpretedb", { state: { tabIndex: 1 } })}
                 sx={{ bgcolor: "primary.main", color: "#fff", mt: 4, cursor: "pointer" }}
             >
                 Go to Dashboard
