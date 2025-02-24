@@ -120,7 +120,7 @@ const CorporateDb = () => {
   
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 8,backgroundColor: "#FFFAF8" }}>
+    <Container maxWidth="lg" sx={{ mt: 8,backgroundColor: "#FFFAF8" }}>
       <Box sx={{ 
         display: 'flex',
         justifyContent: 'space-between',
