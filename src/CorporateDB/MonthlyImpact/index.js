@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, Typography,Box, Grid,useTheme, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText } from "@mui/material";
-// import { TrendingUp, Download } from "@mui/icons-material";
+import { Card, CardContent, Typography, Box, Grid, useTheme, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, IconButton, Container, CircularProgress } from "@mui/material";
+import { TrendingUp, Download } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import "./styles/MonthlyImpact.css";
+import jsPDF from "jspdf";
 
 const monthMapping = {
   January: 1, February: 2, March: 3, April: 4, May: 5, June: 6,
@@ -75,7 +76,7 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
       Object.keys(monthsData).forEach(monthYear => {
         const [month, year] = monthYear.split("-");
         const currentDate = new Date(`${year}-${monthMapping[month]}-01`);
-        
+
         if (currentDate >= fromDate && currentDate <= toDate) {
 
           Object.values(monthsData[monthYear]).forEach(stateData => {
@@ -83,30 +84,78 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
               totalCounts[question] = (totalCounts[question] || 0) + parseInt(value);
 
               if (!partnerBreakdown[question]) partnerBreakdown[question] = {};
-              partnerBreakdown[question][partnerId] = 
+              partnerBreakdown[question][partnerId] =
                 (partnerBreakdown[question][partnerId] || 0) + parseInt(value);
             });
           });
         }
       });
     });
-    
+
     setFilteredData(totalCounts);
     setDetailedData(partnerBreakdown);
   }, [apiData, dateRange]);
 
-  const handleCardClick = (question, value) => {    
-        navigate("/corpretedb/DataViewDetail", {
-          state: {
-            title: question,
-            total: value,
-            detailedData: detailedData[question],
-          },
-        });
-      };  
+  const handleCardClick = (question, value) => {
+    navigate("/corpretedb/DataViewDetail", {
+      state: {
+        title: question,
+        total: value,
+        detailedData: detailedData[question],
+      },
+    });
+  };
+
+
+  const handleDownloadPDF = () => {
+    if (!filteredData || Object.keys(filteredData).length === 0) {
+      alert("No data available to download!");
+      return;
+    }
+
+    const pdf = new jsPDF();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    let yOffset = 20;
+
+    pdf.setFontSize(18);
+    const title = "Monthly Impact Report";
+    const titleWidth = pdf.getTextWidth(title);
+    pdf.text(title, (pageWidth - titleWidth) / 2, yOffset); // Centered title
+    yOffset += 10;
+
+    pdf.setFontSize(12);
+
+    Object.entries(filteredData).forEach(([question, value]) => {
+      const text = `${question}: ${value}`;
+      const textWidth = pdf.getTextWidth(text);
+      pdf.text(text, (pageWidth - textWidth) / 2, yOffset); // Centered text
+      yOffset += 8;
+
+      // Add new page if content exceeds page height
+      if (yOffset > 280) {
+        pdf.addPage();
+        yOffset = 20;
+      }
+    });
+
+    pdf.save("Monthly_Impact_Report.pdf");
+  };
 
   return (
     <div style={{ padding: "20px" }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: "20px" }}>
+        <Typography
+          variant="h6"
+          sx={{
+            color: "#4A4A4A",
+          }}
+        >
+          Download Report
+        </Typography>
+        <IconButton sx={{ color: "#828282" }}>
+          <SaveAltIcon onClick={handleDownloadPDF} />
+        </IconButton>
+      </Box>
       {Object.keys(filteredData).length === 0 ? (
       <Box 
              sx={{ 
@@ -131,6 +180,7 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
                          sx={{
                           cursor: "pointer",
                            borderRadius: '0.5rem',
+                           height: '100%',
                          }}
                          onClick={() => handleCardClick(question, value)}
                          >
@@ -173,6 +223,7 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
                                variant="body2"
                                sx={{
                                  color: "#828282",
+                                 mt : "auto"
                                }}
                              >
                               {question} this month
@@ -186,7 +237,5 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
     </div>
   );
 };
-
-
 
 export default MonthlyImpact;

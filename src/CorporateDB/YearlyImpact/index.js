@@ -71,14 +71,14 @@ const YearlyImpact = () => {
 
   return (
     <Box p={3}>
-      <Box className="yearly-impact-header" gap={1}>
+      {/* <Box className="yearly-impact-header" gap={1}>
         <Typography variant="h6">Report for 2023-2024</Typography>
         {
           !isEmpty && <IconButton sx={{ color: "#828282" }}>
             <SaveAltIcon />
           </IconButton>
         }
-      </Box>
+      </Box> */}
       {
         isEmpty ? <EmptyReport /> :<> <Grid container spacing={3} >
           {metrics.map((metric, index) => (
