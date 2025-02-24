@@ -12,7 +12,24 @@ const isRouteMatch = (pathname, patterns) => {
 };
 
 const Footer = () => {
-  const location = useLocation();
+  const location = useLocation(); // Get the current location
+  const routePatterns = [
+    "/user-details",
+    "/userdetails/:id",
+    "ngo/:id",
+    "edit-yearly-form/:id",
+    "yearly-reporting/:id",
+    "/monthly-reporting/:id",
+    "/edit-form/:id",
+    "monthly-reporting",
+    "yearly-reporting",
+    "monthly-report",
+    "yearly-report",
+    "corporate",
+    "/corpretedb/DataViewDetail",
+    "/corpretedb/NGOTrainedTable",
+
+  ];
 
   return (
     <footer>

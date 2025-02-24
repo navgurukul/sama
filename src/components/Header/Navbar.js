@@ -69,6 +69,8 @@ const Navbar = () => {
     "yearly-reporting",
     "monthly-report",
     "yearly-report",
+    "corpretedb/DataViewDetail",
+    "/corpretedb/NGOTrainedTable"
   ];
   // const menuItems = [
   //   { text: "About Us", href: "/about" },
