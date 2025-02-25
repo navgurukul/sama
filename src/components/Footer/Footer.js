@@ -25,11 +25,16 @@ const Footer = () => {
     "yearly-reporting",
     "monthly-report",
     "yearly-report",
-    "corporate",
+    "/corporate",
     "/corpretedb/DataViewDetail",
     "/corpretedb/NGOTrainedTable",
 
   ];
+
+  const isMatch = isRouteMatch(location.pathname, routePatterns);
+  if (isMatch) {
+    return null;
+  }
 
   return (
     <footer>
