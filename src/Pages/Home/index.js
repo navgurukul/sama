@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Grid, Button, Typography, Box } from "@mui/material";
 import HomeImg from "./assets/HeroSection.svg";
 import "./Styles.css";
@@ -15,6 +15,19 @@ function Home() {
   const isActive = useMediaQuery("(max-width:600px)");
   const isActiveIpad = useMediaQuery("(max-width:1300px)");
   const isXs = useMediaQuery('(max-width:600px)');
+  const [bgImagesLoaded, setBgImagesLoaded] = useState(false);
+
+  useEffect(() => {
+    const img1 = new Image();
+    const img2 = new Image();
+
+    img1.src = diamond;
+    img2.src = HomeImg;
+
+    img1.onload = img2.onload = () => {
+      setBgImagesLoaded(true);
+    };
+  }, []);
 
   const commonImageStyle = {
     width: "100%",
@@ -39,7 +52,9 @@ function Home() {
     <>
       <Box
         sx={{
-          backgroundImage: `url(${diamond}), url(${HomeImg})`,
+          backgroundImage: bgImagesLoaded
+            ? `url(${diamond}), url(${HomeImg})`
+            : "none", // Hide background until loaded
           backgroundSize: "cover, cover",
           backgroundPosition: "center, center",
           color: "white",
@@ -48,7 +63,8 @@ function Home() {
           justifyContent: "center",
           alignItems: "center",
           textAlign: "center",
-          width:"100%"
+          width: "100%",
+          transition: "background-image 0.5s ease-in-out", // Smooth transition when images load
         }}
         paddingY={isActive ? 5 : 28}
       >
@@ -75,8 +91,8 @@ function Home() {
                 About Us
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Sama, a non-profit organisation, and a subsidiary of NavGurukul, 
-                helps modern businesses responsibly repurpose their e-waste for 
+                Sama, a non-profit organisation, and a subsidiary of NavGurukul,
+                helps modern businesses responsibly repurpose their e-waste for
                 educational usage by underserved women & youth.
               </Typography>
               <a href="/about" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>
@@ -89,8 +105,8 @@ function Home() {
                 Our Approach
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Sama is not just a laptop donation project; it's a comprehensive 
-                education initiative aimed at empowering 1 million girls and women 
+                Sama is not just a laptop donation project; it's a comprehensive
+                education initiative aimed at empowering 1 million girls and women
                 by 2030 with cutting-edge devices and skills.
               </Typography>
               <a href="/our-approach" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>
@@ -126,11 +142,11 @@ function Home() {
               md={8}
               sx={{
                 display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' }, 
+                flexDirection: { xs: 'column', md: 'row' },
                 justifyContent: 'center',
                 alignItems: 'center',
                 gap: 4,
-               
+
               }}
             >
               {[
@@ -196,20 +212,20 @@ function Home() {
       </Container>
 
 
-      <Container maxWidth="lg" sx={{ py: "40px"}}>
+      <Container maxWidth="lg" sx={{ py: "40px" }}>
         <Typography variant="h5" textAlign="center">Metrics that Matter</Typography>
         <Typography variant="body1" textAlign="center" mt={2}>Here’s how the impact is measured through data driven insights</Typography>
-        <Box sx={!isActive && { display: 'flex', my: 4 , justifyContent:"center", alignItems:"center"}} spacing={3}>
+        <Box sx={!isActive && { display: 'flex', my: 4, justifyContent: "center", alignItems: "center" }} spacing={3}>
           <Button color="primary" variant={impact === "environmental" ? "contained" : "outlined"}
             style={isActive ? { marginTop: "16px" } : { borderRadius: "100px" }}
             onClick={() => setImpact("environmental")}
-            sx={{ width:{xs:"100%",sm:"280px"}}}>
+            sx={{ width: { xs: "100%", sm: "280px" } }}>
             Environmental Impact
           </Button>
           <Button color="primary" variant={impact === "social" ? "contained" : "outlined"}
             style={isActive ? { margin: "16px 0px" } : { borderRadius: "100px", marginLeft: "24px" }}
             onClick={() => setImpact("social")}
-            sx={{ width:{xs:"100%",sm:"280px"}}}>
+            sx={{ width: { xs: "100%", sm: "280px" } }}>
             Social Impact
           </Button>
         </Box>
@@ -223,8 +239,8 @@ function Home() {
         </Box>
       </Container>
 
-      <Box sx={{ backgroundColor:"#F8F3F0" }}>
-        <Container maxWidth="lg" sx={{ py: "40px",  justifyItems: "center",}}>
+      <Box sx={{ backgroundColor: "#F8F3F0" }}>
+        <Container maxWidth="lg" sx={{ py: "40px", justifyItems: "center", }}>
           <Typography variant="h5" sx={{ textAlign: "center" }}>Sustainability Development Goals</Typography>
           <Typography variant="body1" style={{ width: "65%", margin: "16px 0px", textAlign: "center" }}>
             Sama's mission of repurposing e-waste for educational use by underserved women & youth aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
