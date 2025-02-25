@@ -33,33 +33,38 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
     const year = today.getFullYear();
     
     return `${month}-${year}`;
-};
+};  
 
-  useEffect(() => {   
-    const monthAbbreviationMapping = {
-      "Jan": "January",
-      "Feb": "February",
-      "Mar": "March",
-      "Apr": "April",
-      "May": "May",
-      "Jun": "June",
-      "Jul": "July",
-      "Aug": "August",
-      "Sep": "September",
-      "Oct": "October",
-      "Nov": "November",
-      "Dec": "December",
-    };
+useEffect(() => {
+  const monthAbbreviationMapping = {
+    "Jan": "January",
+    "Feb": "February",
+    "Mar": "March",
+    "Apr": "April",
+    "May": "May",
+    "Jun": "June",
+    "Jul": "July",
+    "Aug": "August",
+    "Sep": "September",
+    "Oct": "October",
+    "Nov": "November",
+    "Dec": "December",
+  };
 
-    const formatMonthYear = (dateStr) => {
-      if (!dateStr) return ""; // Handle empty cases
-      const [monthAbbr, year] = dateStr.split("'");
-      return `${monthAbbreviationMapping[monthAbbr]}-${year}`;
-    };
-    
+  const formatMonthYear = (dateStr) => {
+    if (!dateStr) return "";
+    const [monthAbbr, year] = dateStr.split("'");
+    return `${monthAbbreviationMapping[monthAbbr]}-${year}`;
+  };
+
+  let totalCounts = {};
+  let partnerBreakdown = {};
+
+  // If dateRange is available, process accordingly
+  if (dateRange?.startDate && dateRange?.endDate) {
     const formattedStartDate = formatMonthYear(dateRange.startDate);
     const formattedEndDate = formatMonthYear(dateRange.endDate);
-     
+
     const from = formattedStartDate || getCurrentMonthYear();
     const to = formattedEndDate || getCurrentMonthYear();
 
@@ -69,17 +74,13 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
     const fromDate = new Date(`${fromYear}-${monthMapping[fromMonth]}-01`);
     const toDate = new Date(`${toYear}-${monthMapping[toMonth]}-01`);
 
-    let totalCounts = {};
-    let partnerBreakdown = {};
-    
     Object.entries(apiData).forEach(([partnerId, monthsData]) => {
-      Object.keys(monthsData).forEach(monthYear => {
+      Object.keys(monthsData).forEach((monthYear) => {
         const [month, year] = monthYear.split("-");
         const currentDate = new Date(`${year}-${monthMapping[month]}-01`);
 
         if (currentDate >= fromDate && currentDate <= toDate) {
-
-          Object.values(monthsData[monthYear]).forEach(stateData => {
+          Object.values(monthsData[monthYear]).forEach((stateData) => {
             Object.entries(stateData).forEach(([question, value]) => {
               totalCounts[question] = (totalCounts[question] || 0) + parseInt(value);
 
@@ -91,10 +92,26 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
         }
       });
     });
+  } else {
+    // No date range provided: Process all available data
+    Object.entries(apiData).forEach(([partnerId, monthsData]) => {
+      Object.keys(monthsData).forEach((monthYear) => {
+        Object.values(monthsData[monthYear]).forEach((stateData) => {
+          Object.entries(stateData).forEach(([question, value]) => {
+            totalCounts[question] = (totalCounts[question] || 0) + parseInt(value);
 
-    setFilteredData(totalCounts);
-    setDetailedData(partnerBreakdown);
-  }, [apiData, dateRange]);
+            if (!partnerBreakdown[question]) partnerBreakdown[question] = {};
+            partnerBreakdown[question][partnerId] =
+              (partnerBreakdown[question][partnerId] || 0) + parseInt(value);
+          });
+        });
+      });
+    });
+  }
+
+  setFilteredData(totalCounts);
+  setDetailedData(partnerBreakdown);
+}, [apiData, dateRange]);
 
   const handleCardClick = (question, value) => {
     navigate("/corpretedb/DataViewDetail", {
@@ -105,7 +122,6 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
       },
     });
   };
-
 
   const handleDownloadPDF = () => {
     if (!filteredData || Object.keys(filteredData).length === 0) {
@@ -137,7 +153,6 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
         yOffset = 20;
       }
     });
-
     pdf.save("Monthly_Impact_Report.pdf");
   };
 
@@ -168,7 +183,7 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
              }}
            >
              <Typography variant="h6" color="text.secondary">
-                Please Select the date range to view the data
+                Data is not available.
              </Typography>
            </Box>
     ) : (
