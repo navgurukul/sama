@@ -120,7 +120,8 @@ const CorporateDb = () => {
   
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 8,backgroundColor: "#FFFAF8" }}>
+    <Container maxWidth="xl" sx={{ backgroundColor: "#FFFAF8" , marginTop: '-3rem', paddingTop: '3rem' }}>
+    <Container maxWidth="lg" sx={{ mt: 8 }}>
       <Box sx={{ 
         display: 'flex',
         justifyContent: 'space-between',
@@ -160,6 +161,7 @@ const CorporateDb = () => {
       </Box>
 
       {renderContent()}
+    </Container>
     </Container>
   );
 };
