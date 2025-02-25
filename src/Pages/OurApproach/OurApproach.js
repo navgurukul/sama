@@ -59,12 +59,13 @@ const OurApproach = () => {
                 <Typography
                   variant="h6"
                   mt={3}
+                  color="white"
                   sx={{
                     textAlign: "center",
                     ...container,
                     paddingTop: isActive && 6,
                     mt: sectionIndex === 1 ? 8 : 4,
-
+                    color: "var(--white, #FFF)", 
                   }}
                 >
                   {section.title}
