@@ -248,7 +248,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
           height: "757px",
           width: "675px",
           backgroundColor: "none",
-          top: "20px",
+          // top: "0px",
           left: "350px",
         }}
         zoomControl={false}
