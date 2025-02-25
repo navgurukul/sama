@@ -141,7 +141,7 @@ const DetailView = () => {
             </Box>
 
             <Button
-                onClick={() => navigate("/corporate", { state: { tabIndex: 1 } })}
+                onClick={() => navigate("/corpretedb", { state: { tabIndex: 1 } })}
                 sx={{ bgcolor: "primary.main", color: "#fff", mt: 4, cursor: "pointer" }}
             >
                 Go to Dashboard

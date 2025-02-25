@@ -70,7 +70,7 @@ const YearlyImpact = () => {
   };
 
   return (
-    <Box mb={5} mt={10} >
+    <Box sx={{ marginLeft: "5px" }}>
       {/* <Box className="yearly-impact-header" gap={1}>
         <Typography variant="h6">Report for 2023-2024</Typography>
         {

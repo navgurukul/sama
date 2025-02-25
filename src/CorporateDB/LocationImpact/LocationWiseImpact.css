@@ -1,8 +1,6 @@
 .hover-dialog {
   position: absolute;
   width: 380px;  
-  left: 60%;
-  top: 40%;
   height: 290px;   
   padding: 24px;
   border-radius: 8px;

@@ -19,23 +19,23 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
   const [data, setData] = useState({});
   const theme = useTheme();
   const navigate = useNavigate();
-
+    
   const getCurrentMonthYear = () => {
     const monthNames = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December"
     ];
-
+    
     const today = new Date();
     today.setMonth(today.getMonth() - 1); // Move to last month
 
     const month = monthNames[today.getMonth()];
     const year = today.getFullYear();
-
+    
     return `${month}-${year}`;
-  };
+};
 
-  useEffect(() => {
+  useEffect(() => {   
     const monthAbbreviationMapping = {
       "Jan": "January",
       "Feb": "February",
@@ -56,10 +56,10 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
       const [monthAbbr, year] = dateStr.split("'");
       return `${monthAbbreviationMapping[monthAbbr]}-${year}`;
     };
-
+    
     const formattedStartDate = formatMonthYear(dateRange.startDate);
     const formattedEndDate = formatMonthYear(dateRange.endDate);
-
+     
     const from = formattedStartDate || getCurrentMonthYear();
     const to = formattedEndDate || getCurrentMonthYear();
 
@@ -71,7 +71,7 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
 
     let totalCounts = {};
     let partnerBreakdown = {};
-
+    
     Object.entries(apiData).forEach(([partnerId, monthsData]) => {
       Object.keys(monthsData).forEach(monthYear => {
         const [month, year] = monthYear.split("-");
@@ -142,7 +142,7 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
   };
 
   return (
-    <Box mb={5} >
+    <div style={{ padding: "20px" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: "20px" }}>
         <Typography
           variant="h6"
@@ -157,73 +157,85 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
         </IconButton>
       </Box>
       {Object.keys(filteredData).length === 0 ? (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '400px',
-            backgroundColor: '#f5f5f5',
-            borderRadius: '8px'
-          }}
-        >
-          <Typography variant="h6" color="text.secondary">
-            Please Select the date range to view the data
-          </Typography>
-        </Box>
-      ) : (
-        <Grid container spacing={2}>
-          {Object.entries(filteredData).map(([question, value]) => (
-            <Grid item xs={12} sm={6} lg={4} key={question}>
-              <Card
-                className="monthly-impact-card"
-                sx={{
-                  cursor: "pointer",
-                  borderRadius: "0.5rem",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-                onClick={() => handleCardClick(question, value)}
-              >
-                <CardContent sx={{ p: 3, flexGrow: 1, display: "flex", flexDirection: "column" }}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      mb: 1,
-                      color: "#4A4A4A",
-                    }}
-                  >
-                    {question}
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "baseline",
-                      gap: 1,
-                      mb: 1,
-                    }}
-                  >
-                    <Typography variant="h5">{value}</Typography>
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "#828282",
-                      mt: "auto", // Ensures it's pushed to the bottom
-                      textAlign: "left",
-                    }}
-                  >
-                    {question} this month
-                  </Typography>
-                </CardContent>
-              </Card>
-
-            </Grid>
-          ))}
-        </Grid>
+      <Box 
+             sx={{ 
+               display: 'flex', 
+               justifyContent: 'center', 
+               alignItems: 'center',
+               height: '400px',
+               backgroundColor: '#f5f5f5',
+               borderRadius: '8px'
+             }}
+           >
+             <Typography variant="h6" color="text.secondary">
+                Please Select the date range to view the data
+             </Typography>
+           </Box>
+    ) : (
+      <Grid container spacing={2}>
+        {Object.entries(filteredData).map(([question, value]) => (
+           <Grid item xs={12} sm={6} lg={4} key={question}>
+                          <Card
+                         className="monthly-impact-card"
+                         sx={{
+                          cursor: "pointer",
+                           borderRadius: '0.5rem',
+                           height: '100%',
+                         }}
+                         onClick={() => handleCardClick(question, value)}
+                         >
+                           <CardContent sx={{ p: 3 }}>
+                             <Typography
+                               variant="subtitle1"
+                               sx={{
+                                 mb: 1,
+                                color:"#4A4A4A"
+                               }}
+                             >
+                               {question}
+                             </Typography>
+                             <Box
+                               sx={{
+                                 display: "flex",
+                                 alignItems: "baseline",
+                                 gap: 1,
+                                 mb: 1,
+                               }}
+                             >
+                               <Typography
+                                 variant="h5"
+                               >
+                                 {value}
+                               </Typography>
+                               {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                 <TrendingUp sx={{ color: "#27AE60", fontSize: 16 }} />
+                                 <Typography
+                                   sx={{
+                                     color: "#27AE60",
+                                     fontSize: "12px",
+                                     fontWeight: 500,
+                                   }}
+                                 >
+                                  
+                                 </Typography>
+                               </Box> */}
+                             </Box>
+                             <Typography
+                               variant="body2"
+                               sx={{
+                                 color: "#828282",
+                                 mt : "auto"
+                               }}
+                             >
+                              {question} this month
+                             </Typography>
+                           </CardContent>
+                         </Card>
+                       </Grid>
+        ))}
+      </Grid>
       )}
-    </Box>
+    </div>
   );
 };
 
