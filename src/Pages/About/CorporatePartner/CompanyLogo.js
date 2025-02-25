@@ -3,7 +3,7 @@ import Ama from "./assets/Amazon Logo.png";
 import Mac from "./assets/image 1.png";
 import DXC from "./assets/image 5.png";
 import Acc from './assets/image 15.png';
-// import Apexon from './assets/apex.png';
+import Apexon from './assets/apexon.png';
 import Tiger from './assets/tiger.png'
 import ourteam from "../OurTeam/style";
 
@@ -35,30 +35,18 @@ const CompanyLogo = () => {
                         <img src={Acc} alt="Logo 1" style={{marginLeft: "30px"}} />
                     </Box>
                 </Grid>
-                {/* <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={12} sm={6} md={4}>
                     <Box sx={ourteam.Logo1}>
-                        <img src={Apexon} alt="Logo 1"  />
+                        <img src={Apexon} alt="Logo 1" height="90%" />
                     </Box>
-                </Grid> */}
+                </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                     <Box sx={ourteam.Logo1}>
                         <img src={Tiger} alt="Logo 1"  />
                     </Box>
                 </Grid>
             </Grid>
-            {/* <Grid container spacing={2} justifyContent="right" mt={2}>
-                <Grid item xs={12} sm={6} md={4}>
-                    <Box sx={ourteam.Logo1}>
-                        <img src={Apexon} alt="Logo 1" style={{marginLeft: "30px"}} />
-                    </Box>
-                </Grid>
-            </Grid><Grid container spacing={2} justifyContent="left" mt={2}>
-                <Grid item xs={12} sm={6} md={4}>
-                    <Box sx={ourteam.Logo1}>
-                        <img src={Tiger} alt="Logo 1" style={{marginLeft: "30px"}} />
-                    </Box>
-                </Grid>
-            </Grid> */}
+            
     </Container>
     );
 };
