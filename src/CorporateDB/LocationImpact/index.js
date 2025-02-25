@@ -248,7 +248,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
           height: "757px",
           width: "675px",
           backgroundColor: "none",
-          // top: "0px",
+          top: "20px",
           left: "350px",
         }}
         zoomControl={false}
@@ -272,9 +272,9 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
 
       {hoveredState && (
         <div className="hover-dialog" style={{
-          // position: 'absolute',
-          // left: `${mousePosition.x + 20}px`,
-          // top: `${mousePosition.y + 320}px`,
+          position: 'absolute',
+          left: `${mousePosition.x + 10}px`,
+          top: `${mousePosition.y + 320}px`,
         }}
       >
           <div className="dialog-header">

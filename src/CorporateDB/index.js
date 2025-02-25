@@ -120,15 +120,14 @@ const CorporateDb = () => {
   
 
   return (
-  <Box sx={{backgroundColor: "#FFFAF8", mt:5,}}>
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={{ mt: 8,backgroundColor: "#FFFAF8" }}>
       <Box sx={{ 
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        
+        my: 3 
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 , mt:5}}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <img 
             src={AmazonLogo}
             alt="Amazon Logo"
@@ -162,7 +161,6 @@ const CorporateDb = () => {
 
       {renderContent()}
     </Container>
-    </Box>
   );
 };
 
