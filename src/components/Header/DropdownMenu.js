@@ -40,11 +40,23 @@ const DropdownMenu = ({ title, menuItems }) => {
   };
 
   return (
+    <Box 
+      sx={{
+        alignItems:"left", 
+        justifyContent:"left", 
+        borderRadius: 1, 
+        width: "100%", 
+        display: "flex", 
+        flexDirection: "column", 
+        gap: 1, 
+        padding: 1,
+        marginLeft: {xs:"20px", md:"10px"}
+        }}>
     <Box
       sx={{
         cursor: "pointer",
         display: "flex",
-        textAlign: "left",
+        textAlign: "left",        
         gap: 1,
         fontWeight: "bold",
         color: "#4A4A4A",
@@ -117,6 +129,7 @@ const DropdownMenu = ({ title, menuItems }) => {
           </Paper>
         </Popper>
       )}
+    </Box>
     </Box>
   );
 };

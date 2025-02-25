@@ -7,6 +7,7 @@ const originalTeamMembers = [
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video2.mp4",
     name: "Aman Sharma",
+    Designation: "(Frontend Developer)",
   },
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video3.mp4",
@@ -23,6 +24,7 @@ const originalTeamMembers = [
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video7.mp4",
     name: "Shweta Deshmukh",
+    Designation: "(IT Operation Associate)",
   },
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video8.mp4",
@@ -31,6 +33,7 @@ const originalTeamMembers = [
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video9.mp4",
     name: "Rahul Bauddha",
+    Designation: "(IT Operation Associate)",
   },
 ];
 
@@ -107,21 +110,31 @@ const OurTeam = () => {
                         background:
                           "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)",
                         display: "flex",
-                        alignItems: "flex-end",
-                        justifyContent: "flex-end", // This line moves the name to the right
+                        flexDirection: "column", // Stacks elements vertically
+                        alignItems: "flex-end", // Aligns text to the right
+                        justifyContent: "flex-end",
                       }}
                     >
                       <Typography
                         variant="subtitle1"
                         sx={{
                           color: "#FFF",
-                          // fontWeight: 500,
                           textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
                         }}
                       >
                         {member.name}
                       </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: "#FFF",
+                          textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
+                        }}
+                      >
+                        {member.Designation}
+                      </Typography>
                     </Box>
+
                   </>
                 ) : (
                   <Box
@@ -168,27 +181,33 @@ const OurTeam = () => {
                 }}
               >
                 <li>
-                  <Typography variant="body1" sx={{textAlign:{ xs: "center", md: "left" }}}>
+                  <Typography variant="body1" sx={{ textAlign: { xs: "center", md: "left" } }}>
                     Be part of a mission-driven organization empowering
                     underserved women and youth through technology.
                   </Typography>
                 </li>
                 <li>
-                  <Typography variant="body1"  sx={{textAlign:{ xs: "center", md: "left" }}}>
+                  <Typography variant="body1" sx={{ textAlign: { xs: "center", md: "left" } }}>
                     Gain exposure to CSR initiatives, sustainability practices,
                     and community development projects.
                   </Typography>
                 </li>
                 <li>
-                  <Typography variant="body1"  sx={{textAlign:{ xs: "center", md: "left" }}}>
+                  <Typography variant="body1" sx={{ textAlign: { xs: "center", md: "left" } }}>
                     Work closely with NGOs, corporate partners, and industry
                     leaders, building a robust professional network.
                   </Typography>
                 </li>
               </ul>
-              <Button variant="contained" color="primary" sx={ourteam.button}>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={ourteam.button}
+                onClick={() => window.open("https://www.navgurukul.org/careers", "_blank")}
+              >
                 Explore Current Openings
               </Button>
+
             </Box>
           </Grid>
         </Grid>
