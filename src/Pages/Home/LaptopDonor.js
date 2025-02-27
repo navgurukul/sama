@@ -9,7 +9,6 @@ const LaptopDonorsCarousel = () => {
     { src: require("./assets/Logo3.png"), alt: "Tiger Analytics" },
     { src: require("./assets/Logo4.png"), alt: "fossil" },
     { src: require("./assets/LOgo5.png"), alt: "DXC" },
-    { src: require("./assets/Logo6.png"), alt: "DXC" },
   ];
 
   return (

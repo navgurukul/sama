@@ -163,18 +163,21 @@ const Navbar = () => {
           )}
 
           {!isLoggedIn && (
-            <Box className={`nav-links ${menuVisible ? "visible" : ""}`} sx={{ display: { xs: "none", md: "flex" }, gap: "20px" }}>
+            <Box className={`nav-links ${menuVisible ? "visible" : ""}`} sx={{ display: { xs: "none", md: "flex" }, gap: "0px" }}>
               <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
               <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
 
               {/* Donate Text Link */}
               <MuiLink
                 sx={{
-                  margin: "0 8px",
+                  
                   textDecoration: "none",
                   color: "#4A4A4A",
                   cursor: "pointer",
                   whiteSpace: "nowrap", // Prevents wrapping
+                  textAlign: "left",
+                  marginTop: "7px",
+                  marginLeft: "8px",
                 }}
                 component={Link}
                 to="/donate"
@@ -281,7 +284,7 @@ const Navbar = () => {
                     },
                   }}
                 >
-                  <Typography variant="subtitle1" sx={{ color: "primary.main", }}> Submit your requirements</Typography>
+                  <Typography variant="subtitle1" sx={{ color: "primary.main", }}> Submit Requirements</Typography>
                 </Button>
               </MuiLink>
 
@@ -354,6 +357,18 @@ const Navbar = () => {
           >
             <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
             <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
+            <Box sx={{
+                alignItems:"left", 
+                justifyContent:"left", 
+                borderRadius: 1, 
+                width: "100%", 
+                display: "flex", 
+                flexDirection: "column", 
+                gap: 1, 
+                padding: 1,
+                marginLeft: "8px",
+                marginTop:{xs:"0px", md:"20px"},
+                }}>
             <MuiLink
                 sx={{
                   margin: "0 8px",
@@ -361,7 +376,7 @@ const Navbar = () => {
                   color: "#4A4A4A",
                   cursor: "pointer",
                   whiteSpace: "nowrap", // Prevents wrapping
-                  marginRight:{xs:"210px", md:"0px"}
+                  textAlign: "left",
                 }}
                 component={Link}
                 to="/donate"
@@ -369,6 +384,7 @@ const Navbar = () => {
               >
                 Donate to Sama
               </MuiLink>
+              </Box>
             {!isLoggedIn && !isActive && (
               <MuiLink
                 sx={{

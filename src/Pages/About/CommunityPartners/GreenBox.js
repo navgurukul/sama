@@ -9,7 +9,7 @@ const GreenBox = () => {
             <Container maxWidth="xl" sx={ourteam.GreenBox}>
                 <Box >
                 <Typography variant="h5" gutterBottom style={{ color: "white", textAlign:"center" }}>
-                        Partner Testimonies
+                        Partner Testimonials
                     </Typography>
                     <Grid container spacing={3}>
                         {/* Left Side - Box 1 (Top Left) */}
@@ -82,7 +82,7 @@ const GreenBox = () => {
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
                                     <Typography variant="subtitle1" color="#4A4A4A">
-                                        Karan, Founder, Seedling Foundation
+                                        Seedling Foundation
                                     </Typography>
                                 </Box>
                             </Box>

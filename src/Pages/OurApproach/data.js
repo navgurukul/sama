@@ -31,22 +31,22 @@ export const data = [
       title: "The Digital Gender Divide",
       statistics: [
         {
-          value: "33%",
+          value: "32%",
           moneyLogo: img4,
           description:
-            "of women in India have ever used the internet, compared to 57% of men, highlighting a significant digital divide.",
+            "of rural users can rely on digital platforms for banking, education, and healthcare while, 81% of urban users can do the same due to access to internet",
         },
         {
-          value: "158M",
+          value: "48%",
           moneyLogo: img5,
           description:
-            "girl students were affected by the COVID-19 lockdown, jeopardizing their education and future prospects.",
+            "of rural populations only have internet access, compared to 83% in urban areas.",
         },
         {
-          value: "17%",
+          value: "29%",
           moneyLogo: img6,
           description:
-            "of rural students have internet access in rural areas, whereas 44% in urban areas do and a mere 2% of the poorest income groups have access to a computer with internet.",
+            " is the gap in internet access between rural and urban schools. Urban schools are significantly ahead in access to digital infrastructure also, with 68.7% connected, compared to only 44.9% in rural areas",
         },
       ],
     },

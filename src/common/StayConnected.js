@@ -61,7 +61,7 @@ const StayConnected = () => {
                         Stay Connected with Sama’s Journey
                     </Typography>
                     <Typography variant="body1" sx={ourteam.paragraphText}>
-                        Subscribe to our monthly newsletter, <b>Ripplez</b>, bringing you the
+                        Subscribe to our monthly quarterly, <b>Ripplez</b>, bringing you the
                         latest inspiring impact stories and updates from our mission to empower
                         underserved communities. Don’t miss out and join the conversation!
                     </Typography>

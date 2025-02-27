@@ -13,7 +13,7 @@ import {
   styles,
 } from "./style.js";
 import { data } from "./data.js";
-import Model from './working model.png'
+import Model from './model.png'
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { breakpoints } from "../../theme/constant";
 import ourteam from "../../Pages/About/OurTeam/style.js";
@@ -45,7 +45,7 @@ const OurApproach = () => {
                 Our Rationale
               </Typography>
               <Typography variant="body1" sx={{ color: "var(--white, #FFF)", textAlign: {xs:"left", md:"left"} }} paddingTop="16px">
-                We strongly believe that investing in women's digital education
+                We strongly believe that investing in women and youth’s digital education
                 can reap multifold benefits for society as a whole. As we
                 rapidly advance in technology, it's crucial to ensure that
                 underserved women aren't left behind. Sama addresses two
@@ -120,9 +120,9 @@ const OurApproach = () => {
           <Typography variant="h5" color="#5C785A" gutterBottom>
             Our Working Model
           </Typography>
-          <Typography variant="body1" paragraph >
+          <Typography variant="body1" paragraph textAlign="center">
             Through this comprehensive working model, we 
-            transform e-waste into educational<br/> tools , thereby 
+            transform e-waste into educational tools , thereby 
             providing impact reports to our donors
           </Typography>
           <img src={Model}
