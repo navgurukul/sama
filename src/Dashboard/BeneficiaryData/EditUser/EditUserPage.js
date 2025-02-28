@@ -105,7 +105,7 @@ const EditUserPage = () => {
           `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData&userIdQuery=${id}`);
           // `https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getUserData&userIdQuery=${id}`);
         setUserData(response.data[0]); // Assumes response.data is an array with at least one object
-        console.log("i ama fetch");
+       
         
       } catch (err) {
         setError('Failed to load data');
@@ -129,7 +129,7 @@ const EditUserPage = () => {
         mode: 'no-cors',
         body: JSON.stringify({ ...formData, type: "userdetails"}),
       });
-      console.log("i am submit");
+
       navigate(`/userdetails/${formData.userId}`);
     
     } catch (error) {

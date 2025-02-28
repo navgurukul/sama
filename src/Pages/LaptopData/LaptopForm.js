@@ -68,8 +68,6 @@ function LaptopForm() {
     return true;
   };
 
-  console.log("king");
-  
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
