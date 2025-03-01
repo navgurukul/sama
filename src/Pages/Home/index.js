@@ -106,7 +106,7 @@ function Home() {
               </Typography>
               <Typography variant="body1" gutterBottom>
                 Sama is not just a laptop donation project; it's a comprehensive
-                education initiative aimed at empowering 1 million girls and women
+                education initiative aimed at empowering 1 million women and youth
                 by 2030 with cutting-edge devices and skills.
               </Typography>
               <a href="/our-approach" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>
@@ -242,7 +242,7 @@ function Home() {
       <Box sx={{ backgroundColor: "#F8F3F0" }}>
         <Container maxWidth="lg" sx={{ py: "40px", justifyItems: "center", }}>
           <Typography variant="h5" sx={{ textAlign: "center" }}>Sustainability Development Goals</Typography>
-          <Typography variant="body1" style={{ width: "65%", margin: "16px 0px", textAlign: "center" }}>
+          <Typography variant="body1" mt={2} style={{ width: "65%", textAlign: "center" }}>
             Sama's mission of repurposing e-waste for educational use by underserved women & youth aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
           </Typography>
           <Grid container spacing={4} sx={{ mt: { xs: 0, md: 2 } }}>

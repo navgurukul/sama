@@ -231,42 +231,49 @@ const ourteam = {
         padding: "20px", 
     },
     Image1 : {
-        width: "94.4", 
         height: "88px",
         padding: "16px"   ,    
     },
     Image2 : {
-        width: "88px", 
         height: "88px",
         padding: "16px"
     },
     Image3 : {
-        width: "306px", 
         height: "88px",
         padding: "16px"
     },
     Image4 : {
-        width: "85.3px", 
         height: "88px",
         padding: "16px"
     },
     Image5 : {
-        width: "97.3px", 
         height: "88px",
         padding: "16px"
     },
     Image6 : {
-        width: "91.4px", 
         height: "88px",
         padding: "16px"
     },
     Image7 : {
         height: "88px",
         padding: "16px",
-        marginLeft:"9px",
     },
     Image8 : {
-        width: "143", 
+        height: "88px",
+        padding: "16px",
+
+    },
+    Image9: {
+        height: "88px",
+        padding: "16px",
+
+    },
+    Image10 : {
+        height: "88px",
+        padding: "16px",
+
+    },
+    Image11 : {
         height: "88px",
         padding: "16px",
 
