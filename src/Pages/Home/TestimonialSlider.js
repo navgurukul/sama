@@ -58,7 +58,7 @@ const TestimonialSlider = () => {
       alt: 'Student 5',
       name: "Komal Chaudhary",
       place: "Bangalore",
-      text: "Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it"
+      text: "Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it."
     },
     {
       src: require('./assets/sonam.png'),
@@ -79,13 +79,15 @@ const TestimonialSlider = () => {
 
   const isMobile = useMediaQuery('(max-width:600px)');
 
+  console.log(testimonials)
+  
   const groupedTestimonials = isMobile
-    ? testimonials.map((testimonial) => [testimonial])
+    ? testimonials.map((testimonial, inde) => [testimonial])
     : [
       [testimonials[0], testimonials[1]],
       [testimonials[2], testimonials[3]],
-      [testimonials[4]],[testimonials[5]],
-      [testimonials[6]], [testimonials[7]],
+      [testimonials[4],testimonials[5]],
+      [testimonials[6], testimonials[7]],
       [testimonials[8]],
     ];
 
