@@ -205,7 +205,7 @@ function Donation() {
                   </Typography>
                   <Typography variant="body1">
                     Partner with us to scale our impact and bridge the digital
-                    divide for underserved girls and women and youth.
+                    divide for underserved women and youth.
                   </Typography>
                 </Box>
               </Grid>
@@ -223,7 +223,7 @@ function Donation() {
                     Individual Contribution
                   </Typography>
                   <Typography variant="body1">
-                    Join our mission to empower girls and women and youth through digital
+                    Join our mission to empower women and youth through digital
                     access and volunteering.
                   </Typography>
                 </Box>
@@ -248,7 +248,7 @@ function Donation() {
                   variant="outlined"
                   name="firstName"
                   value={formData.firstName}
-                  placeholder="Ex : John"
+                  placeholder="Ex : Rajesh"
                   onChange={handleChange}
                   sx={{ backgroundColor: "white" }}
                   error={!!errors.firstName}
@@ -262,7 +262,7 @@ function Donation() {
                 <TextField
                   fullWidth
                   required
-                  placeholder="Ex :  Doe"
+                  placeholder="Ex :  Kumar"
                   variant="outlined"
                   name="lastName"
                   value={formData.lastName}
@@ -280,7 +280,7 @@ function Donation() {
                   fullWidth
                   required
                   type="email"
-                  placeholder="Ex : John@gmail.com"
+                  placeholder="Ex : rajesh@gmail.com"
                   variant="outlined"
                   name="email"
                   value={formData.email}

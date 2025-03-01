@@ -198,7 +198,7 @@ function CommunityForm() {
                                     required
                                     variant="outlined"
                                     name="firstName"
-                                    placeholder="First Name"
+                                    placeholder="Ex : Rajesh"
                                     value={formData.firstName}
                                     onChange={handleChange}
                                     sx={ourteam.TextField}
@@ -212,7 +212,7 @@ function CommunityForm() {
                                 <TextField
                                     fullWidth
                                     required
-                                    placeholder="Last Name"
+                                    placeholder="Ex :  Kumar"
                                     variant="outlined"
                                     name="lastName"
                                     value={formData.lastName}
@@ -265,7 +265,7 @@ function CommunityForm() {
                                     fullWidth
                                     required
                                     type="email"
-                                    placeholder="E-mail"
+                                    placeholder="Ex : rajesh@gmail.com"
                                     variant="outlined"
                                     name="email"
                                     value={formData.email}

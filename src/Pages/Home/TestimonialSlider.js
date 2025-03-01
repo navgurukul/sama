@@ -10,6 +10,20 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 const TestimonialSlider = () => {
   const testimonials = [
     {
+      src: require('./assets/apporva.jpg'),
+      alt: 'Student 8',
+      name: "Approva",
+      place: "Bangalore",
+      text: "Orphaned at a young age, I never had the means to learn digital skills. Thanks to Sama and Vimukthi Vidya Samsthe, I touched a computer for the first time and now have the chance to build my future through education."
+    },
+    {
+      src: require('./assets/alfiya.jpg'),
+      alt: 'Student 9',
+      name: "Alfiya D",
+      place: "Bangalore",
+      text: "Coming from an economically challenged background, I couldn't afford computer classes, while my peers in private schools had access. Thanks to Sama and Vimukthi Vidya Samsthe, I now have the opportunity to learn computers in school."
+    },
+    {
       src: require('./assets/shahnaaz.jpg'),
       alt: 'Student 1',
       name: "Shahnaaz",
@@ -46,6 +60,21 @@ const TestimonialSlider = () => {
       place: "Bangalore",
       text: "Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it"
     },
+    {
+      src: require('./assets/sonam.png'),
+      alt: 'Student 6',
+      name: "Sonam",
+      place: "Indore",
+      text: "Sama and NavGurukul enabled my education by providing a laptop and placement support, helping me secure a job at Amazon. Their guidance and resources have been invaluable in shaping my career."
+    },
+    {
+      src: require('./assets/ruchi.jpg'),
+      alt: 'Student 7',
+      name: "Ruchi",
+      place: "Sarjapur",
+      text: "NavGurukul provided me with the skills that shaped my career, and Sama's laptop support was crucial in my journey. Today, I work as a Frontend Developer at Accenture, grateful for the empowerment and opportunities they provided. "
+    },
+    
   ];
 
   const isMobile = useMediaQuery('(max-width:600px)');
@@ -55,7 +84,9 @@ const TestimonialSlider = () => {
     : [
       [testimonials[0], testimonials[1]],
       [testimonials[2], testimonials[3]],
-      [testimonials[4]],
+      [testimonials[4]],[testimonials[5]],
+      [testimonials[6]], [testimonials[7]],
+      [testimonials[8]],
     ];
 
   const [sliderRef, slider] = useKeenSlider({
@@ -110,8 +141,9 @@ const TestimonialSlider = () => {
 
                     <Typography  variant="body1" sx={{ height: "100px",color: {xs:"#FFF", md:"#FFF"}, }}>{testimonial.text}</Typography>
                     <Box style={{width:"64px",height:"64px",border: "7.7px solid rgba(178, 95, 101, 1)",marginTop:"48px",borderRadius:"50px"}}>
-                    <img src={testimonial.src} alt={testimonial.alt}
+                    <img src={testimonial.src} alt={testimonial.alt} 
                       style={{
+                        
                         width: "64px",
                         height: "64px",
                         borderRadius: "50%",
