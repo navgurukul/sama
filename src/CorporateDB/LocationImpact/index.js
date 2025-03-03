@@ -567,6 +567,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
       opacity: 1,
       color: "#FFF",
       fillOpacity: 1,
+      cursor: hasData ? 'pointer' : 'default',
     });
 
     layer.on({
@@ -585,7 +586,11 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
             fillOpacity: 1,
             opacity: 1,
           });
+          e.target.getElement().style.cursor = 'pointer';
+        } else {
+          e.target.getElement().style.cursor = 'default';
         }
+        
       },
       mouseout: (e) => {
         setHoveredState(null);
@@ -595,6 +600,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
           opacity: 1,
           color: "#FFF",
         });
+        e.target.getElement().style.cursor = 'default';
       },
       // Add click handler to handle clicks on states
       click: (e) => {
@@ -626,7 +632,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
           alignItems: 'center',
           height: '400px',
           backgroundColor: '#f5f5f5',
-          borderRadius: '8px'
+          borderRadius: '8px',
         }}
       >
         <Typography variant="h6" color="text.secondary">
@@ -637,7 +643,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={{position:"relative" ,right:"20px",}}>
       <Typography variant="h6">
         State Wise NGO Presence Across India
         {dateRange.startDate && dateRange.endDate && 
@@ -649,10 +655,9 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
           center={[23.5, 83]}
           zoom={4.5}
           style={{
-            height: "757px",
+            height: "800px",
             width: "675px",
             backgroundColor: "#ffff",
-            top: "20px",
             left: "350px",
           }}
           zoomControl={false}
