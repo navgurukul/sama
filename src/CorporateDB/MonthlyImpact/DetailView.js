@@ -55,7 +55,7 @@ const DetailView = () => {
                 NGO Wise {title} in the Month of January
             </Typography>
             <Box
-             sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 1.5 }}
+             sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 1 }}
              >
                 {(updatedData).map(({ originalId, displayName, count }) => (
                     <Box

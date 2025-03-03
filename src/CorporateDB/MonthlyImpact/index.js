@@ -196,10 +196,12 @@ useEffect(() => {
                           cursor: "pointer",
                            borderRadius: '0.5rem',
                            height: '100%',
+                           display: "flex",
+                           flexDirection: "column",
                          }}
                          onClick={() => handleCardClick(question, value)}
                          >
-                           <CardContent sx={{ p: 3 }}>
+                           <CardContent sx={{ p: 3, flexGrow: 1, display: "flex", flexDirection: "column" }}>
                              <Typography
                                variant="subtitle1"
                                sx={{
