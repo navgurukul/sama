@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { TextField, Popover, Paper, Button,InputAdornment } from '@mui/material';
+import { Typography, TextField, Popover, Paper, Button, InputAdornment, Stack } from '@mui/material';
 import dayjs from 'dayjs';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
@@ -34,12 +34,24 @@ const SingleInputDateRangePicker = ({ onDateRangeChange }) => {
     handleClose();
   };
 
+  const handleReset = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setDisplayValue('');
+    onDateRangeChange({ startDate: null, endDate: null });
+  };
+
+  
+
   const open = Boolean(anchorEl);
   const id = open ? 'date-range-popover' : undefined;
 
+  
+  
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div >
+      <div>
         <TextField
           size="small"
           placeholder="Select Date Range"
@@ -47,14 +59,18 @@ const SingleInputDateRangePicker = ({ onDateRangeChange }) => {
           onClick={handleClick}
           InputProps={{
             readOnly: true,
-            endAdornment:open ? (
+            endAdornment: open ? (
               <InputAdornment position="end">
                 <ArrowDropDownIcon />
               </InputAdornment>
-            ):<ArrowDropUpIcon/>,
+            ) : (
+              <ArrowDropUpIcon />
+            ),
           }}
-          sx={{ width: '300px' ,backgroundColor: "#FFFAF8"}}
-        />
+          sx={{ width: '300px', backgroundColor: "#FFFAF8" }}
+        >
+          
+        </TextField>
         <Popover
           id={id}
           open={open}
@@ -78,7 +94,7 @@ const SingleInputDateRangePicker = ({ onDateRangeChange }) => {
                 value={startDate}
                 onChange={setStartDate}
                 views={['month', 'year']}
-                format="MMMM YYYY"
+                format="MM/YY"
                 slotProps={{
                   textField: {
                     size: "small",
@@ -92,7 +108,7 @@ const SingleInputDateRangePicker = ({ onDateRangeChange }) => {
                 value={endDate}
                 onChange={setEndDate}
                 views={['month', 'year']}
-                format="MMMM YYYY"
+                format="MM/YY"
                 minDate={startDate}
                 slotProps={{
                   textField: {
@@ -102,16 +118,25 @@ const SingleInputDateRangePicker = ({ onDateRangeChange }) => {
                   }
                 }}
               />
-              <Button
-                size="small"
-                variant="contained"
-                onClick={handleApply}
-                disabled={!startDate || !endDate}
-                fullWidth
-                sx={{ marginBlock: "10px" }}
-              >
-                Apply
-              </Button>
+              <Stack direction="row" spacing={2} sx={{ marginBlock: "10px" }}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={handleReset}
+                  fullWidth
+                >
+                  Reset
+                </Button>
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={handleApply}
+                  disabled={!startDate || !endDate}
+                  fullWidth
+                >
+                  Apply
+                </Button>
+              </Stack>
             </div>
           </Paper>
         </Popover>

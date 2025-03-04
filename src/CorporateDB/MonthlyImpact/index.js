@@ -19,67 +19,83 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
   const [data, setData] = useState({});
   const theme = useTheme();
   const navigate = useNavigate();
-    
+
   const getCurrentMonthYear = () => {
     const monthNames = [
-        "January", "February", "March", "April", "May", "June", 
-        "July", "August", "September", "October", "November", "December"
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
     ];
-    
+
     const today = new Date();
     today.setMonth(today.getMonth() - 1); // Move to last month
 
     const month = monthNames[today.getMonth()];
     const year = today.getFullYear();
-    
+
     return `${month}-${year}`;
-};  
-
-useEffect(() => {
-  const monthAbbreviationMapping = {
-    "Jan": "January",
-    "Feb": "February",
-    "Mar": "March",
-    "Apr": "April",
-    "May": "May",
-    "Jun": "June",
-    "Jul": "July",
-    "Aug": "August",
-    "Sep": "September",
-    "Oct": "October",
-    "Nov": "November",
-    "Dec": "December",
   };
 
-  const formatMonthYear = (dateStr) => {
-    if (!dateStr) return "";
-    const [monthAbbr, year] = dateStr.split("'");
-    return `${monthAbbreviationMapping[monthAbbr]}-${year}`;
-  };
+  useEffect(() => {
+    const monthAbbreviationMapping = {
+      "Jan": "January",
+      "Feb": "February",
+      "Mar": "March",
+      "Apr": "April",
+      "May": "May",
+      "Jun": "June",
+      "Jul": "July",
+      "Aug": "August",
+      "Sep": "September",
+      "Oct": "October",
+      "Nov": "November",
+      "Dec": "December",
+    };
 
-  let totalCounts = {};
-  let partnerBreakdown = {};
+    const formatMonthYear = (dateStr) => {
+      if (!dateStr) return "";
+      const [monthAbbr, year] = dateStr.split("'");
+      return `${monthAbbreviationMapping[monthAbbr]}-${year}`;
+    };
 
-  // If dateRange is available, process accordingly
-  if (dateRange?.startDate && dateRange?.endDate) {
-    const formattedStartDate = formatMonthYear(dateRange.startDate);
-    const formattedEndDate = formatMonthYear(dateRange.endDate);
+    let totalCounts = {};
+    let partnerBreakdown = {};
 
-    const from = formattedStartDate || getCurrentMonthYear();
-    const to = formattedEndDate || getCurrentMonthYear();
+    // If dateRange is available, process accordingly
+    if (dateRange?.startDate && dateRange?.endDate) {
+      const formattedStartDate = formatMonthYear(dateRange.startDate);
+      const formattedEndDate = formatMonthYear(dateRange.endDate);
 
-    const [fromMonth, fromYear] = from.split("-");
-    const [toMonth, toYear] = to.split("-");
+      const from = formattedStartDate || getCurrentMonthYear();
+      const to = formattedEndDate || getCurrentMonthYear();
 
-    const fromDate = new Date(`${fromYear}-${monthMapping[fromMonth]}-01`);
-    const toDate = new Date(`${toYear}-${monthMapping[toMonth]}-01`);
+      const [fromMonth, fromYear] = from.split("-");
+      const [toMonth, toYear] = to.split("-");
 
-    Object.entries(apiData).forEach(([partnerId, monthsData]) => {
-      Object.keys(monthsData).forEach((monthYear) => {
-        const [month, year] = monthYear.split("-");
-        const currentDate = new Date(`${year}-${monthMapping[month]}-01`);
+      const fromDate = new Date(`${fromYear}-${monthMapping[fromMonth]}-01`);
+      const toDate = new Date(`${toYear}-${monthMapping[toMonth]}-01`);
 
-        if (currentDate >= fromDate && currentDate <= toDate) {
+      Object.entries(apiData).forEach(([partnerId, monthsData]) => {
+        Object.keys(monthsData).forEach((monthYear) => {
+          const [month, year] = monthYear.split("-");
+          const currentDate = new Date(`${year}-${monthMapping[month]}-01`);
+
+          if (currentDate >= fromDate && currentDate <= toDate) {
+            Object.values(monthsData[monthYear]).forEach((stateData) => {
+              Object.entries(stateData).forEach(([question, value]) => {
+                totalCounts[question] = (totalCounts[question] || 0) + parseInt(value);
+
+                if (!partnerBreakdown[question]) partnerBreakdown[question] = {};
+                partnerBreakdown[question][partnerId] =
+                  (partnerBreakdown[question][partnerId] || 0) + parseInt(value);
+              });
+            });
+          }
+        });
+      });
+    } else {
+      // No date range provided: Process all available data
+      Object.entries(apiData).forEach(([partnerId, monthsData]) => {
+        Object.keys(monthsData).forEach((monthYear) => {
           Object.values(monthsData[monthYear]).forEach((stateData) => {
             Object.entries(stateData).forEach(([question, value]) => {
               totalCounts[question] = (totalCounts[question] || 0) + parseInt(value);
@@ -89,29 +105,13 @@ useEffect(() => {
                 (partnerBreakdown[question][partnerId] || 0) + parseInt(value);
             });
           });
-        }
-      });
-    });
-  } else {
-    // No date range provided: Process all available data
-    Object.entries(apiData).forEach(([partnerId, monthsData]) => {
-      Object.keys(monthsData).forEach((monthYear) => {
-        Object.values(monthsData[monthYear]).forEach((stateData) => {
-          Object.entries(stateData).forEach(([question, value]) => {
-            totalCounts[question] = (totalCounts[question] || 0) + parseInt(value);
-
-            if (!partnerBreakdown[question]) partnerBreakdown[question] = {};
-            partnerBreakdown[question][partnerId] =
-              (partnerBreakdown[question][partnerId] || 0) + parseInt(value);
-          });
         });
       });
-    });
-  }
+    }
 
-  setFilteredData(totalCounts);
-  setDetailedData(partnerBreakdown);
-}, [apiData, dateRange]);
+    setFilteredData(totalCounts);
+    setDetailedData(partnerBreakdown);
+  }, [apiData, dateRange]);
 
   const handleCardClick = (question, value) => {
     navigate("/corpretedb/DataViewDetail", {
@@ -156,75 +156,93 @@ useEffect(() => {
     pdf.save("Monthly_Impact_Report.pdf");
   };
 
+  //default data
+  const getFullDataRange = (apiData) => {
+    const allDates = [];
+
+    Object.values(apiData).forEach((monthsData) => {
+      allDates.push(...Object.keys(monthsData)); // Extract month-year keys
+    });
+
+    if (allDates.length === 0) return ""; // No data available
+
+    const sortedDates = allDates.sort((a, b) => {
+      const [monthA, yearA] = a.split("-");
+      const [monthB, yearB] = b.split("-");
+      return new Date(`${yearA}-${monthMapping[monthA]}-01`) - new Date(`${yearB}-${monthMapping[monthB]}-01`);
+    });
+
+    return `${sortedDates[0]} - ${sortedDates[sortedDates.length - 1]}`;
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: "20px" }}>
-        <Typography
-          variant="h6"
-          sx={{
-            color: "#4A4A4A",
-          }}
-        >
-          Download Report
+        <Typography variant="h6" sx={{ color: "#4A4A4A" }}>
+          Download Report for{" "}
+          {dateRange?.startDate && dateRange?.endDate
+            ? `(${dateRange.startDate} - ${dateRange.endDate})`
+            : `(${getFullDataRange(apiData)})`}
         </Typography>
+
         <IconButton sx={{ color: "#828282" }}>
           <SaveAltIcon onClick={handleDownloadPDF} />
         </IconButton>
       </Box>
       {Object.keys(filteredData).length === 0 ? (
-      <Box 
-             sx={{ 
-               display: 'flex', 
-               justifyContent: 'center', 
-               alignItems: 'center',
-               height: '400px',
-               backgroundColor: '#f5f5f5',
-               borderRadius: '8px'
-             }}
-           >
-             <Typography variant="h6" color="text.secondary">
-                Data is not available.
-             </Typography>
-           </Box>
-    ) : (
-      <Grid container spacing={2}>
-        {Object.entries(filteredData).map(([question, value]) => (
-           <Grid item xs={12} sm={6} lg={4} key={question}>
-                          <Card
-                         className="monthly-impact-card"
-                         sx={{
-                          cursor: "pointer",
-                           borderRadius: '0.5rem',
-                           height: '100%',
-                           display: "flex",
-                           flexDirection: "column",
-                         }}
-                         onClick={() => handleCardClick(question, value)}
-                         >
-                           <CardContent sx={{ p: 3, flexGrow: 1, display: "flex", flexDirection: "column" }}>
-                             <Typography
-                               variant="subtitle1"
-                               sx={{
-                                 mb: 1,
-                                color:"#4A4A4A"
-                               }}
-                             >
-                               {question}
-                             </Typography>
-                             <Box
-                               sx={{
-                                 display: "flex",
-                                 alignItems: "baseline",
-                                 gap: 1,
-                                 mb: 1,
-                               }}
-                             >
-                               <Typography
-                                 variant="h5"
-                               >
-                                 {value}
-                               </Typography>
-                               {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '400px',
+            backgroundColor: '#f5f5f5',
+            borderRadius: '8px'
+          }}
+        >
+          <Typography variant="h6" color="text.secondary">
+            Data is not available.
+          </Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={2}>
+          {Object.entries(filteredData).map(([question, value]) => (
+            <Grid item xs={12} sm={6} lg={4} key={question} >
+              <Box
+                className="monthly-impact-card"
+                sx={{
+                  cursor: "pointer",
+                  borderRadius: '8px',
+                  height: '100%',
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+                onClick={() => handleCardClick(question, value)}
+              >
+                <CardContent sx={{ p: 3, flexGrow: 1, display: "flex", flexDirection: "column" }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      mb: 1,
+                      color: "#4A4A4A"
+                    }}
+                  >
+                    {question}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "baseline",
+                      gap: 1,
+                      mb: 1,
+                    }}
+                  >
+                    <Typography
+                      variant="h5"
+                    >
+                      {value}
+                    </Typography>
+                    {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                                  <TrendingUp sx={{ color: "#27AE60", fontSize: 16 }} />
                                  <Typography
                                    sx={{
@@ -236,21 +254,21 @@ useEffect(() => {
                                   
                                  </Typography>
                                </Box> */}
-                             </Box>
-                             <Typography
-                               variant="body2"
-                               sx={{
-                                 color: "#828282",
-                                 mt : "auto"
-                               }}
-                             >
-                              {question} this month
-                             </Typography>
-                           </CardContent>
-                         </Card>
-                       </Grid>
-        ))}
-      </Grid>
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "#828282",
+                      mt: "auto"
+                    }}
+                  >
+                    {question} this month
+                  </Typography>
+                </CardContent>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
       )}
     </div>
   );
