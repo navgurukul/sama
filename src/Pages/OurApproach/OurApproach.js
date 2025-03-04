@@ -48,7 +48,7 @@ const OurApproach = () => {
                 We strongly believe that investing in women and youth’s digital education
                 can reap multifold benefits for society as a whole. As we
                 rapidly advance in technology, it's crucial to ensure that
-                underserved women aren't left behind. Sama addresses two
+                underserved women and youth aren't left behind. Sama addresses two
                 pressing issues simultaneously:
               </Typography>
             </Grid>
@@ -64,7 +64,7 @@ const OurApproach = () => {
                     ...container,
                     paddingTop: isActive && 6,
                     mt: sectionIndex === 1 ? 8 : 4,
-
+                    color: "#ffff"
                   }}
                 >
                   {section.title}
@@ -114,8 +114,7 @@ const OurApproach = () => {
 
         </Container>
       </Box >
-      <Container>
-
+      <Container maxWidth="md">
         <Box sx={ourteam.ApproachBox} mt={5}>
           <Typography variant="h5" color="#5C785A" gutterBottom>
             Our Working Model

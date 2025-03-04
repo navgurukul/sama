@@ -12,28 +12,32 @@ const originalTeamMembers = [
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video3.mp4",
     name: "Shivani Bawa",
+    Designation: "(CEO’s Office Intern)",
   },
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video4.mp4",
     name: "Nitesh Sharma",
+    Designation: "(COO, Co- Founder)",
   },
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video6.mp4",
     name: "Sudiksha Yadav",
+    Designation: "(Design)",
   },
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video7.mp4",
     name: "Shweta Deshmukh",
-    Designation: "(IT Operation Associate)",
+    Designation: "(Operation)",
   },
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video8.mp4",
     name: "Pradeep Thakur",
+    Designation: "(Operation)",
   },
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video9.mp4",
     name: "Rahul Bauddha",
-    Designation: "(IT Operation Associate)",
+    Designation: "(Operation)",
   },
 ];
 

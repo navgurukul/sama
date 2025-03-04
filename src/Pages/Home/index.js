@@ -106,7 +106,7 @@ function Home() {
               </Typography>
               <Typography variant="body1" gutterBottom>
                 Sama is not just a laptop donation project; it's a comprehensive
-                education initiative aimed at empowering 1 million girls and women
+                education initiative aimed at empowering 1 million women and youth
                 by 2030 with cutting-edge devices and skills.
               </Typography>
               <a href="/our-approach" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>

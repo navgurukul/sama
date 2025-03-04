@@ -158,7 +158,7 @@ function ContactForm() {
                     <b>Last Name</b>
                   </InputLabel>
                   <TextField
-                    label="Ex :  Kumar"
+                    label="Ex : Kumar"
                     margin="normal"
                     fullWidth
                     variant="outlined"
