@@ -144,7 +144,7 @@ const CorporateDb = () => {
             </Typography>
           </Box>
         </Box>
-        <CompactDateRangePicker onDateRangeChange={handleDateRangeChange}/>
+        <CompactDateRangePicker onDateRangeChange={handleDateRangeChange} dateRange={dateRange} apiData={apiData || {}} />
       </Box>
 
       <Box sx={{ 

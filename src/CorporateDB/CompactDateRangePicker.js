@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
-const SingleInputDateRangePicker = ({ onDateRangeChange }) => {
+const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -41,20 +41,46 @@ const SingleInputDateRangePicker = ({ onDateRangeChange }) => {
     onDateRangeChange({ startDate: null, endDate: null });
   };
 
-  
+
 
   const open = Boolean(anchorEl);
   const id = open ? 'date-range-popover' : undefined;
 
-  
-  
+// defult date range
+  const monthMapping = {
+    January: 1, February: 2, March: 3, April: 4, May: 5, June: 6,
+    July: 7, August: 8, September: 9, October: 10, November: 11, December: 12
+  };
+
+  const getFullDataRange = (apiData) => {
+    const allDates = [];
+
+    Object.values(apiData).forEach((monthsData) => {
+      allDates.push(...Object.keys(monthsData));
+    });
+
+    if (allDates.length === 0) return "";
+
+    const sortedDates = allDates.sort((a, b) => {
+      const [monthA, yearA] = a.split("-");
+      const [monthB, yearB] = b.split("-");
+      return new Date(`${yearA}-${monthMapping[monthA]}-01`) - new Date(`${yearB}-${monthMapping[monthB]}-01`);
+    });
+
+    return `${sortedDates[0]} - ${sortedDates[sortedDates.length - 1]}`;
+  };
+  /////////////////////////
+
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div>
+
         <TextField
           size="small"
-          placeholder="Select Date Range"
+          placeholder={dateRange?.startDate && dateRange?.endDate
+            ? `(${dateRange.startDate} - ${dateRange.endDate})`
+            : `(${getFullDataRange(apiData)})`}
           value={displayValue}
           onClick={handleClick}
           InputProps={{
@@ -69,7 +95,6 @@ const SingleInputDateRangePicker = ({ onDateRangeChange }) => {
           }}
           sx={{ width: '300px', backgroundColor: "#FFFAF8" }}
         >
-          
         </TextField>
         <Popover
           id={id}
