@@ -114,7 +114,7 @@ const OurApproach = () => {
 
         </Container>
       </Box >
-      <Container maxWidth="md">
+      {/* <Container maxWidth="md">
         <Box sx={ourteam.ApproachBox} mt={5}>
           <Typography variant="h5" color="#5C785A" gutterBottom>
             Our Working Model
@@ -135,7 +135,50 @@ const OurApproach = () => {
           </img>
 
         </Box>
-      </Container>
+      </Container> */}
+
+<Container maxWidth="md">
+  <Box 
+    sx={{
+      ...ourteam.ApproachBox,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      textAlign: "center"
+    }} 
+    mt={5}
+  >
+    <Typography 
+      variant="h5" 
+      color="#5C785A" 
+      gutterBottom 
+      sx={{ textAlign: "center" }}
+    >
+      Our Working Model
+    </Typography>
+    <Typography 
+      variant="body1" 
+      paragraph 
+      align="center"
+      sx={{ 
+        maxWidth: "90%",
+        mx: "auto",
+        textAlign: "center"
+      }}
+    >
+      Through this comprehensive working model, we transform e-waste into educational tools, thereby providing impact reports to our donors
+    </Typography>
+    <img 
+      src={Model}
+      alt="Logo"
+      style={{
+        display: 'block',
+        maxWidth: '100%',
+        margin: '0 auto 100px auto',
+      }}
+    />
+  </Box>
+</Container>
 
     </>
   );
