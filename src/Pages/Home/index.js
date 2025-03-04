@@ -240,9 +240,16 @@ function Home() {
       </Container>
 
       <Box sx={{ backgroundColor: "#F8F3F0" }}>
-        <Container maxWidth="lg" sx={{ py: "40px", justifyItems: "center", }}>
-          <Typography variant="h5" sx={{ textAlign: "center" }}>Sustainability Development Goals</Typography>
-          <Typography variant="body1" style={{ width: "65%", margin: "16px 0px", textAlign: "center" }}>
+        <Container maxWidth="lg" sx={{ py: "40px", 
+          justifyItems: "center",
+           }}>
+          <Typography variant="h5" sx={{ textAlign: "center" }} >Sustainability Development Goals</Typography>
+          <Typography variant="body1" 
+          align="center"
+          style={{ width: "65%", margin: "16px 0px", justifyItems: "center",
+            textAlign: "center"
+           }}
+          >
             Sama's mission of repurposing e-waste for educational use by underserved women & youth aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
           </Typography>
           <Grid container spacing={4} sx={{ mt: { xs: 0, md: 2 } }}>

@@ -120,7 +120,7 @@ const OurApproach = () => {
           <Typography variant="h5" color="#5C785A" gutterBottom>
             Our Working Model
           </Typography>
-          <Typography variant="body1" paragraph textAlign="center">
+          <Typography variant="body1" paragraph align="center" >
             Through this comprehensive working model, we 
             transform e-waste into educational tools , thereby 
             providing impact reports to our donors

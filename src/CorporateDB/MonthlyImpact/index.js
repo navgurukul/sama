@@ -123,6 +123,7 @@ useEffect(() => {
     });
   };
 
+
   const handleDownloadPDF = () => {
     if (!filteredData || Object.keys(filteredData).length === 0) {
       alert("No data available to download!");
@@ -153,6 +154,7 @@ useEffect(() => {
         yOffset = 20;
       }
     });
+
     pdf.save("Monthly_Impact_Report.pdf");
   };
 
