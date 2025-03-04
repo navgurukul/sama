@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { Typography, TextField, Popover, Paper, Button, InputAdornment, Stack } from '@mui/material';
+import { TextField, Popover, Paper, Button, InputAdornment, Stack } from '@mui/material';
 import dayjs from 'dayjs';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
@@ -41,12 +41,10 @@ const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) =
     onDateRangeChange({ startDate: null, endDate: null });
   };
 
-
-
   const open = Boolean(anchorEl);
   const id = open ? 'date-range-popover' : undefined;
 
-// defult date range
+  // Default date range
   const monthMapping = {
     January: 1, February: 2, March: 3, April: 4, May: 5, June: 6,
     July: 7, August: 8, September: 9, October: 10, November: 11, December: 12
@@ -59,7 +57,7 @@ const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) =
       allDates.push(...Object.keys(monthsData));
     });
 
-    if (allDates.length === 0) return "";
+    if (allDates.length === 0) return null;
 
     const sortedDates = allDates.sort((a, b) => {
       const [monthA, yearA] = a.split("-");
@@ -67,20 +65,35 @@ const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) =
       return new Date(`${yearA}-${monthMapping[monthA]}-01`) - new Date(`${yearB}-${monthMapping[monthB]}-01`);
     });
 
-    return `${sortedDates[0]} - ${sortedDates[sortedDates.length - 1]}`;
+    return {
+      start: `${sortedDates[0]}`,
+      end: `${sortedDates[sortedDates.length - 1]}`
+    };
   };
-  /////////////////////////
 
+  useEffect(() => {
+    if (apiData) {
+      const range = getFullDataRange(apiData);
+      if (range) {
+        const [startMonth, startYear] = range.start.split("-");
+        const [endMonth, endYear] = range.end.split("-");
+
+        const formattedStart = dayjs(`${startYear}-${monthMapping[startMonth]}-01`).format("MMM'YYYY");
+        const formattedEnd = dayjs(`${endYear}-${monthMapping[endMonth]}-01`).format("MMM'YYYY");
+
+        setStartDate(dayjs(`${startYear}-${monthMapping[startMonth]}-01`));
+        setEndDate(dayjs(`${endYear}-${monthMapping[endMonth]}-01`));
+        setDisplayValue(`${formattedStart} - ${formattedEnd}`);
+      }
+    }
+  }, [apiData]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div>
-
         <TextField
           size="small"
-          placeholder={dateRange?.startDate && dateRange?.endDate
-            ? `(${dateRange.startDate} - ${dateRange.endDate})`
-            : `(${getFullDataRange(apiData)})`}
+          placeholder={displayValue }
           value={displayValue}
           onClick={handleClick}
           InputProps={{
@@ -94,8 +107,7 @@ const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) =
             ),
           }}
           sx={{ width: '300px', backgroundColor: "#FFFAF8" }}
-        >
-        </TextField>
+        />
         <Popover
           id={id}
           open={open}
@@ -119,7 +131,7 @@ const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) =
                 value={startDate}
                 onChange={setStartDate}
                 views={['month', 'year']}
-                format="MM/YY"
+                format="MMM'YYYY"
                 slotProps={{
                   textField: {
                     size: "small",
@@ -133,7 +145,7 @@ const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) =
                 value={endDate}
                 onChange={setEndDate}
                 views={['month', 'year']}
-                format="MM/YY"
+                format="MMM'YYYY"
                 minDate={startDate}
                 slotProps={{
                   textField: {
