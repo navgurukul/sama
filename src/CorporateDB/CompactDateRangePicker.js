@@ -127,34 +127,37 @@ const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) =
         >
           <Paper elevation={0} className="p-3">
             <div className="space-y-3">
-              <DesktopDatePicker
-                value={startDate}
-                onChange={setStartDate}
-                views={['month', 'year']}
-                format="MMM'YYYY"
-                slotProps={{
-                  textField: {
-                    size: "small",
-                    fullWidth: true,
-                    placeholder: "Start Month"
-                  }
-                }}
-                sx={{ marginBlock: "10px" }}
-              />
-              <DesktopDatePicker
-                value={endDate}
-                onChange={setEndDate}
-                views={['month', 'year']}
-                format="MMM'YYYY"
-                minDate={startDate}
-                slotProps={{
-                  textField: {
-                    size: "small",
-                    fullWidth: true,
-                    placeholder: "End Month"
-                  }
-                }}
-              />
+            <DesktopDatePicker
+  value={startDate}
+  onChange={setStartDate}
+  views={['month', 'year']}
+  format="MMM'YYYY"
+  shouldDisableYear={(year) => year.year() > dayjs().year()} // Disable future years
+  slotProps={{
+    textField: {
+      size: "small",
+      fullWidth: true,
+      placeholder: "Start Month"
+    }
+  }}
+  sx={{ marginBlock: "10px" }}
+/>
+<DesktopDatePicker
+  value={endDate}
+  onChange={setEndDate}
+  views={['month', 'year']}
+  format="MMM'YYYY"
+  minDate={startDate}
+  shouldDisableYear={(year) => year.year() > dayjs().year()} // Disable future years
+  slotProps={{
+    textField: {
+      size: "small",
+      fullWidth: true,
+      placeholder: "End Month"
+    }
+  }}
+/>
+
               <Stack direction="row" spacing={2} sx={{ marginBlock: "10px" }}>
                 <Button
                   size="small"

@@ -128,34 +128,41 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
       alert("No data available to download!");
       return;
     }
-
+  
     const pdf = new jsPDF();
     const pageWidth = pdf.internal.pageSize.getWidth();
     let yOffset = 20;
-
+  
     pdf.setFontSize(18);
     const title = "Monthly Impact Report";
     const titleWidth = pdf.getTextWidth(title);
-    pdf.text(title, (pageWidth - titleWidth) / 2, yOffset); // Centered title
+    pdf.text(title, (pageWidth - titleWidth) / 2, yOffset);
     yOffset += 10;
-
+  
+    pdf.setFontSize(14);
+    const dateRangeText = dateRange?.startDate && dateRange?.endDate
+      ? `from: ${dateRange.startDate} - ${dateRange.endDate}`
+      : `from: ${getFullDataRange(apiData)}`;
+  
+    pdf.text(dateRangeText, (pageWidth - pdf.getTextWidth(dateRangeText)) / 2, yOffset);
+    yOffset += 10;
+  
     pdf.setFontSize(12);
-
+  
     Object.entries(filteredData).forEach(([question, value]) => {
       const text = `${question}: ${value}`;
-      const textWidth = pdf.getTextWidth(text);
-      pdf.text(text, (pageWidth - textWidth) / 2, yOffset); // Centered text
+      pdf.text(text, (pageWidth - pdf.getTextWidth(text)) / 2, yOffset);
       yOffset += 8;
-
-      // Add new page if content exceeds page height
+  
       if (yOffset > 280) {
         pdf.addPage();
         yOffset = 20;
       }
     });
+  
     pdf.save("Monthly_Impact_Report.pdf");
   };
-
+  
   //default data
   const getFullDataRange = (apiData) => {
     const allDates = [];
