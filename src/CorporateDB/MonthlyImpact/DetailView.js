@@ -65,7 +65,7 @@ const DetailView = () => {
                     <Box
                         key={originalId}
                         onClick={() => changeRoute(originalId)}
-                        sx={{ display: "grid", gridTemplateColumns: "10fr 2fr", gridGap: "5px" }}
+                        sx={{ display: "grid", gridTemplateColumns: "10fr 2fr", gridGap: "16px" }}
                     >
                         <Typography
                             sx={{
@@ -108,7 +108,7 @@ const DetailView = () => {
                     </Box>
                 ))}
 
-                <Box sx={{ display: "grid", gridTemplateColumns: "10fr 2fr", gridGap: "5px" }}>
+                <Box sx={{ display: "grid", gridTemplateColumns: "10fr 2fr", gridGap: "16px" }}>
                     <Typography
                         sx={{
                             bgcolor: "#fff",

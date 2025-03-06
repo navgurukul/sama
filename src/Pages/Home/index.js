@@ -239,52 +239,65 @@ function Home() {
         </Box>
       </Container>
 
-      <Box sx={{ backgroundColor: "#F8F3F0" }}>
-        <Container maxWidth="lg" sx={{ py: "40px", justifyItems: "center", }}>
-          <Typography variant="h5" sx={{ textAlign: "center" }}>Sustainability Development Goals</Typography>
-          <Typography variant="body1" mt={2} style={{ width: "65%", textAlign: "center" }}>
-            Sama's mission of repurposing e-waste for educational use by underserved women & youth aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
-          </Typography>
-          <Grid container spacing={4} sx={{ mt: { xs: 0, md: 2 } }}>
-            {[
-              { src: "./assets/sub_1.jpg", overlaySrc: require("./assets/h1.png"), alt: "Gender Equality" },
-              { src: "./assets/sub_2.jpg", overlaySrc: require("./assets/h2.png"), alt: "Gender Equality" },
-              { src: "./assets/sub_4.jpg", overlaySrc: require("./assets/h3.png"), alt: "Quality Education" },
-            ].map((item, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Box sx={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-                  <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
-                  <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
-                </Box>
-              </Grid>
-            ))}
+     
 
-            <Grid
-              item
-              xs={12}
-              md={8}
-              sx={{
-                display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: 4,
-                marginLeft: { xs: "0px", md: "200px" }
-              }}
-            >
-              {[
-                { src: "./assets/laptop_1.jpg", overlaySrc: require("./assets/h4.png"), alt: "Growth" },
-                { src: "./assets/ngStudent.jpg", overlaySrc: require("./assets/h5.png"), alt: "Climate Action" },
-              ].map((item, index) => (
-                <Box key={index} sx={{ position: 'relative', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
-                  <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
-                  <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
-                </Box>
-              ))}
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
+<Box sx={{ backgroundColor: "#F8F3F0" }}>
+  <Container maxWidth="lg" sx={{ py: "40px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <Typography variant="h5" sx={{ textAlign: "center" }}>Sustainability Development Goals</Typography>
+    <Typography 
+      variant="body1" 
+      align="center"
+      sx={{
+        width: { xs: "90%", sm: "80%", md: "65%" },
+        margin: "16px auto",
+        textAlign: "center"
+      }}
+    >
+      Sama's mission of repurposing e-waste for educational use by underserved women & youth aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
+    </Typography>
+    <Grid container spacing={4} sx={{ mt: { xs: 0, md: 2 } }}>
+      {[
+        { src: "./assets/sub_1.jpg", overlaySrc: require("./assets/h1.png"), alt: "Gender Equality" },
+        { src: "./assets/sub_2.jpg", overlaySrc: require("./assets/h2.png"), alt: "Gender Equality" },
+        { src: "./assets/sub_4.jpg", overlaySrc: require("./assets/h3.png"), alt: "Quality Education" },
+      ].map((item, index) => (
+        <Grid item xs={12} md={4} key={index}>
+          <Box sx={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
+            <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
+            <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
+          </Box>
+        </Grid>
+      ))}
+
+      <Grid
+        item
+        xs={12}
+        md={8}
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 4,
+          marginLeft: { xs: "0px", md: "200px" }
+        }}
+      >
+        {[
+          { src: "./assets/laptop_1.jpg", overlaySrc: require("./assets/h4.png"), alt: "Growth" },
+          { src: "./assets/ngStudent.jpg", overlaySrc: require("./assets/h5.png"), alt: "Climate Action" },
+        ].map((item, index) => (
+          <Box key={index} sx={{ position: 'relative', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+            <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
+            <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
+          </Box>
+        ))}
+      </Grid>
+    </Grid>
+  </Container>
+</Box>
+
+
+
       <TestimonialSlider />
       <ContactForm />
     </>

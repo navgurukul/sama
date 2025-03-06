@@ -125,6 +125,7 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
     });
   };
 
+
   const handleDownloadPDF = () => {
     if (!filteredData || Object.keys(filteredData).length === 0) {
       alert("No data available to download!");
