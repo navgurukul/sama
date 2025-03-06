@@ -119,6 +119,8 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
         title: question,
         total: value,
         detailedData: detailedData[question],
+        dateRange:dateRange,
+        fullDataRange:getFullDataRange(apiData)
       },
     });
   };
@@ -179,7 +181,7 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
       return new Date(`${yearA}-${monthMapping[monthA]}-01`) - new Date(`${yearB}-${monthMapping[monthB]}-01`);
     });
 
-    return `${sortedDates[0]} - ${sortedDates[sortedDates.length - 1]}`;
+    return `${sortedDates[0]} to ${sortedDates[sortedDates.length - 1]}`;
   };
 
   return (
