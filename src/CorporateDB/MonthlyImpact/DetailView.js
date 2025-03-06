@@ -5,8 +5,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 const DetailView = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { title, total, detailedData } = location.state || {};
+    const { title, total, detailedData, dateRange, fullDataRange } = location.state || {};
+    const showingDate = dateRange?.startDate && dateRange?.endDate
+    ? `from: ${dateRange.startDate} - ${dateRange.endDate}`
+    : `from: ${fullDataRange}`;
     const [ngosName, setNgosName] = useState({});
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -52,7 +56,7 @@ const DetailView = () => {
             }}
         >
             <Typography variant="h6" sx={{ color: "#4A4A4A", mb: 3, mt: 5 }}>
-                NGO Wise {title} in the Month of January
+                NGO Wise {title} in the Month of {showingDate}
             </Typography>
             <Box
                 sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 1 }}

@@ -123,49 +123,55 @@ const CorporateDb = () => {
   
 
   return (
-    <Container maxWidth="xl" sx={{ backgroundColor: "#FFFAF8" , marginTop: '-3rem', paddingTop: '3rem' }}>
-    <Container maxWidth="lg" sx={{ mt: 8 }}>
-      <Box sx={{ 
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        my: 3 
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <img 
-            src={AmazonLogo}
-            alt="Amazon Logo"
-            style={{ height: '40px' }}
-          />
-          <Box>
-            <Typography variant="h6">Digital Hardware Tracker</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Monitor your e-waste management efforts with ease
-            </Typography>
+    <Box sx={{ 
+      backgroundColor: "#FFFAF8", 
+      minHeight: "100vh",  // Ensures it covers the whole viewport height
+      display: "flex",
+      flexDirection: "column"
+    }}>
+      <Container maxWidth="lg" sx={{ pt: 8, flexGrow: 1 }}>
+        <Box sx={{ 
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          py: 3,
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <img 
+              src={AmazonLogo}
+              alt="Amazon Logo"
+              style={{ height: '40px' }}
+            />
+            <Box>
+              <Typography variant="h6">Digital Hardware Tracker</Typography>
+              <Typography variant="body2" color="text.secondary">
+                Monitor your e-waste management efforts with ease
+              </Typography>
+            </Box>
           </Box>
+          <CompactDateRangePicker onDateRangeChange={handleDateRangeChange} dateRange={dateRange} apiData={apiData || {}} />
         </Box>
-        <CompactDateRangePicker onDateRangeChange={handleDateRangeChange} dateRange={dateRange} apiData={apiData || {}} />
-      </Box>
-
-      <Box sx={{ 
-        "& .MuiTabs-indicator": {
-          display: "none",
-        }
-      }}>
-        <Tabs 
-          value={currentTab}
-          onChange={handleTabChange}
-          sx={{ mb: 3 }}
-        >
-          <Tab label="Location-Wise Impact" sx={TabStyle(0)} />
-          <Tab label="Monthly Impact" sx={TabStyle(1)} />
-          {/* <Tab label="Yearly Impact" sx={TabStyle(2)} /> */}
-        </Tabs>
-      </Box>
-
-      {renderContent()}
-    </Container>
-    </Container>
+    
+        <Box sx={{ 
+          "& .MuiTabs-indicator": {
+            display: "none",
+          }
+        }}>
+          <Tabs 
+            value={currentTab}
+            onChange={handleTabChange}
+            sx={{ mb: 3 }}
+          >
+            <Tab label="Location-Wise Impact" sx={TabStyle(0)} />
+            <Tab label="Monthly Impact" sx={TabStyle(1)} />
+            {/* <Tab label="Yearly Impact" sx={TabStyle(2)} /> */}
+          </Tabs>
+        </Box>
+    
+        {renderContent()}
+      </Container>
+    </Box>
+    
   );
 };
 
