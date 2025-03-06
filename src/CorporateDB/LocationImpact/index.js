@@ -20,8 +20,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
   // Reference to the map container
   const mapContainerRef = useRef(null);
 
-  // console.log(dateRange, 'dateRange');
-  // console.log(apiData, 'apiData');
+
 
   useEffect(() => {
     const fetchGeoData = async () => {
@@ -80,7 +79,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
                     learningHour: 0
                   };
                 }
-
+                
                 // Parse metrics with fallback to 0 if invalid
                 transformedData[state].teachersTrained += parseInt(metrics["Number of Teachers Trained"]) || 0;
                 transformedData[state].schoolVisits += parseInt(metrics["Number of School Visits"]) || 0;
@@ -124,10 +123,10 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
           Object.entries(program).forEach(([monthStr, monthData]) => {
             const apiMonth = parseMonthString(monthStr);
 
-            if (apiMonth.isValid() &&
-              apiMonth.isBetween(selectedStartDate, selectedEndDate, 'month', '[]')) {
+            if (apiMonth.isValid() && 
+                apiMonth.isBetween(selectedStartDate, selectedEndDate, 'month', '[]')) {
               hasDataInRange = true;
-
+              
               Object.entries(monthData).forEach(([state, metrics]) => {
                 if (!statePrograms[state]) {
                   statePrograms[state] = new Set();
@@ -144,7 +143,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
                     learningHour: 0
                   };
                 }
-
+                
                 transformedData[state].teachersTrained += parseInt(metrics["Number of Teachers Trained"]) || 0;
                 transformedData[state].schoolVisits += parseInt(metrics["Number of School Visits"]) || 0;
                 transformedData[state].sessionConducted += parseInt(metrics["Number of Sessions Conducted"]) || 0;
@@ -182,35 +181,37 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
   // Function to calculate the position of the dialog based on event coordinates
   const calculateDialogPosition = (e) => {
     if (!mapContainerRef.current) return { x: 0, y: 0 };
-
+    
     // Get map container bounds
     const mapBounds = mapContainerRef.current.getBoundingClientRect();
-
+    
+    
     // Get coordinates relative to map container
-    let x = e.originalEvent.clientX - mapBounds.left;
-    let y = e.originalEvent.clientY - mapBounds.top;
-
+    let x = (e.originalEvent.clientX - mapBounds.left)- 10 ;
+    let y = (e.originalEvent.clientY - mapBounds.top) + 10 ;
+    
     // Adjust position to ensure dialog stays within map bounds
     // Assume dialog is approximately 300px wide and 400px tall
     const dialogWidth = 300;
     const dialogHeight = 400;
-
+    
     // Ensure dialog doesn't go beyond right edge
     if (x + dialogWidth > mapBounds.width) {
       x = x - dialogWidth;
     }
-
+    
     // Ensure dialog doesn't go beyond bottom edge
     if (y + dialogHeight > mapBounds.height) {
       y = y - dialogHeight;
     }
-
+    
     return { x, y };
   };
 
   const onEachState = (feature, layer) => {
     const stateName = feature.properties.st_nm;
     const hasData = stateData && Object.keys(stateData).includes(stateName);
+    let hoverTimeout;
 
     layer.setStyle({
       fillColor: hasData ? "#CED7CE" : "#E0E0E0",
@@ -226,25 +227,47 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
       mouseover: (e) => {
         if (hasData) {
           // Calculate and set the dialog position based on mouse position
-          const position = calculateDialogPosition(e);
-          setDialogPosition(position);
 
-          setHoveredState({
-            name: stateName,
-            ...stateData[stateName],
-          });
-          e.target.setStyle({
-            fillColor: "#5C785A",
-            fillOpacity: 1,
-            opacity: 1,
-          });
-          e.target.getElement().style.cursor = 'pointer';
+          if (hoverTimeout) clearTimeout(hoverTimeout);
+
+          hoverTimeout = setTimeout(() => {
+            const position = calculateDialogPosition(e);
+            setDialogPosition(position);
+            
+            setHoveredState({
+              name: stateName,
+              ...stateData[stateName],
+            });
+            e.target.setStyle({
+              fillColor: "#5C785A",
+              fillOpacity: 1,
+              opacity: 1,
+            });
+            e.target.getElement().style.cursor = 'pointer';
+          }, 50);
+
+          // const position = calculateDialogPosition(e);
+          // setDialogPosition(position);
+          
+          // setHoveredState({
+          //   name: stateName,
+          //   ...stateData[stateName],
+          // });
+          // e.target.setStyle({
+          //   fillColor: "#5C785A",
+          //   fillOpacity: 1,
+          //   opacity: 1,
+          // });
+          // e.target.getElement().style.cursor = 'pointer';
         } else {
           e.target.getElement().style.cursor = 'default';
         }
-
+        
       },
       mouseout: (e) => {
+
+        if (hoverTimeout) clearTimeout(hoverTimeout);
+
         setHoveredState(null);
         e.target.setStyle({
           fillColor: hasData ? "#CED7CE" : "#E0E0E0",
@@ -260,7 +283,7 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
           // Calculate and set the dialog position based on click position
           const position = calculateDialogPosition(e);
           setDialogPosition(position);
-
+          
           setHoveredState({
             name: stateName,
             ...stateData[stateName],
@@ -277,10 +300,10 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
 
   if (error) {
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
           alignItems: 'center',
           height: '400px',
           backgroundColor: '#f5f5f5',
@@ -318,12 +341,12 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ position: "relative", right: "20px", }}>
+    <Container maxWidth="lg" sx={{position:"relative" ,right:"20px",}}>
       <Typography variant="h6">
         State Wise NGO Presence Across India
         {dateRange?.startDate && dateRange?.endDate
-          ? `(${dateRange.startDate} - ${dateRange.endDate})`
-          : `(${getFullDataRange(apiData)})`}
+            ? `(${dateRange.startDate} - ${dateRange.endDate})`
+            : `(${getFullDataRange(apiData)})`}
       </Typography>
       <div style={{ position: 'relative' }} ref={mapContainerRef}>
         <MapContainer
@@ -355,8 +378,8 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
         </MapContainer>
 
         {hoveredState && (
-          <div
-            className="hover-dialog"
+          <div 
+            className="hover-dialog" 
             style={{
               position: 'absolute',
               left: `${dialogPosition.x}px`,
