@@ -44,14 +44,15 @@ const DetailView = () => {
     };
 
     return (
+        <Container maxWidth= "xl" sx = {{backgroundColor: "#FFFAF8",}}>
         <Container
             maxWidth="sm"
             sx={{
-                mt: 2,
+                // mt: 2,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                backgroundColor: "#fff",
+                backgroundColor: "#FFFAF8", 
                 minHeight: "100vh",
             }}
         >
@@ -129,6 +130,7 @@ const DetailView = () => {
                         sx={{
                             px: 3,
                             py: 0.5,
+                            bgcolor: "#fff",
                             borderRadius: "6px",
                             display: "flex",
                             alignItems: "center",
@@ -150,6 +152,7 @@ const DetailView = () => {
             >
                 Go to Dashboard
             </Button>
+        </Container>
         </Container>
     );
 };

@@ -186,7 +186,7 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: "20px" }}>
         <Typography variant="h6" sx={{ color: "#4A4A4A" }}>
           Download Report for{" "}
@@ -194,7 +194,6 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
             ? `(${dateRange.startDate} - ${dateRange.endDate})`
             : `(${getFullDataRange(apiData)})`}
         </Typography>
-
         <IconButton sx={{ color: "#828282" }}>
           <SaveAltIcon onClick={handleDownloadPDF} />
         </IconButton>
