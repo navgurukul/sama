@@ -5,16 +5,17 @@ import YearlyImpact from "./YearlyImpact";
 import { Box, Tab, Tabs, Container, Typography, CircularProgress } from "@mui/material";
 import AmazonLogo from "./Image/amzon.png";
 import CompactDateRangePicker from "./CompactDateRangePicker";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const CorporateDb = () => {
-  const location = useLocation();  // Get the sent data
+  const location = useLocation();
+  const navigate = useNavigate();
   const [currentTab, setCurrentTab] = useState(location.state?.tabIndex || 0);
   const [dateRange, setDateRange] = useState({
     startDate: '',
     endDate: '',
   });
-  const [apiData, setApiData] = useState(null);
+  const [apiData, setApiData] = useState({}); // Default empty object
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -62,41 +63,37 @@ const CorporateDb = () => {
         </Box>
       );
     }
-
+  
     if (error) {
       return (
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center',
-          height: '400px',
-          backgroundColor: '#f5f5f5',
-          borderRadius: '8px'
-        }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
           <Typography variant="h6" color="text.secondary">
             {error}
           </Typography>
         </Box>
       );
     }
-
+  
+    if (!apiData || Object.keys(apiData).length === 0) {
+      return (
+        <Typography variant="h6" align="center">
+          No data available
+        </Typography>
+      );
+    }
+  
     switch (currentTab) {
-      case 0: 
-        return <LocationWiseImpact 
-          dateRange={dateRange} 
-          apiData={apiData} 
-        />;
-      case 1: 
-        return <MonthlyImpact 
-          dateRange={dateRange}
-          apiData={apiData}
-        />;
-      case 2: 
+      case 0:
+        return <LocationWiseImpact dateRange={dateRange} apiData={apiData} />;
+      case 1:
+        return <MonthlyImpact dateRange={dateRange} apiData={apiData} />;
+      case 2:
         return <YearlyImpact />;
-      default: 
+      default:
         return null;
     }
   };
+  
 
   const TabStyle = (index) => ({
     textTransform: 'none',
@@ -117,52 +114,66 @@ const CorporateDb = () => {
       opacity: 0.9 // Prevents background color change on hover
     }
   });
+  useEffect(() => {
+    if (location.state?.tabIndex !== undefined) {
+      setCurrentTab(location.state.tabIndex);
+      navigate("/corporate", { replace: true, state: {} }); // Clears state safely
+    }
+  }, [location.state, navigate]);
   
 
   return (
-    <Container maxWidth="xl" sx={{ backgroundColor: "#FFFAF8" , marginTop: '-3rem', paddingTop: '3rem' }}>
-    <Container maxWidth="lg" sx={{ mt: 8 }}>
-      <Box sx={{ 
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        my: 3 
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <img 
-            src={AmazonLogo}
-            alt="Amazon Logo"
-            style={{ height: '40px' }}
-          />
-          <Box>
-            <Typography variant="h6">Digital Hardware Tracker</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Monitor your e-waste management efforts with ease
-            </Typography>
+    <Box sx={{ 
+      backgroundColor: "#FFFAF8",
+      minHeight: "100vh",  // Ensures it covers the whole viewport height
+      display: "flex",
+      flexDirection: "column"
+    }}>
+      <Container maxWidth="lg" 
+      sx={{ pt: 1, flexGrow: 1 }}
+      >
+        <Box sx={{ 
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          py: 3,
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <img 
+              src={AmazonLogo}
+              alt="Amazon Logo"
+              style={{ height: '40px' }}
+            />
+            <Box>
+              <Typography variant="h6">Digital Hardware Tracker</Typography>
+              <Typography variant="body2" color="text.secondary">
+                Monitor your e-waste management efforts with ease
+              </Typography>
+            </Box>
           </Box>
+          <CompactDateRangePicker onDateRangeChange={handleDateRangeChange} dateRange={dateRange} apiData={apiData || {}} />
         </Box>
-        <CompactDateRangePicker onDateRangeChange={handleDateRangeChange}/>
-      </Box>
-
-      <Box sx={{ 
-        "& .MuiTabs-indicator": {
-          display: "none",
-        }
-      }}>
-        <Tabs 
-          value={currentTab}
-          onChange={handleTabChange}
-          sx={{ mb: 3 }}
-        >
-          <Tab label="Location-Wise Impact" sx={TabStyle(0)} />
-          <Tab label="Monthly Impact" sx={TabStyle(1)} />
-          <Tab label="Yearly Impact" sx={TabStyle(2)} />
-        </Tabs>
-      </Box>
-
-      {renderContent()}
-    </Container>
-    </Container>
+    
+        <Box sx={{ 
+          "& .MuiTabs-indicator": {
+            display: "none",
+          }
+        }}>
+          <Tabs 
+            value={currentTab}
+            onChange={handleTabChange}
+            sx={{ mb: 3 }}
+          >
+            <Tab label="Location-Wise Impact" sx={TabStyle(0)} />
+            <Tab label="Monthly Impact" sx={TabStyle(1)} />
+            {/* <Tab label="Yearly Impact" sx={TabStyle(2)} /> */}
+          </Tabs>
+        </Box>
+    
+        {renderContent()}
+      </Container>
+    </Box>
+    
   );
 };
 
