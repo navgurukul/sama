@@ -1,6 +1,6 @@
 export const ContainerStyle = {
     marginTop: '30px',
-    maxWidth: 'lg',
+    
 };
 export const BoxStyle = (showVideo) => ({
     position: 'relative',

@@ -165,73 +165,72 @@ function Donation() {
 
   return (
     <>
-      <Container maxWidth="xl" style={{ backgroundColor: "#E0E0E0" }}>
-        <Box sx={{ backgroundColor: "#E0E0E0" }} paddingBottom="80px" paddingTop="80px">
-          <Container maxWidth="lg">
-            <Typography
-              variant="h6"
-              sx={{ color: "#4A4A4A", fontSize: "24px" }}
-            >
-              Support Sama's Mission
-            </Typography>
-            <Grid container spacing={4} sx={{ mt: 1 }}>
-              <Grid item xs={12} md={4}>
-                <Box>
-                  <img src={icon1} />
-                  <Typography
-                    className="customSubtitle1"
-                    sx={{ mt: 2 }}
-                  >
-                    Corporate Laptop Donation
-                  </Typography>
-                  <Typography variant="body1">
-                    Transform your end-of-life laptops into powerful tools
-                    for education and empowerment.
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Box>
-                  <img
-                    src={require("./assets/Group 22.svg").default}
-                    alt="Corporate Impact Funding"
-                  />
-                  <Typography
-                    className="customSubtitle1"
-                    variant="subtitle1"
-                    sx={{ mt: 2 ,color: "#4A4A4A"}}
-                  >
-                    Corporate Impact Funding
-                  </Typography>
-                  <Typography variant="body1">
-                    Partner with us to scale our impact and bridge the digital
-                    divide for underserved women and youth.
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Box>
-                  <img
-                    src={require("./assets/Group 23.svg").default}
-                    alt="Individual Contribution"
-                  />
-                  <Typography
-                    className="customSubtitle1"
-                    sx={{ mt: 2 }}
-                  // sx={{ margin: "14px 0px" }}
-                  >
-                    Individual Contribution
-                  </Typography>
-                  <Typography variant="body1">
-                    Join our mission to empower women and youth through digital
-                    access and volunteering.
-                  </Typography>
-                </Box>
-              </Grid>
+      <Box sx={{ backgroundColor: "#E0E0E0" }} paddingBottom="80px" paddingTop="80px">
+        <Container maxWidth="lg">
+          <Typography
+            variant="h6"
+            sx={{ color: "#4A4A4A", fontSize: "24px" }}
+          >
+            Support Sama's Mission
+          </Typography>
+          <Grid container spacing={4} sx={{ mt: 1 }}>
+            <Grid item xs={12} md={4}>
+              <Box>
+                <img src={icon1} />
+                <Typography
+                  className="customSubtitle1"
+                  sx={{ mt: 2 }}
+                >
+                  Corporate Laptop Donation
+                </Typography>
+                <Typography variant="body1">
+                  Transform your end-of-life laptops into powerful tools
+                  for education and empowerment.
+                </Typography>
+              </Box>
             </Grid>
-          </Container>
-        </Box>
-      </Container>
+            <Grid item xs={12} md={4}>
+              <Box>
+                <img
+                  src={require("./assets/Group 22.svg").default}
+                  alt="Corporate Impact Funding"
+                />
+                <Typography
+                  className="customSubtitle1"
+                  variant="subtitle1"
+                  sx={{ mt: 2 ,color: "#4A4A4A"}}
+                >
+                  Corporate Impact Funding
+                </Typography>
+                <Typography variant="body1">
+                  Partner with us to scale our impact and bridge the digital
+                  divide for underserved women and youth.
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Box>
+                <img
+                  src={require("./assets/Group 23.svg").default}
+                  alt="Individual Contribution"
+                />
+                <Typography
+                  className="customSubtitle1"
+                  sx={{ mt: 2 }}
+                // sx={{ margin: "14px 0px" }}
+                >
+                  Individual Contribution
+                </Typography>
+                <Typography variant="body1">
+                  Join our mission to empower women and youth through digital
+                  access and volunteering.
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+     
 
       <Container maxWidth="lg" sx={{ pt: "70px" }}>
         <Typography variant="h5">Your Details</Typography>

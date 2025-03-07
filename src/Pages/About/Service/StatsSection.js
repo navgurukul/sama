@@ -4,9 +4,9 @@ import ourteam from "../OurTeam/style";
 const StatsGrid = () => {
   return (
     <>
-      <Container maxWidth="xl" sx={{backgroundColor: " #F0F4EF",}} >
-        <Box sx={ourteam.FullBox} >
-        <Grid container spacing={2} justifyContent="center" >
+      <Box sx={{backgroundColor: " #F0F4EF",}} >
+        <Container maxWidth="lg" sx={ourteam.FullBox} >
+          <Grid container spacing={2} justifyContent="center" >
             <Grid item xs={12} sm={6} md={4}>
               <Typography variant="h5" textAlign="center">1 Lakh +</Typography>
               <Typography mt={1} variant="body1" textAlign="center">Students Impacted</Typography>
@@ -32,8 +32,8 @@ const StatsGrid = () => {
               <Typography mt={1} variant="body1" textAlign="center">Presence</Typography>
             </Grid>
           </Grid>
-        </Box>
-      </Container>
+        </Container>
+      </Box>
     </>
   )
 }

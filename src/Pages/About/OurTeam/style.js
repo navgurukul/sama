@@ -1,4 +1,5 @@
-import { border, height, maxWidth, spacing, textAlign, width } from "@mui/system";
+import { border, height, maxHeight, maxWidth, padding, spacing, textAlign, width } from "@mui/system";
+import { Radius } from "lucide-react";
 
 const ourteam = {
     container: {
@@ -140,7 +141,7 @@ const ourteam = {
     GreenBox: {
         height:"100%",
         backgroundColor: "#5C785A",
-        padding: { xs: "30px 32px", md: "50px 0" },
+        padding: { xs: "30px 32px", md: "80px 0" },
         display: "flex",
         flexDirection: "column",
         alignItems: "center", // Center content on smaller screens
@@ -148,43 +149,12 @@ const ourteam = {
     },
 
     Box1: {
-        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
-        height: { xs: "auto", md: "237px" },
-        padding: { xs: "20px", md: "24px" },
-        borderRadius: "8px",
         backgroundColor: "#F7F7F7",
-        marginLeft:{xs: "0px", md:  "160px" },
-        marginRight: { xs: "auto", md: "0px" },
-        marginTop: "32px",
-    },
-    Box2: {
-        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
-        height: { xs: "auto", md: "392px" }, // Auto height on small screens
-        padding: { xs: "20px", md: "24px" },
         borderRadius: "8px",
-        backgroundColor: "#F7F7F7",        
-        marginTop: { xs: "auto", md: "32px" },
-        marginRight: { xs: "auto", md: "0px" },
-        marginLeft: {xs: "0px", md: "-20px" },
+        padding: "24px",
+        
     },
-    Box3: {
-        width: { xs: "90%", sm: "80%", md: "496px" }, 
-        height: { xs: "auto", md: "516px" }, 
-        padding: { xs: "20px", md: "24px" },
-        borderRadius: "8px",
-        backgroundColor: "#F7F7F7",        
-        marginLeft: {xs: "0px", md: "160px" },
-        marginRight: { xs: "auto", md: "0px" },
-        marginTop: { xs: "auto", md: "-155px" },
-    },
-    Box4: {
-        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
-        height: { xs: "auto", md: "206px" }, // Auto height on small screens
-        padding: { xs: "20px", md: "24px" },
-        borderRadius: "8px",
-        backgroundColor: "#F7F7F7",
-        marginLeft: { xs: "auto", md: "-22px" },
-    },
+
     ComForm : {
         width: { xs: "100%", md:  "750px" },
         marginLeft: { xs: "0px", md:  "200px" },
@@ -298,22 +268,19 @@ const ourteam = {
     },
     //About Us
     FullBox:{
-        height:{ xs: "100%", md:  "237px" },
+        // height:{ xs: "100%", md:  "237px" },
         backgroundColor: " #F0F4EF",
-        padding: { xs: "30px 48px", md: "80px 166px" },
+        padding: "80px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center", 
-        marginTop:"40px"
     },
     AboutCard: {
-        width: "304px",
-        height: "364px",
-        textAlign:{ xs: "center", md:  "center" },
-        padding: "24px",
+        height: "420px",
         borderRadius: "8px",
         boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-        backgroundColor: "white",       
+        backgroundColor: "white",   
+          
     },
 };
 

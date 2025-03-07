@@ -5,13 +5,12 @@ import Quote from './assests/quote.png'
 const GreenBox = () => {
     return (
         <>
-
-            <Container maxWidth="xl" sx={ourteam.GreenBox}>
-                <Box >
-                <Typography variant="h5" gutterBottom style={{ color: "white", textAlign:"center" }}>
-                        Partner Testimonials
+            <Box sx={ourteam.GreenBox}>
+                <Container maxWidth="lg" >
+                    <Typography variant="h5" gutterBottom style={{ color: "white", textAlign:"center", marginBottom:"32px" }}>
+                            Partner Testimonials
                     </Typography>
-                    <Grid container spacing={3}>
+                    <Grid container spacing={4}>
                         {/* Left Side - Box 1 (Top Left) */}
                         <Grid item xs={12} md={6}>
                             <Box sx={ourteam.Box1}>
@@ -31,15 +30,11 @@ const GreenBox = () => {
                                     </Typography>
                                 </Box>
                             </Box>
-                        </Grid>
-
-                        {/* Right Side - Box 3 (Top Right) */}
-                        <Grid item xs={12} md={6}>
-                            <Box sx={ourteam.Box2} >
+                            <Box sx={ourteam.Box1} style={{ marginTop: "32px" }}>
                                 <Box style={{ width: "36px", height: "50px" }}>
                                     <img src={Quote} alt="Icon" />
                                 </Box>
-                                <Box sx={{ textAlign: "left" }}>
+                                <Box >
                                     <Typography variant="body1" paragraph color="#2E2E2E">
                                         The Innovation Story sincerely thanks Sama for the<br /> generous
                                         laptop donation. These laptops are <br />empowering students from
@@ -59,9 +54,14 @@ const GreenBox = () => {
                             </Box>
                         </Grid>
 
+                        {/* Right Side - Box 3 (Top Right) */}
+                        {/* <Grid item xs={12} md={6} style={{  }}>
+                           
+                        </Grid> */}
+
                         {/* Left Side - Box 2 (Bottom Left) */}
                         <Grid item xs={12} md={6}>
-                            <Box sx={ourteam.Box3}>
+                            <Box sx={ourteam.Box1}>
                                 <Box style={{ width: "36px", height: "50px" }}>
                                     <img src={Quote} alt="Icon" />
                                 </Box>
@@ -86,11 +86,9 @@ const GreenBox = () => {
                                     </Typography>
                                 </Box>
                             </Box>
-                        </Grid>
 
-                        {/* Right Side - Box 4 (Bottom Right) */}
-                        <Grid item xs={12} md={6}>
-                            <Box sx={ourteam.Box4}>
+
+                            <Box sx={ourteam.Box1} style={{ marginTop: "32px" }}>
                                 <Box style={{ width: "36px", height: "50px" }}>
                                     <img src={Quote} alt="Icon" />
                                 </Box>
@@ -107,9 +105,13 @@ const GreenBox = () => {
                                 </Box>
                             </Box>
                         </Grid>
+
+                        
                     </Grid>
-                </Box>
-            </Container>
+                </Container>
+
+            </Box>
+            
         </>
     )
 }

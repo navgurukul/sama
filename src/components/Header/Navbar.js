@@ -132,10 +132,11 @@ const Navbar = () => {
         justifyContent: "center",
         padding: 0,
         margin: 0,
+        
       }}
       className="header"
     >
-      <Container sx={{ padding: 0, margin: 0 }}>
+      <Box sx={{ paddingX: "16px", margin: 0, justifyContent:"space-between" }}>
         <Toolbar
           disableGutters
           sx={{
@@ -143,7 +144,7 @@ const Navbar = () => {
             position: "relative",
             padding: 0,
             margin: [2, 1, 2, 1],
-            width: "1400px",
+            // width: "1400px",
             "@media (max-width: 600px)": {
               width: "350px",
             },
@@ -163,7 +164,7 @@ const Navbar = () => {
           )}
 
           {!isLoggedIn && (
-            <Box className={`nav-links ${menuVisible ? "visible" : ""}`} sx={{ display: { xs: "none", md: "flex" }, gap: "0px" }}>
+            <Box className={`nav-links ${menuVisible ? "visible" : ""}`}  >
               <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
               <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
 
@@ -352,14 +353,14 @@ const Navbar = () => {
         </Toolbar>
         {!isLoggedIn && (
           <Box
-            className={`mobile-menu ${isActive && menuVisible ? "visible" : ""
+            className={`mobile-menu ${isActive && menuVisible ? "visible" : "" 
               }`}
           >
             <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
             <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
             <Box sx={{
-                alignItems:"left", 
-                justifyContent:"left", 
+                alignItems:"right", 
+                justifyContent:"right", 
                 borderRadius: 1, 
                 width: "100%", 
                 display: "flex", 
@@ -409,7 +410,7 @@ const Navbar = () => {
             )}
           </Box>
         )}
-      </Container>
+      </Box>
     </AppBar>
   );
 };
