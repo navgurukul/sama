@@ -119,8 +119,8 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
         title: question,
         total: value,
         detailedData: detailedData[question],
-        dateRange:dateRange,
-        fullDataRange:getFullDataRange(apiData)
+        dateRange: dateRange,
+        fullDataRange: getFullDataRange(apiData)
       },
     });
   };
@@ -131,41 +131,41 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
       alert("No data available to download!");
       return;
     }
-  
+
     const pdf = new jsPDF();
     const pageWidth = pdf.internal.pageSize.getWidth();
     let yOffset = 20;
-  
+
     pdf.setFontSize(18);
     const title = "Monthly Impact Report";
     const titleWidth = pdf.getTextWidth(title);
     pdf.text(title, (pageWidth - titleWidth) / 2, yOffset);
     yOffset += 10;
-  
+
     pdf.setFontSize(14);
     const dateRangeText = dateRange?.startDate && dateRange?.endDate
       ? `from: ${dateRange.startDate} - ${dateRange.endDate}`
       : `from: ${getFullDataRange(apiData)}`;
-  
+
     pdf.text(dateRangeText, (pageWidth - pdf.getTextWidth(dateRangeText)) / 2, yOffset);
     yOffset += 10;
-  
+
     pdf.setFontSize(12);
-  
+
     Object.entries(filteredData).forEach(([question, value]) => {
       const text = `${question}: ${value}`;
       pdf.text(text, (pageWidth - pdf.getTextWidth(text)) / 2, yOffset);
       yOffset += 8;
-  
+
       if (yOffset > 280) {
         pdf.addPage();
         yOffset = 20;
       }
     });
-  
+
     pdf.save("Monthly_Impact_Report.pdf");
   };
-  
+
   //default data
   const getFullDataRange = (apiData) => {
     const allDates = [];
@@ -215,9 +215,9 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
           </Typography>
         </Box>
       ) : (
-        <Grid container spacing={2}>
+        <Grid container spacing={3}> {/* spacing={3} equals ~30px gap */}
           {Object.entries(filteredData).map(([question, value]) => (
-            <Grid item xs={12} sm={6} lg={4} key={question} >
+            <Grid item xs={12} sm={6} lg={4} key={question}>
               <Box
                 className="monthly-impact-card"
                 sx={{
@@ -247,23 +247,9 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
                       mb: 1,
                     }}
                   >
-                    <Typography
-                      variant="h5"
-                    >
+                    <Typography variant="h5">
                       {value}
                     </Typography>
-                    {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                 <TrendingUp sx={{ color: "#27AE60", fontSize: 16 }} />
-                                 <Typography
-                                   sx={{
-                                     color: "#27AE60",
-                                     fontSize: "12px",
-                                     fontWeight: 500,
-                                   }}
-                                 >
-                                  
-                                 </Typography>
-                               </Box> */}
                   </Box>
                   <Typography
                     variant="body2"
@@ -279,6 +265,7 @@ const MonthlyImpact = ({ dateRange, apiData }) => {
             </Grid>
           ))}
         </Grid>
+
       )}
     </div>
   );

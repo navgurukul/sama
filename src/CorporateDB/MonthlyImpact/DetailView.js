@@ -56,7 +56,7 @@ const DetailView = () => {
             }}
         >
             <Typography variant="h6" sx={{ color: "#4A4A4A", mb: 3, mt: 5 }}>
-                NGO Wise {title} in the Month of {showingDate}
+                NGO Wise {title} {showingDate}
             </Typography>
             <Box
                 sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 1 }}
@@ -65,7 +65,7 @@ const DetailView = () => {
                     <Box
                         key={originalId}
                         onClick={() => changeRoute(originalId)}
-                        sx={{ display: "grid", gridTemplateColumns: "10fr 2fr", gridGap: "16px" }}
+                        sx={{ display: "grid", gridTemplateColumns: "10fr 2fr", gridGap: "8px" }}
                     >
                         <Typography
                             sx={{
