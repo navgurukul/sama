@@ -1,4 +1,6 @@
-import { border, height, maxWidth, spacing, textAlign, width } from "@mui/system";
+import { Margin } from "@mui/icons-material";
+import { border, height, margin, maxHeight, maxWidth, padding, spacing, textAlign, width } from "@mui/system";
+import { Radius } from "lucide-react";
 
 const ourteam = {
     container: {
@@ -47,31 +49,31 @@ const ourteam = {
     },
     StayConnectedGrid:{
         backgroundColor: "#FFFAF8", 
-        padding: {xs:"40px 20px 40px 10px",md:"0px 159px 0px 160px"} , 
-        marginLeft: "calc(-50vw + 50%)",
+        
     },
     mainGrid: {
-        height: "456px",
+        // height: "456px",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         backgroundColor: "#FFFAF8",        
-        marginTop: { xs: "50px", md: "0px" },
-        marginBottom : {xs : "300px", md: "0px"}
+        // marginTop: { xs: "50px", md: "0px" },
+        // marginBottom : {xs : "300px", md: "0px"}
+        padding:"80px 0px",
     },
     leftGrid: {
-        width: "1121px",
+        // width: "1121px",
         display: "flex",
         flexDirection: "column",
         gap: "24px",
     },
     headingText: {
         color: "#4A4A4A",
-        textAlign:{sx:"center", md: "left" }
+        // textAlign:{sx:"center", md: "left" }
     },
     paragraphText: {
         color: "#666",
-        textAlign:{sx:"center", md: "left" }    
+        // textAlign:{sx:"center", md: "left" }    
     },
     inputField: {
         width: "100%",
@@ -104,10 +106,9 @@ const ourteam = {
         marginTop: { xs: "50px", md: "0px" },
     },
     image: {
-        width: "100%",
-        maxWidth: "278px",
-        height: "auto",
-        marginLeft:"64px",
+        width: "278px",
+        height: "256px",
+        // marginLeft:"64px",
         borderRadius: "8px",
     },
     //OurGoverment
@@ -140,7 +141,7 @@ const ourteam = {
     GreenBox: {
         height:"100%",
         backgroundColor: "#5C785A",
-        padding: { xs: "30px 32px", md: "50px 0" },
+        padding: { xs: "30px 32px", md: "80px 0" },
         display: "flex",
         flexDirection: "column",
         alignItems: "center", // Center content on smaller screens
@@ -148,43 +149,12 @@ const ourteam = {
     },
 
     Box1: {
-        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
-        height: { xs: "auto", md: "237px" },
-        padding: { xs: "20px", md: "24px" },
-        borderRadius: "8px",
         backgroundColor: "#F7F7F7",
-        marginLeft:{xs: "0px", md:  "160px" },
-        marginRight: { xs: "auto", md: "0px" },
-        marginTop: "32px",
-    },
-    Box2: {
-        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
-        height: { xs: "auto", md: "392px" }, // Auto height on small screens
-        padding: { xs: "20px", md: "24px" },
         borderRadius: "8px",
-        backgroundColor: "#F7F7F7",        
-        marginTop: { xs: "auto", md: "32px" },
-        marginRight: { xs: "auto", md: "0px" },
-        marginLeft: {xs: "0px", md: "-20px" },
+        padding: "24px",
+        
     },
-    Box3: {
-        width: { xs: "90%", sm: "80%", md: "496px" }, 
-        height: { xs: "auto", md: "516px" }, 
-        padding: { xs: "20px", md: "24px" },
-        borderRadius: "8px",
-        backgroundColor: "#F7F7F7",        
-        marginLeft: {xs: "0px", md: "160px" },
-        marginRight: { xs: "auto", md: "0px" },
-        marginTop: { xs: "auto", md: "-155px" },
-    },
-    Box4: {
-        width: { xs: "90%", sm: "80%", md: "496px" }, // Responsive width
-        height: { xs: "auto", md: "206px" }, // Auto height on small screens
-        padding: { xs: "20px", md: "24px" },
-        borderRadius: "8px",
-        backgroundColor: "#F7F7F7",
-        marginLeft: { xs: "auto", md: "-22px" },
-    },
+
     ComForm : {
         width: { xs: "100%", md:  "750px" },
         marginLeft: { xs: "0px", md:  "200px" },
@@ -298,22 +268,20 @@ const ourteam = {
     },
     //About Us
     FullBox:{
-        height:{ xs: "100%", md:  "237px" },
+        // height:{ xs: "100%", md:  "237px" },
         backgroundColor: " #F0F4EF",
-        padding: { xs: "30px 48px", md: "80px 166px" },
+        padding: "80px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center", 
-        marginTop:"40px"
+        marginTop: "80px",
     },
     AboutCard: {
-        width: "304px",
-        height: "364px",
-        textAlign:{ xs: "center", md:  "center" },
-        padding: "24px",
+        height: "420px",
         borderRadius: "8px",
         boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-        backgroundColor: "white",       
+        backgroundColor: "white",   
+          
     },
 };
 

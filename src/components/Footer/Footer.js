@@ -56,7 +56,7 @@ const Footer = () => {
                   <Box display="flex" flexDirection="column" gap={2} mt={2}>
                     <Typography variant="body2" >
                       <Link href="/about" underline="none" color="#4A4A4A">
-                        About Us
+                      Discover Us
                       </Link>
                     </Typography>
                     <Typography variant="body2" >

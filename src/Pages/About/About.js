@@ -19,7 +19,7 @@ function About() {
         {/* <SamaGoals></SamaGoals> */}
       </Container>
       <ServicesSection></ServicesSection>
-
+    
       <StayConnected />
     </>
   )
