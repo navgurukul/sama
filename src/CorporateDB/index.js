@@ -124,12 +124,14 @@ const CorporateDb = () => {
 
   return (
     <Box sx={{ 
-      backgroundColor: "#FFFAF8", 
+      backgroundColor: "#FFFAF8",
       minHeight: "100vh",  // Ensures it covers the whole viewport height
       display: "flex",
       flexDirection: "column"
     }}>
-      <Container maxWidth="lg" sx={{ pt: 8, flexGrow: 1 }}>
+      <Container maxWidth="lg" 
+      sx={{ pt: 1, flexGrow: 1 }}
+      >
         <Box sx={{ 
           display: 'flex',
           justifyContent: 'space-between',
