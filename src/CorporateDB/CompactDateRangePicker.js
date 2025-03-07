@@ -132,8 +132,13 @@ const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) =
                 onChange={setStartDate}
                 views={['month', 'year']}
                 format="MM/YYYY"
-                shouldDisableYear={(year) => year.year() > dayjs().year()} // Disable future years
-                shouldDisableMonth={(month) => dayjs(month).isAfter(dayjs(), 'month')} // Disable future months
+                maxDate={dayjs()} // Disable future dates
+                shouldDisableYear={(year) => year.year() > dayjs().year()} 
+                shouldDisableMonth={(month) => {
+                  const selectedYear = month.year();
+                  const currentYear = dayjs().year();
+                  return selectedYear === currentYear && month.month() > dayjs().month(); // Disable future months only for this year
+                }}
                 slotProps={{
                   textField: {
                     size: "small",
@@ -150,8 +155,13 @@ const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) =
                 views={['month', 'year']}
                 format="MM/YYYY"
                 minDate={startDate}
-                shouldDisableYear={(year) => year.year() > dayjs().year()} // Disable future years
-                shouldDisableMonth={(month) => dayjs(month).isAfter(dayjs(), 'month')} // Disable future months
+                maxDate={dayjs()} // Disable future dates
+                shouldDisableYear={(year) => year.year() > dayjs().year()} 
+                shouldDisableMonth={(month) => {
+                  const selectedYear = month.year();
+                  const currentYear = dayjs().year();
+                  return selectedYear === currentYear && month.month() > dayjs().month(); // Disable future months only for this year
+                }}
                 slotProps={{
                   textField: {
                     size: "small",
