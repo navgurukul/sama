@@ -1,4 +1,5 @@
-import { border, height, maxHeight, maxWidth, padding, spacing, textAlign, width } from "@mui/system";
+import { Margin } from "@mui/icons-material";
+import { border, height, margin, maxHeight, maxWidth, padding, spacing, textAlign, width } from "@mui/system";
 import { Radius } from "lucide-react";
 
 const ourteam = {
@@ -48,31 +49,31 @@ const ourteam = {
     },
     StayConnectedGrid:{
         backgroundColor: "#FFFAF8", 
-        padding: {xs:"40px 20px 40px 10px",md:"0px 159px 0px 160px"} , 
-        marginLeft: "calc(-50vw + 50%)",
+        
     },
     mainGrid: {
-        height: "456px",
+        // height: "456px",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         backgroundColor: "#FFFAF8",        
-        marginTop: { xs: "50px", md: "0px" },
-        marginBottom : {xs : "300px", md: "0px"}
+        // marginTop: { xs: "50px", md: "0px" },
+        // marginBottom : {xs : "300px", md: "0px"}
+        padding:"80px 0px",
     },
     leftGrid: {
-        width: "1121px",
+        // width: "1121px",
         display: "flex",
         flexDirection: "column",
         gap: "24px",
     },
     headingText: {
         color: "#4A4A4A",
-        textAlign:{sx:"center", md: "left" }
+        // textAlign:{sx:"center", md: "left" }
     },
     paragraphText: {
         color: "#666",
-        textAlign:{sx:"center", md: "left" }    
+        // textAlign:{sx:"center", md: "left" }    
     },
     inputField: {
         width: "100%",
@@ -105,10 +106,9 @@ const ourteam = {
         marginTop: { xs: "50px", md: "0px" },
     },
     image: {
-        width: "100%",
-        maxWidth: "278px",
-        height: "auto",
-        marginLeft:"64px",
+        width: "278px",
+        height: "256px",
+        // marginLeft:"64px",
         borderRadius: "8px",
     },
     //OurGoverment
@@ -274,6 +274,7 @@ const ourteam = {
         display: "flex",
         flexDirection: "column",
         alignItems: "center", 
+        marginTop: "80px",
     },
     AboutCard: {
         height: "420px",
