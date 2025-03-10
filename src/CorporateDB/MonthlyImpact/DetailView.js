@@ -44,53 +44,93 @@ const DetailView = () => {
     };
 
     return (
-        <Container maxWidth= "xl" sx = {{backgroundColor: "#FFFAF8",}}>
-        <Container
-            maxWidth="sm"
-            sx={{
-                // mt: 2,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                backgroundColor: "#FFFAF8", 
-                minHeight: "100vh",
-            }}
-        >
-            <Typography variant="h6" sx={{ color: "#4A4A4A", mb: 3, mt: 5 }}>
-                NGO Wise {title} {showingDate}
-            </Typography>
-            <Box
-                sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 1 }}
+        <Box  sx = {{backgroundColor: "#FFFAF8",}}>
+            <Container
+                maxWidth="sm"
+                sx={{
+                    // mt: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    backgroundColor: "#FFFAF8", 
+                    minHeight: "100vh",
+                }}
             >
-                {(updatedData).map(({ originalId, displayName, count }) => (
-                    <Box
-                        key={originalId}
-                        onClick={() => changeRoute(originalId)}
-                        sx={{ display: "grid", gridTemplateColumns: "10fr 2fr", gridGap: "8px" }}
-                    >
+                <Typography variant="h6" sx={{ color: "#4A4A4A", mb: 3, mt: 5 }}>
+                    NGO Wise {title} {showingDate}
+                </Typography>
+                <Box
+                    sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 1 }}
+                >
+                    {(updatedData).map(({ originalId, displayName, count }) => (
+                        <Box
+                            key={originalId}
+                            onClick={() => changeRoute(originalId)}
+                            sx={{ display: "grid", gridTemplateColumns: "10fr 2fr", gridGap: "8px" }}
+                        >
+                            <Typography
+                                sx={{
+                                    bgcolor: "#fff",
+                                    px: 3,
+                                    py: 0.5,
+                                    bgcolor: "primary.light",
+                                    borderRadius: "6px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "left",
+                                    height: "63px",
+                                    color: "#4A4A4A",
+                                    color: "#4A4A4A",
+                                    cursor: "pointer",
+                                    boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
+                                }}
+                                variant="body1"
+                            >{displayName}</Typography>
+                            <Typography
+                                sx={{
+                                    px: 3,
+                                    py: 0.5,
+                                    bgcolor: "#CED7CE",
+                                    borderRadius: "6px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    height: "63px",
+                                    fontSize: "14px",
+                                    fontWeight: 500,
+                                    color: "#4A4A4A",
+                                    cursor: "pointer",
+                                    boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
+                                }}
+                                    variant="body1"
+                            >
+                                <Typography variant="body1">{count}</Typography>
+                            </Typography>
+                        </Box>
+                    ))}
+
+                    <Box sx={{ display: "grid", gridTemplateColumns: "10fr 2fr", gridGap: "8px" }}>
                         <Typography
                             sx={{
                                 bgcolor: "#fff",
                                 px: 3,
                                 py: 0.5,
-                                bgcolor: "primary.light",
                                 borderRadius: "6px",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "left",
                                 height: "63px",
                                 color: "#4A4A4A",
-                                color: "#4A4A4A",
-                                cursor: "pointer",
                                 boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
                             }}
-                            variant="body1"
-                        >{displayName}</Typography>
+                        >
+                            <b>Total {title}</b>
+                        </Typography>
                         <Typography
                             sx={{
                                 px: 3,
                                 py: 0.5,
-                                bgcolor: "#CED7CE",
+                                bgcolor: "#fff",
                                 borderRadius: "6px",
                                 display: "flex",
                                 alignItems: "center",
@@ -98,62 +138,22 @@ const DetailView = () => {
                                 height: "63px",
                                 fontSize: "14px",
                                 fontWeight: 500,
-                                color: "#4A4A4A",
-                                cursor: "pointer",
                                 boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
                             }}
-                                variant="body1"
                         >
-                            <Typography variant="body1">{count}</Typography>
+                            <Typography variant="body1"><b>{total}</b></Typography>
                         </Typography>
                     </Box>
-                ))}
-
-                <Box sx={{ display: "grid", gridTemplateColumns: "10fr 2fr", gridGap: "16px" }}>
-                    <Typography
-                        sx={{
-                            bgcolor: "#fff",
-                            px: 3,
-                            py: 0.5,
-                            borderRadius: "6px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "left",
-                            height: "63px",
-                            color: "#4A4A4A",
-                            boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
-                        }}
-                    >
-                        <b>Total {title}</b>
-                    </Typography>
-                    <Typography
-                        sx={{
-                            px: 3,
-                            py: 0.5,
-                            bgcolor: "#fff",
-                            borderRadius: "6px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            height: "63px",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                            boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",
-                        }}
-                    >
-                        <Typography variant="body1"><b>{total}</b></Typography>
-                    </Typography>
                 </Box>
-            </Box>
 
-            <Button
-                onClick={() => navigate("/corporate", { state: { tabIndex: 1 } })}
-                sx={{ bgcolor: "primary.main", color: "#fff", mt: 4, cursor: "pointer" }}
-            >
-                Go to Dashboard
-            </Button>
-        </Container>
-        </Container>
+                <Button
+                    onClick={() => navigate("/corporate", { state: { tabIndex: 1 } })}
+                    sx={{ bgcolor: "primary.main", color: "#fff", mt: 4, cursor: "pointer" }}
+                >
+                    Go to Dashboard
+                </Button>
+            </Container>
+        </Box>
     );
 };
 
