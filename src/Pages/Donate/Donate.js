@@ -247,7 +247,7 @@ function Donation() {
                   variant="outlined"
                   name="firstName"
                   value={formData.firstName}
-                  placeholder="Ex : Rajesh"
+                  placeholder="Eg : Rajesh"
                   onChange={handleChange}
                   sx={{ backgroundColor: "white" }}
                   error={!!errors.firstName}
@@ -261,7 +261,7 @@ function Donation() {
                 <TextField
                   fullWidth
                   required
-                  placeholder="Ex :  Kumar"
+                  placeholder="Eg :  Kumar"
                   variant="outlined"
                   name="lastName"
                   value={formData.lastName}
@@ -279,7 +279,7 @@ function Donation() {
                   fullWidth
                   required
                   type="email"
-                  placeholder="Ex : rajesh@gmail.com"
+                  placeholder="Eg : rajesh@gmail.com"
                   variant="outlined"
                   name="email"
                   value={formData.email}
@@ -298,7 +298,7 @@ function Donation() {
                   required
                   type="tel"
                   variant="outlined"
-                  placeholder="Ex :  xxxx xxx xxx"
+                  placeholder="Eg :  xxxx xxx xxx"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}

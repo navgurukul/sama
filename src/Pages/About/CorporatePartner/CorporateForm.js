@@ -199,7 +199,7 @@ function CorporateForm() {
                                     required
                                     variant="outlined"
                                     name="firstName"
-                                    placeholder="Ex : Rajesh"
+                                    placeholder="Eg : Rajesh"
                                     value={formData.firstName}
                                     onChange={handleChange}
                                     sx={ourteam.TextField}
@@ -213,7 +213,7 @@ function CorporateForm() {
                                 <TextField
                                     fullWidth
                                     required
-                                    placeholder="Ex :  Kumar"
+                                    placeholder="Eg :  Kumar"
                                     variant="outlined"
                                     name="lastName"
                                     value={formData.lastName}
@@ -266,7 +266,7 @@ function CorporateForm() {
                                     fullWidth
                                     required
                                     type="email"
-                                    placeholder="Ex : rajesh@gmail.com"
+                                    placeholder="Eg : rajesh@gmail.com"
                                     variant="outlined"
                                     name="email"
                                     value={formData.email}
