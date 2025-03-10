@@ -35,7 +35,7 @@ const OurGoverment = () => {
                     to reach rural and underserved <br /> areas, ensuring equitable
                     access to technology and opportunity
                 </Typography>
-                <Typography variant="h6" gutterBottom sx={ourteam.secondhead} mt={5}>
+                <Typography variant="h6" gutterBottom sx={ourteam.secondhead} mt={8}>
                     Help Sama bridge the digital divide in rural and <br />underserved areas
                 </Typography>
                 <OurGovermentForm />

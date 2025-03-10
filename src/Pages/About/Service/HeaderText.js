@@ -10,7 +10,7 @@ const HeaderText = () => {
     return (
         <Container maxWidth="lg" >
         <Box sx={{width:{xs:"auto",md:"756px"}, justifySelf:"center"}} >
-            <Typography variant="h5" gutterBottom marginTop="80px" textAlign="center">
+            <Typography variant="h5" gutterBottom marginTop="40px" textAlign="center">
                 What We Do
             </Typography>
             <Typography variant="body1" paragraph textAlign="justify">
