@@ -60,7 +60,7 @@ const ServiceIcons = () => {
               {index === 2 ? (
                 <List dense sx={{ padding: 0 }}>
                   {service.description.map((point, i) => (
-                    <ListItem key={i} sx={{ padding: "2px 0", minHeight: "unset", marginLeft:"40px" }}>
+                    <ListItem key={i} sx={{ padding: "2px 0", minHeight: "unset" }}>
                       <ListItemText
                         primary={point}
                         primaryTypographyProps={{

@@ -4,7 +4,7 @@ import ourteam from "../OurTeam/style";
 const StatsGrid = () => {
   return (
     <>
-      <Container maxWidth="xl" sx={{backgroundColor: " #F0F4EF",}} >
+      <Container maxWidth="xl" sx={{backgroundColor: " #F0F4EF", marginTop:"80px"}}  >
         <Box sx={ourteam.FullBox} >
         <Grid container spacing={2} justifyContent="center" >
             <Grid item xs={12} sm={6} md={4}>

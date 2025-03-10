@@ -188,6 +188,8 @@ const ourteam = {
     ComForm : {
         width: { xs: "100%", md:  "750px" },
         marginLeft: { xs: "0px", md:  "200px" },
+        marginTop: "80px",
+        marginBottom: "40px"
     },
     TextField:{
         backgroundColor: "white",

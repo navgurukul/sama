@@ -40,7 +40,7 @@ const Footer = () => {
     <footer>
       <Box maxWidth="false" bgcolor="primary.light" py={5}>
         <Container maxWidth="lg">
-          <Grid container spacing={3} alignItems="center">
+          <Grid container spacing={3} alignItems="center" marginBottom={"16px"}>
             <Grid item xs={12} md={2} textAlign={{ xs: "center", md: "left" }} mb={{ xs: 2, md: 12 }}>
               <Link href="/">
                 <img src={samalogo} alt="Logo" width={170} /> {/* Increased Size */}
@@ -56,7 +56,7 @@ const Footer = () => {
                   <Box display="flex" flexDirection="column" gap={2} mt={2}>
                     <Typography variant="body2" >
                       <Link href="/about" underline="none" color="#4A4A4A">
-                        About Us
+                        Discover Us
                       </Link>
                     </Typography>
                     <Typography variant="body2" >
@@ -117,7 +117,7 @@ const Footer = () => {
 
           <hr />
 
-          <Grid container alignItems="center" mt={5}>
+          <Grid container alignItems="center" mt={2}>
             <Grid item xs={12} md={8} textAlign={{ xs: "center", md: "left" }}>
               <Typography variant="body1" color="text.secondary">
                 <Link href="/privacy-policy" color="inherit" underline="none">
@@ -127,7 +127,7 @@ const Footer = () => {
             </Grid>
             <Grid item xs={12} md={4} textAlign="center">
               <Typography variant="body1" color="text.secondary">
-                Copyright © 2024 reserved
+                Copyright © 2025 reserved
               </Typography>
             </Grid>
             <Grid item xs={12} md={4}></Grid>
