@@ -165,7 +165,7 @@ function Donation() {
 
   return (
     <>
-      <Box sx={{ backgroundColor: "#E0E0E0" }} paddingBottom="80px" paddingTop="80px">
+      <Box sx={{ backgroundColor: "#F0F4EF" }} paddingBottom="80px" paddingTop="80px">
         <Container maxWidth="lg">
           <Typography
             variant="h6"
@@ -232,8 +232,8 @@ function Donation() {
       </Box>
      
 
-      <Container maxWidth="lg" sx={{ pt: "70px" }}>
-        <Typography variant="h5">Your Details</Typography>
+      <Container maxWidth="lg" sx={{ pt: "80px", pb: "80px" }}>
+        <Typography variant="h5" textAlign="center" >Your Details</Typography>
         <Box sx={{ pt: "32px" }}>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
@@ -247,7 +247,7 @@ function Donation() {
                   variant="outlined"
                   name="firstName"
                   value={formData.firstName}
-                  placeholder="Ex : Rajesh"
+                  placeholder="Rajesh"
                   onChange={handleChange}
                   sx={{ backgroundColor: "white" }}
                   error={!!errors.firstName}
@@ -261,7 +261,7 @@ function Donation() {
                 <TextField
                   fullWidth
                   required
-                  placeholder="Ex :  Kumar"
+                  placeholder="Kumar"
                   variant="outlined"
                   name="lastName"
                   value={formData.lastName}
@@ -279,7 +279,7 @@ function Donation() {
                   fullWidth
                   required
                   type="email"
-                  placeholder="Ex : rajesh@gmail.com"
+                  placeholder="rajesh@gmail.com"
                   variant="outlined"
                   name="email"
                   value={formData.email}
@@ -298,7 +298,7 @@ function Donation() {
                   required
                   type="tel"
                   variant="outlined"
-                  placeholder="Ex :  xxxx xxx xxx"
+                  placeholder="xxxx xxx xxx"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
@@ -580,7 +580,7 @@ function Donation() {
                 item
                 xs={12}
                 sx={{
-                  paddingBottom: "4%",
+                 
                   display: "flex",
                   alignItems: "center",
                 }}

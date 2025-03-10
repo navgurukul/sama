@@ -1,4 +1,3 @@
-import { border, textAlign } from "@mui/system";
 
 export const container = {
     background: "var(--primary, #5C785A)",   

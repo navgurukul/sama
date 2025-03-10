@@ -241,7 +241,7 @@ function Home() {
 
      
 
-    <Box sx={{ backgroundColor: "#F8F3F0" }}>
+    <Box sx={{ backgroundColor: "#FFFAF8" }}>
       <Container maxWidth="lg" sx={{ py: "80px", display: "flex", flexDirection: "column", alignItems: "center" }}>
         <Typography variant="h5" sx={{ textAlign: "center" }}>Sustainability Development Goals</Typography>
         <Typography 

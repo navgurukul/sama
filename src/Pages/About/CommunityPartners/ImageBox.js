@@ -16,39 +16,39 @@ const ImageBox = () => {
     return (
         <Container maxWidth="lg" sx={ourteam.Communitycontainer}>
                 <Grid container spacing={2} justifyContent="center" sx={{ gap: "32px" }}>
-                    <Box sx={ourteam.Image1}>
+                    <Box sx={ourteam.Image}>
                         <img src={img1} alt="img1" />
                     </Box>
-                    <Box sx={ourteam.Image2}>
+                    <Box sx={ourteam.Image}>
                         <img src={img2} alt="img2" />
                     </Box>
-                    <Box sx={ourteam.Image3}>
+                    <Box sx={ourteam.Image}>
                         <img src={img3} alt="img3" />
                     </Box>
-                    <Box sx={ourteam.Image4}>
+                    <Box sx={ourteam.Image}>
                         <img src={img4} alt="img4" />
                     </Box>
-                    <Box sx={ourteam.Image5}>
+                    <Box sx={ourteam.Image}>
                         <img src={img5} alt="img5" />
                     </Box>
-                    <Box sx={ourteam.Image6}>
+                    <Box sx={ourteam.Image}>
                         <img src={img6} alt="img6" />
                     </Box>
                 </Grid>
                 <Grid container spacing={2} justifyContent="center" sx={{ marginTop: "16px", }}>
-                    <Box sx={ourteam.Image7}>
+                    <Box sx={ourteam.Image}>
                         <img src={img7} alt="img7" />
                     </Box>
-                    <Box sx={ourteam.Image8}>
+                    <Box sx={ourteam.Image}>
                         <img src={img8} alt="img8" />
                     </Box>
-                    <Box sx={ourteam.Image9}>
+                    <Box sx={ourteam.Image}>
                         <img height="100%" src={img9} alt="img8" />
                     </Box>
-                    <Box sx={ourteam.Image10}>
+                    <Box sx={ourteam.Image}>
                         <img height="100%" src={img10} alt="img8" />
                     </Box>
-                    <Box sx={ourteam.Image11}>
+                    <Box sx={ourteam.Image}>
                         <img height="100%" src={img11} alt="img8" />
                     </Box>
                 </Grid>

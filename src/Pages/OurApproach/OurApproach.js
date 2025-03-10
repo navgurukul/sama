@@ -107,7 +107,7 @@ const OurApproach = () => {
                         alignItems="center" 
                         sx={{ 
                           paddingTop: "32px",
-                          paddingRight: "32px" 
+                          // paddingRight: "32px" 
                         }}
                       >
                         <img
@@ -145,9 +145,10 @@ const OurApproach = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            textAlign: "center"
+            textAlign: "center",
+            marginTop: "80px"
           }} 
-          mt={5}
+          
         >
           <Typography 
             variant="h5" 

@@ -12,7 +12,7 @@ const originalTeamMembers = [
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video3.mp4",
     name: "Shivani Bawa",
-    Designation: "(CEO’s Office Intern)",
+    Designation: "(CEO's Office Intern)",
   },
   {
     video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video4.mp4",
@@ -85,15 +85,22 @@ const OurTeam = () => {
         >
           {teamMembers.map((member, index) => (
             <Grid item xs={12} sm={6} md={4} key={index} sx={ourteam.gridItem}>
-              <Card sx={{ ...ourteam.card, position: "relative" }}>
+              <Card 
+                sx={{ 
+                  ...ourteam.card, 
+                  position: "relative",
+                  aspectRatio: "1/1", // Make card a perfect square
+                  overflow: "hidden", // Ensure content doesn't overflow
+                }}
+              >
                 {!videoErrors[index] ? (
                   <>
                     <video
                       key={member.video}
                       src={member.video}
                       style={{
-                        width: "100%",
-                        height: "100%",
+                        width: "500.89px",
+                        height: "317.212px",
                         objectFit: "cover",
                       }}
                       autoPlay
@@ -117,6 +124,14 @@ const OurTeam = () => {
                         flexDirection: "column", // Stacks elements vertically
                         alignItems: "flex-end", // Aligns text to the right
                         justifyContent: "flex-end",
+                        transition: "padding-bottom 0.3s ease",
+                        "&:hover": {
+                          "& .designation": {
+                            maxHeight: "50px",
+                            opacity: 1,
+                            marginTop: "5px",
+                          }
+                        }
                       }}
                     >
                       <Typography
@@ -129,16 +144,21 @@ const OurTeam = () => {
                         {member.name}
                       </Typography>
                       <Typography
+                        className="designation"
                         variant="body1"
                         sx={{
                           color: "#FFF",
                           textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
+                          opacity: 0, // Hidden by default
+                          maxHeight: 0, // Takes no space when hidden
+                          overflow: "hidden", // Hide overflow
+                          marginTop: 0, // No margin initially
+                          transition: "all 0.3s ease", // Smooth transition for all properties
                         }}
                       >
                         {member.Designation}
                       </Typography>
                     </Box>
-
                   </>
                 ) : (
                   <Box
@@ -164,7 +184,7 @@ const OurTeam = () => {
         <Grid
           container
           spacing={2}
-          sx={{ marginTop: "60px", marginLeft: { xs: "0px", md: "140px" } }}
+          sx={{ marginTop: "48px", marginLeft: { xs: "0px", md: "140px" } }}
         >
           <Grid item xs={12} md={6}>
             <Box sx={ourteam.box}>
@@ -211,7 +231,6 @@ const OurTeam = () => {
               >
                 Explore Current Openings
               </Button>
-
             </Box>
           </Grid>
         </Grid>
