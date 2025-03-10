@@ -88,28 +88,24 @@ const OurApproach = () => {
                 >
                   {section.title}
                 </Typography>
-                <Grid container spacing={3}>
+                <Grid
+                  container 
+                >
                   {section.statistics.map((stat, statIndex) => (
-                   <Grid
-                   item
-                   xs={12}
-                   md={4}
-                   lg={4}
-                   key={statIndex}
-                   style={statItem}
-                   sx={{
-                     marginTop: isActive ? "16px" : undefined,
-                     padding: "16px", // Add padding to create space between items
-                   }}
-                 >
-                      <Box 
-                        display="flex" 
-                        alignItems="center" 
-                        sx={{ 
-                          paddingTop: "32px",
-                          // paddingRight: "32px" 
-                        }}
-                      >
+                    <Grid
+                      
+                      item
+                      xs={12}
+                      md={4}
+                      lg={4}
+                      key={statIndex}
+                      style={statItem}
+                      sx={{
+                        ...container,
+                        marginTop: isActive && "16px",
+                      }}
+                    >
+                      <Box display="flex" alignItems="center" sx={{ paddingTop: "32px" }}>
                         <img
                           src={stat.moneyLogo}
                           alt="money logo"
@@ -138,7 +134,7 @@ const OurApproach = () => {
         </Container>
       </Box>
 
-      <Container maxWidth="md">
+      {/* <Container maxWidth="md">
         <Box 
           sx={{
             ...ourteam.ApproachBox,
@@ -180,7 +176,54 @@ const OurApproach = () => {
             }}
           />
         </Box>
-      </Container>
+      </Container> */} 
+
+    <Container maxWidth="md">
+      <Box 
+        sx={{
+          ...ourteam.ApproachBox,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+          
+        }} 
+      
+      >
+        <Typography 
+          variant="h5" 
+          color="#5C785A" 
+          gutterBottom 
+          sx={{ textAlign: "center",marginTop :"80px" }}
+        >
+          Our Working Model
+        </Typography>
+        <Typography 
+          variant="body1" 
+          paragraph 
+          align="center"
+          sx={{ 
+            maxWidth: "90%",
+            mx: "auto",
+            textAlign: "center",
+            marginTop :"21px"
+          }}
+        >
+          Through this comprehensive working model, we transform e-waste into educational tools, thereby providing impact reports to our donors
+        </Typography>
+        <img 
+          src={Model}
+          alt="Logo"
+          style={{
+            display: 'block',
+            maxWidth: '100%',
+            margin: '0 auto 100px auto',
+            marginTop :"21px"
+          }}
+        />
+      </Box>
+    </Container>
+
     </>
   );
 };
