@@ -1,11 +1,12 @@
 import { border, textAlign } from "@mui/system";
 
 export const container = {
-    background: "var(--primary, #5C785A)",    
+    background: "var(--primary, #5C785A)",   
+    paddingBottom: "80px" 
 };
 
 export const lgContainer = {
-    padding: '0px 0px 64px 0px',
+    // padding: '0px 0px 64px 0px',
 };
 export const sectionTitle ={
     color: "white"
