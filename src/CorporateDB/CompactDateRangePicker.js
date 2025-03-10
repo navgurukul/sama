@@ -83,10 +83,10 @@ const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) =
 
         setStartDate(dayjs(`${startYear}-${monthMapping[startMonth]}-01`));
         setEndDate(dayjs(`${endYear}-${monthMapping[endMonth]}-01`));
-        setDisplayValue(`${formattedStart} - ${formattedEnd}`);
+        !displayValue && setDisplayValue(`${formattedStart} - ${formattedEnd}`);
       }
     }
-  }, [apiData]);
+  }, [apiData, displayValue]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
