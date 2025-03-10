@@ -10,13 +10,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 const TestimonialSlider = () => {
   const testimonials = [
     {
-      src: require('./assets/apporva.jpg'),
-      alt: 'Student 8',
-      name: "Approva",
-      place: "Bangalore",
-      text: "Orphaned at a young age, I never had the means to learn digital skills. Thanks to Sama and Vimukthi Vidya Samsthe, I touched a computer for the first time and now have the chance to build my future through education."
-    },
-    {
       src: require('./assets/alfiya.jpg'),
       alt: 'Student 9',
       name: "Alfiya D",
@@ -88,7 +81,6 @@ const TestimonialSlider = () => {
       [testimonials[2], testimonials[3]],
       [testimonials[4],testimonials[5]],
       [testimonials[6], testimonials[7]],
-      [testimonials[8]],
     ];
 
   const [sliderRef, slider] = useKeenSlider({

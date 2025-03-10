@@ -158,6 +158,8 @@ const ourteam = {
     ComForm : {
         width: { xs: "100%", md:  "750px" },
         marginLeft: { xs: "0px", md:  "200px" },
+        marginTop: "80px",
+        marginBottom: "40px",
     },
     TextField:{
         backgroundColor: "white",
@@ -200,53 +202,9 @@ const ourteam = {
         width: "100%", 
         padding: "20px", 
     },
-    Image1 : {
+    Image : {
         height: "88px",
         padding: "16px"   ,    
-    },
-    Image2 : {
-        height: "88px",
-        padding: "16px"
-    },
-    Image3 : {
-        height: "88px",
-        padding: "16px"
-    },
-    Image4 : {
-        height: "88px",
-        padding: "16px"
-    },
-    Image5 : {
-        height: "88px",
-        padding: "16px"
-    },
-    Image6 : {
-        height: "88px",
-        padding: "16px"
-    },
-    Image7 : {
-        height: "88px",
-        padding: "16px",
-    },
-    Image8 : {
-        height: "88px",
-        padding: "16px",
-
-    },
-    Image9: {
-        height: "88px",
-        padding: "16px",
-
-    },
-    Image10 : {
-        height: "88px",
-        padding: "16px",
-
-    },
-    Image11 : {
-        height: "88px",
-        padding: "16px",
-
     },
     
     //Coroporate Logo Box
