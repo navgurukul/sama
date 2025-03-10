@@ -70,10 +70,11 @@ const OurApproach = () => {
                   {section.title}
                 </Typography>
                 <Grid
-                  container
+                  container 
                 >
                   {section.statistics.map((stat, statIndex) => (
                     <Grid
+                      
                       item
                       xs={12}
                       md={4}
@@ -144,15 +145,16 @@ const OurApproach = () => {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      textAlign: "center"
+      textAlign: "center",
+      
     }} 
-    mt={5}
+   
   >
     <Typography 
       variant="h5" 
       color="#5C785A" 
       gutterBottom 
-      sx={{ textAlign: "center" }}
+      sx={{ textAlign: "center",marginTop :"80px" }}
     >
       Our Working Model
     </Typography>
@@ -163,7 +165,8 @@ const OurApproach = () => {
       sx={{ 
         maxWidth: "90%",
         mx: "auto",
-        textAlign: "center"
+        textAlign: "center",
+        marginTop :"21px"
       }}
     >
       Through this comprehensive working model, we transform e-waste into educational tools, thereby providing impact reports to our donors
@@ -175,6 +178,7 @@ const OurApproach = () => {
         display: 'block',
         maxWidth: '100%',
         margin: '0 auto 100px auto',
+        marginTop :"21px"
       }}
     />
   </Box>

@@ -233,7 +233,7 @@ function Donation() {
      
 
       <Container maxWidth="lg" sx={{ pt: "70px" }}>
-        <Typography variant="h5">Your Details</Typography>
+        <Typography variant="h5" textAlign="center" >Your Details</Typography>
         <Box sx={{ pt: "32px" }}>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>

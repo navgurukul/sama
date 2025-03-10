@@ -177,7 +177,7 @@ const Navbar = () => {
                   cursor: "pointer",
                   whiteSpace: "nowrap", // Prevents wrapping
                   textAlign: "left",
-                  marginTop: "7px",
+                  marginTop: "9px",
                   marginLeft: "8px",
                 }}
                 component={Link}

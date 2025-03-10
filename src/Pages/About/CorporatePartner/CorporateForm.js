@@ -213,7 +213,7 @@ function CorporateForm() {
                                 <TextField
                                     fullWidth
                                     required
-                                    placeholder="Eg :  Kumar"
+                                    placeholder="Kumar"
                                     variant="outlined"
                                     name="lastName"
                                     value={formData.lastName}
