@@ -1,35 +1,26 @@
 import React from "react";
-import { Container, Grid, Box, Typography } from "@mui/material";
+import { Container, Grid, Box, Typography, useMediaQuery } from "@mui/material";
 import {
   container,
   lgContainer,
-  h6,
   statItem,
-  h4,
   statLogo,
-  subtitle1,
   styleh5,
-  Modelbody1,
-  styles,
+  styles
 } from "./style.js";
 import { data } from "./data.js";
-import Model from './model.png'
-import useMediaQuery from "@mui/material/useMediaQuery";
+import Model from './model.png';
 import { breakpoints } from "../../theme/constant";
 import ourteam from "../../Pages/About/OurTeam/style.js";
-import we from "./we.svg";
-import { Mode } from "@mui/icons-material";
-import { border } from "@mui/system";
+
 const OurApproach = () => {
-  const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
+  const isActive = useMediaQuery(`(max-width:${breakpoints.values.sm}px)`);
 
   return (
     <>
       <Box
-
         style={container}
         sx={{
-          ...container,
           paddingLeft: isActive ? "16px" : "0px",
           paddingRight: isActive ? "16px" : "0px",
           display: "flex",
@@ -38,14 +29,34 @@ const OurApproach = () => {
           justifyContent: "center",
         }}
       >
-        <Container maxWidth="lg" style={lgContainer} sx={{}}>
-          <Grid container sx={{ paddingTop: "80px", textAlign: {xs:"left", md:"center"}, justifyContent: "center" }} >
-            <Grid item xs={12} md={7} sm={12} sx={{ px: { lg: 0, sm: 5, md: 3, sx: 5 } }}>
+        <Container maxWidth="lg" style={lgContainer}>
+          <Grid 
+            container 
+            sx={{ 
+              paddingTop: "80px", 
+              textAlign: { xs: "left", md: "center" }, 
+              justifyContent: "center" 
+            }}
+          >
+            <Grid 
+              item 
+              xs={12} 
+              md={7} 
+              sm={12} 
+              sx={{ px: { lg: 0, sm: 5, md: 3, xs: 5 } }}
+            >
               <Typography sx={styleh5} variant="h5">
                 Our Rationale
               </Typography>
-              <Typography variant="body1" sx={{ color: "var(--white, #FFF)", textAlign: {xs:"left", md:"left"} }} paddingTop="16px">
-                We strongly believe that investing in women and youth’s digital education
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: "var(--white, #FFF)", 
+                  textAlign: { xs: "left", md: "left" } 
+                }} 
+                paddingTop="16px"
+              >
+                We strongly believe that investing in women and youth's digital education
                 can reap multifold benefits for society as a whole. As we
                 rapidly advance in technology, it's crucial to ensure that
                 underserved women and youth aren't left behind. Sama addresses two
@@ -53,18 +64,26 @@ const OurApproach = () => {
               </Typography>
             </Grid>
           </Grid>
-          <Grid container color="#fff" paddingTop="40px" sx={{ px: { lg: 0, sm: 5, md: 3, sx: 5 }, justifyContent: "center" }}>
+          
+          <Grid 
+            container 
+            color="#fff" 
+            paddingTop="40px" 
+            sx={{ 
+              px: { lg: 0, sm: 5, md: 3, xs: 5 }, 
+              justifyContent: "center" 
+            }}
+          >
             {data.map((section, sectionIndex) => (
               <React.Fragment key={sectionIndex}>
                 <Typography
                   variant="h6"
-                  mt={3}
                   sx={{
                     textAlign: "center",
-                    ...container,
-                    paddingTop: isActive && 6,
+                    paddingTop: isActive ? 6 : undefined,
                     mt: sectionIndex === 1 ? 8 : 4,
-                    color: "#ffff"
+                    color: "#fff",
+                    marginBottom: "16px",
                   }}
                 >
                   {section.title}
@@ -102,7 +121,7 @@ const OurApproach = () => {
                       </Box>
                       <Typography
                         variant="body1"
-                        sx={{ color: "var(--white, #FFF)", mt: 2, width: { md: "305px" } }}
+                        sx={{ color: "var(--white, #FFF)", mt: 2,paddingRight: "32px" }}
                       >
                         {stat.description}
                       </Typography>
@@ -112,77 +131,98 @@ const OurApproach = () => {
               </React.Fragment>
             ))}
           </Grid>
-
         </Container>
-      </Box >
+      </Box>
+
       {/* <Container maxWidth="md">
-        <Box sx={ourteam.ApproachBox} mt={5}>
-          <Typography variant="h5" color="#5C785A" gutterBottom>
+        <Box 
+          sx={{
+            ...ourteam.ApproachBox,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+            marginTop: "80px"
+          }} 
+          
+        >
+          <Typography 
+            variant="h5" 
+            color="#5C785A" 
+            gutterBottom 
+            sx={{ textAlign: "center" }}
+          >
             Our Working Model
           </Typography>
-          <Typography variant="body1" paragraph align="center" >
-            Through this comprehensive working model, we 
-            transform e-waste into educational tools , thereby 
-            providing impact reports to our donors
+          <Typography 
+            variant="body1" 
+            paragraph 
+            align="center"
+            sx={{ 
+              maxWidth: "90%",
+              mx: "auto",
+              textAlign: "center"
+            }}
+          >
+            Through this comprehensive working model, we transform e-waste into educational tools, thereby providing impact reports to our donors
           </Typography>
-          <img src={Model}
+          <img 
+            src={Model}
             alt="Logo"
             style={{
               display: 'block',
               maxWidth: '100%',
-              marginBottom: '100px',
-            }}>
-
-          </img>
-
+              margin: '0 auto 100px auto',
+            }}
+          />
         </Box>
-      </Container> */}
+      </Container> */} 
 
-<Container maxWidth="md">
-  <Box 
-    sx={{
-      ...ourteam.ApproachBox,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      textAlign: "center",
+    <Container maxWidth="md">
+      <Box 
+        sx={{
+          ...ourteam.ApproachBox,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+          
+        }} 
       
-    }} 
-   
-  >
-    <Typography 
-      variant="h5" 
-      color="#5C785A" 
-      gutterBottom 
-      sx={{ textAlign: "center",marginTop :"80px" }}
-    >
-      Our Working Model
-    </Typography>
-    <Typography 
-      variant="body1" 
-      paragraph 
-      align="center"
-      sx={{ 
-        maxWidth: "90%",
-        mx: "auto",
-        textAlign: "center",
-        marginTop :"21px"
-      }}
-    >
-      Through this comprehensive working model, we transform e-waste into educational tools, thereby providing impact reports to our donors
-    </Typography>
-    <img 
-      src={Model}
-      alt="Logo"
-      style={{
-        display: 'block',
-        maxWidth: '100%',
-        margin: '0 auto 100px auto',
-        marginTop :"21px"
-      }}
-    />
-  </Box>
-</Container>
+      >
+        <Typography 
+          variant="h5" 
+          color="#5C785A" 
+          gutterBottom 
+          sx={{ textAlign: "center",marginTop :"80px" }}
+        >
+          Our Working Model
+        </Typography>
+        <Typography 
+          variant="body1" 
+          paragraph 
+          align="center"
+          sx={{ 
+            maxWidth: "90%",
+            mx: "auto",
+            textAlign: "center",
+            marginTop :"21px"
+          }}
+        >
+          Through this comprehensive working model, we transform e-waste into educational tools, thereby providing impact reports to our donors
+        </Typography>
+        <img 
+          src={Model}
+          alt="Logo"
+          style={{
+            display: 'block',
+            maxWidth: '100%',
+            margin: '0 auto 100px auto',
+            marginTop :"21px"
+          }}
+        />
+      </Box>
+    </Container>
 
     </>
   );

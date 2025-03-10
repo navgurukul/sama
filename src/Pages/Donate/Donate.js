@@ -165,7 +165,7 @@ function Donation() {
 
   return (
     <>
-      <Box sx={{ backgroundColor: "#E0E0E0" }} paddingBottom="80px" paddingTop="80px">
+      <Box sx={{ backgroundColor: "#F0F4EF" }} paddingBottom="80px" paddingTop="80px">
         <Container maxWidth="lg">
           <Typography
             variant="h6"
@@ -232,7 +232,7 @@ function Donation() {
       </Box>
      
 
-      <Container maxWidth="lg" sx={{ pt: "70px" }}>
+      <Container maxWidth="lg" sx={{ pt: "80px", pb: "80px" }}>
         <Typography variant="h5" textAlign="center" >Your Details</Typography>
         <Box sx={{ pt: "32px" }}>
           <form onSubmit={handleSubmit}>
@@ -580,7 +580,7 @@ function Donation() {
                 item
                 xs={12}
                 sx={{
-                  paddingBottom: "4%",
+                 
                   display: "flex",
                   alignItems: "center",
                 }}

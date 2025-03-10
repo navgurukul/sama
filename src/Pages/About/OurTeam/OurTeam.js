@@ -184,7 +184,7 @@ const OurTeam = () => {
         <Grid
           container
           spacing={2}
-          sx={{ marginTop: "48px", marginLeft: { xs: "0px", md: "140px" } }}
+          sx={{ marginTop: "48px",marginBottom:"32px", marginLeft: { xs: "0px", md: "140px" } }}
         >
           <Grid item xs={12} md={6}>
             <Box sx={ourteam.box}>

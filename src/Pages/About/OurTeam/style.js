@@ -108,7 +108,6 @@ const ourteam = {
     image: {
         width: "278px",
         height: "256px",
-        // marginLeft:"64px",
         borderRadius: "8px",
     },
     //OurGoverment
