@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Grid, Button, Typography, Box } from "@mui/material";
 import HomeImg from "./assets/HeroSection.svg";
 import "./Styles.css";
@@ -15,6 +15,19 @@ function Home() {
   const isActive = useMediaQuery("(max-width:600px)");
   const isActiveIpad = useMediaQuery("(max-width:1300px)");
   const isXs = useMediaQuery('(max-width:600px)');
+  const [bgImagesLoaded, setBgImagesLoaded] = useState(false);
+
+  useEffect(() => {
+    const img1 = new Image();
+    const img2 = new Image();
+
+    img1.src = diamond;
+    img2.src = HomeImg;
+
+    img1.onload = img2.onload = () => {
+      setBgImagesLoaded(true);
+    };
+  }, []);
 
   const commonImageStyle = {
     width: "100%",
@@ -39,7 +52,9 @@ function Home() {
     <>
       <Box
         sx={{
-          backgroundImage: `url(${diamond}), url(${HomeImg})`,
+          backgroundImage: bgImagesLoaded
+            ? `url(${diamond}), url(${HomeImg})`
+            : "none", // Hide background until loaded
           backgroundSize: "cover, cover",
           backgroundPosition: "center, center",
           color: "white",
@@ -48,6 +63,8 @@ function Home() {
           justifyContent: "center",
           alignItems: "center",
           textAlign: "center",
+          width: "100%",
+          transition: "background-image 0.5s ease-in-out", // Smooth transition when images load
         }}
         paddingY={isActive ? 5 : 28}
       >
@@ -65,7 +82,7 @@ function Home() {
       </Box>
       <LaptopDonor />
 
-      <Box sx={{ my: 10}} >
+      <Box sx={{ my: 10 }} >
         <Container maxWidth="lg">
           <Typography variant="h5" align="left" mb={4}></Typography>
           <Grid container spacing={4}>
@@ -74,7 +91,9 @@ function Home() {
                 About Us
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Sama, a non-profit organisation, and a subsidiary of NavGurukul, helps modern businesses responsibly repurpose their e-waste for educational usage by underserved women. Our aim is to embed Net Zero Through Giving into the culture of a client organisation so that every member understands the role they can play in supporting the transition towards a greener and inclusive future.
+                Sama, a non-profit organisation, and a subsidiary of NavGurukul,
+                helps modern businesses responsibly repurpose their e-waste for
+                educational usage by underserved women & youth.
               </Typography>
               <a href="/about" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>
                 <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "bold", fontSize: "18px" }}>Know more</Typography>
@@ -86,7 +105,9 @@ function Home() {
                 Our Approach
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Sama is not just a laptop donation project; it's a comprehensive education initiative aimed at empowering 1 million girls and women by 2030 with cutting-edge devices and skills, leveraging the existing infrastructure of our corporate partners.
+                Sama is not just a laptop donation project; it's a comprehensive
+                education initiative aimed at empowering 1 million women and youth
+                by 2030 with cutting-edge devices and skills.
               </Typography>
               <a href="/our-approach" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", marginTop: "16px" }}>
                 <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "bold", fontSize: "18px" }}>Know more</Typography>
@@ -96,25 +117,49 @@ function Home() {
           </Grid>
         </Container>
       </Box>
-      <Box sx={{ backgroundColor: "#F0F4EF", py: 6 }}>
-        <Container maxWidth="lg">
-          <Typography variant="h5" margin="32px 0px">Our Goals for 2030</Typography>
-          <Grid container spacing={4}>
+      <Box sx={{ backgroundColor: "#F0F4EF", py: 6, }}>
+        <Container maxWidth="lg" >
+          <Typography variant="h5" margin="32px 0px" sx={{ textAlign: "center" }}>Our Goals for 2030</Typography>
+          <Grid container spacing={4} sx={{ justifyContent: "center" }}>
+            {/* First Row - Three Items */}
             {[
               { src: require("./assets/image 9.svg").default, value: "2.4 M", description: "kgs of Resource Waste Reduction" },
               { src: require("./assets/image 11.svg").default, value: "8.6 M", description: "grams of Toxic Waste Reduction" },
               { src: require("./assets/image 10.svg").default, value: "400 M", description: "kgs of Carbon Footprint Reduction" },
-              { src: require("./assets/image 9 (1).svg").default, value: "1 M", description: "Beneficiaries of Digital Inclusion" },
-              { src: require("./assets/image 12.svg").default, value: "4 M", description: "Hours average per day of Learning Hours" },
             ].map((item, index) => (
               <Grid item xs={12} md={4} key={index}>
-                <Box>
+                <Box sx={{ textAlign: "center" }}>
                   <img src={item.src} alt={item.description} />
-                  <Typography variant="h5" color="primary" marginTop="8px">{item.value}</Typography>
-                  <Typography variant="body1" sx={{color: '#4A4A4A'}}>{item.description}</Typography>
+                  <Typography variant="h5" color="primary" mt={1}>{item.value}</Typography>
+                  <Typography variant="body1" sx={{ color: '#4A4A4A' }}>{item.description}</Typography>
                 </Box>
               </Grid>
             ))}
+
+            <Grid
+              item
+              xs={12}
+              md={8}
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 4,
+
+              }}
+            >
+              {[
+                { src: require("./assets/image 9 (1).svg").default, value: "1 M", description: "Beneficiaries of Digital Inclusion" },
+                { src: require("./assets/image 12.svg").default, value: "4 M", description: "Hours average per day of Learning Hours" },
+              ].map((item, index) => (
+                <Box key={index} sx={{ textAlign: "center", width: "100%", maxWidth: "400px" }}>
+                  <img src={item.src} alt={item.description} />
+                  <Typography variant="h5" color="primary" mt={1}>{item.value}</Typography>
+                  <Typography variant="body1" sx={{ color: '#4A4A4A' }}>{item.description}</Typography>
+                </Box>
+              ))}
+            </Grid>
           </Grid>
           <Typography variant="body2"
             color="#4A4A4A"
@@ -124,7 +169,8 @@ function Home() {
               fontStyle: 'normal',
               fontWeight: 400,
               my: 4,
-              lineHeight: '170%'
+              lineHeight: '170%',
+              textAlign: "center"
             }} gutterBottom>
             *All calculations based on relevant people benefiting from 1 M laptops by 2030
           </Typography>
@@ -157,7 +203,7 @@ function Home() {
           </Typography>
         </Box>
       </Container> */}
-      <Container maxWidth="xxl" style={{ padding: 0,background:"#F0F4EF" }}>
+      <Container maxWidth="xxl" style={{ padding: 0, background: "#F0F4EF" }}>
         <img
           src={BGIMG}
           alt="Sama Group"
@@ -166,18 +212,20 @@ function Home() {
       </Container>
 
 
-      <Container maxWidth="lg" sx={{py:"80px",backgroundColor: "#FFFAF8"}}>
-        <Typography variant="h5">Metrics that Matter</Typography>
-        <Typography variant="body1">Here’s how the impact is measured through data driven insights</Typography>
-        <Box sx={!isActive && { display: 'flex', my: 4 }} spacing={3}>
+      <Container maxWidth="lg" sx={{ py: "80px" }}>
+        <Typography variant="h5" textAlign="center">Metrics that Matter</Typography>
+        <Typography variant="body1" textAlign="center" mt={2}>Here’s how the impact is measured through data driven insights</Typography>
+        <Box sx={!isActive && { display: 'flex', my: 4, justifyContent: "center", alignItems: "center" }} spacing={3}>
           <Button color="primary" variant={impact === "environmental" ? "contained" : "outlined"}
             style={isActive ? { marginTop: "16px" } : { borderRadius: "100px" }}
-            onClick={() => setImpact("environmental")}>
+            onClick={() => setImpact("environmental")}
+            sx={{ width: { xs: "100%", sm: "280px" } }}>
             Environmental Impact
           </Button>
           <Button color="primary" variant={impact === "social" ? "contained" : "outlined"}
-            style={isActive ? { margin: "16px 0px" } : { borderRadius: "100px", marginLeft: "32px" }}
-            onClick={() => setImpact("social")}>
+            style={isActive ? { margin: "16px 0px" } : { borderRadius: "100px", marginLeft: "24px" }}
+            onClick={() => setImpact("social")}
+            sx={{ width: { xs: "100%", sm: "280px" } }}>
             Social Impact
           </Button>
         </Box>
@@ -191,30 +239,65 @@ function Home() {
         </Box>
       </Container>
 
-      <Box>
-        <Container maxWidth="lg" sx={{py:"80px"}}>
-          <Typography variant="h5">Sustainability Development Goals</Typography>
-          <Typography variant="body1" style={{ width: "65%", margin: "32px 0px" }}>
-            Sama's mission of repurposing e-waste for educational use by underserved women aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
-          </Typography>
-          <Grid container spacing={3}>
+     
+
+    <Box sx={{ backgroundColor: "#FFFAF8" }}>
+      <Container maxWidth="lg" sx={{ py: "80px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <Typography variant="h5" sx={{ textAlign: "center" }}>Sustainability Development Goals</Typography>
+        <Typography 
+          variant="body1" 
+          align="center"
+          sx={{
+            width: { xs: "90%", sm: "80%", md: "65%" },
+            margin: "16px auto",
+            textAlign: "center"
+          }}
+        >
+          Sama's mission of repurposing e-waste for educational use by underserved women & youth aligns with several UN Sustainable Development Goals. Our "Net Zero Through Giving" approach contributes to the following SDGs:
+        </Typography>
+        <Grid container spacing={4} sx={{ mt: { xs: 0, md: 2 } }}>
+          {[
+            { src: "./assets/sub_1.jpg", overlaySrc: require("./assets/h1.png"), alt: "Gender Equality" },
+            { src: "./assets/sub_2.jpg", overlaySrc: require("./assets/h2.png"), alt: "Gender Equality" },
+            { src: "./assets/sub_4.jpg", overlaySrc: require("./assets/h3.png"), alt: "Quality Education" },
+          ].map((item, index) => (
+            <Grid item xs={12} md={4} key={index}>
+              <Box sx={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
+                <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
+                <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
+              </Box>
+            </Grid>
+          ))}
+
+          <Grid
+            item
+            xs={12}
+            md={8}
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 4,
+              marginLeft: { xs: "0px", md: "200px" }
+            }}
+          >
             {[
-              { src: "./assets/sub_1.jpg", overlaySrc: require("./assets/E_GIF_04.gif"), alt: "Gender Equality" },
-              { src: "./assets/sub_2.jpg", overlaySrc: require("./assets/E_GIF_05.gif"), alt: "Gender Equality" },
-              { src: "./assets/sub_4.jpg", overlaySrc: require("./assets/E_GIF_08.gif"), alt: "quality education" },
-              { src: "./assets/laptop_1.jpg", overlaySrc: require("./assets/E_GIF_12.gif"), alt: "growth" },
-              { src: "./assets/ngStudent.jpg", overlaySrc: require("./assets/E_GIF_13.gif"), alt: "climate action" },
+              { src: "./assets/laptop_1.jpg", overlaySrc: require("./assets/h4.png"), alt: "Growth" },
+              { src: "./assets/ngStudent.jpg", overlaySrc: require("./assets/h5.png"), alt: "Climate Action" },
             ].map((item, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Box sx={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-                  <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
-                  <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
-                </Box>
-              </Grid>
+              <Box key={index} sx={{ position: 'relative', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+                <img src={require(`${item.src}`)} alt={item.alt} style={commonImageStyle} />
+                <img src={item.overlaySrc} alt={item.alt} style={commonOverlayImageStyle} />
+              </Box>
             ))}
           </Grid>
-        </Container>
-      </Box>
+        </Grid>
+      </Container>
+    </Box>
+
+
+
       <TestimonialSlider />
       <ContactForm />
     </>

@@ -10,6 +10,13 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 const TestimonialSlider = () => {
   const testimonials = [
     {
+      src: require('./assets/alfiya.jpg'),
+      alt: 'Student 9',
+      name: "Alfiya D",
+      place: "Bangalore",
+      text: "Coming from an economically challenged background, I couldn't afford computer classes, while my peers in private schools had access. Thanks to Sama and Vimukthi Vidya Samsthe, I now have the opportunity to learn computers in school."
+    },
+    {
       src: require('./assets/shahnaaz.jpg'),
       alt: 'Student 1',
       name: "Shahnaaz",
@@ -44,18 +51,36 @@ const TestimonialSlider = () => {
       alt: 'Student 5',
       name: "Komal Chaudhary",
       place: "Bangalore",
-      text: "Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it"
+      text: "Before, I couldn't even turn a laptop on. Now, I can't imagine a day of learning without it."
     },
+    {
+      src: require('./assets/sonam.png'),
+      alt: 'Student 6',
+      name: "Sonam",
+      place: "Indore",
+      text: "Sama and NavGurukul enabled my education by providing a laptop and placement support, helping me secure a job at Amazon. Their guidance and resources have been invaluable in shaping my career."
+    },
+    {
+      src: require('./assets/ruchi.jpg'),
+      alt: 'Student 7',
+      name: "Ruchi",
+      place: "Sarjapur",
+      text: "NavGurukul provided me with the skills that shaped my career, and Sama's laptop support was crucial in my journey. Today, I work as a Frontend Developer at Accenture, grateful for the empowerment and opportunities they provided. "
+    },
+    
   ];
 
   const isMobile = useMediaQuery('(max-width:600px)');
 
+  console.log(testimonials)
+  
   const groupedTestimonials = isMobile
-    ? testimonials.map((testimonial) => [testimonial])
+    ? testimonials.map((testimonial, inde) => [testimonial])
     : [
       [testimonials[0], testimonials[1]],
       [testimonials[2], testimonials[3]],
-      [testimonials[4]],
+      [testimonials[4],testimonials[5]],
+      [testimonials[6], testimonials[7]],
     ];
 
   const [sliderRef, slider] = useKeenSlider({
@@ -108,17 +133,19 @@ const TestimonialSlider = () => {
                 {group.map((testimonial, idx) => (
                   <Box key={idx} sx={isMobile ? { width: '100%' } : { width: '50%', paddingRight: '16px' }}>
 
-                    <Typography  variant="body1" sx={!isMobile && { height: "100px",color: "#FFF", }}>{testimonial.text}</Typography>
-                    <Box style={{width:"64px",height:"64px",border: "7.7px solid rgba(178, 95, 101, 1)",marginTop:"30px",borderRadius:"50px"}}>
-                    <img src={testimonial.src} alt={testimonial.alt}
+                    <Typography  variant="body1" sx={{ height: "100px",color: {xs:"#FFF", md:"#FFF"}, }}>{testimonial.text}</Typography>
+                    <Box style={{width:"64px",height:"64px",border: "4px solid rgba(178, 95, 101, 1)",marginTop:"48px",borderRadius:"50px"}}>
+                    <img src={testimonial.src} alt={testimonial.alt} 
                       style={{
+                        
                         width: "64px",
                         height: "64px",
                         borderRadius: "50%",
-                        objectFit: "cover"
+                        objectFit: "cover",
+                        
                       }} />
                       </Box>
-                    <Typography variant="subtitle1" sx={{mt:2,fontWeight:"bold",color: "#FFF",}}>{testimonial.name}</Typography>
+                    <Typography variant="subtitle1" sx={{mt:2,fontWeight:"bold",color: {xs:"#FFF", md:"#FFF"},}}>{testimonial.name}</Typography>
                   </Box>
                 ))}
               </Box>

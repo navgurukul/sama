@@ -1,18 +1,13 @@
 import React from "react";
 import { Container, Grid, Typography, Link, Box } from "@mui/material";
 import samalogo from "../../assets/samalogo.png";
+import Email from "./email.png";
+import LinkedInIcon from "./linkdin.png";
 import { matchPath, useLocation } from "react-router-dom";
 
 const isRouteMatch = (pathname, patterns) => {
   return patterns.some((pattern) =>
-    matchPath(
-      {
-        path: pattern,
-        exact: true,
-        strict: false,
-      },
-      pathname
-    )
+    matchPath({ path: pattern, exact: true, strict: false }, pathname)
   );
 };
 
@@ -30,65 +25,112 @@ const Footer = () => {
     "yearly-reporting",
     "monthly-report",
     "yearly-report",
+    "/corporate",
+    "/corpretedb/DataViewDetail",
+    "/corpretedb/NGOTrainedTable",
+
   ];
 
-  // Check if the current route matches any pattern
-  if (isRouteMatch(location.pathname, routePatterns)) {
-    return null; // Don't render the footer if the route matches
+  const isMatch = isRouteMatch(location.pathname, routePatterns);
+  if (isMatch) {
+    return null;
   }
+
   return (
     <footer>
       <Box maxWidth="false" bgcolor="primary.light" py={5}>
         <Container maxWidth="lg">
-          <Grid container my={1}>
-            <Grid item xs={4} sm={6} md={6}>
+          <Grid container spacing={3} alignItems="center" marginBottom={"32px"}>
+            <Grid item xs={12} md={2} textAlign={{ xs: "center", md: "left" }} mb={{ xs: 2, md: 12 }}>
               <Link href="/">
-                <img src={samalogo} alt="Logo" width={100} />
+                <img src={samalogo} alt="Logo" width={170} /> {/* Increased Size */}
               </Link>
             </Grid>
-            <Grid item xs={4} sm={6} md={6}></Grid>
+
+            <Grid item xs={12} md={10} >
+              <Grid container spacing={6} gap={{ xs: 2, md: 16 }} justifyContent="center" >
+                <Grid item xs={12} sm={2} textAlign={{ xs: "center", md: "left" }}>
+                  <Typography variant="subtitle2" fontWeight="bold" color="#4A4A4A">
+                    About Sama
+                  </Typography>
+                  <Box display="flex" flexDirection="column" gap={2} mt={2}>
+                    <Typography variant="body2" >
+                      <Link href="/about" underline="none" color="#4A4A4A">
+                      Discover Us
+                      </Link>
+                    </Typography>
+                    <Typography variant="body2" >
+                      <Link href="/our-approach" underline="none" color="#4A4A4A">
+                        Our Approach
+                      </Link>
+                    </Typography>
+                    <Typography variant="body2" >
+                      <Link href="/ourteam" underline="none" color="#4A4A4A">
+                        Our Team
+                      </Link>
+                    </Typography>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} sm={3} textAlign={{ xs: "center", md: "left" }} >
+                  <Typography variant="subtitle2" fontWeight="bold" color="#4A4A4A">
+                    Get Involved
+                  </Typography>
+                  <Box display="flex" flexDirection="column" gap={2} mt={2}>
+                    <Typography variant="body2"  >
+                      <Link href="/corporatepartner" underline="none" color="#4A4A4A">
+                        Corporate Partners
+                      </Link>
+                    </Typography>
+                    <Typography variant="body2" >
+                      <Link href="/ourgoverment" underline="none" color="#4A4A4A">
+                        Government Partners
+                      </Link>
+                    </Typography>
+                    <Typography variant="body2" >
+                      <Link href="/communitypartners" underline="none" color="#4A4A4A">
+                        Community Partners
+                      </Link>
+                    </Typography>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} sm={2} justifyItems={{ xs: "center", md: "left" }} sx={{ marginRight: { xs: "10px", md: "30px" } }}>
+                  <Typography variant="subtitle2" fontWeight="bold" color="#4A4A4A">
+                    Support
+                  </Typography>
+                  <Box display="flex" justifyContent="center" alignItems="center" mt={1} gap={1}>
+                    <img src={Email} fontSize="small" sx={{ mr: 1 }} />
+                    <Link href="mailto:operations@navgurukul.org" underline="none" target="_blank" rel="noopener noreferrer">
+                      <Typography variant="body2" >operations@navgurukul.org</Typography>
+                    </Link>
+                  </Box>
+                  <Box display="flex" justifyContent="center" mt={2} gap={1}>
+                    <Link href="https://www.linkedin.com/company/thesama/" underline="none" target="_blank" rel="noopener noreferrer">
+                      <img src={LinkedInIcon} />
+                    </Link>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Grid>
           </Grid>
+
           <hr />
-          <Grid container alignItems="center" mt={5}>
-            <Grid
-              item
-              xs={12}
-              md={4}
-              sx={{
-                mb: { xs: -2, md: 0 },
-              }}
-            >
-              <Typography
-                variant="body1"
-                color="text.secondary"
-                sx={{
-                  textAlign: { xs: "center", md: "left" },
-                }}
-              >
-                <Link
-                  href="/privacy-policy"
-                  color="inherit"
-                  underline="none"
-                  sx={{ cursor: "pointer" }}
-                >
+
+          <Grid container alignItems="center" mt={4}>
+            <Grid item xs={12} md={8} textAlign={{ xs: "center", md: "left" }}>
+              <Typography variant="body1" color="text.secondary">
+                <Link href="/privacy-policy" color="inherit" underline="none">
                   Legal & Privacy Policy
                 </Link>
               </Typography>
             </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography
-                variant="body1"
-                color="text.secondary"
-                align="center"
-                sx={{
-                  mt: { xs: 4, md: 0 }, // Add top margin only on mobile
-                }}
-              >
-                Copyright © 2024 reserved
+            <Grid item xs={12} md={4} textAlign="center">
+              <Typography variant="body1" color="text.secondary">
+                Copyright © 2025 reserved
               </Typography>
             </Grid>
-            <Grid item xs={12} md={4}>
-            </Grid>
+            <Grid item xs={12} md={4}></Grid>
           </Grid>
         </Container>
       </Box>
@@ -96,4 +138,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default Footer; 

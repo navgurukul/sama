@@ -93,7 +93,6 @@ const MonthlyReport = () => {
   const monthlyDates = generateMonthlyDates(monthlyReportingDate);
   const [extraLoader, setExtraLoader] = useState(true);
 
-
   // this is to get the preliminary data from the sheet
   const [metrics, setMetrics] = useState([]);
 
@@ -156,31 +155,17 @@ const MonthlyReport = () => {
     setCurrentDate(new Date());
   }, []);
 
-  // get request for the existing monthly reports.
+
   useEffect(() => {
-    // Fetch data when the component mounts
     fetch(
       `${process.env.REACT_APP_NgoInformationApi}?type=GetMonthlyReport&id=${user}`
     )
       .then((response) => response.json())
       .then((result) => {
         if (result.status === "success") {
-          const rawData = result.data;
-          // const parsedData = Array.isArray(rawData)
-          //   ? rawData
-          //   : JSON.parse(rawData);
-
-          // // Filter out empty values and transform strings into objects
-          // const transformedData = parsedData
-          //   .filter((item) => item.trim() !== "")
-          //   .map((item) => {
-          //     return item.split(",").reduce((acc, pair) => {
-          //       const [key, value] = pair.split(":").map((str) => str.trim());
-          //       acc[key] = value; // Create key-value pairs
-          //       return acc;
-          //     }, {});
-          //   });
-          setMonthlyMetrixGet(rawData);
+          // Transform data structure here
+          const transformedData = result.data.result; // Getting the result object directly
+          setMonthlyMetrixGet(transformedData);
           setIsDataAvailabel(true);
           setExtraLoader(false);
         } else {
@@ -206,7 +191,7 @@ const MonthlyReport = () => {
 
         // Assuming the API returns { success: true, exists: true/false }
         if (response.data) {
-          setIsFormCreated(response.data.status==="success");
+          setIsFormCreated(response.data.status === "success");
         } else {
           throw new Error("Invalid response from server");
         }
@@ -249,7 +234,7 @@ const MonthlyReport = () => {
           <Typography variant="h6" gutterBottom sx={{ color: "#4A4A4A" }}>
             Monthly Report
           </Typography>
-          {!monthlyDates.length>0 && (
+          {!monthlyDates.length > 0 && (
             <Box
               sx={{
                 display: "flex",
@@ -259,7 +244,8 @@ const MonthlyReport = () => {
               }}
             >
               <CircularProgress />
-            </Box>)}
+            </Box>
+          )}
           <Grid container spacing={3} mb={8}>
             {monthlyDates.map((report, index) => {
               const isEnabled = currentDate >= report; // Check if current date has passed the card's date
@@ -267,9 +253,13 @@ const MonthlyReport = () => {
                 month: "long",
               }); // Get full month name
               const year = report.getFullYear(); // Get the year
-              const monthKey = `${monthName} ${year}`; // Generate the key for `monthlyMetrixGet`
-              const reportData = monthlyMetrixGet[monthKey]; // Get the corresponding data from `monthlyMetrixGet`
-                    
+              const monthKey = `${monthName}-${year}`; // Changed space to hyphen to match API format
+              const reportData = monthlyMetrixGet?.[monthKey]; // Added optional chaining
+
+              
+            
+
+       
 
               return (
                 <Grid item xs={12} sm={6} md={4} key={index}>

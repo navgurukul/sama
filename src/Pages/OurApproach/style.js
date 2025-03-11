@@ -1,11 +1,11 @@
-import { border } from "@mui/system";
 
 export const container = {
-    background: "var(--primary, #5C785A)",    
+    background: "var(--primary, #5C785A)",   
+    paddingBottom: "80px" 
 };
 
 export const lgContainer = {
-    padding: '0px 0px 64px 0px',
+    // padding: '0px 0px 64px 0px',
 };
 export const sectionTitle ={
     color: "white"
@@ -45,7 +45,6 @@ export const styleh5 = {
     fontWeight: 700,
     lineHeight: " 41.6px",
     fontStyle: "normal",
-    
 }
 export const Modelbody1 = {
     color: "var(--white, #FFF)",
@@ -59,7 +58,6 @@ export const Modelbody1 = {
 export const styles={
     h4:{
         color:"var(--white, #FFF)",
-        fontSize:"48px",
         fontStyle:"normal",
         lineHeight:"41.6px",
         fontWeight:700,

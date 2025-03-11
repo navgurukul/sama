@@ -5,8 +5,8 @@ import { Container } from "@mui/system";
 
 const NGODetails = ({ ngo }) => {
   return (
-    <Container maxWidth="lg" sx={{ padding: "24px" }}>
-      <Grid container spacing={4}>
+    <Container maxWidth="lg" sx={{ padding: "24px" }} >
+      <Grid container spacing={4}mt={5}>
         {ngo.map((item) => (
           <React.Fragment key={item.Id}>
             <Grid item xs={12} sm={6} md={6}>

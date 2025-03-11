@@ -129,7 +129,7 @@ function ContactForm() {
     >
       <Container maxWidth="lg">
         <Grid container spacing={4}>
-          <Grid item xs={12} md={8}>
+          <Grid item xs={12} md={6}>
             <Typography variant="h5">Contact Us</Typography>
             <Typography variant="body1" mt={2}>
               Fill out the form, and we’ll get back to you as soon as possible.
@@ -141,7 +141,7 @@ function ContactForm() {
                     <b>First Name</b>
                   </InputLabel>
                   <TextField
-                    label="Ex : John"
+                    placeholder="Rajesh"
                     margin="normal"
                     fullWidth
                     variant="outlined"
@@ -158,7 +158,7 @@ function ContactForm() {
                     <b>Last Name</b>
                   </InputLabel>
                   <TextField
-                    label="Ex :  Doe"
+                    placeholder="Kumar"
                     margin="normal"
                     fullWidth
                     variant="outlined"
@@ -176,7 +176,7 @@ function ContactForm() {
               </InputLabel>
               <TextField
                 fullWidth
-                label="Ex : John@gmail.com"
+                placeholder="rajesh@gmail.com"
                 margin="normal"
                 variant="outlined"
                 name="email"
@@ -226,11 +226,14 @@ function ContactForm() {
             </form>
           </Grid>
           <Grid item xs={12} sm={12} md={4}>
+            <Box sx={{height:{ xs: '100%', md: "385px" }, width: { xs: '100%', md: "533px"}}}>
             <img
               src={require("./assets/Frame outer.svg").default}
               alt="Contact"
               width="100%"
             />
+            </Box>
+            
           </Grid>
         </Grid>
       </Container>
