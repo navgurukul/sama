@@ -40,7 +40,7 @@ const Footer = () => {
     <footer>
       <Box maxWidth="false" bgcolor="primary.light" py={5}>
         <Container maxWidth="lg">
-          <Grid container spacing={3} alignItems="center" marginBottom={"16px"}>
+          <Grid container spacing={3} alignItems="center" marginBottom={"32px"}>
             <Grid item xs={12} md={2} textAlign={{ xs: "center", md: "left" }} mb={{ xs: 2, md: 12 }}>
               <Link href="/">
                 <img src={samalogo} alt="Logo" width={170} /> {/* Increased Size */}
@@ -117,7 +117,7 @@ const Footer = () => {
 
           <hr />
 
-          <Grid container alignItems="center" mt={2}>
+          <Grid container alignItems="center" mt={4}>
             <Grid item xs={12} md={8} textAlign={{ xs: "center", md: "left" }}>
               <Typography variant="body1" color="text.secondary">
                 <Link href="/privacy-policy" color="inherit" underline="none">
