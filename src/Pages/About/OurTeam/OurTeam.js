@@ -5,37 +5,37 @@ import StayConnected from "../../../common/StayConnected";
 
 const originalTeamMembers = [
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video2.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/Work_vid2_aman.mp4",
     name: "Aman Sharma",
     Designation: "(Frontend Developer)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video3.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/IMG_2610.mov",
     name: "Shivani Bawa",
     Designation: "(CEO's Office Intern)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video4.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/Nitesh.mp4",
     name: "Nitesh Sharma",
     Designation: "(COO, Co- Founder)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video6.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/Sudiksha.mp4",
     name: "Sudiksha Yadav",
     Designation: "(Design)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video7.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/VID_20250124_145511749_HL.mp4",
     name: "Shweta Deshmukh",
     Designation: "(Operation)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video8.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/1000081135.mp4",
     name: "Pradeep Thakur",
     Designation: "(Operation)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/video9.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/1000081142.mp4",
     name: "Rahul Bauddha",
     Designation: "(Operation)",
   },
