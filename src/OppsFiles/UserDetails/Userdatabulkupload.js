@@ -46,7 +46,6 @@ function Userdatabulkupload({ user }) {
     const uploadedFile = e.target.files[0];
     validateAndSetFile(uploadedFile);
   };
-
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
