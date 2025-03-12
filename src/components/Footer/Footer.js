@@ -101,8 +101,8 @@ const Footer = () => {
                   </Typography>
                   <Box display="flex" justifyContent="center" alignItems="center" mt={1} gap={1}>
                     <img src={Email} fontSize="small" sx={{ mr: 1 }} />
-                    <Link href="mailto:operations@navgurukul.org" underline="none" target="_blank" rel="noopener noreferrer">
-                      <Typography variant="body2" >operations@navgurukul.org</Typography>
+                    <Link href="mailto:operations@thesama.in" underline="none" target="_blank" rel="noopener noreferrer">
+                      <Typography variant="body2" >operations@thesama.in</Typography>
                     </Link>
                   </Box>
                   <Box display="flex" justifyContent="center" mt={2} gap={1}>

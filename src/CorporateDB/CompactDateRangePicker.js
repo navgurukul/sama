@@ -81,8 +81,8 @@ const SingleInputDateRangePicker = ({ onDateRangeChange, dateRange, apiData }) =
         const formattedStart = dayjs(`${startYear}-${monthMapping[startMonth]}-01`).format("MMM'YYYY");
         const formattedEnd = dayjs(`${endYear}-${monthMapping[endMonth]}-01`).format("MMM'YYYY");
 
-        setStartDate(dayjs(`${startYear}-${monthMapping[startMonth]}-01`));
-        setEndDate(dayjs(`${endYear}-${monthMapping[endMonth]}-01`));
+        !displayValue && setStartDate(dayjs(`${startYear}-${monthMapping[startMonth]}-01`));
+        !displayValue && setEndDate(dayjs(`${endYear}-${monthMapping[endMonth]}-01`));
         !displayValue && setDisplayValue(`${formattedStart} - ${formattedEnd}`);
       }
     }
