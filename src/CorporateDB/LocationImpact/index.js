@@ -38,13 +38,8 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
   }, []);
 
   const parseMonthString = (monthStr) => {
-    if (monthStr.includes("March")) {
-      return dayjs(monthStr.replace("March", "Mar"), "MMM-YYYY");
-    } else if (monthStr.includes("April")) {
-      return dayjs(monthStr.replace("April", "Apr"), "MMM-YYYY");
-    }
-    return dayjs(monthStr, "MMM-YYYY");
-  };
+    return dayjs(monthStr, ["MMMM-YYYY", "MMM-YYYY"], true); // Supports both long & short month formats
+};
 
   useEffect(() => {
     const processStateData = () => {
@@ -120,39 +115,58 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
         // Process data only for the selected range
         Object.keys(apiData).forEach(programId => {
           const program = apiData[programId];
+      
           Object.entries(program).forEach(([monthStr, monthData]) => {
-            const apiMonth = parseMonthString(monthStr);
-
-            if (apiMonth.isValid() && 
-                apiMonth.isBetween(selectedStartDate, selectedEndDate, 'month', '[]')) {
-              hasDataInRange = true;
-              
-              Object.entries(monthData).forEach(([state, metrics]) => {
-                if (!statePrograms[state]) {
-                  statePrograms[state] = new Set();
-                }
-                statePrograms[state].add(programId);
-
-                if (!transformedData[state]) {
-                  transformedData[state] = {
-                    ngoNum: 0,
-                    teachersTrained: 0,
-                    schoolVisits: 0,
-                    sessionConducted: 0,
-                    modules: 0,
-                    learningHour: 0
-                  };
-                }
-                
-                transformedData[state].teachersTrained += parseInt(metrics["Number of Teachers Trained"]) || 0;
-                transformedData[state].schoolVisits += parseInt(metrics["Number of School Visits"]) || 0;
-                transformedData[state].sessionConducted += parseInt(metrics["Number of Sessions Conducted"]) || 0;
-                transformedData[state].modules += parseInt(metrics["Number of Modules Completed"]) || 0;
-                transformedData[state].learningHour = transformedData[state].sessionConducted * 1;
-              });
-            }
+              const apiMonth = parseMonthString(monthStr);
+               console.log("apiMonth",apiMonth,monthStr);
+      
+              // Ensure year is within range first
+              if (apiMonth.isValid()) {
+                console.log("apiMonth",apiMonth);
+                  const apiYear = apiMonth.year();
+                  const startYear = selectedStartDate.year();
+                  const endYear = selectedEndDate.year();
+      
+                  // Check if year is within range
+                  if (apiYear > startYear && apiYear < endYear) {
+                      processData();
+                  } else if (apiYear === startYear && apiMonth.month() >= selectedStartDate.month()) {
+                      processData();
+                  } else if (apiYear === endYear && apiMonth.month() <= selectedEndDate.month()) {
+                      processData();
+                  }
+              }
+      
+              function processData() {
+                  hasDataInRange = true;
+      
+                  Object.entries(monthData).forEach(([state, metrics]) => {
+                      if (!statePrograms[state]) {
+                          statePrograms[state] = new Set();
+                      }
+                      statePrograms[state].add(programId);
+      
+                      if (!transformedData[state]) {
+                          transformedData[state] = {
+                              ngoNum: 0,
+                              teachersTrained: 0,
+                              schoolVisits: 0,
+                              sessionConducted: 0,
+                              modules: 0,
+                              learningHour: 0
+                          };
+                      }
+      
+                      transformedData[state].teachersTrained += parseInt(metrics["Number of Teachers Trained"]) || 0;
+                      transformedData[state].schoolVisits += parseInt(metrics["Number of School Visits"]) || 0;
+                      transformedData[state].sessionConducted += parseInt(metrics["Number of Sessions Conducted"]) || 0;
+                      transformedData[state].modules += parseInt(metrics["Number of Modules Completed"]) || 0;
+                      transformedData[state].learningHour = transformedData[state].sessionConducted * 1;
+                  });
+              }
           });
-        });
+      });
+      
 
         if (!hasDataInRange) {
           setStateData({});
