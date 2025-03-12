@@ -118,11 +118,9 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
       
           Object.entries(program).forEach(([monthStr, monthData]) => {
               const apiMonth = parseMonthString(monthStr);
-               console.log("apiMonth",apiMonth,monthStr);
-      
+              
               // Ensure year is within range first
               if (apiMonth.isValid()) {
-                console.log("apiMonth",apiMonth);
                   const apiYear = apiMonth.year();
                   const startYear = selectedStartDate.year();
                   const endYear = selectedEndDate.year();
