@@ -448,14 +448,18 @@ function RegistrationForm() {
           {formFields?.map((field) => {
             if (field?.type === "text") {
               return (
+                <div>
+                <Typography mt={10} component="span" fontWeight="bold">
+                      {field.question}
+                    </Typography>
                 <TextField
                   key={field.name}
                   fullWidth
-                  label={
-                    <Typography component="span" fontWeight="bold">
-                      {field.question}
-                    </Typography>
-                  }
+                  // label={
+                  //   <Typography component="span" fontWeight="bold">
+                  //     {field.question}
+                  //   </Typography>
+                  // }
                   name={field.name}
                   value={formData[field.name]}
                   onChange={handleInputChange}
@@ -475,6 +479,7 @@ function RegistrationForm() {
                       : undefined
                   }
                 />
+              </div>
               );
             } else if (field?.type === "radio") {
               return (

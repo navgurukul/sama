@@ -88,6 +88,8 @@
     display: flex;
     margin-left: 0px;
   }
+
+  
   /* .dropMob{
     display: flex ;
     justify-content: flex-end;
@@ -107,6 +109,7 @@
 .MuiIconButton-root:hover,
 .MuiIconButton-root:focus {
   color: #045B50;
+  margin-right:"0px"; 
   border-color: #004F40 !important;
   border: 2px dotted #004F40 !important;
 }

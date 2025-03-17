@@ -133,16 +133,16 @@ const TestimonialSlider = () => {
                 {group.map((testimonial, idx) => (
                   <Box key={idx} sx={isMobile ? { width: '100%' } : { width: '50%', paddingRight: '16px' }}>
 
-                    <Typography  variant="body1" sx={{ height: "100px",color: {xs:"#FFF", md:"#FFF"}, }}>{testimonial.text}</Typography>
+                    <Typography  variant="body1" sx={{ height: {sx:"150px",md:"100px"},color: {xs:"#FFF", md:"#FFF"}, }}>{testimonial.text}</Typography>
                     <Box style={{width:"64px",height:"64px",border: "4px solid rgba(178, 95, 101, 1)",marginTop:"48px",borderRadius:"50px"}}>
                     <img src={testimonial.src} alt={testimonial.alt} 
                       style={{
                         
-                        width: "64px",
+                        width:"64px",
                         height: "64px",
                         borderRadius: "50%",
                         objectFit: "cover",
-                        
+                        // marginTop: {xs:"20px",md:"0px"},
                       }} />
                       </Box>
                     <Typography variant="subtitle1" sx={{mt:2,fontWeight:"bold",color: {xs:"#FFF", md:"#FFF"},}}>{testimonial.name}</Typography>

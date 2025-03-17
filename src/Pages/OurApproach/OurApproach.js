@@ -121,7 +121,8 @@ const OurApproach = () => {
                       </Box>
                       <Typography
                         variant="body1"
-                        sx={{ color: "var(--white, #FFF)", mt: 2,paddingRight: "32px" }}
+                        
+                        sx={{ color: "var(--white, #FFF)", mt: 2,paddingRight: "32px",textAlign: { xs: "center", md: "left" } }}
                       >
                         {stat.description}
                       </Typography>
