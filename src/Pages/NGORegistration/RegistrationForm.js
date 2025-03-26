@@ -77,6 +77,15 @@ function RegistrationForm() {
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [checkingContact, setCheckingContact] = useState(false);
 
+  // Define PDF size limit (in bytes)
+  const MAX_PDF_SIZE = 5 * 1024 * 1024; // 5MB
+  const ALLOWED_FILE_TYPES = [
+    'application/pdf', 
+    'application/msword', 
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  ];
+
   const [formData, setFormData] = useState({
     organizationName: "",
     registrationNumber: "",
@@ -255,8 +264,39 @@ function RegistrationForm() {
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
-    setFormData({ ...formData, impactReport: file });
-    setFileName(file ? file.name : "");
+    
+    // Validate file size and type
+    if (file) {
+      if (file.size > MAX_PDF_SIZE) {
+        setErrors(prev => ({
+          ...prev,
+          impactReport: `File size must not exceed ${MAX_PDF_SIZE / 1024 / 1024}MB`
+        }));
+        setFileName("");
+        e.target.value = null; // Clear the file input
+        return;
+      }
+
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+        setErrors(prev => ({
+          ...prev,
+          impactReport: 'Only PDF, DOC, DOCX, and XLSX files are allowed'
+        }));
+        setFileName("");
+        e.target.value = null; // Clear the file input
+        return;
+      }
+
+      // Clear any previous file-related errors
+      setErrors(prev => {
+        const newErrors = {...prev};
+        delete newErrors.impactReport;
+        return newErrors;
+      });
+
+      setFormData({ ...formData, impactReport: file });
+      setFileName(file.name);
+    }
   };
 
   const formfields = [
@@ -287,9 +327,12 @@ function RegistrationForm() {
     formfields.forEach((field) => {
       const value = formData[field.name];
 
-      // File size validation
-      if (field.name === "impactReport" && value?.size > 2 * 1024 * 1024) {
-        newErrors[field.name] = "Impact report file size must not exceed 2MB";
+      // File validation
+      if (field.name === "impactReport") {
+        if (!value) {
+          newErrors[field.name] = `Allowed file types: PDF, DOC, DOCX, XLSX (Max size: 5MB)`;
+
+        } 
       }
 
       // Contact number validation
@@ -326,7 +369,7 @@ function RegistrationForm() {
 
       // Primary contact name validation - allow letters
       if (field.name === "primaryContactName" && value) {
-        const textPattern = /^[A-Za-z\s]+$/;;  
+        const textPattern = /^[A-Za-z\s]+$/;  
         if (!textPattern.test(value)) {
           newErrors[field.name] = "Name should contain only letters";
         }
@@ -532,7 +575,16 @@ function RegistrationForm() {
                     Please share any impact reports or documentation related to
                     your previous projects.
                   </Typography>
-                  <Button variant="contained" component="label">
+                  {errors.impactReport && (
+                    <Typography color="error" variant="body2">
+                      {errors.impactReport}
+                    </Typography>
+                  )}
+                  <Button 
+                    variant="contained" 
+                    component="label" 
+                    color={errors.impactReport ? "error" : "primary"}
+                  >
                     Upload File
                     <input
                       type="file"
@@ -547,6 +599,7 @@ function RegistrationForm() {
                       Selected file: {fileName}
                     </Typography>
                   )}
+                  
                   <br />
                 </>
               );

@@ -216,54 +216,6 @@ function LaptopTagging() {
   };
 
 
-  // // Search handling
-  // const handleSearch = () => {
-  //   if (!idQuery && !macQuery) {
-  //     applyFilters();
-  //     return;
-  //   }
-     
-  //   let filtered = allData.filter(laptop => {
-  //     if (idQuery) {
-  //       return String(laptop.ID).toUpperCase() === idQuery.toUpperCase();
-  //     }
-  //     if (macQuery) {
-  //       return String(laptop['Mac address']).toUpperCase() === macQuery.toUpperCase();
-  //     }
-  //     return false;
-  //   });
-
-  //   // Apply additional filters to search results
-  //   if (workingFilter !== 'all') {
-  //     filtered = filtered.filter(laptop => {
-  //       const isNotWorking = laptop.Working === "Not Working";
-  //       return workingFilter === 'notWorking' ? isNotWorking : !isNotWorking;
-  //     });
-  //   }
-    
-  //   if (statusFilter !== 'all') {
-  //     filtered = filtered.filter(laptop => 
-  //       laptop.Status === statusFilter
-  //     );
-  //   }
-    
-  //   if (majorIssueFilter !== 'all') {
-  //     filtered = filtered.filter(laptop => {
-  //       const hasMajorIssue = laptop.MajorIssue === true || laptop.MajorIssue === "Yes";
-  //       return majorIssueFilter === 'yes' ? hasMajorIssue : !hasMajorIssue;
-  //     });
-  //   }
-    
-  //   if (minorIssueFilter !== 'all') {
-  //     filtered = filtered.filter(laptop => {
-  //       const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
-  //       return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
-  //     });
-  //   }
-    
-  //   setData(filtered);
-  // };
-
   // Reset filters but keep search terms
   const handleResetFilters = () => {
     setWorkingFilter('all');
