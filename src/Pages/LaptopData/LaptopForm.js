@@ -134,6 +134,10 @@ function LaptopForm() {
     "Graphics Card Issues",
     "Water Damage",
     "USB Ports",
+    "Camera issue",
+    "Charging point issue",
+    "Fan Error",
+    "Wifi issue"
   ];
 
   // Options for minor issues in the select field
@@ -146,6 +150,7 @@ function LaptopForm() {
     "Minor Software Issues",
     "Port Wear",
     "Touchpad Sensitivity",
+
   ];
 
   return (
