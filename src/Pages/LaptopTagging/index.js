@@ -1,72 +1,50 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  TextField,
   Button,
   Container,
   CircularProgress,
-  Typography,
   Grid,
-  Checkbox,
-  Tooltip,
-  IconButton,
-  Modal,
-  Box,
-  Select,
-  MenuItem,
+  Typography,
 } from '@mui/material';
 import MUIDataTable from "mui-datatables";
-import GetAppIcon from '@mui/icons-material/GetApp';
-import PrintIcon from '@mui/icons-material/Print';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import './styles.css';
+import { fetchLaptopData, updateLaptopData } from '../../components/OPS/LaptopTable/api';
+import SearchBar from './SearchBar';
+import FilterPanel from '../../components/OPS/LaptopTable/FilterPanel';
+import ConfirmationModal from '../../components/OPS/LaptopTable/ConfirmationModal';
+import ExportTools from '../../components/OPS/LaptopTable/ExportTools';
 import EditButton from './EditButton';
-import { padding } from '@mui/system';
+import { getTableColumns } from '../../components/OPS/LaptopTable/LaptopTable';
 
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  // border: '1px solid #000',
-  borderRadius: 4,
-  boxShadow: 24,
-  p: 4,
-};
 
 function LaptopTagging() {
+  // States
+  const [allData, setAllData] = useState([]);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [idQuery, setIdQuery] = useState('');
   const [macQuery, setMacQuery] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [taggedLaptops, setTaggedLaptops] = useState({}); // Track tagged status
-  const [open, setOpen] = useState(false); // Modal state
-  const [selectedRowIndex, setSelectedRowIndex] = useState(null); // To store selected row index
-  const [isChecked, setIsChecked] = useState(false); // To store the desired checked state
-  const printRef = useRef(); // Reference to the div for printing
+  const [taggedLaptops, setTaggedLaptops] = useState({});
+  const [open, setOpen] = useState(false);
+  const [selectedRowIndex, setSelectedRowIndex] = useState(null);
+  const [isChecked, setIsChecked] = useState(false);
   const [changeStatus, setChangeStatus] = useState(false);
-  const [allData, setAllData] = useState([]);
   const [refresh, setRefresh] = useState(false);
-
   const [modelStatus, setModelStatus] = useState(false);
+  const [workingFilter, setWorkingFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [majorIssueFilter, setMajorIssueFilter] = useState('all');
+  const [minorIssueFilter, setMinorIssueFilter] = useState('all');
+  const printRef = useRef();
 
-
-
- useEffect(() => {
-    const fetchData = async () => {
+  // Fetch data on component mount and when refresh state changes
+  useEffect(() => {
+    const loadData = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-                          `${
-                  process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi
-                }?type=getLaptopData`);
-          // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec?type=getLaptopData");
-        const result = await response.json();
+        const result = await fetchLaptopData();
         setAllData(result);
-        // setFilteredData(result); // Set filteredData to the fetched data initially
+        setData(result);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -74,14 +52,99 @@ function LaptopTagging() {
       }
     };
 
-    fetchData(); // Only called once when component mounts
-    
+    loadData();
   }, [refresh]);
 
+  // Apply filters when filter values change
+  useEffect(() => {
+    applyFilters();
+  }, [workingFilter, statusFilter, majorIssueFilter, minorIssueFilter, allData]);
 
+  // Filter application logic
+  // Modified applyFilters function for LaptopTagging.js
+  const applyFilters = () => {
+    let filteredData = [...allData];
+    
+    // Apply working filter
+    if (workingFilter !== 'all') {
+      filteredData = filteredData.filter(laptop => {
+        const isNotWorking = laptop.Working === "Not Working";
+        return workingFilter === 'notWorking' ? isNotWorking : !isNotWorking;
+      });
+    }
+    
+    // Apply status filter
+    if (statusFilter !== 'all') {
+      filteredData = filteredData.filter(laptop => 
+        laptop.Status === statusFilter
+      );
+    }
+    
+    // Apply major issue filter
+    if (majorIssueFilter !== 'all') {
+      
+      if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
+        // General yes/no filter
+        filteredData = filteredData.filter(laptop => {
+          const hasMajorIssue = laptop.MajorIssue === true || laptop.MajorIssue === "Yes";
+          return majorIssueFilter === 'yes' ? hasMajorIssue : !hasMajorIssue;
+        });
+      } else {
+        // Specific issue filter - check if the specific issue exists in the MajorIssueDetails field
+        filteredData = filteredData.filter(laptop => {
+
+          // Assuming MajorIssueDetails is either an array or a comma-separated string
+          const issueDetails = typeof laptop["Major Issues"] === 'string' 
+            ? laptop["Major Issues"].split(',').map(issue => issue.trim())
+            : Array.isArray(laptop["Major Issues"]) 
+              ? laptop["Major Issues"]
+              : [];
+              
+          return issueDetails.includes(majorIssueFilter);
+        });
+      }
+    }
+    
+    // Apply minor issue filter
+    if (minorIssueFilter !== 'all') {
+      if (minorIssueFilter === 'yes' || minorIssueFilter === 'no') {
+        // General yes/no filter
+        filteredData = filteredData.filter(laptop => {
+          const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
+          return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
+        });
+      } else {
+        // Specific issue filter - check if the specific issue exists in the MinorIssueDetails field
+        filteredData = filteredData.filter(laptop => {
+
+          // Assuming MinorIssueDetails is either an array or a comma-separated string
+          const issueDetails = typeof laptop["Minor Issues"]=== 'string' 
+            ? laptop["Minor Issues"].split(',').map(issue => issue.trim())
+            : Array.isArray(laptop["Minor Issues"]) 
+              ? laptop["Minor Issues"] 
+              : [];
+              
+          return issueDetails.includes(minorIssueFilter);
+        });
+      }
+    }
+    
+    // If there are specific ID or MAC queries, those take precedence
+    if (idQuery || macQuery) {
+      handleSearch();
+    } else {
+      setData(filteredData);
+    }
+  };
+
+// Also update the handleSearch function to handle specific issues
   const handleSearch = () => {
-     
-    const filtered = allData.filter(laptop => {
+    if (!idQuery && !macQuery) {
+      applyFilters();
+      return;
+    }
+    
+    let filtered = allData.filter(laptop => {
       if (idQuery) {
         return String(laptop.ID).toUpperCase() === idQuery.toUpperCase();
       }
@@ -90,160 +153,96 @@ function LaptopTagging() {
       }
       return false;
     });
-    setData(filtered);
-    
-  };
 
-  useEffect(() => {
+    // Apply additional filters to search results
+    if (workingFilter !== 'all') {
+      filtered = filtered.filter(laptop => {
+        const isNotWorking = laptop.Working === "Not Working";
+        return workingFilter === 'notWorking' ? isNotWorking : !isNotWorking;
+      });
+    }
     
-    handleSearch();
-  },[loading]);
- 
-
-  const handleDownloadPDF = () => {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const padding = 10;
-    const cardWidth = pageWidth - padding * 2;
-    const cardHeight = 100;
-    let yPosition = 20; // Starting Y position for the first card
-  
-    data.forEach((laptop, index) => {
-      // Draw card border
-      doc.setDrawColor(0); // Black border
-      doc.rect(padding, yPosition, cardWidth, cardHeight);
-  
-      // Add laptop details inside the card
-      doc.setFontSize(12);
-      doc.text(`ID: ${laptop.ID}`, padding + 5, yPosition + 10);
-      doc.text(`Donor Company: ${laptop["Donor Company Name"]}`, padding + 5, yPosition + 20);
-      doc.text(`RAM: ${laptop.RAM}`, padding + 5, yPosition + 30);
-      doc.text(`ROM: ${laptop.ROM}`, padding + 5, yPosition + 40);
-      doc.text(`Manufacturer Model: ${laptop["Manufacturer Model"]}`, padding + 5, yPosition + 50);
-      doc.text(`Minor Issues: ${laptop["Minor Issues"]}`, padding + 5, yPosition + 60);
-      doc.text(`Major Issues: ${laptop["Major Issues"]}`, padding + 5, yPosition + 70);
-      doc.text(`Mac address: ${laptop["Mac address"]}`, padding + 5, yPosition + 80);
-      // doc.text(`barcodeUrl: <img src="${laptop.barcodeUrl}" class="barcode" />`, padding + 5, yPosition + 80);
-  
-      // Add space between cards
-      yPosition += cardHeight + 10;
-  
-      // Create a new page if the current page is filled
-      if (yPosition + cardHeight > doc.internal.pageSize.getHeight() - padding) {
-        doc.addPage();
-        yPosition = 20; // Reset Y position for new page
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(laptop => 
+        laptop.Status === statusFilter
+      );
+    }
+    
+    // Apply major issue filter
+    if (majorIssueFilter !== 'all') {
+      if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
+        // General yes/no filter
+        filtered = filtered.filter(laptop => {
+          const hasMajorIssue = laptop.MajorIssue === true || laptop.MajorIssue === "Yes";
+          return majorIssueFilter === 'yes' ? hasMajorIssue : !hasMajorIssue;
+        });
+      } else {
+        // Specific issue filter
+        filtered = filtered.filter(laptop => {
+          const issueDetails = typeof laptop.MajorIssueDetails === 'string' 
+            ? laptop.MajorIssueDetails.split(',').map(issue => issue.trim())
+            : Array.isArray(laptop.MajorIssueDetails) 
+              ? laptop.MajorIssueDetails 
+              : [];
+              
+          return issueDetails.includes(majorIssueFilter);
+        });
       }
-    });
-  
-    // Download the PDF
-    doc.save("laptop_data_cards.pdf");
-  };
-  
-
-  const handlePrint = () => {
-    const printContent = document.getElementById('tableToPrint');
-    const WindowPrint = window.open('', '', 'width=900,height=650');
+    }
     
-
-    // Modify this part to include the structure you want for printing
-    WindowPrint.document.write(`
-      <html>
-        <head>
-          <title>Print Laptop Data</title>
-          <style>
-            /* Add custom print styling here */
-            body {
-              font-family: Arial, sans-serif;
-            }
-            .card {
-              width: 800px;
-              padding: 20px;
-              margin-bottom: 20px;
-              position: relative;
-              page-break-inside: avoid;
-              // left: 50%;
-            }
-            .barcode {
-              position: absolute;
-              top: 20px;
-              right: 30px;
-              width: 150px;
-              height: 50px;
-              border: 1px dashed black; /* Dashed line for cutting */
-              padding: 10px;
-            }
-            table {
-              width: 100%;
-              bottom: 50px;
-              left: 10px;
-            }
-            th, td {
-              padding: 8px 0;
-              text-align: left;
-            }
-            th {
-              text-align: right;
-            }
-          </style>
-        </head>
-        <body>
-          ${data.map(laptop => `
-            <div class="card">
-              <img src="${laptop.barcodeUrl}" class="barcode" />
-              <table>
-               
-                <tr>
-                  <th>Donor Company:</th>
-                  <td>${laptop["Donor Company Name"]}</td>
-                </tr>
-                <tr>
-                  <th>RAM:</th>
-                  <td>${laptop.RAM}</td>
-                </tr>
-                <tr>
-                  <th>ROM:</th>
-                  <td>${laptop.ROM}</td>
-                </tr>
-                <tr>
-                  <th>Manufacturer Model:</th>
-                  <td>${laptop["Manufacturer Model"]}</td>
-                </tr>
-                <tr>
-                  <th>Minor Issues:</th>
-                  <td>${laptop["Minor Issues"]}</td>
-                </tr>
-                <tr>
-                  <th>Major Issues:</th>
-                  <td>${laptop["Major Issues"]}</td>
-                </tr>
-                <tr>
-                  <th>Mac Address:</th>
-                  <td>${laptop["Mac address"]}</td>
-                </tr>
-
-                
-              </table>
-            </div>
-          `).join('')}
-        </body>
-      </html>
-    `);
+    // Apply minor issue filter
+    if (minorIssueFilter !== 'all') {
+      if (minorIssueFilter === 'yes' || minorIssueFilter === 'no') {
+        // General yes/no filter
+        filtered = filtered.filter(laptop => {
+          const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
+          return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
+        });
+      } else {
+        // Specific issue filter
+        filtered = filtered.filter(laptop => {
+          const issueDetails = typeof laptop.MinorIssueDetails === 'string' 
+            ? laptop.MinorIssueDetails.split(',').map(issue => issue.trim())
+            : Array.isArray(laptop.MinorIssueDetails) 
+              ? laptop.MinorIssueDetails 
+              : [];
+              
+          return issueDetails.includes(minorIssueFilter);
+        });
+      }
+    }
     
-    
-    WindowPrint.document.close();
-    // WindowPrint.focus();
-    WindowPrint.print();
-    // WindowPrint.close();
+    setData(filtered);
   };
 
+
+  // Reset filters but keep search terms
+  const handleResetFilters = () => {
+    setWorkingFilter('all');
+    setStatusFilter('all');
+    setMajorIssueFilter('all');
+    setMinorIssueFilter('all');
+    // Reset data to all data (or search results if search is active)
+    if (idQuery || macQuery) {
+      handleSearch();
+    } else {
+      setData(allData);
+    }
+  };
+
+  // Reset all filters and search terms
   const handleReset = () => {
     setIdQuery('');
     setMacQuery('');
-    setTaggedLaptops({}); // Reset tagged status
-    setData([]); // Clear data
+    setTaggedLaptops({});
+    setWorkingFilter('all');
+    setStatusFilter('all');
+    setMajorIssueFilter('all');
+    setMinorIssueFilter('all');
+    setData(allData);
   };
 
-  // Updated function to handle checkbox click
+  // Handle checkbox click to tag laptop as working/not working
   const handleTagClick = (event, rowIndex) => {
     event.stopPropagation();
     event.preventDefault();
@@ -253,75 +252,10 @@ function LaptopTagging() {
     setIsChecked(!isCurrentlyChecked);
     setChangeStatus(false);
 
-    setOpen(true); // Open the modal
+    setOpen(true);
   };
 
-
-
-  // Function to handle modal confirmation (Okay button)
-  const handleModalConfirm = async () => {
-    const rowIndex = data[selectedRowIndex];
-    const laptopId = data[selectedRowIndex]?.ID;
-
-    // Update the taggedLaptops state
-    if (!changeStatus) {
-    setTaggedLaptops(prevState => ({
-      ...prevState,
-      [selectedRowIndex]: isChecked
-    }));
-  }
-
-   
-      const payload = {
-        type:"laptopLabeling",
-        id: laptopId,
-        working: !changeStatus ? (!isChecked?"Working":"Not Working"):rowIndex.Working,
-        donorCompanyName: rowIndex["Donor Company Name"],
-        ram: rowIndex.RAM,
-        rom: rowIndex.ROM,
-        manufacturerModel: rowIndex["Manufacturer Model"], 
-        inventoryLocation: rowIndex["Inventory Location"],
-        macAddress: rowIndex["Mac address"],
-        processor: rowIndex["Processor"],
-        others: rowIndex["Others"], 
-        status: rowIndex["Status"],
-        laptopWeight: rowIndex["laptop weight"],
-        conditionStatus: rowIndex["Condition Status"],
-        manufacturingDate: rowIndex["Manufacturing Date"],
-      };
-      try {
-        await fetch(
-          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,{
-          // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-          mode: 'no-cors'
-        });
-        setRefresh(!refresh);
-      } catch (error) {
-        console.error('Error tagging the laptop:', error);
-      }
-   
-    setOpen(false);
-    setSelectedRowIndex(null);
-    setIsChecked(false);
-    setModelStatus(false);
-    
-    handleSearch()
-  };
-
-  // Function to handle modal cancellation (Cancel button)
-  const handleModalClose = () => {
-    setOpen(false);
-    setSelectedRowIndex(null);
-    setIsChecked(false);
-    setModelStatus(false);
-  };
-
-  // Function to handle status change
+  // Handle status change dropdown
   const handleStatusChange = (event, rowIndex) => {
     setSelectedRowIndex(rowIndex);
     const modelStatustatus = event.target.value;
@@ -331,322 +265,156 @@ function LaptopTagging() {
     setModelStatus(true);
     setChangeStatus(true);
     setOpen(true);
-    // setRefresh(!refresh);
-    
   };
 
-  const columns = [
-    { 
-      name: "ID", 
-      label: "Serial No", //Serial No = ID  
-      options: {
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    { 
-      name: "Donor Company Name", 
-      label: "Company Name",
-      options: {
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    { 
-      name: "RAM", 
-      label: "RAM",
-      options: {
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    { 
-      name: "ROM", 
-      label: "ROM",
-      options: {
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    { 
-      name: "Manufacturer Model", 
-      label: "Manufacturer Model",
-      options: {
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    { 
-      name: "Minor Issues", 
-      label: "Minor Issues",
-      options: {
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    { 
-      name: "Major Issues", 
-      label: "Major Issues",
-      options: {
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    { 
-      name: "Inventory Location", 
-      label: "Inventory Location",
-      options: {
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    { 
-      name: "Mac address", 
-      label: "Mac Address",
-      options: {
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    {
-      name: "Status",
-      label: "Status",
-      options: {
-        customBodyRender: (value, tableMeta) => {
-          const rowIndex = tableMeta.rowIndex;
-          const laptopData = data[rowIndex];
-          return (
-            <Select
-              value={laptopData.Status}
-              onChange={(event) => handleStatusChange(event, rowIndex)}
-              displayEmpty
-              style={{borderRadius:"20px"}}
-            >
-              
-              <MenuItem value="Laptop Received">Laptop Received</MenuItem>
-              <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
-            </Select>
-          );
-        },
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    {
-      name: "working",
-      label: "Not Working",// Not Working
-      options: {
-        customBodyRender: (value, tableMeta) => {
-          const rowIndex = tableMeta.rowIndex;
-          const laptopData = data[rowIndex];
-          const isChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : laptopData.Working === "Not Working";
-          
-          return (
-            <Checkbox
-              checked={isChecked}
-              onClick={(event) => handleTagClick(event, rowIndex)}
-              color="primary"
-              className="custom-body-cell"
-            /> 
-          
-          )
-        
-       
-        },
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    {
-      name: "Edit",
-      label: "Edit",
-      options: {
-        customBodyRender: (value, tableMeta) => {
-          const rowIndex = tableMeta.rowIndex;
-          const laptopData = data[rowIndex]; // Fetch the current row's laptop data
-          return (
-            <EditButton 
-            laptopData={laptopData} 
-            rowIndex={rowIndex}
-            data={data}
-            setData={setData}
-            setOpen={setOpen}
-            setSelectedRowIndex={setSelectedRowIndex}
-            style={style}
-            setRefresh={setRefresh}
-            refresh={refresh}
+  // Handle modal confirmation
+  const handleModalConfirm = async () => {
+    const rowIndex = selectedRowIndex;
+    const laptopData = data[rowIndex];
+    const laptopId = laptopData?.ID;
 
-            />
-          );
-        },
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
+    if (!changeStatus) {
+      setTaggedLaptops(prevState => ({
+        ...prevState,
+        [rowIndex]: isChecked
+      }));
     }
-  ];
 
-  
+    const payload = {
+      type: "laptopLabeling",
+      id: laptopId,
+      working: !changeStatus ? (!isChecked ? "Working" : "Not Working") : laptopData.Working,
+      donorCompanyName: laptopData["Donor Company Name"],
+      ram: laptopData.RAM,
+      rom: laptopData.ROM,
+      manufacturerModel: laptopData["Manufacturer Model"], 
+      inventoryLocation: laptopData["Inventory Location"],
+      macAddress: laptopData["Mac address"],
+      processor: laptopData["Processor"],
+      others: laptopData["Others"], 
+      status: laptopData["Status"],
+      laptopWeight: laptopData["laptop weight"],
+      conditionStatus: laptopData["Condition Status"],
+      manufacturingDate: laptopData["Manufacturing Date"],
+      majorIssue: laptopData["MajorIssue"],
+      minorIssue: laptopData["MinorIssue"]
+    };
+    
+    try {
+      await updateLaptopData(payload);
+      setRefresh(!refresh);
+    } catch (error) {
+      console.error('Error updating the laptop:', error);
+    }
+   
+    setOpen(false);
+    setSelectedRowIndex(null);
+    setIsChecked(false);
+    setModelStatus(false);
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setOpen(false);
+    setSelectedRowIndex(null);
+    setIsChecked(false);
+    setModelStatus(false);
+  };
+
+  // Define table columns
+  const columns = getTableColumns(
+    data, 
+    taggedLaptops, 
+    handleTagClick, 
+    handleStatusChange,
+    (props) => (
+      <EditButton 
+        {...props}
+        setData={setData}
+        setOpen={setOpen}
+        setSelectedRowIndex={setSelectedRowIndex}
+        setRefresh={setRefresh}
+        refresh={refresh}
+      />
+    )
+  );
+
+  // Get modal props based on current state
+  const getModalProps = () => {
+    let title, message;
+    
+    if (modelStatus) {
+      title = "Status";
+      message = "Are you sure you want to change the status for this laptop?";
+    } else {
+      title = !isChecked ? 'Working' : 'Not Working';
+      message = `Are you sure you want to mark this laptop as ${!isChecked ? 'Working' : 'Not Working'}?`;
+    }
+    
+    return { title, message };
+  };
   
   return (
-    <Container maxWidth="xl">
-      <Grid container spacing={2} style={{ marginBottom: '32px', marginTop: '80px' }}>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            label="Search by Serial No"
-            variant="outlined"
-            fullWidth
-            value={idQuery}
-            onChange={(e) => setIdQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // Trigger search on Enter key
-            disabled={macQuery !== ''}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            label="Search by Mac Address"
-            variant="outlined"
-            fullWidth
-            value={macQuery}
-            onChange={(e) => setMacQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // Trigger search on Enter key
-            disabled={idQuery !== ''}
-          />
-        </Grid>
-      </Grid>
-      <Grid container spacing={2} style={{marginBottom:"32px"}}>
-        <Grid item>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSearch}
-            disabled={(!idQuery && !macQuery)}
-          >
-            {'Search'}
-          </Button>
-        </Grid>
-        <Grid item>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={handleReset}
-            disabled={loading}
-          >
-            Reset
-          </Button>
-        </Grid>
-      </Grid>
+    <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
 
-      {/* Conditionally render the data table */}
+      {/* Search Bar */}
+      <SearchBar 
+        idQuery={idQuery}
+        setIdQuery={setIdQuery}
+        macQuery={macQuery}
+        setMacQuery={setMacQuery}
+        onSearch={handleSearch}
+        handleReset={handleReset}
+        loading={loading}
+      />
+        
+      {/* Filter Panel */}
+      <FilterPanel 
+        workingFilter={workingFilter}
+        setWorkingFilter={setWorkingFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        majorIssueFilter={majorIssueFilter}
+        setMajorIssueFilter={setMajorIssueFilter}
+        minorIssueFilter={minorIssueFilter}
+        setMinorIssueFilter={setMinorIssueFilter}
+        onResetFilters={handleResetFilters}
+      />
+
+      {/* Action Buttons */}
       
-      <div id="tableToPrint" >
-        <MUIDataTable
-          title={"Laptop Data"}
-          data={data}
-          columns={columns}
-          options={{
-            responsive: 'scrollMaxHeight', // Adjust table height dynamically
-            customToolbar: () => (
-              <React.Fragment>
-                <Tooltip title={"Download PDF"}>
-                  <IconButton onClick={handleDownloadPDF}>
-                    <GetAppIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title={"Print"}>
-                  <IconButton onClick={handlePrint}>
-                    <PrintIcon />
-                  </IconButton>
-                </Tooltip>
-              </React.Fragment>
-            ),
-            filterType: 'checkbox',
-            selectableRows: 'none', 
-            
-            download: false, // Disable the default download button
-            print: false,    // Disable the default print button
-            sort: false,
-          }}
-        />
+
+      {/* Data Table */}
+      <div id="tableToPrint">
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          <MUIDataTable
+            elevation={0}
+            title={`Laptop Data (${data.length} records)`}
+            data={data}
+            columns={columns}
+            options={{
+              responsive: 'scrollMinHeight',
+              customToolbar: () => <ExportTools data={data} />,
+              filterType: 'checkbox',
+              selectableRows: 'none', 
+              download: false,
+              print: false,
+              sort: false,
+              viewColumns: false  
+            }}
+          />
+        )}
       </div>
      
-      {/* Modal for checkbox click */}
-      <Modal
+      {/* Confirmation Modal */}
+      <ConfirmationModal 
         open={open}
         onClose={handleModalClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            
-            {modelStatus ? "Status" :!isChecked ? 'Working' : 'Not Working'}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-
-          
-         {modelStatus ?
-          "Are you sure you want to change the status for this laptop?"
-          : `Are you sure you want to mark this laptop as ${!isChecked ? 'Working' : 'Not Working'}?`
-         }
-          </Typography>
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button variant="outlined" color="secondary" onClick={handleModalClose} style={{ marginRight: 8 }}>
-              Cancel
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleModalConfirm}>
-              Yes
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
+        onConfirm={handleModalConfirm}
+        {...getModalProps()}
+      />
 
       {/* Hidden div for printing */}
       <div ref={printRef} style={{ display: 'none' }}></div>
