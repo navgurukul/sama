@@ -226,7 +226,6 @@ const ourteam = {
     },
     //About Us
     FullBox:{
-        // height:{ xs: "100%", md:  "237px" },
         backgroundColor: " #F0F4EF",
         padding: "80px",
         display: "flex",
