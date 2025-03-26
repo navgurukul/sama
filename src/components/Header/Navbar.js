@@ -136,7 +136,7 @@ const Navbar = () => {
       }}
       className="header"
     >
-      <Box sx={{ paddingX: "16px", margin: 0, justifyContent:"space-between" }}>
+      <Box sx={{ padding: "20px",  justifyContent:"space-between"}}>
         <Toolbar
           disableGutters
           sx={{
@@ -146,7 +146,7 @@ const Navbar = () => {
             margin: [2, 1, 2, 1],
             // width: "1400px",
             "@media (max-width: 600px)": {
-              width: "350px",
+              width: "330px",
             },
           }}
         >
@@ -278,7 +278,7 @@ const Navbar = () => {
                     fontWeight: activeTab === "/login" ? "bold" : "normal",
                     borderRadius: "100px",
                     backgroundColor: "#FFFFFF",
-                    border: "1px solid",
+                    border: "1px solid ",
                     borderColor: "primary.main",
                     "&:hover": {
                       backgroundColor: "#FFFFFF",
@@ -372,7 +372,7 @@ const Navbar = () => {
                 }}>
             <MuiLink
                 sx={{
-                  margin: "0 8px",
+                  margin: "0 5px",
                   textDecoration: "none",
                   color: "#4A4A4A",
                   cursor: "pointer",
