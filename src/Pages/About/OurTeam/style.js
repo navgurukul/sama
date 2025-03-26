@@ -6,14 +6,15 @@ const ourteam = {
     container: {
         textAlign: "center", 
         py: 4, 
-        marginTop: "40px",
+        marginTop: {xs:"10px", md:"40px"},
     },
     gridContainer: {
         marginTop: "40px",
     },
     gridItem: {
         display: "flex", 
-        justifyContent: "center"
+        justifyContent: "center",
+        margin: {xs:"2px 10px", md: "0px"},
     },
     card: {
         width: "450px", 
@@ -36,7 +37,7 @@ const ourteam = {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: "16px"
+        gap: "16px",
     },
     typographyBody: {
         textAlign: { xs: "center", md: "left" }

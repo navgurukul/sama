@@ -2,45 +2,43 @@ import React, { useState, useEffect } from "react";
 import { Button, Box, Container, Typography, Grid, Card } from "@mui/material";
 import ourteam from "./style";
 import StayConnected from "../../../common/StayConnected";
-
 const originalTeamMembers = [
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/Work_vid2_aman.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/2.gif",
     name: "Aman Sharma",
     Designation: "(Frontend Developer)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/IMG_2610.mov",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/7.gif",
     name: "Shivani Bawa",
     Designation: "(CEO's Office Intern)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/Nitesh.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/1.gif",
     name: "Nitesh Sharma",
     Designation: "(COO, Co- Founder)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/Sudiksha.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/5.gif",
     name: "Sudiksha Yadav",
     Designation: "(Design)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/VID_20250124_145511749_HL.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/6.gif",
     name: "Shweta Deshmukh",
     Designation: "(Operation)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/1000081135.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/3.gif",
     name: "Pradeep Thakur",
     Designation: "(Operation)",
   },
   {
-    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/1000081142.mp4",
+    video: "https://sama-app-gifs.s3.ap-south-1.amazonaws.com/4.gif",
     name: "Rahul Bauddha",
     Designation: "(Operation)",
   },
 ];
-
 const shuffleArray = (array) => {
   let shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -49,15 +47,12 @@ const shuffleArray = (array) => {
   }
   return shuffled;
 };
-
 const OurTeam = () => {
   const [teamMembers, setTeamMembers] = useState([]);
   const [videoErrors, setVideoErrors] = useState({});
-
   useEffect(() => {
     setTeamMembers(shuffleArray(originalTeamMembers));
   }, []);
-
   const handleVideoError = (index, videoSrc) => {
     console.error(`Failed to load video at index ${index}: ${videoSrc}`);
     setVideoErrors((prev) => ({
@@ -65,10 +60,9 @@ const OurTeam = () => {
       [index]: true,
     }));
   };
-
   return (
     <>
-      <Container maxWidth="lg" sx={ourteam.container}>
+      <Container maxWidth="lg" disableGutters sx={ourteam.container}>
         <Typography variant="h5" gutterBottom>
           Our Team
         </Typography>
@@ -79,38 +73,43 @@ const OurTeam = () => {
         </Typography>
         <Grid
           container
-          spacing={0.5}
+          spacing={0.3}
           justifyContent="center"
           sx={ourteam.gridContainer}
         >
           {teamMembers.map((member, index) => (
             <Grid item xs={12} sm={6} md={4} key={index} sx={ourteam.gridItem}>
-              <Card 
-                sx={{ 
-                  ...ourteam.card, 
+              <Card
+                sx={{
+                  ...ourteam.card,
+                  boxShadow: "none",
                   position: "relative",
-                  aspectRatio: "1/1", // Make card a perfect square
-                  overflow: "hidden", // Ensure content doesn't overflow
+                  padding: 0,
+                  margin: 0,
+                  overflow: "hidden",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%", // Ensures card stretches fully within the grid
+                  height: "100%", // Matches the aspect ratio or parent height                 
                 }}
+                elevation={0}
               >
                 {!videoErrors[index] ? (
                   <>
-                    <video
+                    <img
                       key={member.video}
                       src={member.video}
                       style={{
-                        width: "500.89px",
-                        height: "317.212px",
-                        objectFit: "cover",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover", // Ensures the image/video covers the card completely
+                        objectPosition: "center",
+                        display: "block",
                       }}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      controls={false}
                       onError={() => handleVideoError(index, member.video)}
                     />
-                    {/* Name overlay */}
+
                     <Box
                       sx={{
                         position: "absolute",
@@ -121,8 +120,8 @@ const OurTeam = () => {
                         background:
                           "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)",
                         display: "flex",
-                        flexDirection: "column", // Stacks elements vertically
-                        alignItems: "flex-end", // Aligns text to the right
+                        flexDirection: "column",
+                        alignItems: "flex-end",
                         justifyContent: "flex-end",
                         transition: "padding-bottom 0.3s ease",
                         "&:hover": {
@@ -149,11 +148,11 @@ const OurTeam = () => {
                         sx={{
                           color: "#FFF",
                           textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
-                          opacity: 0, // Hidden by default
-                          maxHeight: 0, // Takes no space when hidden
-                          overflow: "hidden", // Hide overflow
-                          marginTop: 0, // No margin initially
-                          transition: "all 0.3s ease", // Smooth transition for all properties
+                          opacity: 0,
+                          maxHeight: 0,
+                          overflow: "hidden",
+                          marginTop: 0,
+                          transition: "all 0.3s ease",
                         }}
                       >
                         {member.Designation}
@@ -162,15 +161,14 @@ const OurTeam = () => {
                   </>
                 ) : (
                   <Box
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      bgcolor: "grey.200",
-                      minHeight: "200px",
-                    }}
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    bgcolor: "grey.200",
+                  }}
                   >
                     <Typography variant="body2" color="text.secondary">
                       Video unavailable
@@ -184,9 +182,9 @@ const OurTeam = () => {
         <Grid
           container
           spacing={2}
-          sx={{ marginTop: "48px",marginBottom:"32px", marginLeft: { xs: "0px", md: "140px" } }}
+          sx={{ marginTop: "48px", marginBottom: "32px",  alignItems: "center", justifyContent: "center" }}
         >
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={8}>
             <Box sx={ourteam.box}>
               <Typography variant="h5" gutterBottom>
                 Grow With Us
@@ -239,5 +237,4 @@ const OurTeam = () => {
     </>
   );
 };
-
 export default OurTeam;
