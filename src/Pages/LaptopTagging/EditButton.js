@@ -43,6 +43,14 @@ const EditButton = ({
     const [open, setOpen] = useState(false);
 
     const handleEditClick = () => {
+
+    const currentDate = new Date().toISOString().split('T')[0];
+    
+    const SavedData = JSON.parse(localStorage.getItem('_AuthSama_')); 
+    const userEmail = SavedData?.[0]?.email || "Email not found";
+
+    const lastUpdatedBy = userEmail || 'Unknown';
+
         setEditData({
             id: laptopData.ID || "",
             donorCompanyName: laptopData["Donor Company Name"] || "",
@@ -60,6 +68,10 @@ const EditButton = ({
             manufacturingDate: laptopData["Manufacturing Date"] || "",
             majorIssues: laptopData["Major Issues"] ? laptopData["Major Issues"].split(",") : [],
             minorIssues: laptopData["Minor Issues"] ? laptopData["Minor Issues"].split(",") : [],
+            assignedTo: laptopData["Assigned To"] || "",
+            donatedTo: laptopData["Donated To"] || "",
+            lastUpdatedOn: currentDate,
+            lastUpdatedBy: lastUpdatedBy,
         });
         setOpen(true);
     };
@@ -121,6 +133,10 @@ const EditButton = ({
                     manufacturingDate: "",
                     majorIssues: [],
                     minorIssues: [],
+                    assignedTo: "",
+                    donatedTo: "",
+                    lastUpdatedOn: "",
+                    lastUpdatedBy: "",
                 }
             );
             handleModalClose();
