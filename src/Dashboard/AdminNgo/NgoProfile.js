@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import NGODetails from './NgoDetails';
 import { fetchNgoDetails } from '../Redux/ngoSlice';
 import { useLocation } from "react-router-dom";
+import NGOLaptopTable from './NGOLaptopTable';
 
 function NgoProfile() {
   const location = useLocation();
@@ -33,7 +34,11 @@ function NgoProfile() {
   return (
     <div>
       {ngoDetails ? (
-        <NGODetails ngo={ngoDetails} />
+        <>
+          <NGODetails ngo={ngoDetails} />
+          <NGOLaptopTable ngoData={ngoDetails}/>
+        
+        </>
       ) : (
         <div>No NGO details available</div>
       )}
