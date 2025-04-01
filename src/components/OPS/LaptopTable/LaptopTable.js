@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, Box, Chip } from '@mui/material';
 import { LaptopStatusDropdown,AssignedTo, DonatedTo,  LaptopWorkingCheckbox } from './LaptopStatus';
 
-export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton) => {
+export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton, refresh, setRefresh) => {
   // Helper function to check if laptop has battery issues
   const hasBatteryIssue = (laptop) => {
     const minorIssues = laptop["Minor Issues"]?.toLowerCase() || "";
@@ -237,7 +237,6 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
               })
             }
           },
-    // ... (other columns remain the same until Status)
     {
       name: "Status",
       label: "Status",
@@ -341,6 +340,8 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
                     laptopData={laptopData} 
                     rowIndex={rowIndex}
                     data={data}
+                    setRefresh={setRefresh}  // Pass these through
+                    refresh={refresh}  
                   />
                 );
               },
@@ -353,6 +354,5 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
             }
           }
 
-    // ... (Edit column remains the same)
   ];
 };

@@ -99,9 +99,9 @@ const EditButton = ({
         };
 
         try {
+            
             await fetch(
                 `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
-                // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
                 {
                     method: "POST",
                     headers: {
@@ -111,10 +111,14 @@ const EditButton = ({
                     body: JSON.stringify(dataToSend),
                     mode: "no-cors",
                 }
-                
             );
+            handleModalClose();
+
             // Close the modal and reset the data after successfully saving
-            setRefresh(!refresh);
+            if (setRefresh) {
+                setRefresh(!refresh);
+              }
+            // setRefresh(!refresh);
             setEditData(
                 {
                     id: "",
@@ -139,7 +143,7 @@ const EditButton = ({
                     lastUpdatedBy: "",
                 }
             );
-            handleModalClose();
+            
         } catch (error) {
             console.error("Error tagging the laptop:", error);
         }

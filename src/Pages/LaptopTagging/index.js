@@ -35,8 +35,6 @@ function LaptopTagging() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [majorIssueFilter, setMajorIssueFilter] = useState('all');
   const [minorIssueFilter, setMinorIssueFilter] = useState('all');
-  const [updateType, setUpdateType] = useState(null);
-  // const [updateValue, setUpdateValue] = useState(null);
   const [updateField, setUpdateField] = useState(null);
   const [updateValue, setUpdateValue] = useState(null);
 
@@ -248,18 +246,6 @@ function LaptopTagging() {
     setData(allData);
   };
 
-  // Handle checkbox click to tag laptop as working/not working
-  // const handleTagClick = (event, rowIndex) => {
-  //   event.stopPropagation();
-  //   event.preventDefault();
-
-  //   const isCurrentlyChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : data[rowIndex].Working === "Not Working";
-  //   setSelectedRowIndex(rowIndex);
-  //   setIsChecked(!isCurrentlyChecked);
-  //   setChangeStatus(false);
-
-  //   setOpen(true);
-  // };
 
   const handleWorkingToggle = (event, rowIndex) => {
     event.stopPropagation();
@@ -389,7 +375,6 @@ const handleDonatedToChange = (event, rowIndex) => {
       lastUpdatedBy: lastUpdatedBy,
     };
   
-    console.log("Payload for update:", payload);
     try {
       await updateLaptopData(payload);
       setRefresh(!refresh);
@@ -426,7 +411,13 @@ const handleDonatedToChange = (event, rowIndex) => {
     handleStatusChange,     // For Status dropdown
     handleAssignedToChange, // For Assigned To dropdown
     handleDonatedToChange,  // For Donated To dropdown
-    EditButton, 
+    (props) => (
+      <EditButton 
+        {...props}
+        setRefresh={setRefresh}  // Make sure this is passed
+        refresh={refresh}        // And this too
+      />
+    )
   );
 
   return (
