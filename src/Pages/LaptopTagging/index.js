@@ -35,6 +35,9 @@ function LaptopTagging() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [majorIssueFilter, setMajorIssueFilter] = useState('all');
   const [minorIssueFilter, setMinorIssueFilter] = useState('all');
+  const [updateField, setUpdateField] = useState(null);
+  const [updateValue, setUpdateValue] = useState(null);
+
   const printRef = useRef();
 
   // Fetch data on component mount and when refresh state changes
@@ -54,6 +57,7 @@ function LaptopTagging() {
 
     loadData();
   }, [refresh]);
+
 
   // Apply filters when filter values change
   useEffect(() => {
@@ -242,75 +246,151 @@ function LaptopTagging() {
     setData(allData);
   };
 
-  // Handle checkbox click to tag laptop as working/not working
-  const handleTagClick = (event, rowIndex) => {
+
+  const handleWorkingToggle = (event, rowIndex) => {
     event.stopPropagation();
-    event.preventDefault();
-
-    const isCurrentlyChecked = taggedLaptops[rowIndex] !== undefined ? taggedLaptops[rowIndex] : data[rowIndex].Working === "Not Working";
-    setSelectedRowIndex(rowIndex);
-    setIsChecked(!isCurrentlyChecked);
-    setChangeStatus(false);
-
-    setOpen(true);
-  };
-
-  // Handle status change dropdown
-  const handleStatusChange = (event, rowIndex) => {
-    setSelectedRowIndex(rowIndex);
-    const modelStatustatus = event.target.value;
+    const laptopData = data[rowIndex];
+    const newStatus = laptopData.Working === "Working" ? "Not Working" : "Working";
+    
+    // Immediately update the UI for better responsiveness
     const updatedData = [...data];
-    updatedData[rowIndex].Status = modelStatustatus;
+    updatedData[rowIndex].Working = newStatus;
     setData(updatedData);
-    setModelStatus(true);
-    setChangeStatus(true);
+  
+    setSelectedRowIndex(rowIndex);
+    setUpdateField('Working');
+    setUpdateValue(newStatus);
+    setOpen(true);
+  };
+  
+  // Status change handler
+  const handleStatusChange = (event, rowIndex) => {
+    const newValue = event.target.value;
+    const updatedData = [...data];
+    updatedData[rowIndex].Status = newValue;
+    setData(updatedData);
+    
+    setSelectedRowIndex(rowIndex);
+    setUpdateField('Status');
+    setUpdateValue(newValue);
     setOpen(true);
   };
 
-  // Handle modal confirmation
+  // Assigned To handler
+const handleAssignedToChange = (event, rowIndex) => {
+  const newValue = event.target.value;
+  const updatedData = [...data];
+  updatedData[rowIndex]["Assigned To"] = newValue;
+  setData(updatedData);
+  
+  setSelectedRowIndex(rowIndex);
+  setUpdateField('Assigned To');
+  setUpdateValue(newValue);
+  setOpen(true);
+};
+
+// Donated To handler
+const handleDonatedToChange = (event, rowIndex) => {
+  const newValue = event.target.value;
+  const updatedData = [...data];
+  updatedData[rowIndex]["Donated To"] = newValue;
+  setData(updatedData);
+  
+  setSelectedRowIndex(rowIndex);
+  setUpdateField('Donated To');
+  setUpdateValue(newValue);
+  setOpen(true);
+};
+
+  const getModalProps = () => {
+    let title, message;
+    
+    switch(updateField) {
+      case 'Working':
+        title = "Working Status";
+        message = `Are you sure you want to mark this laptop as ${updateValue}?`;
+        break;
+      case 'Status':
+        title = "Status Update";
+        message = `Are you sure you want to change the status to "${updateValue}"?`;
+        break;
+      case 'Assigned To':
+        title = "Assignment Update";
+        message = `Are you sure you want to assign this laptop to "${updateValue}"?`;
+        break;
+      case 'Donated To':
+        title = "Donation Update";
+        message = `Are you sure you want to mark this laptop as donated to "${updateValue}"?`;
+        break;
+      default:
+        title = "Confirm Update";
+        message = "Are you sure you want to make this change?";
+    }
+    
+    return { title, message };
+  };
+
+
   const handleModalConfirm = async () => {
+    if (selectedRowIndex === null) {
+      setOpen(false);
+      return;
+    }
+  
     const rowIndex = selectedRowIndex;
     const laptopData = data[rowIndex];
     const laptopId = laptopData?.ID;
+    const currentDate = new Date().toISOString().split('T')[0];
+    
+    const SavedData = JSON.parse(localStorage.getItem('_AuthSama_')); 
+    const userEmail = SavedData?.[0]?.email || "Email not found";
 
-    if (!changeStatus) {
-      setTaggedLaptops(prevState => ({
-        ...prevState,
-        [rowIndex]: isChecked
-      }));
-    }
+    const lastUpdatedBy = userEmail || 'Unknown';
 
+    // Create the payload with all fields
     const payload = {
       type: "laptopLabeling",
       id: laptopId,
-      working: !changeStatus ? (!isChecked ? "Working" : "Not Working") : laptopData.Working,
+      working: updateField === 'Working' ? updateValue : laptopData.Working,
+      // working: !changeStatus ? (!isChecked ? "Working" : "Not Working") : laptopData.Working,
+      status: updateField === 'Status' ? updateValue : laptopData.Status,
+      assignedTo: updateField === 'Assigned To' ? updateValue : laptopData["Assigned To"],
+      donatedTo: updateField === 'Donated To' ? updateValue : laptopData["Donated To"],
+      // Include all other fields unchanged
       donorCompanyName: laptopData["Donor Company Name"],
       ram: laptopData.RAM,
       rom: laptopData.ROM,
-      manufacturerModel: laptopData["Manufacturer Model"], 
+      manufacturerModel: laptopData["Manufacturer Model"],
       inventoryLocation: laptopData["Inventory Location"],
       macAddress: laptopData["Mac address"],
       processor: laptopData["Processor"],
-      others: laptopData["Others"], 
-      status: laptopData["Status"],
+      others: laptopData["Others"],
       laptopWeight: laptopData["laptop weight"],
       conditionStatus: laptopData["Condition Status"],
       manufacturingDate: laptopData["Manufacturing Date"],
       majorIssue: laptopData["MajorIssue"],
-      minorIssue: laptopData["MinorIssue"]
+      minorIssue: laptopData["MinorIssue"],
+      batteryCapacity : laptopData["Battery Capacity"],
+      lastUpdatedOn: currentDate,
+      lastUpdatedBy: lastUpdatedBy,
     };
-    
+  
     try {
       await updateLaptopData(payload);
       setRefresh(!refresh);
     } catch (error) {
+      const originalData = [...data];
+    originalData[rowIndex].Working = updateValue === "Working" ? "Not Working" : "Working";
+    setData(originalData);
+
       console.error('Error updating the laptop:', error);
     }
-   
+  
+    // Reset all state
     setOpen(false);
     setSelectedRowIndex(null);
-    setIsChecked(false);
-    setModelStatus(false);
+    setUpdateField(null);
+    setUpdateValue(null);
   };
 
   // Handle modal close
@@ -319,41 +399,27 @@ function LaptopTagging() {
     setSelectedRowIndex(null);
     setIsChecked(false);
     setModelStatus(false);
+    
   };
 
+  
   // Define table columns
   const columns = getTableColumns(
-    data, 
-    taggedLaptops, 
-    handleTagClick, 
-    handleStatusChange,
+    data,
+    taggedLaptops,
+    handleWorkingToggle,    // For Working checkbox
+    handleStatusChange,     // For Status dropdown
+    handleAssignedToChange, // For Assigned To dropdown
+    handleDonatedToChange,  // For Donated To dropdown
     (props) => (
       <EditButton 
         {...props}
-        setData={setData}
-        setOpen={setOpen}
-        setSelectedRowIndex={setSelectedRowIndex}
-        setRefresh={setRefresh}
-        refresh={refresh}
+        setRefresh={setRefresh}  // Make sure this is passed
+        refresh={refresh}        // And this too
       />
     )
   );
 
-  // Get modal props based on current state
-  const getModalProps = () => {
-    let title, message;
-    
-    if (modelStatus) {
-      title = "Status";
-      message = "Are you sure you want to change the status for this laptop?";
-    } else {
-      title = !isChecked ? 'Working' : 'Not Working';
-      message = `Are you sure you want to mark this laptop as ${!isChecked ? 'Working' : 'Not Working'}?`;
-    }
-    
-    return { title, message };
-  };
-  
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
 
@@ -423,3 +489,5 @@ function LaptopTagging() {
 }
 
 export default LaptopTagging;
+
+

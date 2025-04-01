@@ -65,7 +65,6 @@ const OurTeam = () => {
       [index]: true,
     }));
   };
-
   return (
     <>
       <Container maxWidth="lg" sx={ourteam.container}>

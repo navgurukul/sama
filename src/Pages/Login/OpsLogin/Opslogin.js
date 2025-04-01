@@ -76,7 +76,7 @@ function Opslogin() {
                 const documentResult = await documentResponse.json();
 
                 if (!documentResult.isDataAvailable) {
-                  // Navigate to document upload if data is not available
+                  // Navigate to document upload if data is not Available
                   navigate('/documentupload');
                   return;
                 }
