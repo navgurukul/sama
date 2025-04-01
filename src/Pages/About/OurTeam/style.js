@@ -40,7 +40,7 @@ const ourteam = {
         gap: "16px"
     },
     typographyBody: {
-        textAlign: { xs: "center", md: "left" }
+        textAlign: { xs: "left", md: "left" }
     },
     button: {
         marginTop: "0px",

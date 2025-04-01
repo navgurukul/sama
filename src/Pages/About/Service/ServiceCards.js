@@ -64,9 +64,9 @@ const ServiceIcons = () => {
               </Typography>
 
               { service.title === "Values"? (
-                <Box component="ul" sx={{ pl: 3, textAlign: "left" }}>
+                <Box  sx={{ pl: 3, textAlign: "left" }}>
                   {service.description.map((point, i) => (
-                    <Box component="li" key={i}>
+                    <Box  key={i}>
                       <Typography color="textSecondary" variant="body1">
                         {point}
                       </Typography>

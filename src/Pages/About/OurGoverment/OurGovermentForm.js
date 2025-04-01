@@ -13,11 +13,22 @@ import {
 } from "@mui/material";
 import ourteam from '../OurTeam/style';
 
-const stateOptions = ["Maharashtra", "New Delhi", "Gujarat", "Punjab", "Karnataka", "Tamil Nadu"];
-
+const stateOptions = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+    "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
+    "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim",
+    "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand",
+    "West Bengal",
+    // Union Territories
+    "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+    "Lakshadweep", "Delhi", "Puducherry", "Ladakh", "Jammu and Kashmir"
+  ];
+  
 
 function OurGovermentForm() {
     const [formData, setFormData] = useState({
+        formType: "government",
         firstName: "",
         lastName: "",
         companyName: "",
@@ -99,14 +110,16 @@ function OurGovermentForm() {
                 newErrors[field] = errorMessage;
             }
         });
-
+    
         setErrors(newErrors);
-
+    
         if (Object.keys(newErrors).length > 0) {
             console.log("Form has errors:", newErrors);
             return;
         }
+    
         const capitalizedData = {
+            formType: "government", 
             firstName: capitalizeFirstLetter(formData.firstName),
             lastName: capitalizeFirstLetter(formData.lastName),
             email: formData.email.toLowerCase(),
@@ -116,47 +129,42 @@ function OurGovermentForm() {
             state: formData.state,
             city: formData.city,
         };
-        const validationErrors = validateField();
-
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-        } else {
-            try {
-                const response = await fetch(
-                    "https://script.google.com/macros/s/AKfycbxsl620RVQhDhsMDejHtQEGeQMi2PgepO_Wo6nh0oZWACgaUwpv_nUTbTDst6l32Mlo3Q/exec",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(capitalizedData),
-                        mode: "no-cors",
-                    }
-                );
-
-
-                setFormData({
-                    firstName: "",
-                    lastName: "",
-                    companyName: "",
-                    phone: "",
-                    state: "",
-                    city: "",
-                    email: "",
-                    message: "",
-                });
-                setOtherText("");
-                setSuccessMessage(true);
-                setTimeout(() => {
-                    setSuccessMessage(false);
-                }, 5000);
-            } catch (error) {
-                console.error("Error:", error);
-            }
+    
+    
+        try {
+            const response = await fetch(
+                "https://script.google.com/macros/s/AKfycbxIcZb3iQ4Kr7QXEi_KtziiM83oX1v7GFREzsQue53tqgET6Hc5h8cMEMIAdzSbPJIaOw/exec",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(capitalizedData),
+                    mode: "no-cors",
+                }
+            );
+    
+            setFormData({
+                firstName: "",
+                lastName: "",
+                companyName: "",
+                phone: "",
+                state: "",
+                city: "",
+                email: "",
+                message: "",
+                
+            });
+            
+            setOtherText("");
+            setSuccessMessage(true);
+            setTimeout(() => {
+                setSuccessMessage(false);
+            }, 5000);
+        } catch (error) {
+            console.error("Error:", error);
         }
-
     };
-
     console.log(formData)
 
     return (

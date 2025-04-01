@@ -42,6 +42,7 @@
   margin-top: 30px;
   align-items: center;
   padding-bottom: 5px;
+  border: "1px solid black";
 }
 
 .mobile-menu .MuiListItem-root {
