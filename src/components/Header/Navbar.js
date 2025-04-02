@@ -103,7 +103,7 @@ const Navbar = () => {
     if (href === "/") {
       setActiveTab("");
     }
-    setMenuVisible(false); // This will always close the menu
+    setMenuVisible(false);
   };
 
   const handleLogout = () => {
@@ -132,11 +132,11 @@ const Navbar = () => {
         justifyContent: "center",
         padding: 0,
         margin: 0,
-
+        
       }}
       className="header"
     >
-      <Box sx={{ paddingX: "16px", margin: 0, justifyContent: "space-between" }}>
+      <Box sx={{ padding: "20px",  justifyContent:"space-between"}}>
         <Toolbar
           disableGutters
           sx={{
@@ -146,7 +146,7 @@ const Navbar = () => {
             margin: [2, 1, 2, 1],
             // width: "1400px",
             "@media (max-width: 600px)": {
-              width: "350px",
+              width: "330px",
             },
           }}
         >
@@ -171,7 +171,7 @@ const Navbar = () => {
               {/* Donate Text Link */}
               <MuiLink
                 sx={{
-
+                  
                   textDecoration: "none",
                   color: "#4A4A4A",
                   cursor: "pointer",
@@ -184,7 +184,7 @@ const Navbar = () => {
                 to="/donate"
                 variant="body1"
               >
-                Donate
+                Donate to Sama
               </MuiLink>
             </Box>
           )}
@@ -229,7 +229,7 @@ const Navbar = () => {
               >
                 {(() => {
                   const role = JSON.parse(localStorage.getItem("role") || "[]");
-
+                
 
                   if (role.includes("admin") || role.includes("ops")) {
                     return (
@@ -278,7 +278,7 @@ const Navbar = () => {
                     fontWeight: activeTab === "/login" ? "bold" : "normal",
                     borderRadius: "100px",
                     backgroundColor: "#FFFFFF",
-                    border: "1px solid",
+                    border: "1px solid ",
                     borderColor: "primary.main",
                     "&:hover": {
                       backgroundColor: "#FFFFFF",
@@ -353,49 +353,39 @@ const Navbar = () => {
         </Toolbar>
         {!isLoggedIn && (
           <Box
-            className={`mobile-menu ${isActive && menuVisible ? "visible" : ""
+            className={`mobile-menu ${isActive && menuVisible ? "visible" : "" 
               }`}
-            sx={{ border: "1ps solid black" }}
           >
-            <DropdownMenu
-              title="Discover Us"
-              menuItems={discoverUsItems}
-              onItemClick={() => handleTabClick()} // Add this
-            />
-            <DropdownMenu
-              title="Get Involved"
-              menuItems={getInvolvedItems}
-              onItemClick={() => handleTabClick()} // Add this
-            />
+            <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
+            <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
             <Box sx={{
-              alignItems: "right",
-              justifyContent: "right",
-              borderRadius: 1,
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              gap: 1,
-              padding: 1,
-              marginLeft: "8px",
-              marginTop: { xs: "0px", md: "20px" },
-            }}>
-              <MuiLink
+                alignItems:"right", 
+                justifyContent:"right", 
+                borderRadius: 1, 
+                width: "100%", 
+                display: "flex", 
+                flexDirection: "column", 
+                gap: 1, 
+                padding: 1,
+                marginLeft: "8px",
+                marginTop:{xs:"0px", md:"20px"},
+                }}>
+            <MuiLink
                 sx={{
-                  margin: "0 8px",
+                  margin: "0 5px",
                   textDecoration: "none",
                   color: "#4A4A4A",
                   cursor: "pointer",
-                  whiteSpace: "nowrap",
+                  whiteSpace: "nowrap", // Prevents wrapping
                   textAlign: "left",
                 }}
                 component={Link}
                 to="/donate"
                 variant="body1"
-                onClick={() => handleTabClick("/donate")} // Add this
               >
-                Donate
+                Donate to Sama
               </MuiLink>
-            </Box>
+              </Box>
             {!isLoggedIn && !isActive && (
               <MuiLink
                 sx={{
