@@ -262,7 +262,7 @@ const Navbar = () => {
           )}
 
           {/* Code for Dashboard Login */}
-          <Box sx={{ marginLeft: "auto" }}>
+          <Box sx={{ marginLeft: "auto",  }}>
             {!isLoggedIn && !isActive && (
               <MuiLink
                 sx={{
@@ -339,7 +339,7 @@ const Navbar = () => {
             )} */}
           </Box>
           {!isLoggedIn && (
-            <Box className="mobile-nav">
+            <Box className="mobile-nav" sx={{ marginRight: "17px"}}>
               <IconButton
                 edge="start"
                 aria-label="menu"
@@ -355,7 +355,6 @@ const Navbar = () => {
           <Box
             className={`mobile-menu ${isActive && menuVisible ? "visible" : ""
               }`}
-            sx={{ border: "1px solid black" }}
           >
             <DropdownMenu
               title="Discover Us"
@@ -381,7 +380,7 @@ const Navbar = () => {
             }}>
               <MuiLink
                 sx={{
-                  margin: "0 8px",
+                  margin: "0 5px",
                   textDecoration: "none",
                   color: "#4A4A4A",
                   cursor: "pointer",
