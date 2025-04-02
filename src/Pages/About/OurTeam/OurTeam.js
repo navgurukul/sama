@@ -84,11 +84,14 @@ const OurTeam = () => {
                   ...ourteam.card,
                   boxShadow: "none",
                   position: "relative",
-                  aspectRatio: "1/1",
+                  padding: 0,
+                  margin: 0,
                   overflow: "hidden",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  width: "100%", // Ensures card stretches fully within the grid
+                  height: "100%", // Matches the aspect ratio or parent height                 
                 }}
                 elevation={0}
               >
@@ -98,16 +101,15 @@ const OurTeam = () => {
                       key={member.video}
                       src={member.video}
                       style={{
-                        // width: "500.89px",
-                        // height: "317.212px",
                         width: "100%",
                         height: "100%",
-                        objectFit: "cover",
-                        objectPosition: "100% 0%",
+                        objectFit: "cover", // Ensures the image/video covers the card completely
+                        objectPosition: "center",
                         display: "block",
                       }}
                       onError={() => handleVideoError(index, member.video)}
                     />
+
                     <Box
                       sx={{
                         position: "absolute",
@@ -159,15 +161,14 @@ const OurTeam = () => {
                   </>
                 ) : (
                   <Box
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      bgcolor: "grey.200",
-                      minHeight: "200px",
-                    }}
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    bgcolor: "grey.200",
+                  }}
                   >
                     <Typography variant="body2" color="text.secondary">
                       Video unavailable
@@ -181,9 +182,9 @@ const OurTeam = () => {
         <Grid
           container
           spacing={2}
-          sx={{ marginTop: "48px", marginBottom: "32px", marginLeft: { xs: "0px", md: "140px" } }}
+          sx={{ marginTop: "48px", marginBottom: "32px",  alignItems: "center", justifyContent: "center" }}
         >
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={8}>
             <Box sx={ourteam.box}>
               <Typography variant="h5" gutterBottom>
                 Grow With Us
@@ -193,33 +194,33 @@ const OurTeam = () => {
                 well-being matters and your growth is supported every step of the
                 way. Discover the advantages of being part of our team.
               </Typography>
-              {/* <ul
+              <ul
                 style={{
                   paddingLeft: "20px",
                   listStyleType: "disc",
                   paddingTop: "0px",
                   marginTop: "0px",
                 }}
-              > */}
-                {/* <li> */}
-                  <Typography variant="body1" sx={{ textAlign: { xs: "left", md: "left" } }}>
+              >
+                <li>
+                  <Typography variant="body1" sx={{ textAlign: { xs: "center", md: "left" } }}>
                     Be part of a mission-driven organization empowering
                     underserved women and youth through technology.
                   </Typography>
-                {/* </li> */}
-                {/* <li> */}
-                  <Typography variant="body1" sx={{ textAlign: { xs: "left", md: "left" } }}>
+                </li>
+                <li>
+                  <Typography variant="body1" sx={{ textAlign: { xs: "center", md: "left" } }}>
                     Gain exposure to CSR initiatives, sustainability practices,
                     and community development projects.
                   </Typography>
-                {/* </li> */}
-                {/* <li> */}
-                  <Typography variant="body1" sx={{ textAlign: { xs: "left", md: "left" } }}>
+                </li>
+                <li>
+                  <Typography variant="body1" sx={{ textAlign: { xs: "center", md: "left" } }}>
                     Work closely with NGOs, corporate partners, and industry
                     leaders, building a robust professional network.
                   </Typography>
-                {/* </li> */}
-              {/* </ul> */}
+                </li>
+              </ul>
               <Button
                 variant="contained"
                 color="primary"
