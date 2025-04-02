@@ -135,7 +135,28 @@ function Ops() {
               </CardContent>
             </Card>
           </Grid>
-        </Grid>
+          <Grid item xs={12} sm={6} md={6}>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h6" component="h2" gutterBottom>
+                  New Card
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  New card testing
+                </Typography>
+                <Box mt={2}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="/ops-welcome"
+                  >
+                    Click
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>       
       </Box>
     </Container>
   );

@@ -56,7 +56,7 @@ import OurTeam from './Pages/About/OurTeam/OurTeam';
 import OurGoverment from './Pages/About/OurGoverment/OurGoverment';
 import CommunityPartners from './Pages/About/CommunityPartners/CommunityPartners';
 import CorporatePartner from './Pages/About/CorporatePartner/CorporatePartner';
-
+import OpsWelcome from './components/OPS/OpsWelcome';
 
 
 function App() {
@@ -133,7 +133,7 @@ function App() {
                 } />
               <Route path="/monthly-reporting/:id" element={<MonthlyForm />} />
               <Route path="/edit-form/:id" element={<MonthlyEditForm />} />
-              
+              <Route path="/ops-welcome" element={<OpsWelcome />} />
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
