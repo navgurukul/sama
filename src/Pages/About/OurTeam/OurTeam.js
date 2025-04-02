@@ -103,7 +103,7 @@ const OurTeam = () => {
                       style={{
                         width: "100%",
                         height: "100%",
-                        objectFit: "cover", // Ensures the image/video covers the card completely
+                        objectFit: "cover", 
                         objectPosition: "center",
                         display: "block",
                       }}
