@@ -156,7 +156,7 @@ function CommunityForm() {
         };
         try {
             await fetch(
-                "https://script.google.com/macros/s/AKfycbxIcZb3iQ4Kr7QXEi_KtziiM83oX1v7GFREzsQue53tqgET6Hc5h8cMEMIAdzSbPJIaOw/exec",
+                `${process.env.REACT_APP_GetInvolvedForm}`,
                 {
                     method: "POST",
                     headers: {
