@@ -133,7 +133,7 @@ function App() {
                 } />
               <Route path="/monthly-reporting/:id" element={<MonthlyForm />} />
               <Route path="/edit-form/:id" element={<MonthlyEditForm />} />
-              <Route path="/ops-welcome" element={<OpsWelcome />} />
+              <Route path="/laptop-with-issues" element={<OpsWelcome />} />
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}

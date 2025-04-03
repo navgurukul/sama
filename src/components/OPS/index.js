@@ -139,18 +139,18 @@ function Ops() {
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6" component="h2" gutterBottom>
-                  New Card
+                  Laptop with Issues
                 </Typography>
                 <Typography variant="body1" color="textSecondary" gutterBottom>
-                  New card testing
+                  Check the laptops with issues and their status.
                 </Typography>
                 <Box mt={2}>
                   <Button
                     variant="contained"
                     color="primary"
-                    href="/ops-welcome"
+                    href="/laptop-with-issues"
                   >
-                    Click
+                    Laptop with Issues
                   </Button>
                 </Box>
               </CardContent>
