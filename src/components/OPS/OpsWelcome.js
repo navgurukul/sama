@@ -8,8 +8,11 @@ import {
     TableRow, 
     Paper, 
     Typography,
-    Chip,
-    Avatar
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button
   } from '@mui/material';
   import React, { useState, useEffect } from 'react';
   
@@ -17,6 +20,8 @@ import {
       const [laptopsWithComments, setLaptopsWithComments] = useState([]);
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState(null);
+      const [selectedLaptop, setSelectedLaptop] = useState(null);
+      const [openDialog, setOpenDialog] = useState(false);
   
       useEffect(() => {
           const fetchData = async () => {
@@ -43,6 +48,39 @@ import {
           fetchData();
       }, []);
   
+      const handleRowClick = (laptop) => {
+          setSelectedLaptop(laptop);
+          setOpenDialog(true);
+      };
+  
+      const handleCloseDialog = () => {
+          setOpenDialog(false);
+      };
+  
+      const handleIssueResponse = (isFixed) => {
+        if (isFixed) {
+            const SavedData = JSON.parse(localStorage.getItem('_AuthSama_'));
+            const userEmail = SavedData?.[0]?.email || "Email not found";       
+            const now = new Date();
+            const formattedDateTime = now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            console.log(`Laptop ID: ${selectedLaptop.ID}`);
+            console.log(`Action: Marked as FIXED`);
+            console.log(`Action By: ${userEmail}`);
+            console.log(`Local Time: ${formattedDateTime}`);
+        } else {
+            console.log(`Issue NOT fixed for laptop ${selectedLaptop.ID}`);
+        }
+        handleCloseDialog();
+    };
+  
       if (loading) return <Container maxWidth="lg"><Typography>Loading...</Typography></Container>;
       if (error) return <Container maxWidth="lg"><Typography color="error">Error: {error}</Typography></Container>;
   
@@ -59,56 +97,33 @@ import {
                           <TableHead>
                               <TableRow>
                                   <TableCell><strong>ID</strong></TableCell>
-                                  <TableCell><strong>Model</strong></TableCell>
-                                  <TableCell><strong>RAM/ROM</strong></TableCell>
                                   <TableCell><strong>Processor</strong></TableCell>
                                   <TableCell><strong>Battery</strong></TableCell>
-                                  <TableCell><strong>Donor</strong></TableCell>
+                                  <TableCell><strong>Assigned To</strong></TableCell>
+                                  <TableCell><strong>Donated To</strong></TableCell>
                                   <TableCell><strong>Comment</strong></TableCell>
-                                  <TableCell><strong>Status</strong></TableCell>
-                                  <TableCell><strong>Condition</strong></TableCell>
-                                  <TableCell><strong>Location</strong></TableCell>
                                   <TableCell><strong>Last Updated</strong></TableCell>
                               </TableRow>
                           </TableHead>
                           <TableBody>
                               {laptopsWithComments.map((laptop, index) => (
-                                  <TableRow key={index} hover>
-                                      <TableCell>
-                                          <div>{laptop.ID}</div>
-                                          {/* {laptop.barcodeUrl && (
-                                              <Avatar 
-                                                  src={laptop.barcodeUrl} 
-                                                  variant="square"
-                                                  sx={{ width: 100, height: 30, mt: 1 }}
-                                              />
-                                          )} */}
-                                      </TableCell>
-                                      <TableCell>{laptop['Manufacturer Model']}</TableCell>
-                                      <TableCell>{laptop.RAM}/{laptop.ROM}</TableCell>
+                                  <TableRow 
+                                      key={index} 
+                                      hover 
+                                      onClick={() => handleRowClick(laptop)}
+                                      sx={{ cursor: 'pointer' }}
+                                  >
+                                      <TableCell>{laptop.ID}</TableCell>
                                       <TableCell>{laptop.Processor || 'N/A'}</TableCell>
                                       <TableCell>
                                           {laptop['Battery Capacity'] ? 
                                               `${Math.round(laptop['Battery Capacity'] * 100)}%` : 'N/A'}
                                       </TableCell>
-                                      <TableCell>{laptop['Donor Company Name']}</TableCell>
+                                      <TableCell>{laptop['Assigned To'] || 'N/A'}</TableCell>
+                                      <TableCell>{laptop['Donated To'] || 'N/A'}</TableCell>
                                       <TableCell sx={{ maxWidth: '250px', whiteSpace: 'pre-wrap' }}>
                                           {laptop['Comment for the Issues']}
                                       </TableCell>
-                                      <TableCell>
-                                          <Chip 
-                                              label={laptop.Status || 'No status'} 
-                                              color={
-                                                  laptop.Status === 'Laptop Received' ? 'primary' : 
-                                                  laptop.Status === 'Ready for Donation' ? 'success' : 'default'
-                                              }
-                                              size="small"
-                                          />
-                                      </TableCell>
-                                      <TableCell sx={{ maxWidth: '200px' }}>
-                                          {laptop['Condition Status'] || 'N/A'}
-                                      </TableCell>
-                                      <TableCell>{laptop['Inventory Location'] || 'N/A'}</TableCell>
                                       <TableCell>
                                           {laptop['Last Updated On'] ? 
                                               new Date(laptop['Last Updated On']).toLocaleDateString() : 'N/A'}
@@ -121,6 +136,42 @@ import {
               ) : (
                   <Typography variant="body1">No laptops with issue comments found</Typography>
               )}
+  
+              {/* Dialog for issue confirmation */}
+              <Dialog open={openDialog} onClose={handleCloseDialog}>
+                  <DialogTitle>Issue Resolution</DialogTitle>
+                  <DialogContent>
+                      {selectedLaptop && (
+                          <>
+                              {/* <Typography variant="h6" gutterBottom> */}
+                                  {/* {selectedLaptop['Manufacturer Model'] || 'Unknown Model'} */}
+                              {/* </Typography> */}
+                              <Typography variant="body1" gutterBottom>
+                                  Is the issue fixed?
+                              </Typography>
+                              <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                                  {selectedLaptop['Comment for the Issues']}
+                              </Typography>
+                          </>
+                      )}
+                  </DialogContent>
+                  <DialogActions>
+                      <Button 
+                          onClick={() => handleIssueResponse(false)} 
+                          color="error"
+                          variant="outlined"
+                      >
+                          No
+                      </Button>
+                      <Button 
+                          onClick={() => handleIssueResponse(true)} 
+                          color="primary"
+                          variant="contained"
+                      >
+                          Yes
+                      </Button>
+                  </DialogActions>
+              </Dialog>
           </Container>
       );
   };
