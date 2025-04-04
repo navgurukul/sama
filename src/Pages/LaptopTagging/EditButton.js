@@ -168,9 +168,15 @@ const EditButton = ({
         "Graphics Card Issues",
         "Water Damage",
         "USB Ports",
+        "Camera issue",
+        "Charging point issue",
+        "Fan Error",
+        "Wifi issue"
+
     ];
 
     const minorIssuesOptions = [
+
         "Cosmetic Wear",
         "Loose Hinges",
         "Dead Pixels",
