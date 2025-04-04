@@ -62,21 +62,36 @@ const OpsWelcome = () => {
         if (isFixed && selectedLaptop) {
             const SavedData = JSON.parse(localStorage.getItem('_AuthSama_'));
             const userEmail = SavedData?.[0]?.email || "System";
-            
             try {
+                // await fetch('https://script.google.com/macros/s/AKfycbzBhsmMq3XVCf-YvpxzQbSifYZDN33BoQudq4va4AbC-j-uz080qmPhQqUIgdqb3w2YXg/exec', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     mode: 'no-cors',
+                //     body: JSON.stringify({
+                //         type: "UpdateLaptopComment",
+                //         laptopId: selectedLaptop.ID,
+                //         updatedBy: userEmail
+                //     })
+                // });
+                console.log("Sending request to update:", {
+                    type: "UpdateLaptopComment",
+                    laptopId: selectedLaptop.ID,
+                    updatedBy: userEmail
+                });
                 await fetch('https://script.google.com/macros/s/AKfycbzBhsmMq3XVCf-YvpxzQbSifYZDN33BoQudq4va4AbC-j-uz080qmPhQqUIgdqb3w2YXg/exec', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    mode: 'no-cors', 
+                    mode: 'no-cors',
                     body: JSON.stringify({
                         type: "UpdateLaptopComment",
                         laptopId: selectedLaptop.ID,
                         updatedBy: userEmail
                     })
                 });
-    
                 alert('Update request sent! Refreshing data...');
                 await fetchData(); // Refresh the table data
             } catch (error) {
@@ -86,6 +101,7 @@ const OpsWelcome = () => {
         }
         handleCloseDialog();
     };
+
     
 
     if (loading) return <Container maxWidth="lg"><Typography>Loading...</Typography></Container>;
