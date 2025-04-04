@@ -41,7 +41,7 @@ const services = [
 const ServiceIcons = () => {
   return (
     // <Container maxWidth="lg" sx={{margin:"80px 0px"}}>
-      <Grid container spacing={3} align="left" sx={{margin:"48px 0px", paddingRight:"41px"}}>
+      <Grid container spacing={3} align="left" sx={{margin:"48px 0px", paddingRight:{xs:"41px", md:"0px"}}}>
         {services.map((service, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Box
@@ -64,7 +64,7 @@ const ServiceIcons = () => {
               </Typography>
 
               { service.title === "Values"? (
-                <Box  sx={{ pl: 3, textAlign: "left" }}>
+                <Box  sx={{textAlign: "left" }}>
                   {service.description.map((point, i) => (
                     <Box  key={i}>
                       <Typography color="textSecondary" variant="body1">
