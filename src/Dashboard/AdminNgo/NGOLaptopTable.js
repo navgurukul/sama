@@ -64,6 +64,10 @@ function NGOLaptopTable({ ngoData }) {
     "Graphics Card Issues",
     "Water Damage",
     "USB Ports",
+    "Camera issue",
+    "Charging point issue",
+    "Fan Error",
+    "Wifi issue"
   ];
   
   const minorIssuesOptions = [
