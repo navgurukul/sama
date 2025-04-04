@@ -58,68 +58,12 @@ const OpsWelcome = () => {
         setOpenDialog(false);
     };
 
-    // const handleIssueResponse = async () => {
-    //     if (!selectedLaptop) {
-    //         console.error("No laptop selected");
-    //         handleCloseDialog();
-    //         return;
-    //     }
-    
-    //     try {
-    //         const userEmail = JSON.parse(localStorage.getItem('_AuthSama_'))?.[0]?.email || "System";
-    
-    //         const url = "";
-    //         const requestBody = {
-                
-    //             laptopId: selectedLaptop.ID,  
-    //             updatedBy: userEmail  
-    //         };
-    
-    //         const response = await fetch(url, {
-    //             method: "POST",
-    //             headers: { "Content-Type": "application/json" },
-    //             mode:"no-cors",
-    //             body: JSON.stringify(requestBody),
-    //         });
-    
-    //         const text = await response.text();
-    
-    //         if (!text) {
-    //             throw new Error("Empty response from server");
-    //         }
-    
-    //         const result = JSON.parse(text);
-    
-    //         if (result.success) {
-    //             console.log(`Success: ${result.message}`);
-    //             await fetchData(); 
-                
-    //             // Verify the comment was actually cleared
-    //             const updatedLaptop = (await fetchData()).find(l => l.ID === selectedLaptop.ID);
-    //             if (updatedLaptop && updatedLaptop['Comment for the Issues'] === "") {
-    //                 alert("Comment cleared successfully!");
-    //             } else {
-    //                 alert("Comment was not cleared. Please check the sheet.");
-    //             }
-    //         } else {
-    //             console.error(`Failed: ${result.message}`);
-    //             alert(`Error: ${result.message}`);
-    //         }
-    //     } catch (error) {
-    //         console.error("Error clearing comment:", error);
-    //         alert("Failed to clear comment. Please check console for details.");
-    //     } finally {
-    //         handleCloseDialog();
-    //     }
-    // };
-
     const handleIssueResponse = async (isFixed) => {
         if (isFixed && selectedLaptop) {
             const SavedData = JSON.parse(localStorage.getItem('_AuthSama_'));
             const userEmail = SavedData?.[0]?.email || "System";
             
             try {
-                // Fire-and-forget POST request
                 await fetch('https://script.google.com/macros/s/AKfycbzBhsmMq3XVCf-YvpxzQbSifYZDN33BoQudq4va4AbC-j-uz080qmPhQqUIgdqb3w2YXg/exec', {
                     method: 'POST',
                     headers: {
