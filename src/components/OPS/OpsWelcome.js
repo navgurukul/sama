@@ -63,24 +63,7 @@ const OpsWelcome = () => {
             const SavedData = JSON.parse(localStorage.getItem('_AuthSama_'));
             const userEmail = SavedData?.[0]?.email || "System";
             try {
-                // await fetch('https://script.google.com/macros/s/AKfycbzBhsmMq3XVCf-YvpxzQbSifYZDN33BoQudq4va4AbC-j-uz080qmPhQqUIgdqb3w2YXg/exec', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                //     mode: 'no-cors',
-                //     body: JSON.stringify({
-                //         type: "UpdateLaptopComment",
-                //         laptopId: selectedLaptop.ID,
-                //         updatedBy: userEmail
-                //     })
-                // });
-                console.log("Sending request to update:", {
-                    type: "UpdateLaptopComment",
-                    laptopId: selectedLaptop.ID,
-                    updatedBy: userEmail
-                });
-                await fetch('https://script.google.com/macros/s/AKfycbzBhsmMq3XVCf-YvpxzQbSifYZDN33BoQudq4va4AbC-j-uz080qmPhQqUIgdqb3w2YXg/exec', {
+                await fetch((`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=UpdateLaptopComment`), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -175,7 +158,7 @@ const OpsWelcome = () => {
                         </>
                     )}
                 </DialogContent>
-                <DialogActions>
+                <DialogActions >
                     <Button 
                         onClick={() => handleIssueResponse(false)} 
                         color="error"
