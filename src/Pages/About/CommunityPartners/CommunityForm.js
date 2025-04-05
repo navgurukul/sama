@@ -17,11 +17,23 @@ import {
 } from "@mui/material";
 import ourteam from '../OurTeam/style';
 
-const stateOptions = ["Maharashtra", "New Delhi", "Gujarat", "Punjab", "Karnataka", "Tamil Nadu"];
+const stateOptions = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+    "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
+    "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim",
+    "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand",
+    "West Bengal",
+    // Union Territories
+    "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+    "Lakshadweep", "Delhi", "Puducherry", "Ladakh", "Jammu and Kashmir"
+  ];
+  
 
 
 function CommunityForm() {
     const [formData, setFormData] = useState({
+        formType: "community",
         firstName: "",
         lastName: "",
         companyName: "",
@@ -129,6 +141,7 @@ function CommunityForm() {
             return;
         }
         const capitalizedData = {
+            formType: "community", 
             firstName: capitalizeFirstLetter(formData.firstName),
             lastName: capitalizeFirstLetter(formData.lastName),
             email: formData.email.toLowerCase(),
@@ -143,7 +156,7 @@ function CommunityForm() {
         };
         try {
             await fetch(
-                "https://script.google.com/macros/s/AKfycbw0KIFPoyRJjjUGzal2vg11sNMnHnTclDEc1eHu5pP0b_gElJ3M9K9kGz5CQWihrCc72w/exec",
+                `${process.env.REACT_APP_GetInvolvedForm}`,
                 {
                     method: "POST",
                     headers: {
@@ -340,10 +353,9 @@ function CommunityForm() {
                                     </Typography>
                                     <RadioGroup row name="outcome" onChange={handleRadioChange} value={selectedOutcome}>
                                         <FormControlLabel value="Women" control={<Radio />} label="Women" />
-                                        <FormControlLabel value="Children" control={<Radio />} label="Children Impact" />
-                                        <FormControlLabel value="Sex Workers" control={<Radio />} label="Sex Workers" />
-                                        <FormControlLabel value="Physically Challenged" control={<Radio />} label="Physically Challenged" />
-                                        <FormControlLabel value="Mentally Challenged" control={<Radio />} label="Mentally Challenged" />
+                                        <FormControlLabel value="Children" control={<Radio />} label="Children" />
+                                        <FormControlLabel value="Sex Workers" control={<Radio />} label="Sex workers" />
+                                        <FormControlLabel value="Specially abled individuals" control={<Radio />} label="Specially abled individuals" />
                                         <FormControlLabel value="Enviroment" control={<Radio />} label="Enviroment" />
                                         <FormControlLabel value="other" control={<Radio />} label="Other" />
                                     </RadioGroup>

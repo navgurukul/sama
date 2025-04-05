@@ -17,11 +17,22 @@ import {
 } from "@mui/material";
 import ourteam from '../OurTeam/style';
 
-const stateOptions = ["Maharashtra", "New Delhi", "Gujarat", "Punjab", "Karnataka", "Tamil Nadu"];
-
+const stateOptions = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+    "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
+    "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim",
+    "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand",
+    "West Bengal",
+    // Union Territories
+    "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+    "Lakshadweep", "Delhi", "Puducherry", "Ladakh", "Jammu and Kashmir"
+  ];
+  
 
 function CorporateForm() {
     const [formData, setFormData] = useState({
+        formType: "corporate",
         firstName: "",
         lastName: "",
         companyName: "",
@@ -131,6 +142,7 @@ function CorporateForm() {
             return;
         }
         const capitalizedData = {
+            formType: "corporate", 
             firstName: capitalizeFirstLetter(formData.firstName),
             lastName: capitalizeFirstLetter(formData.lastName),
             email: formData.email.toLowerCase(),
@@ -144,7 +156,7 @@ function CorporateForm() {
         };
         try {
             await fetch(
-                "https://script.google.com/macros/s/AKfycbzBwnZJAPjjx1x33Sbwv_xc0SHqjYwhcHGxiWfkR7WCjtTS2gMSYa2K1sIUe-WOPTA/exec",
+                `${process.env.REACT_APP_GetInvolvedForm}`,
                 {
                     method: "POST",
                     headers: {

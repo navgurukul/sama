@@ -6,7 +6,7 @@ const ourteam = {
     container: {
         textAlign: "center", 
         py: 4, 
-        marginTop: {xs:"10px", md: "40px"},
+        marginTop: {xs:"10px", md:"40px"},
     },
     gridContainer: {
         marginTop: "40px",
@@ -14,7 +14,7 @@ const ourteam = {
     gridItem: {
         display: "flex", 
         justifyContent: "center",
-        marginLeft: { xs: "20px", md: "0px" },
+        margin: {xs:"2px 10px", md: "0px"},
     },
     card: {
         width: "450px", 
@@ -37,7 +37,7 @@ const ourteam = {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: "16px"
+        gap: "16px",
     },
     typographyBody: {
         textAlign: { xs: "center", md: "left" }
@@ -226,7 +226,6 @@ const ourteam = {
     },
     //About Us
     FullBox:{
-        // height:{ xs: "100%", md:  "237px" },
         backgroundColor: " #F0F4EF",
         padding: "80px",
         display: "flex",
