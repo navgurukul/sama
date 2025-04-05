@@ -234,7 +234,7 @@ function Home() {
             <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" style={{ boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)", borderRadius: "16px" }}
             />
           ) : (
-            <img src={require("./assets/Sama - Social Impact.jpg")} height="auto" width="100%" alt="sama social" style={{ boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)", borderRadius: "16px" }} />
+            <img src={require("./assets/Dashboard.jpg")} height="auto" width="100%" alt="sama social" style={{ boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)", borderRadius: "16px" }} />
           )}
         </Box>
       </Container>

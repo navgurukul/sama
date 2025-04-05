@@ -135,7 +135,28 @@ function Ops() {
               </CardContent>
             </Card>
           </Grid>
-        </Grid>
+          <Grid item xs={12} sm={6} md={6}>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h6" component="h2" gutterBottom>
+                  Laptop with Issues
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  Check the laptops with issues and their status.
+                </Typography>
+                <Box mt={2}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="/laptop-with-issues"
+                  >
+                    Laptop with Issues
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>       
       </Box>
     </Container>
   );
