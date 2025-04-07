@@ -26,7 +26,7 @@ const FormComponent = ({ user }) => {
   const role = JSON.parse(localStorage.getItem('role'));
   const { userId } = location.state || {};
 
-  
+
   const statesOptions = [
     "Andhra Pradesh",
     "Arunachal Pradesh",
@@ -102,22 +102,22 @@ const FormComponent = ({ user }) => {
     "5+ lakh",
   ];
   const fields = [
-    { label: "Name", name: "name" },
-    { label: "Email", name: "email" },
-    { label: "Contact Number", name: "contactNumber" },
+    { label: "Name*", name: "name" },
+    { label: "Email*", name: "email" },
+    { label: "Contact Number*", name: "contactNumber" },
     { label: "Date Of Birth", name: "dateOfBirth" },
-    { label: "Address (Number, Street, Locality etc.)", name: "address" },
+    { label: "Address (Number, Street, Locality etc.)*", name: "address" },
     { label: "State", name: "addressState" },
     { label: "ID Proof Type", name: "idProofType" },
-    { label: "ID Number", name: "idNumber" },
+    { label: "ID Number*", name: "idNumber" },
     { label: "Qualification", name: "qualification" },
     { label: "Occupation Status", name: "occupation" },
     { label: "Use Case", name: "useCase" },
-    { label: "Number of Family Members", name: "familyMembers" },
-    { label: "Father/Mother/Guardian’s Occupation", name: "guardian" },
+    { label: "Number of Family Members*", name: "familyMembers" },
+    { label: "Father/Mother/Guardian’s Occupation*", name: "guardian" },
     { label: "Family Annual Income", name: "familyAnnualIncome" },
     { label: "Status", name: "status" },
-    { label: "Laptop Assigned", name: "laptopAssigned" },
+    { label: "Laptop Assigned*", name: "laptopAssigned" },
     // { label: "Income Certificate", name: "incomeCertificate" },
   ];
 
@@ -143,6 +143,26 @@ const FormComponent = ({ user }) => {
   const { id } = useParams();
 
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
+
+  const requiredFields = [
+    "name",
+    "email",
+    "contactNumber",
+    "dateOfBirth",
+    "address",
+    "addressState",
+    "idProofType",
+    "idNumber",
+    "qualification",
+    "occupation",
+    "useCase",
+    "familyMembers",
+    "guardian",
+    "familyAnnualIncome",
+    "status",
+    "laptopAssigned",
+  ];
+
 
   const handleFileChange = (event, fileType) => {
     setFormData({
@@ -230,7 +250,7 @@ const FormComponent = ({ user }) => {
         };
 
         const response = await fetch(
-            process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi,
+          process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi,
           // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
           {
             method: "POST",
@@ -283,7 +303,11 @@ const FormComponent = ({ user }) => {
               <FormControl fullWidth margin="normal" key={field.name}>
                 <Typography variant="subtitle1" key={field.name}>
                   {field.label}
+                  {requiredFields.includes(field.name) && (
+                    <span > *</span>
+                  )}
                 </Typography>
+
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
                   name={field.name}
@@ -331,33 +355,15 @@ const FormComponent = ({ user }) => {
                 )}
               </FormControl>
             );
-          } else if (field.name === "useCase") {
+          } 
+          if (field.name === "status") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
                 <Typography variant="subtitle1" key={field.name}>
                   {field.label}
-                </Typography>
-                {/* <InputLabel>{field.label}</InputLabel> */}
-                <Select
-                  name={field.name}
-                  value={formData[field.name] || ""}
-                  onChange={handleChange}
-                  label={field.label}
-                  sx={{ textAlign: "left" }}
-                >
-                  {useCaseOptions.map((option, index) => (
-                    <MenuItem key={index} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            );
-          } else if (field.name === "status") {
-            return (
-              <FormControl fullWidth margin="normal" key={field.name}>
-                <Typography variant="subtitle1" key={field.name}>
-                  {field.label}
+                  {requiredFields.includes(field.name) && (
+                    <span> *</span>
+                  )}
                 </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
@@ -375,11 +381,41 @@ const FormComponent = ({ user }) => {
                 </Select>
               </FormControl>
             );
-          } else if (field.name === "dateOfBirth") {
+          }
+            if (field.name === "useCase") {
+            return (
+              <FormControl fullWidth margin="normal" key={field.name}>
+                <Typography variant="subtitle1" key={field.name}>
+                  {field.label}
+                  {requiredFields.includes(field.name) && (
+                    <span> *</span>
+                  )}
+                </Typography>
+                {/* <InputLabel>{field.label}</InputLabel> */}
+                <Select
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  label={field.label}
+                  sx={{ textAlign: "left" }}
+                >
+                  {useCaseOptions.map((option, index) => (
+                    <MenuItem key={index} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          
+          }if (field.name === "dateOfBirth") {
             return (
               <>
                 <Typography variant="subtitle1" key={field.name}>
                   {field.label}
+                  {requiredFields.includes(field.name) && (
+                    <span> *</span>
+                  )}
                 </Typography>
                 <TextField
                   fullWidth
@@ -395,11 +431,14 @@ const FormComponent = ({ user }) => {
                 />
               </>
             );
-          } else if (field.name === "addressState") {
+          }if (field.name === "addressState") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
                 <Typography variant="subtitle1" key={field.name}>
                   {field.label}
+                  {requiredFields.includes(field.name) && (
+                    <span > *</span>
+                  )}
                 </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
@@ -416,11 +455,14 @@ const FormComponent = ({ user }) => {
                 </Select>
               </FormControl>
             );
-          } else if (field.name === "qualification") {
+          } if (field.name === "qualification") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
                 <Typography variant="subtitle1" key={field.name}>
                   {field.label}
+                  {requiredFields.includes(field.name) && (
+                    <span > *</span>
+                  )}
                 </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
@@ -438,11 +480,14 @@ const FormComponent = ({ user }) => {
                 </Select>
               </FormControl>
             );
-          } else if (field.name === "occupation") {
+          } if (field.name === "occupation") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
                 <Typography variant="subtitle1" key={field.name}>
                   {field.label}
+                  {requiredFields.includes(field.name) && (
+                    <span > *</span>
+                  )}
                 </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
@@ -460,11 +505,15 @@ const FormComponent = ({ user }) => {
                 </Select>
               </FormControl>
             );
-          } else if (field.name === "familyAnnualIncome") {
+          }
+           if (field.name === "familyAnnualIncome") {
             return (
               <FormControl fullWidth margin="normal" key={field.name}>
                 <Typography variant="subtitle1" key={field.name}>
                   {field.label}
+                  {requiredFields.includes(field.name) && (
+                    <span > *</span>
+                  )}
                 </Typography>
                 {/* <InputLabel>{field.label}</InputLabel> */}
                 <Select
@@ -506,7 +555,7 @@ const FormComponent = ({ user }) => {
           }
         })}
         <FormControl fullWidth margin="normal">
-          <Typography variant="subtitle1">Income Certificate</Typography>
+          <Typography variant="subtitle1">Income Certificate*</Typography>
           <Button
             variant="outlined"
             component="label"
@@ -517,7 +566,7 @@ const FormComponent = ({ user }) => {
               type="file"
               hidden
               onChange={(e) => handleFileChange(e, "incomeCertificateFile")}
-              // onChange={handleFileChange}
+            // onChange={handleFileChange}
             />
           </Button>
           {formData.incomeCertificateFile ? (
@@ -544,14 +593,14 @@ const FormComponent = ({ user }) => {
             fontSize: "17.7px",
           }}
           type="submit"
-          // disabled={loading}
+        // disabled={loading}
         >
           {loading ? (
             <CircularProgress
               size={24}
               // color="white"
               color="inherit"
-              //  sx={{ color: "white" }}
+            //  sx={{ color: "white" }}
             />
           ) : (
             "Add Benificiary"

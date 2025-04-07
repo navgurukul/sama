@@ -1,22 +1,23 @@
-import React, { useState } from "react"; // Import React and the useState hook from React
+import React, { useState } from "react";
 import {
   TextField,
   Button,
   Container,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
   MenuItem,
   Checkbox,
   ListItemText,
+  Snackbar,
+  Alert,
+  FormHelperText,
+  InputAdornment
 } from "@mui/material";
 import "./common.css";
 
 function LaptopForm() {
-  // State to store form data
   const [formData, setFormData] = useState({
     type: "laptopLabeling",
+    id: "",
     donorCompanyName: "",
     ram: "",
     rom: "",
@@ -33,66 +34,94 @@ function LaptopForm() {
     batteryCapacity: "",
   });
 
-  // State to manage loading state for the loader
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  // Function to handle changes in text fields
+  const requiredFields = [
+    "id",
+    "donorCompanyName",
+    "ram",
+    "rom",
+    "conditionStatus",
+    "manufacturerModel",
+    "processor",
+    "manufacturingDate",
+    "minorIssues",
+    "majorIssues",
+    "inventoryLocation",
+    "laptopWeight",
+    "macAddress",
+    "batteryCapacity",
+  ];
+
   const handleChange = (e) => {
-    const { name, value } = e.target; // Get the name and value from the event target
+    const { name, value } = e.target;
     setFormData({
-      ...formData, // Spread existing form data
-      [name]: value, // Update the changed field
+      ...formData,
+      [name]: value,
     });
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null,
+      });
+    }
   };
 
-  // Function to handle changes in select fields
   const handleSelectChange = (e) => {
-    const { name, value } = e.target; // Get the name and value from the event target
+    const { name, value } = e.target;
     setFormData({
-      ...formData, // Spread existing form data
-      [name]: typeof value === "string" ? value.split(",") : value, // Update select field values
+      ...formData,
+      [name]: typeof value === "string" ? value.split(",") : value,
     });
   };
 
   const validateForm = () => {
-    const requiredFields = [
-      "donorCompanyName",
-      "conditionStatus",
-    ];
-    for (let field of requiredFields) {
-      if (!formData[field].trim()) {
-        alert(`${field} is required.`);
-        return false;
+    const newErrors = {};
+    let isValid = true;
+
+    requiredFields.forEach(field => {
+      if (!formData[field] || (Array.isArray(formData[field]) && formData[field].length === 0)) {
+        newErrors[field] = "This field is required";
+        isValid = false;
       }
+    });
+
+    setErrors(newErrors);
+    
+    if (!isValid) {
+      setSnackbarMessage("Please fill all required fields");
+      setSnackbarOpen(true);
     }
-    return true;
+    
+    return isValid;
   };
 
-
-  // Function to handle form submission
   const handleSubmit = async (e) => {
-
     e.preventDefault();
     if (!validateForm()) return;
+    
     setLoading(true);
     try {
       await fetch(
         `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
-        // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
         {
           method: "POST",
-          body: JSON.stringify(formData), // Convert form data to JSON
-          mode: "no-cors", // Use no-cors mode since it's a cross-origin request
+          body: JSON.stringify(formData),
+          mode: "no-cors",
           headers: {
-            "Content-Type": "application/json", // Specify content type as JSON
+            "Content-Type": "application/json",
           },
         }
       );
 
-      alert("Data uploaded successfully!"); // Show success message after data upload
-      setLoading(false); // Hide the loader
+      alert("Data uploaded successfully!");
+      setLoading(false);
 
-      // Reset the form data to its initial state
+      // Reset form
       setFormData({
         type: "laptopLabeling",
         id: "",
@@ -112,13 +141,17 @@ function LaptopForm() {
         batteryCapacity: "",
       });
     } catch (error) {
-      console.error("Error:", error); // Log error to the console
-      alert("An error occurred. Please try again."); // Show error message
-      setLoading(false); // Hide the loader on error
+      console.error("Error:", error);
+      setSnackbarMessage("An error occurred. Please try again.");
+      setSnackbarOpen(true);
+      setLoading(false);
     }
   };
 
-  // Options for major issues in the select field
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
   const majorIssueOptions = [
     "Fan",
     "Speaker",
@@ -140,7 +173,6 @@ function LaptopForm() {
     "Wifi issue"
   ];
 
-  // Options for minor issues in the select field
   const minorIssuesOptions = [
     "Cosmetic Wear",
     "Loose Hinges",
@@ -150,13 +182,21 @@ function LaptopForm() {
     "Minor Software Issues",
     "Port Wear",
     "Touchpad Sensitivity",
-
   ];
+
+  // Helper function to add required star to label
+  const getLabel = (fieldName) => (
+    <>
+      {fieldName}
+      {requiredFields.includes(fieldName) && (
+        <span style={{ color: "red" }}> *</span>
+      )}
+    </>
+  );
 
   return (
     <>
-      <Container sx={{ mt: 5, }} maxWidth="sm">
-        {/* Display the loader and overlay if loading is true */}
+      <Container sx={{ mt: 5 }} maxWidth="sm">
         {loading && (
           <div className="overlay">
             <div className="loader">Loading...</div>
@@ -164,95 +204,119 @@ function LaptopForm() {
         )}
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-            {/* Form Fields */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Serial Number"
+                label={getLabel("Serial Number")}
                 name="id"
                 value={formData.id}
                 onChange={handleChange}
                 variant="outlined"
+                error={!!errors.id}
+                helperText={errors.id}
+                required
+               
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Donor Company Name"
+                label={getLabel("Donor Company Name")}
                 name="donorCompanyName"
                 value={formData.donorCompanyName}
                 onChange={handleChange}
                 variant="outlined"
+                error={!!errors.donorCompanyName}
+                helperText={errors.donorCompanyName}
+                required
               />
             </Grid>
 
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="RAM"
+                label={getLabel("RAM")}
                 name="ram"
                 value={formData.ram}
                 onChange={handleChange}
                 variant="outlined"
+                error={!!errors.ram}
+                helperText={errors.ram}
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="ROM"
+                label={getLabel("ROM")}
                 name="rom"
                 value={formData.rom}
                 onChange={handleChange}
                 variant="outlined"
+                error={!!errors.rom}
+                helperText={errors.rom}
+                required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Manufacturer Model"
+                label={getLabel("Manufacturer Model")}
                 name="manufacturerModel"
                 value={formData.manufacturerModel}
                 onChange={handleChange}
                 variant="outlined"
+                error={!!errors.manufacturerModel}
+                helperText={errors.manufacturerModel}
+                required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Processor"
+                label={getLabel("Processor")}
                 name="processor"
                 value={formData.processor}
                 onChange={handleChange}
                 variant="outlined"
+                error={!!errors.processor}
+                helperText={errors.processor}
+                required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Manufacturing Date"
+                label={getLabel("Manufacturing Date")}
                 name="manufacturingDate"
                 type="date"
                 InputLabelProps={{ shrink: true }}
                 value={formData.manufacturingDate}
                 onChange={handleChange}
                 variant="outlined"
+                error={!!errors.manufacturingDate}
+                helperText={errors.manufacturingDate}
+                required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Condition Status"
+                label={getLabel("Condition Status")}
                 name="conditionStatus"
                 value={formData.conditionStatus}
                 onChange={handleChange}
                 variant="outlined"
+                error={!!errors.conditionStatus}
+                helperText={errors.conditionStatus}
+                required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 select
-                label="Minor Issues"
+                label={getLabel("Minor Issues")}
                 name="minorIssues"
                 variant="outlined"
                 SelectProps={{
@@ -261,6 +325,9 @@ function LaptopForm() {
                   onChange: handleSelectChange,
                   renderValue: (selected) => selected.join(", "),
                 }}
+                error={!!errors.minorIssues}
+                helperText={errors.minorIssues}
+                required
               >
                 {minorIssuesOptions.map((issue) => (
                   <MenuItem key={issue} value={issue}>
@@ -272,10 +339,10 @@ function LaptopForm() {
             </Grid>
 
             <Grid item xs={12}>
-            <TextField
+              <TextField
                 fullWidth
                 select
-                label="Major Issues"
+                label={getLabel("Major Issues")}
                 name="majorIssues"
                 variant="outlined"
                 SelectProps={{
@@ -284,64 +351,81 @@ function LaptopForm() {
                   onChange: handleSelectChange,
                   renderValue: (selected) => selected.join(", "),
                 }}
+                error={!!errors.majorIssues}
+                helperText={errors.majorIssues}
+                required
               >
-                  {majorIssueOptions.map((issue) => (
-                    <MenuItem key={issue} value={issue}>
-                      <Checkbox
-                        checked={formData.majorIssues.indexOf(issue) > -1}
-                      />
-                      <ListItemText primary={issue} />
-                    </MenuItem>
-                  ))}
+                {majorIssueOptions.map((issue) => (
+                  <MenuItem key={issue} value={issue}>
+                    <Checkbox
+                      checked={formData.majorIssues.indexOf(issue) > -1}
+                    />
+                    <ListItemText primary={issue} />
+                  </MenuItem>
+                ))}
               </TextField>
               <TextField
                 fullWidth
-                label="Other Laptop Issues optional"
+                label={getLabel("Other Laptop Issues optional")}
                 name="others"
                 value={formData.others}
                 onChange={handleChange}
                 variant="outlined"
                 sx={{ mt: 2 }}
+                error={!!errors.others}
+                helperText={errors.others}
               />
               <TextField
                 fullWidth
-                label="Battery Capacity"
+                label={getLabel("Battery Capacity")}
                 name="batteryCapacity"
                 value={formData.batteryCapacity}
                 onChange={handleChange}
                 variant="outlined"
                 sx={{ mt: 2 }}
+                error={!!errors.batteryCapacity}
+                helperText={errors.batteryCapacity}
+                required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Inventory Location"
+                label={getLabel("Inventory Location")}
                 name="inventoryLocation"
                 value={formData.inventoryLocation}
                 onChange={handleChange}
                 variant="outlined"
+                error={!!errors.inventoryLocation}
+                helperText={errors.inventoryLocation}
+                required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Laptop Weight"
+                label={getLabel("Laptop Weight")}
                 name="laptopWeight"
                 value={formData.laptopWeight}
                 onChange={handleChange}
                 variant="outlined"
+                error={!!errors.laptopWeight}
+                helperText={errors.laptopWeight}
+                required
               />
             </Grid>
 
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Mac address"
+                label={getLabel("Mac address")}
                 name="macAddress"
                 value={formData.macAddress}
                 onChange={handleChange}
                 variant="outlined"
+                error={!!errors.macAddress}
+                helperText={errors.macAddress}
+                required
               />
             </Grid>
             <Grid item xs={12} style={{ marginBottom: "10%" }}>
@@ -350,16 +434,27 @@ function LaptopForm() {
                 variant="contained"
                 color="primary"
                 fullWidth
-                disabled={loading} // Disable button while loading
+                disabled={loading}
               >
                 Submit
               </Button>
             </Grid>
           </Grid>
         </form>
+        
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Container>
     </>
   );
 }
 
-export default LaptopForm; 
+export default LaptopForm;
