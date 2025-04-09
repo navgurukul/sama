@@ -10,7 +10,8 @@ import {
   Snackbar,
   Alert,
   FormHelperText,
-  InputAdornment
+  InputAdornment,
+  Typography
 } from "@mui/material";
 import "./common.css";
 
@@ -206,13 +207,9 @@ function LaptopForm() {
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
+              <Typography variant="subtitle1">Serial Number <span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
-                label={
-                  <span>
-                    Serial Number<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
                 name="id"
                 value={formData.id}
                 onChange={handleChange}
@@ -223,13 +220,10 @@ function LaptopForm() {
 
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="subtitle1">Donor Company Name <span style={{ color: "red" }}>*</span></Typography>
+
               <TextField
                 fullWidth
-                label={
-                  <span>
-                    Donor Company Name<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
                 name="donorCompanyName"
                 value={formData.donorCompanyName}
                 onChange={handleChange}
@@ -241,12 +235,9 @@ function LaptopForm() {
             </Grid>
 
             <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle1">RAM <span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
-                label={
-                <span>
-                  RAM<span style={{ color: "red" }}>*</span>
-                </span>}
                 name="ram"
                 value={formData.ram}
                 onChange={handleChange}
@@ -257,13 +248,9 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle1">ROM <span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
-                label={
-                  <span>
-                    ROM<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
                 name="rom"
                 value={formData.rom}
                 onChange={handleChange}
@@ -274,13 +261,9 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="subtitle1">Manufacturer Model<span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidthlabel={getLabel("")}
-                label={
-                  <span>
-                    Manufacturer Model<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
                 name="manufacturerModel"
                 value={formData.manufacturerModel}
                 onChange={handleChange}
@@ -291,13 +274,9 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="subtitle1">Processor <span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
-                label={
-                  <span>
-                    Processor<span style={{ color: "red" }}>*</span>
-                  </span>
-                }                
                 name="processor"
                 value={formData.processor}
                 onChange={handleChange}
@@ -308,13 +287,9 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="subtitle1">Manufacturing Date<span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
-                label={
-                  <span>
-                    Manufacturing Date<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
                 name="manufacturingDate"
                 type="date"
                 InputLabelProps={{ shrink: true }}
@@ -327,13 +302,9 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="subtitle1">Condition Status<span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
-                label={
-                  <span>
-                    Condition Status<span style={{ color: "red" }}>*</span>
-                  </span>
-                }                
                 name="conditionStatus"
                 value={formData.conditionStatus}
                 onChange={handleChange}
@@ -344,14 +315,10 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="subtitle1">Minor Issues<span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
                 select
-                label={
-                  <span>
-                    Minor Issues<span style={{ color: "red" }}>*</span>
-                  </span>
-                }                
                 name="minorIssues"
                 variant="outlined"
                 SelectProps={{
@@ -374,14 +341,10 @@ function LaptopForm() {
             </Grid>
 
             <Grid item xs={12}>
+              <Typography variant="subtitle1">Major Issues<span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
                 select
-                label={
-                  <span>
-                    Major Issues<span style={{ color: "red" }}>*</span>
-                  </span>
-                }                
                 name="majorIssues"
                 variant="outlined"
                 SelectProps={{
@@ -403,13 +366,12 @@ function LaptopForm() {
                   </MenuItem>
                 ))}
               </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="subtitle1">Other Laptop Issues optional<span style={{ color: "red" }}>*</span></Typography>
+
               <TextField
                 fullWidth
-                label={
-                  <span>
-                    Other Laptop Issues optional<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
                 name="others"
                 value={formData.others}
                 onChange={handleChange}
@@ -418,13 +380,11 @@ function LaptopForm() {
                 error={!!errors.others}
                 helperText={errors.others}
               />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="subtitle1">Battery Capacity <span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
-                label={
-                  <span>
-                    Battery Capacity<span style={{ color: "red" }}>*</span>
-                  </span>
-                }                
                 name="batteryCapacity"
                 value={formData.batteryCapacity}
                 onChange={handleChange}
@@ -432,17 +392,12 @@ function LaptopForm() {
                 sx={{ mt: 2 }}
                 error={!!errors.batteryCapacity}
                 helperText={errors.batteryCapacity}
-              // required
               />
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="subtitle1">Inventory Location<span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
-                label={
-                  <span>
-                    Inventory Location<span style={{ color: "red" }}>*</span>
-                  </span>
-                }                
                 name="inventoryLocation"
                 value={formData.inventoryLocation}
                 onChange={handleChange}
@@ -453,13 +408,9 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="subtitle1">Laptop Weight <span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
-                label={
-                  <span>
-                    Laptop Weight<span style={{ color: "red" }}>*</span>
-                  </span>
-                }                
                 name="laptopWeight"
                 value={formData.laptopWeight}
                 onChange={handleChange}
@@ -471,13 +422,9 @@ function LaptopForm() {
             </Grid>
 
             <Grid item xs={12}>
+              <Typography variant="subtitle1">Mac address<span style={{ color: "red" }}>*</span></Typography>
               <TextField
                 fullWidth
-                label={
-                  <span>
-                    Mac address<span style={{ color: "red" }}>*</span>
-                  </span>
-                }                
                 name="macAddress"
                 value={formData.macAddress}
                 onChange={handleChange}

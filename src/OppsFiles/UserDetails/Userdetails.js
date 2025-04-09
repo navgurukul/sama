@@ -346,10 +346,10 @@ const FormComponent = ({ user }) => {
             sx={{ 
               border: errors.idProofFile ? "1px solid red" : "1px solid #5C785A",
               borderRadius: "100px",
-              color: errors.idProofFile ? "red" : "inherit"
+              color: errors.idProofFile ? "red" : "#5C785A"
             }}
           >
-            Upload ID Proof
+            Upload ID Proof Image
             <input
               type="file"
               hidden
@@ -435,7 +435,7 @@ const FormComponent = ({ user }) => {
             sx={{ 
               border: errors.incomeCertificateFile ? "1px solid red" : "1px solid #5C785A",
               borderRadius: "100px",
-              color: errors.incomeCertificateFile ? "red" : "inherit"
+              color: errors.incomeCertificateFile ? "red" : "#5C785A"
             }}
           >
             Upload Income Certificate
@@ -464,13 +464,13 @@ const FormComponent = ({ user }) => {
           color="primary"
           sx={{
             mt: 4,
-            width: "201px",
+            width: "207px",
             borderRadius: "100px",
             marginLeft: "150px",
             fontSize: "17.7px",
           }}
           type="submit"
-          disabled={loading}
+          // disabled={loading}
         >
           {loading ? (
             <CircularProgress size={24} color="inherit" />
