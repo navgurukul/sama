@@ -91,19 +91,20 @@ function LaptopForm() {
     });
 
     setErrors(newErrors);
-    
+
     if (!isValid) {
       setSnackbarMessage("Please fill all required fields");
       setSnackbarOpen(true);
     }
-    
+
     return isValid;
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    
+
     setLoading(true);
     try {
       await fetch(
@@ -207,87 +208,113 @@ function LaptopForm() {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label={getLabel("Serial Number")}
+                label={
+                  <span>
+                    Serial Number<span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 name="id"
                 value={formData.id}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.id}
                 helperText={errors.id}
-                required
-               
               />
+
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label={getLabel("Donor Company Name")}
+                label={
+                  <span>
+                    Donor Company Name<span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 name="donorCompanyName"
                 value={formData.donorCompanyName}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.donorCompanyName}
                 helperText={errors.donorCompanyName}
-                required
+              // required
               />
             </Grid>
 
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label={getLabel("RAM")}
+                label={
+                <span>
+                  RAM<span style={{ color: "red" }}>*</span>
+                </span>}
                 name="ram"
                 value={formData.ram}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.ram}
                 helperText={errors.ram}
-                required
+              // required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label={getLabel("ROM")}
+                label={
+                  <span>
+                    ROM<span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 name="rom"
                 value={formData.rom}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.rom}
                 helperText={errors.rom}
-                required
+              // required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                fullWidth
-                label={getLabel("Manufacturer Model")}
+                fullWidthlabel={getLabel("")}
+                label={
+                  <span>
+                    Manufacturer Model<span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 name="manufacturerModel"
                 value={formData.manufacturerModel}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.manufacturerModel}
                 helperText={errors.manufacturerModel}
-                required
+              // required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label={getLabel("Processor")}
+                label={
+                  <span>
+                    Processor<span style={{ color: "red" }}>*</span>
+                  </span>
+                }                
                 name="processor"
                 value={formData.processor}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.processor}
                 helperText={errors.processor}
-                required
+              // required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label={getLabel("Manufacturing Date")}
+                label={
+                  <span>
+                    Manufacturing Date<span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 name="manufacturingDate"
                 type="date"
                 InputLabelProps={{ shrink: true }}
@@ -296,27 +323,35 @@ function LaptopForm() {
                 variant="outlined"
                 error={!!errors.manufacturingDate}
                 helperText={errors.manufacturingDate}
-                required
+              // required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label={getLabel("Condition Status")}
+                label={
+                  <span>
+                    Condition Status<span style={{ color: "red" }}>*</span>
+                  </span>
+                }                
                 name="conditionStatus"
                 value={formData.conditionStatus}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.conditionStatus}
                 helperText={errors.conditionStatus}
-                required
+              // required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 select
-                label={getLabel("Minor Issues")}
+                label={
+                  <span>
+                    Minor Issues<span style={{ color: "red" }}>*</span>
+                  </span>
+                }                
                 name="minorIssues"
                 variant="outlined"
                 SelectProps={{
@@ -327,7 +362,7 @@ function LaptopForm() {
                 }}
                 error={!!errors.minorIssues}
                 helperText={errors.minorIssues}
-                required
+              // required
               >
                 {minorIssuesOptions.map((issue) => (
                   <MenuItem key={issue} value={issue}>
@@ -342,7 +377,11 @@ function LaptopForm() {
               <TextField
                 fullWidth
                 select
-                label={getLabel("Major Issues")}
+                label={
+                  <span>
+                    Major Issues<span style={{ color: "red" }}>*</span>
+                  </span>
+                }                
                 name="majorIssues"
                 variant="outlined"
                 SelectProps={{
@@ -353,7 +392,7 @@ function LaptopForm() {
                 }}
                 error={!!errors.majorIssues}
                 helperText={errors.majorIssues}
-                required
+              // required
               >
                 {majorIssueOptions.map((issue) => (
                   <MenuItem key={issue} value={issue}>
@@ -366,7 +405,11 @@ function LaptopForm() {
               </TextField>
               <TextField
                 fullWidth
-                label={getLabel("Other Laptop Issues optional")}
+                label={
+                  <span>
+                    Other Laptop Issues optional<span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 name="others"
                 value={formData.others}
                 onChange={handleChange}
@@ -377,7 +420,11 @@ function LaptopForm() {
               />
               <TextField
                 fullWidth
-                label={getLabel("Battery Capacity")}
+                label={
+                  <span>
+                    Battery Capacity<span style={{ color: "red" }}>*</span>
+                  </span>
+                }                
                 name="batteryCapacity"
                 value={formData.batteryCapacity}
                 onChange={handleChange}
@@ -385,47 +432,59 @@ function LaptopForm() {
                 sx={{ mt: 2 }}
                 error={!!errors.batteryCapacity}
                 helperText={errors.batteryCapacity}
-                required
+              // required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label={getLabel("Inventory Location")}
+                label={
+                  <span>
+                    Inventory Location<span style={{ color: "red" }}>*</span>
+                  </span>
+                }                
                 name="inventoryLocation"
                 value={formData.inventoryLocation}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.inventoryLocation}
                 helperText={errors.inventoryLocation}
-                required
+              // required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label={getLabel("Laptop Weight")}
+                label={
+                  <span>
+                    Laptop Weight<span style={{ color: "red" }}>*</span>
+                  </span>
+                }                
                 name="laptopWeight"
                 value={formData.laptopWeight}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.laptopWeight}
                 helperText={errors.laptopWeight}
-                required
+              // required
               />
             </Grid>
 
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label={getLabel("Mac address")}
+                label={
+                  <span>
+                    Mac address<span style={{ color: "red" }}>*</span>
+                  </span>
+                }                
                 name="macAddress"
                 value={formData.macAddress}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.macAddress}
                 helperText={errors.macAddress}
-                required
+              // required
               />
             </Grid>
             <Grid item xs={12} style={{ marginBottom: "10%" }}>
@@ -441,7 +500,7 @@ function LaptopForm() {
             </Grid>
           </Grid>
         </form>
-        
+
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}
