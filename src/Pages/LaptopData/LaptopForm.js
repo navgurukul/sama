@@ -150,6 +150,8 @@ function LaptopForm() {
     "Minor Software Issues",
     "Port Wear",
     "Touchpad Sensitivity",
+    "CMOS Battery",
+    "RAM Issue" ,
 
   ];
 

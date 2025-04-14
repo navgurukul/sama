@@ -50,6 +50,9 @@ const FilterPanel = ({
     "Minor Software Issues",
     "Port Wear",
     "Touchpad Sensitivity",
+    "CMOS Battery",
+    "RAM Issue" ,
+
   ];
 
   return (
