@@ -314,11 +314,11 @@ function NGOLaptopTable({ ngoData }) {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" gutterBottom align="center">
-        NGO Laptop Distribution Management
+      <Typography variant="h5" gutterBottom align="center" mb = {6}>
+        Assigned Laptops
       </Typography>
       
-      {ngoData && ngoData.length > 0 && (
+      {/* {ngoData && ngoData.length > 0 && (
         <FormControl sx={{ mb: 3 }}>
           <InputLabel id="ngo-select-label">Select NGO</InputLabel>
           <Select
@@ -335,9 +335,9 @@ function NGOLaptopTable({ ngoData }) {
             ))}
           </Select>
         </FormControl>
-      )}
+      )} */}
 
-      <TableContainer component={Paper} elevation={3}>
+      <TableContainer component={Paper} elevation={3} >
         <Table size="small">
           <TableHead>
             <TableRow>

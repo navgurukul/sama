@@ -91,8 +91,9 @@ function NgoProfile() {
                 aria-label="NGO information tabs"
               >
                 <Tab label="NGO Details" />
+                <Tab label="Documents" />
                 <Tab label="Laptop Information" />
-                <Tab label="Laptop Documents" />
+                
 
               </Tabs>
             </Box>
@@ -102,12 +103,13 @@ function NgoProfile() {
             </TabPanel>
             
             <TabPanel value={tabValue} index={1}>
-              <NGOLaptopTable ngoData={ngoDetails} />
+              <Document ngoData={ngoDetails} id={id} />
             </TabPanel>
 
             <TabPanel value={tabValue} index={2}>
-              <Document ngoData={ngoDetails} id={id} />
+              <NGOLaptopTable ngoData={ngoDetails} />
             </TabPanel>
+
           </Box>
         ) : (
           <Box sx={{ textAlign: 'center', p: 4 }}>

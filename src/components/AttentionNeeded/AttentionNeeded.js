@@ -22,7 +22,7 @@ const AttentionNeeded = () => {
       // Fetch data from the API
       const fetchData = async () => {
         try {
-          const response = await fetch(`${process.env.REACT_APP_NgoInformationApi}?type=MultipleDocsGet&userId=${storedUserId}`);
+          const response = await fetch(`${process.env.REACT_APP_NgoInformationApi}MultipleDocsGet&user?type=Id=${storedUserId}`);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }

@@ -12,14 +12,14 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-const DropdownMenu = ({ title, menuItems }) => {
+const DropdownMenu = ({ title, menuItems,onItemClick }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
   const location = useLocation(); // Get the current route
 
   useEffect(() => {
-    window.scrollTo(0, 0); // Scroll to top when route changes
+    setOpen(false); // Close dropdown when route changes
   }, [location.pathname]);
 
   const handleClick = (event) => {
@@ -27,10 +27,19 @@ const DropdownMenu = ({ title, menuItems }) => {
       setOpen((prev) => !prev);
     } else {
       setAnchorEl(event.currentTarget);
-      setOpen(true);
+      setOpen((prev) => !prev);
     }
   };
-
+  const handleItemClick = (e) => {
+    e.preventDefault();
+    const href = e.currentTarget.getAttribute('href');
+    setOpen(false);
+    if (onItemClick) onItemClick();
+    // Small delay to ensure menu closes before navigation
+    setTimeout(() => {
+      window.location.href = href;
+    }, 50);
+  };
   const handleMouseEnter = (event) => {
     if (!isMobile) {
       setAnchorEl(event.currentTarget);
@@ -38,10 +47,14 @@ const DropdownMenu = ({ title, menuItems }) => {
     }
   };
 
-  const handleMouseLeave = (event) => {
+  const handleMouseLeave = () => {
     if (!isMobile) {
       setOpen(false);
     }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -94,7 +107,13 @@ const DropdownMenu = ({ title, menuItems }) => {
             <Paper sx={{ marginBottom: "20px", width: "320px", backgroundColor: "#f9f9f9", boxShadow: 2, mt: 1 }}>
               <MenuList>
                 {menuItems.map((item, index) => (
-                  <MenuItem key={index} component={Link} to={item.href} onClick={() => setOpen(false)} sx={{ textAlign: "center" }}>
+                  <MenuItem
+                    key={index}
+                    component={Link}
+                    to={item.href}
+                    onClick={handleItemClick} // Close dropdown when clicked
+                    sx={{ textAlign: "center" }}
+                  >
                     <Typography variant="body1">{item.text}</Typography>
                   </MenuItem>
                 ))}
@@ -105,7 +124,7 @@ const DropdownMenu = ({ title, menuItems }) => {
           <Popper open={open} anchorEl={anchorEl} placement="bottom-start" disablePortal>
             <Paper
               onMouseEnter={() => setOpen(true)}
-              onMouseLeave={() => setOpen(false)}
+              onMouseLeave={handleMouseLeave}
               elevation={3}
               sx={{
                 mt: 1,
@@ -115,7 +134,13 @@ const DropdownMenu = ({ title, menuItems }) => {
             >
               <MenuList>
                 {menuItems.map((item, index) => (
-                  <MenuItem key={index} component={Link} to={item.href} onClick={() => setOpen(false)} sx={{ textAlign: "left" }}>
+                  <MenuItem
+                    key={index}
+                    component={Link}
+                    to={item.href}
+                    onClick={handleItemClick} // Close dropdown when clicked
+                    sx={{ textAlign: "left" }}
+                  >
                     <Typography variant="body1">{item.text}</Typography>
                   </MenuItem>
                 ))}

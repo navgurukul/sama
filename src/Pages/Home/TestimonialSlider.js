@@ -65,7 +65,7 @@ const TestimonialSlider = () => {
       alt: 'Student 7',
       name: "Ruchi",
       place: "Sarjapur",
-      text: "NavGurukul provided me with the skills that shaped my career, and Sama's laptop support was crucial in my journey. Today, I work as a Frontend Developer at Accenture, grateful for the empowerment and opportunities they provided. "
+      text: "NavGurukul support and Sama's laptop donation was crucial in my career. Today, I work as a Frontend Developer at Accenture, grateful for the empowerment and opportunities they provided."
     },
     
   ];
@@ -114,7 +114,7 @@ const TestimonialSlider = () => {
     <Box style={{ backgroundColor: "#5C785A"}}>
       <Container maxWidth="lg" sx={isMobile ? { py: 4 } : { py: 10 }}>
         <Typography variant="h5" style={{ color: "#FFF" }}>
-          Student Speaks
+          Testimonials from our Beneficiaires
         </Typography>
 
          <Box display="flex" alignItems="center" position="relative" mt={3}>
@@ -133,16 +133,16 @@ const TestimonialSlider = () => {
                 {group.map((testimonial, idx) => (
                   <Box key={idx} sx={isMobile ? { width: '100%' } : { width: '50%', paddingRight: '16px' }}>
 
-                    <Typography  variant="body1" sx={{ height: "100px",color: {xs:"#FFF", md:"#FFF"}, }}>{testimonial.text}</Typography>
+                    <Typography  variant="body1" sx={{ height:{sx:"100px", md: "100px"},color: {xs:"#FFF", md:"#FFF"}, }}>{testimonial.text}</Typography>
                     <Box style={{width:"64px",height:"64px",border: "4px solid rgba(178, 95, 101, 1)",marginTop:"48px",borderRadius:"50px"}}>
                     <img src={testimonial.src} alt={testimonial.alt} 
                       style={{
                         
-                        width: "64px",
+                        width:"64px",
                         height: "64px",
                         borderRadius: "50%",
                         objectFit: "cover",
-                        
+                        // marginTop: {xs:"20px",md:"0px"},
                       }} />
                       </Box>
                     <Typography variant="subtitle1" sx={{mt:2,fontWeight:"bold",color: {xs:"#FFF", md:"#FFF"},}}>{testimonial.name}</Typography>
