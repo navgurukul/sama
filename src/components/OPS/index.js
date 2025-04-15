@@ -160,18 +160,18 @@ function Ops() {
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6" component="h2" gutterBottom>
-                  Laptop By ID
+                  Laptop Audit
                 </Typography>
                 <Typography variant="body1" color="textSecondary" gutterBottom>
-                  Check the laptops by searching ID.
+                  Audit the laptop here.
                 </Typography>
                 <Box mt={2}>
                   <Button
                     variant="contained"
                     color="primary"
-                    href="/laptop-by-id"
+                    href="/audit"
                   >
-                    Laptop with Issues
+                     Laptop Audit
                   </Button>
                 </Box>
               </CardContent>
