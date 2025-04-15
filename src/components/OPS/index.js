@@ -156,6 +156,27 @@ function Ops() {
               </CardContent>
             </Card>
           </Grid>
+          <Grid item xs={12} sm={6} md={6}>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h6" component="h2" gutterBottom>
+                  Laptop Audit
+                </Typography>
+                <Typography variant="body1" color="textSecondary" gutterBottom>
+                  Audit the laptop here.
+                </Typography>
+                <Box mt={2}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="/audit"
+                  >
+                     Laptop Audit
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>       
       </Box>
     </Container>

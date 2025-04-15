@@ -57,6 +57,7 @@ import OurGoverment from './Pages/About/OurGoverment/OurGoverment';
 import CommunityPartners from './Pages/About/CommunityPartners/CommunityPartners';
 import CorporatePartner from './Pages/About/CorporatePartner/CorporatePartner';
 import OpsWelcome from './components/OPS/OpsWelcome';
+import Audit from './components/OPS/LaptopAudit';
 
 
 function App() {
@@ -134,6 +135,8 @@ function App() {
               <Route path="/monthly-reporting/:id" element={<MonthlyForm />} />
               <Route path="/edit-form/:id" element={<MonthlyEditForm />} />
               <Route path="/laptop-with-issues" element={<OpsWelcome />} />
+              <Route path="/audit" element={<Audit />} />
+              
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
