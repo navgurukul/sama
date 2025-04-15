@@ -50,7 +50,7 @@ function OurGovermentForm() {
     const handleStateChange = (event) => {
         setFormData({
             ...formData,
-            state: event.target.value,  // Correctly updating state
+            state: event.target.value,  
         });
 
         setErrors({
