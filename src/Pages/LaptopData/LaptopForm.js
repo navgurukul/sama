@@ -11,7 +11,8 @@ import {
   Alert,
   FormHelperText,
   InputAdornment,
-  Typography
+  Typography,
+  Select,
 } from "@mui/material";
 import "./common.css";
 
@@ -43,18 +44,18 @@ function LaptopForm() {
   const requiredFields = [
     "id",
     "donorCompanyName",
-    "ram",
-    "rom",
-    "conditionStatus",
-    "manufacturerModel",
-    "processor",
-    "manufacturingDate",
-    "minorIssues",
-    "majorIssues",
+    // "ram",
+    // "rom",
+    // "conditionStatus",
+    // "manufacturerModel",
+    // "processor",
+    // "manufacturingDate",
+    // "minorIssues",
+    // "majorIssues",
     "inventoryLocation",
-    "laptopWeight",
-    "macAddress",
-    "batteryCapacity",
+    // "laptopWeight",
+    // "macAddress",
+    // "batteryCapacity",
   ];
 
   const handleChange = (e) => {
@@ -184,8 +185,6 @@ function LaptopForm() {
     "Minor Software Issues",
     "Port Wear",
     "Touchpad Sensitivity",
-    "CMOS Battery",
-    "RAM Issue" ,
   ];
 
   // Helper function to add required star to label
@@ -237,8 +236,10 @@ function LaptopForm() {
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">RAM <span style={{ color: "red" }}>*</span></Typography>
-              <TextField
+              <Typography variant="subtitle1">RAM
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
+              <Select
                 fullWidth
                 name="ram"
                 value={formData.ram}
@@ -246,12 +247,19 @@ function LaptopForm() {
                 variant="outlined"
                 error={!!errors.ram}
                 helperText={errors.ram}
-              // required
-              />
+              >
+                {["8GB", "12GB", "16GB", "24GB", "32GB"].map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">ROM <span style={{ color: "red" }}>*</span></Typography>
-              <TextField
+              <Typography variant="subtitle1">ROM
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
+              <Select
                 fullWidth
                 name="rom"
                 value={formData.rom}
@@ -259,13 +267,20 @@ function LaptopForm() {
                 variant="outlined"
                 error={!!errors.rom}
                 helperText={errors.rom}
-              // required
-              />
+              >
+                {["256GB", "512GB", "1TB"].map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Manufacturer Model<span style={{ color: "red" }}>*</span></Typography>
+              <Typography variant="subtitle1">Manufacturer Model
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
               <TextField
-                fullWidthlabel={getLabel("")}
+                fullWidth
                 name="manufacturerModel"
                 value={formData.manufacturerModel}
                 onChange={handleChange}
@@ -276,8 +291,10 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Processor <span style={{ color: "red" }}>*</span></Typography>
-              <TextField
+              <Typography variant="subtitle1">Processor
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
+              <Select
                 fullWidth
                 name="processor"
                 value={formData.processor}
@@ -285,11 +302,18 @@ function LaptopForm() {
                 variant="outlined"
                 error={!!errors.processor}
                 helperText={errors.processor}
-              // required
-              />
+              >
+                {["i3", "i5", "i7", "Ryzen 3", "Ryzen 5", "Ryzen 7"].map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Manufacturing Date<span style={{ color: "red" }}>*</span></Typography>
+              <Typography variant="subtitle1">Manufacturing Date
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
               <TextField
                 fullWidth
                 name="manufacturingDate"
@@ -304,7 +328,9 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Condition Status<span style={{ color: "red" }}>*</span></Typography>
+              <Typography variant="subtitle1">Condition Status
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
               <TextField
                 fullWidth
                 name="conditionStatus"
@@ -317,7 +343,9 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Minor Issues<span style={{ color: "red" }}>*</span></Typography>
+              <Typography variant="subtitle1">Minor Issues
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
               <TextField
                 fullWidth
                 select
@@ -343,7 +371,9 @@ function LaptopForm() {
             </Grid>
 
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Major Issues<span style={{ color: "red" }}>*</span></Typography>
+              <Typography variant="subtitle1">Major Issues
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
               <TextField
                 fullWidth
                 select
@@ -370,7 +400,9 @@ function LaptopForm() {
               </TextField>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Other Laptop Issues optional<span style={{ color: "red" }}>*</span></Typography>
+              <Typography variant="subtitle1">Other Laptop Issues optional
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
 
               <TextField
                 fullWidth
@@ -384,7 +416,9 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Battery Capacity <span style={{ color: "red" }}>*</span></Typography>
+              <Typography variant="subtitle1">Battery Capacity
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
               <TextField
                 fullWidth
                 name="batteryCapacity"
@@ -397,7 +431,9 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Inventory Location<span style={{ color: "red" }}>*</span></Typography>
+              <Typography variant="subtitle1">Inventory Location
+                <span style={{ color: "red" }}>*</span>
+              </Typography>
               <TextField
                 fullWidth
                 name="inventoryLocation"
@@ -410,7 +446,9 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Laptop Weight <span style={{ color: "red" }}>*</span></Typography>
+              <Typography variant="subtitle1">Laptop Weight
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
               <TextField
                 fullWidth
                 name="laptopWeight"
@@ -424,7 +462,9 @@ function LaptopForm() {
             </Grid>
 
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Mac address<span style={{ color: "red" }}>*</span></Typography>
+              <Typography variant="subtitle1">Mac address
+                {/* <span style={{ color: "red" }}>*</span> */}
+              </Typography>
               <TextField
                 fullWidth
                 name="macAddress"
@@ -435,6 +475,7 @@ function LaptopForm() {
                 helperText={errors.macAddress}
               // required
               />
+
             </Grid>
             <Grid item xs={12} style={{ marginBottom: "10%" }}>
               <Button
