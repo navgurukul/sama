@@ -1,21 +1,22 @@
 import { Box, Container, Typography, Grid, } from "@mui/material";
 import ourteam from '../OurTeam/style';
-import Quote from './assests/quote.png'
+import Quote from './assests/Vector1.png';
+import Quote1 from "./assests/Vector.png";
 
 const GreenBox = () => {
     return (
         <>
             <Box sx={ourteam.GreenBox}>
                 <Container maxWidth="lg" >
-                    <Typography variant="h5" gutterBottom style={{ color: "white", textAlign:"center", marginBottom:"32px" }}>
-                            Partner Testimonials
+                    <Typography variant="h5" gutterBottom style={{ color: "white", textAlign: "center", marginBottom: "32px" }}>
+                        Partner Testimonials
                     </Typography>
                     <Grid container spacing={4}>
                         {/* Left Side - Box 1 (Top Left) */}
-                        <Grid item xs={12} md={6}>
-                            <Box sx={ourteam.Box1}>
+                        <Grid item xs={12} md={6} >
+                            <Box sx={ourteam.Box1} style={{ display: "flex", flexDirection: "column", position: "relative" }}>
                                 <Box style={{ width: "36px", height: "50px" }}>
-                                    <img src={Quote} alt="Icon" />
+                                    <img src={Quote} alt="Icon" style={{ height: "80%", filter: "invert(300%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(50%) contrast(90%)" }} />
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
                                     <Typography variant="body1" paragraph color="#2E2E2E">
@@ -29,12 +30,16 @@ const GreenBox = () => {
                                         Vishthar
                                     </Typography>
                                 </Box>
-                            </Box>
-                            <Box sx={ourteam.Box1} style={{ marginTop: "32px" }}>
-                                <Box style={{ width: "36px", height: "50px" }}>
-                                    <img src={Quote} alt="Icon" />
+                                <Box style={{ width: "36px", height: "50px", position: "absolute", right: "50px", bottom: "8px" }}>
+                                    <img src={Quote1} alt="Icon" style={{ height: "60%", filter: "invert(60%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(210%) contrast(90%)" }} />
                                 </Box>
-                                <Box >
+
+                            </Box>
+                            <Box sx={ourteam.Box1} style={{ marginTop: "32px", display: "flex", flexDirection: "column", position: "relative" }}>
+                                <Box style={{ width: "36px", height: "50px" }}>
+                                    <img src={Quote} alt="Icon" style={{ height: "80%", filter: "invert(300%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(50%) contrast(90%)" }} />
+                                </Box>
+                                <Box sx={{ textAlign: "left" }}>
                                     <Typography variant="body1" paragraph color="#2E2E2E">
                                         The Innovation Story sincerely thanks Sama for the<br /> generous
                                         laptop donation. These laptops are <br />empowering students from
@@ -51,7 +56,12 @@ const GreenBox = () => {
                                         The Innovation Story
                                     </Typography>
                                 </Box>
+                                {/* Align second quote to the right */}
+                                <Box style={{ width: "36px", height: "50px", position: "absolute", right: "50px", bottom: "8px" }}>
+                                    <img src={Quote1} alt="Icon" style={{ height: "60%", filter: "invert(60%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(210%) contrast(90%)" }} />
+                                </Box>
                             </Box>
+
                         </Grid>
 
                         {/* Right Side - Box 3 (Top Right) */}
@@ -61,9 +71,9 @@ const GreenBox = () => {
 
                         {/* Left Side - Box 2 (Bottom Left) */}
                         <Grid item xs={12} md={6}>
-                            <Box sx={ourteam.Box1}>
+                            <Box sx={ourteam.Box1} style={{ display: "flex", flexDirection: "column", position: "relative" }}>
                                 <Box style={{ width: "36px", height: "50px" }}>
-                                    <img src={Quote} alt="Icon" />
+                                    <img src={Quote} alt="Icon" style={{ height: "80%", filter: "invert(300%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(50%) contrast(90%)" }} />
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
                                     <Typography variant="body1" paragraph color="#2E2E2E">
@@ -85,12 +95,15 @@ const GreenBox = () => {
                                         Seedling Foundation
                                     </Typography>
                                 </Box>
+                                <Box style={{ width: "36px", height: "50px", position: "absolute", right: "50px", bottom: "8px" }}>
+                                    <img src={Quote1} alt="Icon" style={{ height: "60%", filter: "invert(60%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(210%) contrast(90%)" }} />
+                                </Box>
                             </Box>
 
 
-                            <Box sx={ourteam.Box1} style={{ marginTop: "32px" }}>
+                            <Box sx={ourteam.Box1} style={{ marginTop: "32px", display: "flex", flexDirection: "column", position: "relative" }}>
                                 <Box style={{ width: "36px", height: "50px" }}>
-                                    <img src={Quote} alt="Icon" />
+                                    <img src={Quote} alt="Icon" style={{ height: "80%", filter: "invert(300%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(50%) contrast(90%)" }} />
                                 </Box>
                                 <Box sx={{ textAlign: "left" }}>
                                     <Typography variant="body1" paragraph color="#2E2E2E">
@@ -103,15 +116,19 @@ const GreenBox = () => {
                                         Eklayva India Foundation
                                     </Typography>
                                 </Box>
+                                <Box style={{ width: "36px", height: "50px", position: "absolute", right: "50px", bottom: "8px" }}>
+                                    <img src={Quote1} alt="Icon" style={{ height: "60%", filter: "invert(60%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(210%) contrast(90%)" }} />
+                                </Box>
+
                             </Box>
                         </Grid>
 
-                        
+
                     </Grid>
                 </Container>
 
             </Box>
-            
+
         </>
     )
 }
