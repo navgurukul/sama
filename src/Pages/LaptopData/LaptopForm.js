@@ -184,6 +184,8 @@ function LaptopForm() {
     "Minor Software Issues",
     "Port Wear",
     "Touchpad Sensitivity",
+    "CMOS Battery",
+    "RAM Issue" ,
   ];
 
   // Helper function to add required star to label
