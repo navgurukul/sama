@@ -48,6 +48,10 @@
     bottom: 0; /* Positioned at the bottom */
   }
   
+  .errorField input {
+    border: 1px solid red !important;
+  }
+  
   /* Keyframes for the dot animation */
   @keyframes load {
     0% {
