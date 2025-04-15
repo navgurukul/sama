@@ -165,7 +165,6 @@ function OurGovermentForm() {
             console.error("Error:", error);
         }
     };
-    console.log(formData)
 
     return (
 
