@@ -29,20 +29,28 @@ const style = {
     maxHeight: 600,
     overflowY: "scroll",
     p: 4,
-    
+
 };
 
 const EditButton = ({
     setRefresh,
     laptopData,
     refresh,
-   
+
 }) => {
     const [editData, setEditData] = useState();
 
     const [open, setOpen] = useState(false);
 
     const handleEditClick = () => {
+
+        const currentDate = new Date().toISOString().split('T')[0];
+
+        const SavedData = JSON.parse(localStorage.getItem('_AuthSama_'));
+        const userEmail = SavedData?.[0]?.email || "Email not found";
+
+        const lastUpdatedBy = userEmail || 'Unknown';
+
         setEditData({
             id: laptopData.ID || "",
             donorCompanyName: laptopData["Donor Company Name"] || "",
@@ -60,6 +68,10 @@ const EditButton = ({
             manufacturingDate: laptopData["Manufacturing Date"] || "",
             majorIssues: laptopData["Major Issues"] ? laptopData["Major Issues"].split(",") : [],
             minorIssues: laptopData["Minor Issues"] ? laptopData["Minor Issues"].split(",") : [],
+            assignedTo: laptopData["Assigned To"] || "",
+            donatedTo: laptopData["Donated To"] || "",
+            lastUpdatedOn: currentDate,
+            lastUpdatedBy: lastUpdatedBy,
         });
         setOpen(true);
     };
@@ -87,22 +99,26 @@ const EditButton = ({
         };
 
         try {
+
             await fetch(
                 `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
-                // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        
+
                     },
                     body: JSON.stringify(dataToSend),
                     mode: "no-cors",
                 }
-                
             );
+            handleModalClose();
+
             // Close the modal and reset the data after successfully saving
-            setRefresh(!refresh);
+            if (setRefresh) {
+                setRefresh(!refresh);
+            }
+            // setRefresh(!refresh);
             setEditData(
                 {
                     id: "",
@@ -114,16 +130,20 @@ const EditButton = ({
                     macAddress: "",
                     status: "",
                     working: "",
-                    batteryCapacity:"",
+                    batteryCapacity: "",
                     inventoryLocation: "",
                     laptopWeight: "",
                     conditionStatus: "",
                     manufacturingDate: "",
                     majorIssues: [],
                     minorIssues: [],
+                    assignedTo: "",
+                    donatedTo: "",
+                    lastUpdatedOn: "",
+                    lastUpdatedBy: "",
                 }
             );
-            handleModalClose();
+
         } catch (error) {
             console.error("Error tagging the laptop:", error);
         }
@@ -148,9 +168,15 @@ const EditButton = ({
         "Graphics Card Issues",
         "Water Damage",
         "USB Ports",
+        "Camera issue",
+        "Charging point issue",
+        "Fan Error",
+        "Wifi issue"
+
     ];
 
     const minorIssuesOptions = [
+
         "Cosmetic Wear",
         "Loose Hinges",
         "Dead Pixels",
@@ -159,11 +185,13 @@ const EditButton = ({
         "Minor Software Issues",
         "Port Wear",
         "Touchpad Sensitivity",
+        "CMOS Battery",
+        "RAM Issue",
     ];
 
     return (
         <>
-             <IconButton
+            <IconButton
                 color="primary"
                 onClick={handleEditClick}
                 aria-label="edit"
@@ -185,44 +213,55 @@ const EditButton = ({
                             />
                         </Grid>
                         <Grid item xs={6}>
-                            <TextField
-                                label="RAM"
-                                name="ram"
-                                value={editData?.ram || ""}
-                                onChange={handleEditChange}
-                                fullWidth
-                                margin="normal"
-                            />
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel>RAM</InputLabel>
+                                <Select
+                                    name="ram"
+                                    value={editData?.ram || ""}
+                                    onChange={handleEditChange}
+                                    label="RAM"
+                                >
+                                    {["8GB", "12GB", "16GB", "24GB", "32GB"].map((option) => (
+                                        <MenuItem key={option} value={option}>
+                                            {option}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item xs={6}>
-                            <TextField
-                                label="ROM"
-                                name="rom"
-                                value={editData?.rom || ""}
-                                onChange={handleEditChange}
-                                fullWidth
-                                margin="normal"
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Manufacturer Model"
-                                name="manufacturerModel"
-                                value={editData?.manufacturerModel || ""}
-                                onChange={handleEditChange}
-                                fullWidth
-                                margin="normal"
-                            />
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel>ROM</InputLabel>
+                                <Select
+                                    name="rom"
+                                    value={editData?.rom || ""}
+                                    onChange={handleEditChange}
+                                    label="ROM"
+                                >
+                                    {["256GB", "512GB", "1TB"].map((option) => (
+                                        <MenuItem key={option} value={option}>
+                                            {option}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item xs={6}>
-                            <TextField
-                                label="Processor"
-                                name="processor"
-                                value={editData?.processor || ""}
-                                onChange={handleEditChange}
-                                fullWidth
-                                margin="normal"
-                            />
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel>Processor</InputLabel>
+                                <Select
+                                    name="processor"
+                                    value={editData?.processor || ""}
+                                    onChange={handleEditChange}
+                                    label="Processor"
+                                >
+                                    {["i3", "i5", "i7", "Ryzen 3", "Ryzen 5", "Ryzen 7"].map((option) => (
+                                        <MenuItem key={option} value={option}>
+                                            {option}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item xs={6}>
                             <TextField

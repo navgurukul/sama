@@ -147,9 +147,8 @@ const MOUCard = (ngoid) => {
             Congrats! MOU has been generated
           </Typography>
           <Typography variant="body1" sx={{ mb: 1 }}>
-            Sama has reviewed all the beneficiary requests for 100 students.
-            Please read the MOU and upload it here by{" "}
-            <strong>12 Oct 2024</strong>.
+            Sama has reviewed all the beneficiary requests for students.
+            Please read the MOU and upload it here.
           </Typography>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button
