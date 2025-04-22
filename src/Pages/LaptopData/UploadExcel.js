@@ -92,11 +92,54 @@ const Upload = () => {
         return;
       }
 
+      // ✅ Convert the sheet to JSON format with headers
+    const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    // ✅ Validation: check Inventory Location for each row
+    const allowedLocations = [
+      "Sarjapur Campus Bangalore",
+      "Anish Jadhav Memorial Foundation Navgurukul Campus Pune",
+    ];
+
+    const invalidRows = jsonData.filter((row) => {
+      const inventoryValid = allowedLocations.some(
+        (loc) => loc.toLowerCase() === String(row["Inventory Location"]).toLowerCase()
+      );
+    
+      const idValid = row["ID"] && String(row["ID"]).trim() !== "";
+      const donorValid = row["Donor Company Name"] && String(row["Donor Company Name"]).trim() !== "";
+    
+      return !inventoryValid || !idValid || !donorValid;
+    });
+
+    
+    // const invalidRows = jsonData.filter(
+    //   (row) =>
+    //     !allowedLocations.some(
+    //       (loc) => loc.toLowerCase() === String(row["Inventory Location"]).toLowerCase()
+    //     )
+    // );
+    
+
+    if (invalidRows.length > 0) {
+      setError(
+        "Please enter valid Inventory Location as mentioned in the template and ensure ID and Donor Company Name are not empty."
+      );
+      setLoading(false);
+      return;
+    }
+
+    // ✅ Proceed only if validation passed
+    const dataToSend = {
+      type: "bulkupload",
+      data: jsonData,
+    };
+
       // If valid, proceed with the upload
-      const dataToSend = {
-        type: "bulkupload",
-        data: XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]), // Convert sheet to JSON
-      };
+      // const dataToSend = {
+      //   type: "bulkupload",
+      //   data: XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]), // Convert sheet to JSON
+      // };
 
       // Post data to Google Apps Script
       try {
@@ -133,6 +176,28 @@ const Upload = () => {
           <div className="loader">Loading...</div>
         </div>
       )}
+
+       {/* ✅ Guide Section */}
+  <Paper
+    elevation={2}
+    style={{
+      padding: "16px",
+      marginBottom: "30px",
+      backgroundColor: "#f9f9f9",
+    }}
+  >
+    <Typography variant="h6" gutterBottom>
+      Guide
+    </Typography>
+    <Typography variant="subtitle1" gutterBottom>
+      Before uploading the sheet, please ensure the Inventory Location is correctly entered. Only the following values are allowed:
+    </Typography>
+    <ul style={{ paddingLeft: "20px", marginTop: "10px" }}>
+      <li>"Sarjapur Campus Bangalore"</li>
+      <li>"Anish Jadhav Memorial Foundation Navgurukul Campus Pune"</li>
+    </ul>
+  </Paper>
+
       <Paper
         elevation={3}
         style={{ padding: "20px", textAlign: "center", marginBottom: "50px" }}

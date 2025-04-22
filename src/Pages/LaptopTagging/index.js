@@ -58,6 +58,7 @@ function LaptopTagging() {
     loadData();
   }, [refresh]);
 
+  
 
   // Apply filters when filter values change
   useEffect(() => {
