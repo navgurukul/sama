@@ -58,6 +58,7 @@ import CommunityPartners from './Pages/About/CommunityPartners/CommunityPartners
 import CorporatePartner from './Pages/About/CorporatePartner/CorporatePartner';
 import OpsWelcome from './components/OPS/OpsWelcome';
 import Audit from './components/OPS/LaptopAudit';
+import LaptopDetails from "./Pages/LaptopTagging/LaptopDetails";
 
 
 function App() {
@@ -228,7 +229,7 @@ function App() {
                 path="/ops"
                 element={
                   <PrivateRoute reqired={'ops'}> 
-                    <Ops />
+                    <LaptopDetails/>
                   </PrivateRoute>
                 }
               />  {/* // only ops team can access this to oprate the things */}

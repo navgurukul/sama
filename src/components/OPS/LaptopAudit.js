@@ -4,14 +4,19 @@ import MUIDataTable from "mui-datatables";
 import { TextField, Button, Box, Typography } from "@mui/material";
 
 const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
+  if (!dateString) return "";
+  const date = new Date(dateString); // No need to add T10:30 if sheet already has full datetime
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
+
 
   
 const Audit = () => {
@@ -35,9 +40,12 @@ const Audit = () => {
         }
         return newRow;
       });
-  
+      
+      
+      
       setData(formattedData);
       setFiltered(formattedData);
+      
     } catch (err) {
       console.error("Error fetching audit data:", err);
     }
