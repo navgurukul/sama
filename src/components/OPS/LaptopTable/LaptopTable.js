@@ -305,13 +305,13 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
     },
     {
       name: "Working",
-      label: "working",
+      label: "Not Working",
       options: {
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           const isWorking = laptopData.Working === "Working";
-          
+        
           return (
             <LaptopWorkingCheckbox 
               checked={isWorking}
