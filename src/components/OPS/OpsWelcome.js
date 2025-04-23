@@ -106,7 +106,7 @@ const OpsWelcome = () => {
                                 <TableCell><strong>Processor</strong></TableCell>
                                 <TableCell><strong>Battery</strong></TableCell>
                                 <TableCell><strong>Assigned To</strong></TableCell>
-                                <TableCell><strong>Donated To</strong></TableCell>
+                                <TableCell><strong>Allocated To</strong></TableCell>
                                 <TableCell><strong>Comment</strong></TableCell>
                                 <TableCell><strong>Last Updated</strong></TableCell>
                             </TableRow>

@@ -88,7 +88,7 @@ export const DonatedTo = ({ value, onChange }) => {
 export const LaptopWorkingCheckbox = ({ checked, onChange }) => {
   return (
     <Checkbox
-      checked={checked}
+      checked={!checked}
       onClick={onChange}
       color="primary"
       className="custom-body-cell"

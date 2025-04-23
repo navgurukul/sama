@@ -172,7 +172,6 @@ function LaptopTagging() {
       );
     }
     
-    // Apply major issue filter
     if (majorIssueFilter !== 'all') {
       if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
         // General yes/no filter
@@ -250,7 +249,8 @@ function LaptopTagging() {
   const handleWorkingToggle = (event, rowIndex) => {
     event.stopPropagation();
     const laptopData = data[rowIndex];
-    const newStatus = laptopData.Working === "Working" ? "Not Working" : "Working";
+    // Invert the logic - checked means Not Working
+    const newStatus = event.target.checked ? "Not Working" : "Working";
     
     // Immediately update the UI for better responsiveness
     const updatedData = [...data];
@@ -262,6 +262,7 @@ function LaptopTagging() {
     setUpdateValue(newStatus);
     setOpen(true);
   };
+  
   
   // Status change handler
   const handleStatusChange = (event, rowIndex) => {
@@ -468,7 +469,7 @@ const handleDonatedToChange = (event, rowIndex) => {
               download: false,
               print: false,
               sort: false,
-              viewColumns: false  
+              viewColumns: true  
             }}
           />
         )}
