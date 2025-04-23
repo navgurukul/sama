@@ -294,11 +294,11 @@ const handleAssignedToChange = (event, rowIndex) => {
 const handleDonatedToChange = (event, rowIndex) => {
   const newValue = event.target.value;
   const updatedData = [...data];
-  updatedData[rowIndex]["Donated To"] = newValue;
+  updatedData[rowIndex]["Allocated To"] = newValue;
   setData(updatedData);
   
   setSelectedRowIndex(rowIndex);
-  setUpdateField('Donated To');
+  setUpdateField('Allocated To');
   setUpdateValue(newValue);
   setOpen(true);
 };
@@ -319,9 +319,9 @@ const handleDonatedToChange = (event, rowIndex) => {
         title = "Assignment Update";
         message = `Are you sure you want to assign this laptop to "${updateValue}"?`;
         break;
-      case 'Donated To':
+      case 'Allocated To':
         title = "Donation Update";
-        message = `Are you sure you want to mark this laptop as donated to "${updateValue}"?`;
+        message = `Are you sure you want to mark this laptop as allocated to "${updateValue}"?`;
         break;
       default:
         title = "Confirm Update";
@@ -356,7 +356,7 @@ const handleDonatedToChange = (event, rowIndex) => {
       // working: !changeStatus ? (!isChecked ? "Working" : "Not Working") : laptopData.Working,
       status: updateField === 'Status' ? updateValue : laptopData.Status,
       assignedTo: updateField === 'Assigned To' ? updateValue : laptopData["Assigned To"],
-      donatedTo: updateField === 'Donated To' ? updateValue : laptopData["Donated To"],
+      donatedTo: updateField === 'Allocated To' ? updateValue : laptopData["Allocated To"],
       // Include all other fields unchanged
       donorCompanyName: laptopData["Donor Company Name"],
       ram: laptopData.RAM,
