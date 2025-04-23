@@ -316,15 +316,15 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       }
     },
     {
-      name: "Allocated to",
-      label: "Allocated to",
+      name: "Allocated To",
+      label: "Allocated To",
       options: {
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           return (
             <DonatedTo 
-              value={laptopData["Donated To"] || ''}
+              value={laptopData["Allocated To"] || ''}
               onChange={(event) => handleDonatedToChange(event, rowIndex)}
             />
           );
