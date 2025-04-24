@@ -16,20 +16,21 @@ const formatDate = (dateString) => {
   });
 };
 
-
-
-  
 const Audit = () => {
   const [data, setData] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [searchId, setSearchId] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    field: null,
+    direction: 'asc'
+  });
 
   const fetchAuditData = async () => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=audit`
       );
-  
+
       const formattedData = response.data.map((row) => {
         const newRow = { ...row };
         if (newRow["Date"]) {
@@ -40,17 +41,13 @@ const Audit = () => {
         }
         return newRow;
       });
-      
-      
-      
+
       setData(formattedData);
       setFiltered(formattedData);
-      
     } catch (err) {
       console.error("Error fetching audit data:", err);
     }
   };
-  
 
   useEffect(() => {
     fetchAuditData();
@@ -67,6 +64,56 @@ const Audit = () => {
     }
   };
 
+  // Function to sort data
+  const handleSort = (field) => {
+    const direction = sortConfig.field === field && sortConfig.direction === 'desc' ? 'asc': 'desc';
+    
+    setSortConfig({ field, direction });
+    
+    const sortedData = [...filtered].sort((a, b) => {
+      if (a[field] === null || a[field] === undefined) return 1;
+      if (b[field] === null || b[field] === undefined) return -1;
+      
+      // Check if the field might contain dates
+      if (field === "Date" || field === "Updated On" || field.toLowerCase().includes('date')) {
+        const dateA = new Date(a[field]);
+        const dateB = new Date(b[field]);
+        
+        if (isNaN(dateA) || isNaN(dateB)) {
+          // Fall back to string comparison if dates are invalid
+          return direction === 'desc' 
+            ? a[field].toString().localeCompare(b[field].toString())
+            : b[field].toString().localeCompare(a[field].toString());
+        }
+        
+        return direction === 'desc' ? dateA - dateB : dateB - dateA;
+      }
+      
+      // Check if the field contains numbers
+      if (!isNaN(a[field]) && !isNaN(b[field])) {
+        return direction === 'asc' 
+          ? Number(a[field]) - Number(b[field])
+          : Number(b[field]) - Number(a[field]);
+      }
+      
+      // Default string comparison
+      return direction === 'asc' 
+        ? a[field].toString().localeCompare(b[field].toString())
+        : b[field].toString().localeCompare(a[field].toString());
+    });
+    
+    setFiltered(sortedData);
+  };
+
+  // Custom cell rendering function for "Updated On" column
+  const customCellRender = (value, tableMeta, updateValue, displayData) => {
+    const columnName = columns[tableMeta.columnIndex].name;
+    if (columnName === "Updated On") {
+      return <Typography sx={{ fontSize: '1.1rem', fontWeight: 'medium' }}>{value}</Typography>;
+    }
+    return value;
+  };
+
   // Dynamically create columns from keys
   const columns = data[0]
     ? Object.keys(data[0]).map((key) => ({
@@ -75,7 +122,24 @@ const Audit = () => {
         options: {
           display: "true",
           filter: true,
-          sort: false,
+          sort: key==="Updated On" ? true : false,
+          sortThirdClickReset: true,
+          onSort: () => handleSort(key),
+          sortDirection: sortConfig.field === key ? sortConfig.direction : 'none',
+          customBodyRenderLite: (dataIndex, rowIndex) => {
+            const value = filtered[dataIndex][key];
+            if (key === "Updated On") {
+              return <Typography variant="body2">{value}</Typography>;
+            }
+            return value;
+          },
+          // For the column header
+          customHeadLabelRender: (columnMeta) => {
+            if (columnMeta.name === "Updated On") {
+              return <Typography variant="body2" component="div">Updated On</Typography>;
+            }
+            return columnMeta.label;
+          }
         },
       }))
     : [];
@@ -90,28 +154,31 @@ const Audit = () => {
     rowsPerPage: 10,
     rowsPerPageOptions: [10, 20, 50, 100],
     responsive: "standard",
+    sortOrder: {
+      name: sortConfig.field || '',
+      direction: sortConfig.direction
+    }
   };
 
   return (
     <Box sx={{ padding: 3 }}>
-     <Typography variant="h5" gutterBottom align="center">
-    Laptop Audit
-  </Typography>
-
-  <Box sx={{ display: "flex", gap: 2, alignItems: "center" ,align : "center", justifyContent:"center", marginBottom: 4}}>
-    <TextField
-      label="Search by ID"
-      variant="outlined"
-      size="small"
-      value={searchId}
-      onChange={(e) => setSearchId(e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-      sx={{ width: 200 }}
-    />
-    <Button variant="contained" size="small" onClick={handleSearch}>
-      Search
-    </Button>
-  </Box>
+      <Typography variant="h5" gutterBottom align="center">
+        Laptop Audit
+      </Typography>
+      <Box sx={{ display: "flex", gap: 2, alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
+        <TextField
+          label="Search by ID"
+          variant="outlined"
+          size="small"
+          value={searchId}
+          onChange={(e) => setSearchId(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          sx={{ width: 200 }}
+        />
+        <Button variant="contained" size="small" onClick={handleSearch}>
+          Search
+        </Button>
+      </Box>
 
       <MUIDataTable
         title={"Audit Records"}
