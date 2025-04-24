@@ -14,6 +14,7 @@ function Opslogin() {
   const [failedStatuses, setFailedStatuses] = useState([]);
   const [pendingStatuses, setPendingStatuses] = useState([]);
   const navigate = useNavigate();
+  const [openSignup, setOpenSignup] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -189,7 +190,7 @@ function Opslogin() {
               required
               InputLabelProps={{ shrink: true }}
             />
-            <Box sx={{ display: 'flex', flexDirection: "column", gap: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: "row", gap: 2 }}>
               <Button
                 onClick={handleSubmit}
                 type="submit"
@@ -198,7 +199,14 @@ function Opslogin() {
               >
                 {loder ? <CircularProgress color='white' /> : "Login"}
               </Button>
-            </Box>
+              {/* <Button
+                onClick={() => navigate('/signup')}
+                variant="outlined"
+                sx={{width: 'auto', alignSelf: 'start', mt: 2, borderRadius: "100px" }}
+              >
+                Sign Up
+              </Button>         */}
+              </Box>            
           </Box>
         </Grid>
       </Grid>
