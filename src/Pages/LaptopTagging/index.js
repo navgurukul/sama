@@ -417,7 +417,9 @@ const handleDonatedToChange = (event, rowIndex) => {
         setRefresh={setRefresh}  // Make sure this is passed
         refresh={refresh}        // And this too
       />
+      
     )
+    
   );
 
   return (

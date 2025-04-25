@@ -89,6 +89,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Donor Company Name", 
       label: "Company Name",
       options: {
+        filter: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
         }),
@@ -138,6 +139,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Minor Issues", 
       label: "Minor Issues",
       options: {
+        filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptop = data[rowIndex];
@@ -160,6 +162,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Major Issues", 
       label: "Major Issues",
       options: {
+        filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptop = data[rowIndex];
@@ -218,6 +221,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Battery Capacity", 
       label: "Battery Capacity",
       options: {
+        filter: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
         }),
@@ -319,6 +323,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Allocated To",
       label: "Allocated To",
       options: {
+        filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];

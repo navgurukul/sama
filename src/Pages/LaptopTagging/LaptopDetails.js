@@ -255,7 +255,25 @@ function LaptopDetails() {
         label: key,
         options: {
           display: "true",
-          filter: true,
+          filter: 
+            (
+              key === 'ID' || 
+              key === 'Manufacturing Date' || 
+              key ==='Manufacturer Model' || 
+              key ==='Major Issues'||
+              key ==='Mac address'||
+              key ==='Last Updated On'||
+              key ==='Battery Capacity'||
+              key ==='Date Committed'||
+              key ==='Processor'||
+              key ==='Condition Status'||
+              key ==='Minor Issues'||
+              key ==='Comment for the Issues'||
+              key ==='Allocated To'||
+              key ==='RAM'||
+              key ==='ROM'
+            ) 
+            ? false : true,
           sort: false,
         },
       }))

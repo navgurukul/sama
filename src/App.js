@@ -59,6 +59,7 @@ import CorporatePartner from './Pages/About/CorporatePartner/CorporatePartner';
 import OpsWelcome from './components/OPS/OpsWelcome';
 import Audit from './components/OPS/LaptopAudit';
 import LaptopDetails from "./Pages/LaptopTagging/LaptopDetails";
+import SignupForm from './Pages/Login/OpsLogin/SignupForm';
 
 
 function App() {
@@ -197,6 +198,7 @@ function App() {
                 }
               />
               <Route path="/edit-user/:id" element={<EditUserPage />} />
+              <Route path="/signup" element={<SignupForm />} />
               
               <Route path="/yearly-reporting/:id" element={
                 <PrivateRoute reqired={'ngo'} ngoType="1 to many">
