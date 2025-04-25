@@ -11,13 +11,11 @@ import './styles.css';
 import { fetchLaptopData, updateLaptopData } from '../../components/OPS/LaptopTable/api';
 import SearchBar from './SearchBar';
 import FilterPanel from '../../components/OPS/LaptopTable/FilterPanel';
-import ConfirmationModal from '../../components/OPS/LaptopTable/ConfirmationModal';
 import ExportTools from '../../components/OPS/LaptopTable/ExportTools';
-import EditButton from './EditButton';
-import { getTableColumns } from '../../components/OPS/LaptopTable/LaptopTable';
 
 
-function LaptopTagging() {
+
+function LaptopDetails() {
   // States
   const [allData, setAllData] = useState([]);
   const [data, setData] = useState([]);
@@ -58,7 +56,6 @@ function LaptopTagging() {
     loadData();
   }, [refresh]);
 
-  
 
   // Apply filters when filter values change
   useEffect(() => {
@@ -72,8 +69,9 @@ function LaptopTagging() {
     
     // Apply working filter
     if (workingFilter !== 'all') {
-      filteredData = filteredData.filter(laptop => 
+      filteredData = filteredData.filter(laptop =>
         laptop.Working === workingFilter
+      
       );
     }
     
@@ -141,6 +139,9 @@ function LaptopTagging() {
     }
   };
 
+  console.log('Filtered Data:', data);
+
+
 // Also update the handleSearch function to handle specific issues
   const handleSearch = () => {
     if (!idQuery && !macQuery) {
@@ -171,6 +172,7 @@ function LaptopTagging() {
       );
     }
     
+    // Apply major issue filter
     if (majorIssueFilter !== 'all') {
       if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
         // General yes/no filter
@@ -245,182 +247,38 @@ function LaptopTagging() {
   };
 
 
-  const handleWorkingToggle = (event, rowIndex) => {
-    event.stopPropagation();
-    const laptopData = data[rowIndex];
-    // Invert the logic - checked means Not Working
-    const newStatus = event.target.checked ? "Not Working" : "Working";
-    
-    // Immediately update the UI for better responsiveness
-    const updatedData = [...data];
-    updatedData[rowIndex].Working = newStatus;
-    setData(updatedData);
-  
-    setSelectedRowIndex(rowIndex);
-    setUpdateField('Working');
-    setUpdateValue(newStatus);
-    setOpen(true);
-  };
-  
-  
-  // Status change handler
-  const handleStatusChange = (event, rowIndex) => {
-    const newValue = event.target.value;
-    const updatedData = [...data];
-    updatedData[rowIndex].Status = newValue;
-    setData(updatedData);
-    
-    setSelectedRowIndex(rowIndex);
-    setUpdateField('Status');
-    setUpdateValue(newValue);
-    setOpen(true);
-  };
+  const columns = data[0]
+  ? Object.keys(data[0])
+      .filter(key => key !== 'barcodeUrl') // Filter out the barcodeUrl key
+      .map((key) => ({
+        name: key,
+        label: key,
+        options: {
+          display: "true",
+          filter: 
+            (
+              key === 'ID' || 
+              key === 'Manufacturing Date' || 
+              key ==='Manufacturer Model' || 
+              key ==='Major Issues'||
+              key ==='Mac address'||
+              key ==='Last Updated On'||
+              key ==='Battery Capacity'||
+              key ==='Date Committed'||
+              key ==='Processor'||
+              key ==='Condition Status'||
+              key ==='Minor Issues'||
+              key ==='Comment for the Issues'||
+              key ==='Allocated To'||
+              key ==='RAM'||
+              key ==='ROM'
+            ) 
+            ? false : true,
+          sort: false,
+        },
+      }))
+  : [];
 
-  // Assigned To handler
-const handleAssignedToChange = (event, rowIndex) => {
-  const newValue = event.target.value;
-  const updatedData = [...data];
-  updatedData[rowIndex]["Assigned To"] = newValue;
-  setData(updatedData);
-  
-  setSelectedRowIndex(rowIndex);
-  setUpdateField('Assigned To');
-  setUpdateValue(newValue);
-  setOpen(true);
-};
-
-// Donated To handler
-const handleDonatedToChange = (event, rowIndex) => {
-  const newValue = event.target.value;
-  const updatedData = [...data];
-  updatedData[rowIndex]["Allocated To"] = newValue;
-  setData(updatedData);
-  
-  setSelectedRowIndex(rowIndex);
-  setUpdateField('Allocated To');
-  setUpdateValue(newValue);
-  setOpen(true);
-};
-
-  const getModalProps = () => {
-    let title, message;
-    
-    switch(updateField) {
-      case 'Working':
-        title = "Working Status";
-        message = `Are you sure you want to mark this laptop as ${updateValue}?`;
-        break;
-      case 'Status':
-        title = "Status Update";
-        message = `Are you sure you want to change the status to "${updateValue}"?`;
-        break;
-      case 'Assigned To':
-        title = "Assignment Update";
-        message = `Are you sure you want to assign this laptop to "${updateValue}"?`;
-        break;
-      case 'Allocated To':
-        title = "Donation Update";
-        message = `Are you sure you want to mark this laptop as allocated to "${updateValue}"?`;
-        break;
-      default:
-        title = "Confirm Update";
-        message = "Are you sure you want to make this change?";
-    }
-    
-    return { title, message };
-  };
-
-
-  const handleModalConfirm = async () => {
-    if (selectedRowIndex === null) {
-      setOpen(false);
-      return;
-    }
-  
-    const rowIndex = selectedRowIndex;
-    const laptopData = data[rowIndex];
-    const laptopId = laptopData?.ID;
-    const currentDate = new Date().toISOString().split('T')[0];
-    
-    const SavedData = JSON.parse(localStorage.getItem('_AuthSama_')); 
-    const userEmail = SavedData?.[0]?.email || "Email not found";
-
-    const lastUpdatedBy = userEmail || 'Unknown';
-
-    // Create the payload with all fields
-    const payload = {
-      type: "laptopLabeling",
-      id: laptopId,
-      working: updateField === 'Working' ? updateValue : laptopData.Working,
-      // working: !changeStatus ? (!isChecked ? "Working" : "Not Working") : laptopData.Working,
-      status: updateField === 'Status' ? updateValue : laptopData.Status,
-      assignedTo: updateField === 'Assigned To' ? updateValue : laptopData["Assigned To"],
-      donatedTo: updateField === 'Allocated To' ? updateValue : laptopData["Allocated To"],
-      // Include all other fields unchanged
-      donorCompanyName: laptopData["Donor Company Name"],
-      ram: laptopData.RAM,
-      rom: laptopData.ROM,
-      manufacturerModel: laptopData["Manufacturer Model"],
-      inventoryLocation: laptopData["Inventory Location"],
-      macAddress: laptopData["Mac address"],
-      processor: laptopData["Processor"],
-      others: laptopData["Others"],
-      laptopWeight: laptopData["laptop weight"],
-      conditionStatus: laptopData["Condition Status"],
-      manufacturingDate: laptopData["Manufacturing Date"],
-      majorIssue: laptopData["MajorIssue"],
-      minorIssue: laptopData["MinorIssue"],
-      batteryCapacity : laptopData["Battery Capacity"],
-      lastUpdatedOn: currentDate,
-      lastUpdatedBy: lastUpdatedBy,
-    };
-  
-    try {
-      await updateLaptopData(payload);
-      setRefresh(!refresh);
-    } catch (error) {
-      const originalData = [...data];
-    originalData[rowIndex].Working = updateValue === "Working" ? "Not Working" : "Working";
-    setData(originalData);
-
-      console.error('Error updating the laptop:', error);
-    }
-  
-    // Reset all state
-    setOpen(false);
-    setSelectedRowIndex(null);
-    setUpdateField(null);
-    setUpdateValue(null);
-  };
-
-  // Handle modal close
-  const handleModalClose = () => {
-    setOpen(false);
-    setSelectedRowIndex(null);
-    setIsChecked(false);
-    setModelStatus(false);
-    
-  };
-
-  
-  // Define table columns
-  const columns = getTableColumns(
-    data,
-    taggedLaptops,
-    handleWorkingToggle,    // For Working checkbox
-    handleStatusChange,     // For Status dropdown
-    handleAssignedToChange, // For Assigned To dropdown
-    handleDonatedToChange,  // For Donated To dropdown
-    (props) => (
-      <EditButton 
-        {...props}
-        setRefresh={setRefresh}  // Make sure this is passed
-        refresh={refresh}        // And this too
-      />
-      
-    )
-    
-  );
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
@@ -470,19 +328,13 @@ const handleDonatedToChange = (event, rowIndex) => {
               download: false,
               print: false,
               sort: false,
-              viewColumns: true  
+              viewColumns: false  
             }}
           />
         )}
       </div>
      
-      {/* Confirmation Modal */}
-      <ConfirmationModal 
-        open={open}
-        onClose={handleModalClose}
-        onConfirm={handleModalConfirm}
-        {...getModalProps()}
-      />
+     
 
       {/* Hidden div for printing */}
       <div ref={printRef} style={{ display: 'none' }}></div>
@@ -490,6 +342,6 @@ const handleDonatedToChange = (event, rowIndex) => {
   );
 }
 
-export default LaptopTagging;
+export default LaptopDetails;
 
 

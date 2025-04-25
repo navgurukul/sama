@@ -13,7 +13,7 @@ export const LaptopStatusDropdown = ({ value, onChange }) => {
       <MenuItem value="Laptop Received">Laptop Received</MenuItem>
       <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
       <MenuItem value="To be dispatch">To Be Dispatch</MenuItem>
-      <MenuItem value="Donated">Donated</MenuItem>
+      <MenuItem value="Donated">Allocated</MenuItem>
     </Select>
   );
 };
@@ -88,7 +88,7 @@ export const DonatedTo = ({ value, onChange }) => {
 export const LaptopWorkingCheckbox = ({ checked, onChange }) => {
   return (
     <Checkbox
-      checked={checked}
+      checked={!checked}
       onClick={onChange}
       color="primary"
       className="custom-body-cell"

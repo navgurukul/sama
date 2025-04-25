@@ -431,19 +431,25 @@ function LaptopForm() {
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">Inventory Location
-                <span style={{ color: "red" }}>*</span>
+              <Typography variant="subtitle1">
+                Inventory Location <span style={{ color: "red" }}>*</span>
               </Typography>
               <TextField
                 fullWidth
+                select
                 name="inventoryLocation"
                 value={formData.inventoryLocation}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.inventoryLocation}
                 helperText={errors.inventoryLocation}
-              // required
-              />
+              >
+                {["Sarjapur Campus Bangalore", "Anish Jadhav Memorial Foundation Navgurukul Campus Pune"].map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="subtitle1">Laptop Weight

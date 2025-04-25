@@ -73,8 +73,8 @@ const FilterPanel = ({
               size="small"
             >
               <MenuItem value="all">All</MenuItem>
-              <MenuItem value="working">Working</MenuItem>
-              <MenuItem value="notWorking">Not Working</MenuItem>
+              <MenuItem value="Working">Working</MenuItem>
+              <MenuItem value="Not Working">Not Working</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -92,7 +92,7 @@ const FilterPanel = ({
               <MenuItem value="all">All</MenuItem>
               <MenuItem value="Laptop Received">Laptop Received</MenuItem>
               <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
-              <MenuItem value="Laptop Tagged">Donated</MenuItem>
+              <MenuItem value="Laptop Tagged">Allocated</MenuItem>
               <MenuItem value="Laptop Shipped">To be dispatch</MenuItem>
             </Select>
           </FormControl>
@@ -109,8 +109,8 @@ const FilterPanel = ({
               size="small"
             >
               <MenuItem value="all">All</MenuItem>
-              <MenuItem value="yes">Yes</MenuItem>
-              <MenuItem value="no">No</MenuItem>
+              {/* <MenuItem value="yes">Yes</MenuItem>
+              <MenuItem value="no">No</MenuItem> */}
               <MenuItem disabled sx={{ borderTop: '1px solid #eee', py: 1 }}>
                 <Typography variant="caption">Specific Issues</Typography>
               </MenuItem>
@@ -132,8 +132,8 @@ const FilterPanel = ({
               size="small"
             >
               <MenuItem value="all">All</MenuItem>
-              <MenuItem value="yes">Yes</MenuItem>
-              <MenuItem value="no">No</MenuItem>
+              {/* <MenuItem value="yes">Yes</MenuItem>
+              <MenuItem value="no">No</MenuItem> */}
               <MenuItem disabled sx={{ borderTop: '1px solid #eee', py: 1 }}>
                 <Typography variant="caption">Specific Issues</Typography>
               </MenuItem>
