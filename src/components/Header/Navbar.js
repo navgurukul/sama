@@ -145,16 +145,16 @@ const Navbar = () => {
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
           {!isRouteMatch(location.pathname, routePatterns) && (
-            <Box 
-              component="img" 
-              src={logo} 
-              alt="Logo" 
-              className="header-logo" 
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              className="header-logo"
               sx={{ cursor: 'pointer' }}
               onClick={() => navigate("/ops")}
             />
           )}
-          
+
           <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
             <IconButton
               edge="start"
@@ -165,7 +165,7 @@ const Navbar = () => {
             >
               <MenuIcon />
             </IconButton>
-            
+
             <Avatar
               alt="Profile"
               src={ProfileImg}
@@ -195,10 +195,10 @@ const Navbar = () => {
             >
               <List>
                 {opsTabs.map((tab) => (
-                  <ListItem 
-                    button 
-                    key={tab.path} 
-                    component={Link} 
+                  <ListItem
+                    button
+                    key={tab.path}
+                    component={Link}
                     to={tab.path}
                     selected={activeTab === tab.path}
                     onClick={() => {
@@ -219,16 +219,16 @@ const Navbar = () => {
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
           {!isRouteMatch(location.pathname, routePatterns) && (
-            <Box 
-              component="img" 
-              src={logo} 
-              alt="Logo" 
-              className="header-logo" 
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              className="header-logo"
               sx={{ cursor: 'pointer' }}
               onClick={() => navigate("/ops")}
             />
           )}
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', mr: 3 }}>
             <Tabs
               value={activeTab}
@@ -317,6 +317,22 @@ const Navbar = () => {
             <BackButton />
           ) : (
             <>
+              {isLoggedIn && role.includes("admin") && (
+                <Button
+                  variant="contained"
+                  sx={{
+                    marginRight: 2,
+                    borderRadius: "100px",
+                    backgroundColor: "primary.main",
+                  }}
+                  onClick={() => navigate("/registration")}
+                >
+                  <Typography variant="subtitle1" sx={{ color: "#ffffff" }}>
+                    Registration
+                  </Typography>
+                </Button>
+              )}
+
               {!isLoggedIn && (
                 <Box
                   component="img"
@@ -336,7 +352,6 @@ const Navbar = () => {
               )}
             </>
           )}
-
           {!isLoggedIn && (
             <Box className={`nav-links ${menuVisible ? "visible" : ""}`}>
               <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />

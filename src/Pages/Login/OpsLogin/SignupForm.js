@@ -27,7 +27,7 @@ const SignupForm = () => {
     setLoading(true);
 
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbxoV7zFVG8BmfF9T60EbCRuEqpmVIR2igbeWAca7kdL-R07Lhdmmk14xOskgSToLPA6/exec', {
+      await fetch('https://script.google.com/macros/s/AKfycbz7eoDcN16SrbO67pRjm63IOjPte7e5wmH2WQlJPr1B2bak4fYa-GaLVmUv_bsjlVMt/exec', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,6 +35,7 @@ const SignupForm = () => {
         mode: 'no-cors',
         body: JSON.stringify({
           ...formData,
+          detail: 'registration',
           status: 'Data entered'
         }),
       });
@@ -105,7 +106,6 @@ const SignupForm = () => {
             <Typography variant="h6" color="primary">
               Your data is being submitted and reviewed by admin.
             </Typography>
-            {/* <CircularProgress sx={{ mt: 3 }} /> */}
           </Box>
         )}
       </Box>
