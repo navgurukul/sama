@@ -10,6 +10,11 @@ import {
     Typography,
     Select,
     MenuItem,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Button,
 } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 
@@ -17,6 +22,9 @@ const Registration = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [currentRow, setCurrentRow] = useState(null);
+    const [newStatus, setNewStatus] = useState('');
 
     useEffect(() => {
         fetchData();
@@ -25,7 +33,7 @@ const Registration = () => {
     const fetchData = async () => {
         try {
             const response = await fetch(
-                'https://script.google.com/macros/s/AKfycbzrwyMBpSERDU7RkuQvc-O3Ofxu8hUPbs95c_nZJ67YnOIM-Yq4EzqNaMoMI-l0m32l/exec'
+                `${process.env.REACT_APP_UserDetailApi}?type=getRegistration`
             );
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -34,7 +42,6 @@ const Registration = () => {
             if (Array.isArray(result)) {
                 setData(result);
             }
-            console.log("Fetched data:", result);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -42,40 +49,57 @@ const Registration = () => {
         }
     };
 
-    const handleStatusChange = async (e, index, row) => {
-        const newStatus = e.target.value;
-        const id = row.ID; 
-        
+    const handleStatusChange = (e, index, row) => {
+        const selectedStatus = e.target.value;
+        setCurrentRow(row);
+        setNewStatus(selectedStatus);
+        setOpenDialog(true);
+    };
+
+    const handleDialogClose = (confirm) => {
+        if (confirm) {
+            // Update the status if the user clicks Yes
+            updateStatus();
+        } else {
+            // Revert the status change if the user clicks Cancel
+            setNewStatus(currentRow.Status);
+        }
+        setOpenDialog(false);
+    };
+
+    const updateStatus = async () => {
+        const email = currentRow.Email;
         const updatedData = [...data];
+        const index = data.indexOf(currentRow);
         updatedData[index].Status = newStatus;
         setData(updatedData);
-    
+
         try {
-            const response = await fetch('https://script.google.com/macros/s/AKfycbz7eoDcN16SrbO67pRjm63IOjPte7e5wmH2WQlJPr1B2bak4fYa-GaLVmUv_bsjlVMt/exec', {
+            const response = await fetch(process.env.REACT_APP_UserDetailApi, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                mode: 'no-cors',    
+                mode: 'no-cors',
                 body: JSON.stringify({
-                    detail: 'statusUpdate',
-                    id: id,
-                    status: newStatus,
+                    type: 'updateRegistration',
+                    email: email,       // use email instead of id
+                    status: newStatus,  // lowercase to match backend
                 }),
             });
-    
-            console.log('Status update request sent successfully (no-cors).');
-            
+
+            const text = await response.text();
+            console.log('Response from server:', text);
         } catch (error) {
-            console.error('Error sending status update request:', error);
-    
+            console.error('Error updating status:', error);
+
+            // Revert the update in case of error
             const revertedData = [...data];
-            revertedData[index].Status = row.Status;
+            const index = data.indexOf(currentRow);
+            revertedData[index].Status = currentRow.Status;
             setData(revertedData);
         }
     };
-    
-
 
     if (loading) {
         return (
@@ -127,6 +151,26 @@ const Registration = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Dialog
+                open={openDialog}
+                onClose={() => setOpenDialog(false)}
+            >
+                <DialogTitle>Confirm Status Change</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1">
+                        Are you sure you want to change the status of '{currentRow?.Name}' to '{newStatus}'?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => handleDialogClose(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={() => handleDialogClose(true)} color="primary">
+                        Yes
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };
