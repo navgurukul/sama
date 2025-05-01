@@ -15,6 +15,7 @@ import {
     DialogContent,
     DialogTitle,
     Button,
+    TextField,
 } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 
@@ -25,10 +26,10 @@ const Registration = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [currentRow, setCurrentRow] = useState(null);
     const [newStatus, setNewStatus] = useState('');
+    const [rejectionReason, setRejectionReason] = useState('');
     const [openRoleDialog, setOpenRoleDialog] = useState(false);
     const [openFinalConfirmDialog, setOpenFinalConfirmDialog] = useState(false);
     const [selectedRole, setSelectedRole] = useState('');
-
 
     useEffect(() => {
         fetchData();
@@ -57,13 +58,17 @@ const Registration = () => {
         const selectedStatus = e.target.value;
         setCurrentRow(row);
         setNewStatus(selectedStatus);
-        setOpenDialog(true);
+        if (selectedStatus === 'Reject') {
+            setOpenDialog(true); // Show rejection reason dialog
+        } else {
+            setOpenDialog(true); // Open normal status change dialog
+        }
     };
 
     const handleDialogClose = (confirm) => {
         if (confirm) {
-            if (newStatus === "Reject") {
-                updateStatusAndRole("Reject", ""); // No role needed
+            if (newStatus === 'Reject') {
+                updateStatusAndRole('Reject', '', rejectionReason); // Send rejection reason
             } else {
                 setOpenRoleDialog(true); // Only open dialog if not rejected
             }
@@ -72,7 +77,6 @@ const Registration = () => {
         }
         setOpenDialog(false);
     };
-    
 
     const handleRoleDialogClose = (confirm) => {
         if (confirm) {
@@ -93,14 +97,15 @@ const Registration = () => {
         setOpenFinalConfirmDialog(false);
     };
 
-    const updateStatusAndRole = async (statusParam = newStatus, roleParam = selectedRole) => {
+    const updateStatusAndRole = async (statusParam = newStatus, roleParam = selectedRole, comment = '') => {
         const email = currentRow.Email;
         const updatedData = [...data];
         const index = data.indexOf(currentRow);
         updatedData[index].Status = statusParam;
         updatedData[index].Role = roleParam;
+        updatedData[index].Comment = comment; // Store comment in the data
         setData(updatedData);
-    
+
         try {
             const response = await fetch(process.env.REACT_APP_UserDetailApi, {
                 method: 'POST',
@@ -113,6 +118,7 @@ const Registration = () => {
                     email,
                     status: statusParam,
                     role: roleParam,
+                    comment: comment, // Include the comment in the request
                 }),
             });
             const text = await response.text();
@@ -121,7 +127,6 @@ const Registration = () => {
             console.error('Error updating:', error);
         }
     };
-    
 
     if (loading) {
         return (
@@ -174,15 +179,23 @@ const Registration = () => {
                 </Table>
             </TableContainer>
 
-            <Dialog
-                open={openDialog}
-                onClose={() => setOpenDialog(false)}
-            >
+            <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                 <DialogTitle>Confirm Status Change</DialogTitle>
                 <DialogContent>
                     <Typography variant="body1">
                         Are you sure you want to change the status of '{currentRow?.Name}' to '{newStatus}'?
                     </Typography>
+                    {newStatus === 'Reject' && (
+                        <TextField
+                            fullWidth
+                            label="Reason for Rejection"
+                            multiline
+                            rows={4}
+                            value={rejectionReason}
+                            onChange={(e) => setRejectionReason(e.target.value)}
+                            sx={{ mt: 2 }}
+                        />
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => handleDialogClose(false)} color="primary">
@@ -193,6 +206,7 @@ const Registration = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
             <Dialog open={openRoleDialog} onClose={() => setOpenRoleDialog(false)}>
                 <DialogTitle>Select Role</DialogTitle>
                 <DialogContent>
@@ -217,6 +231,7 @@ const Registration = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
             <Dialog open={openFinalConfirmDialog} onClose={() => setOpenFinalConfirmDialog(false)}>
                 <DialogTitle>Confirm Role & Status</DialogTitle>
                 <DialogContent>
