@@ -25,6 +25,10 @@ const Registration = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [currentRow, setCurrentRow] = useState(null);
     const [newStatus, setNewStatus] = useState('');
+    const [openRoleDialog, setOpenRoleDialog] = useState(false);
+    const [openFinalConfirmDialog, setOpenFinalConfirmDialog] = useState(false);
+    const [selectedRole, setSelectedRole] = useState('');
+
 
     useEffect(() => {
         fetchData();
@@ -58,22 +62,45 @@ const Registration = () => {
 
     const handleDialogClose = (confirm) => {
         if (confirm) {
-            // Update the status if the user clicks Yes
-            updateStatus();
+            if (newStatus === "Reject") {
+                updateStatusAndRole("Reject", ""); // No role needed
+            } else {
+                setOpenRoleDialog(true); // Only open dialog if not rejected
+            }
         } else {
-            // Revert the status change if the user clicks Cancel
             setNewStatus(currentRow.Status);
         }
         setOpenDialog(false);
     };
+    
 
-    const updateStatus = async () => {
+    const handleRoleDialogClose = (confirm) => {
+        if (confirm) {
+            setOpenFinalConfirmDialog(true);
+        } else {
+            setSelectedRole('');
+        }
+        setOpenRoleDialog(false);
+    };
+
+    const handleFinalConfirmClose = async (confirm) => {
+        if (confirm) {
+            await updateStatusAndRole(); // Final update
+        } else {
+            setSelectedRole('');
+            setNewStatus(currentRow.Status);
+        }
+        setOpenFinalConfirmDialog(false);
+    };
+
+    const updateStatusAndRole = async (statusParam = newStatus, roleParam = selectedRole) => {
         const email = currentRow.Email;
         const updatedData = [...data];
         const index = data.indexOf(currentRow);
-        updatedData[index].Status = newStatus;
+        updatedData[index].Status = statusParam;
+        updatedData[index].Role = roleParam;
         setData(updatedData);
-
+    
         try {
             const response = await fetch(process.env.REACT_APP_UserDetailApi, {
                 method: 'POST',
@@ -83,23 +110,18 @@ const Registration = () => {
                 mode: 'no-cors',
                 body: JSON.stringify({
                     type: 'updateRegistration',
-                    email: email,       // use email instead of id
-                    status: newStatus,  // lowercase to match backend
+                    email,
+                    status: statusParam,
+                    role: roleParam,
                 }),
             });
-
             const text = await response.text();
             console.log('Response from server:', text);
         } catch (error) {
-            console.error('Error updating status:', error);
-
-            // Revert the update in case of error
-            const revertedData = [...data];
-            const index = data.indexOf(currentRow);
-            revertedData[index].Status = currentRow.Status;
-            setData(revertedData);
+            console.error('Error updating:', error);
         }
     };
+    
 
     if (loading) {
         return (
@@ -142,8 +164,8 @@ const Registration = () => {
                                         displayEmpty
                                         fullWidth
                                     >
-                                        <MenuItem value="ops">ops</MenuItem>
-                                        <MenuItem value="admin">admin</MenuItem>
+                                        <MenuItem value="Approved">Approved</MenuItem>
+                                        <MenuItem value="Reject">Reject</MenuItem>
                                     </Select>
                                 </TableCell>
                             </TableRow>
@@ -171,6 +193,43 @@ const Registration = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Dialog open={openRoleDialog} onClose={() => setOpenRoleDialog(false)}>
+                <DialogTitle>Select Role</DialogTitle>
+                <DialogContent>
+                    <Typography>Select a role to assign:</Typography>
+                    <Select
+                        value={selectedRole}
+                        onChange={(e) => setSelectedRole(e.target.value)}
+                        fullWidth
+                        displayEmpty
+                        sx={{ mt: 2 }}
+                    >
+                        <MenuItem value=""><em>None</em></MenuItem>
+                        <MenuItem value="admin">Admin</MenuItem>
+                        <MenuItem value="ops">Ops</MenuItem>
+                        <MenuItem value="customer">Customer</MenuItem>
+                    </Select>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => handleRoleDialogClose(false)}>Cancel</Button>
+                    <Button onClick={() => handleRoleDialogClose(true)} disabled={!selectedRole}>
+                        Next
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={openFinalConfirmDialog} onClose={() => setOpenFinalConfirmDialog(false)}>
+                <DialogTitle>Confirm Role & Status</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Are you sure you want to set status to <strong>{newStatus}</strong> and role to <strong>{selectedRole}</strong> for <strong>{currentRow?.Name}</strong>?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => handleFinalConfirmClose(false)}>Cancel</Button>
+                    <Button onClick={() => handleFinalConfirmClose(true)}>Yes</Button>
+                </DialogActions>
+            </Dialog>
+
         </Container>
     );
 };

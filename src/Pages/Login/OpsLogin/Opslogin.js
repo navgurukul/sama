@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Typography, Box, Container, Grid, FormLabel, CircularProgress } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Container,
+  Grid,
+  FormLabel,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 import login_ngo from "./assets/login_ngo.svg";
 import AttentionNeeded from "../../../components/AttentionNeeded/AttentionNeeded"
 
@@ -15,6 +28,12 @@ function Opslogin() {
   const [pendingStatuses, setPendingStatuses] = useState([]);
   const navigate = useNavigate();
   const [openSignup, setOpenSignup] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [openForgotModal, setOpenForgotModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotMessage, setForgotMessage] = useState('');
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,9 +109,9 @@ function Opslogin() {
                     if (value.status !== "Success" && value.status !== "Pending Verification") {
                       if (value.status === "") {
                         emptyStatuses.push(key);
-                      } 
+                      }
                       failed.push(key); // Collect keys with failed statuses
-                      
+
                     } else if (value.status === "Pending Verification") {
                       pending.push(key); // Collect keys with pending verification statuses
                     }
@@ -158,6 +177,33 @@ function Opslogin() {
     }
     setLoder(false);
   };
+
+  const handleForgotPasswordSubmit = async () => {
+    if (!forgotEmail) {
+      setForgotMessage('Please enter your email.');
+      return;
+    }
+  
+    try {
+      await fetch(`${process.env.REACT_APP_UserDetailApi}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors', // opaque response
+        body: JSON.stringify({ email: forgotEmail, type: 'forgotPassword' }),
+      });
+  
+      // We assume it worked (since no way to read the response)
+      setForgotMessage('If your email is registered, you will receive reset instructions.');
+    } catch (error) {
+      console.error('Error sending reset email:', error);
+      setForgotMessage('An error occurred. Please try again later.');
+    }
+  };
+  
+  
+  
+  
+
   return (
     <Container maxWidth="md" sx={{ my: 10 }}>
       <Grid container spacing={10} alignItems="center">
@@ -199,14 +245,51 @@ function Opslogin() {
               >
                 {loder ? <CircularProgress color='white' /> : "Login"}
               </Button>
-              {/* <Button
+              <Button
                 onClick={() => navigate('/signup')}
                 variant="outlined"
-                sx={{width: 'auto', alignSelf: 'start', mt: 2, borderRadius: "100px" }}
+                sx={{ width: 'auto', alignSelf: 'start', mt: 2, borderRadius: "100px" }}
               >
                 Sign Up
-              </Button>         */}
-              </Box>            
+              </Button>
+            </Box>
+            <Typography
+              sx={{
+                mt: 2,
+                color: 'primary.main',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                width: 'fit-content'
+              }}
+              onClick={() => setOpenForgotModal(true)}
+            >
+              Forgot Password?
+            </Typography>
+            <Dialog open={openForgotModal} onClose={() => setOpenForgotModal(false)}>
+              <DialogTitle>Reset Password</DialogTitle>
+              <DialogContent>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  label="Enter your registered email"
+                  type="email"
+                  fullWidth
+                  variant="outlined"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                />
+                {forgotMessage && (
+                  <Typography sx={{ mt: 1, color: 'success.main' }}>{forgotMessage}</Typography>
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpenForgotModal(false)}>Back to login</Button>
+                <Button onClick={handleForgotPasswordSubmit}>
+                  Submit
+                </Button>
+              </DialogActions>
+            </Dialog>
+
           </Box>
         </Grid>
       </Grid>
