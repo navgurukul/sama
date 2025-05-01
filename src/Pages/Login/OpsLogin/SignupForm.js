@@ -9,11 +9,13 @@ import {
 } from '@mui/material';
 
 const SignupForm = () => {
+  
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
+    Name: '',
+    Email: '',
+    Password: '',
   });
+  
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -27,7 +29,7 @@ const SignupForm = () => {
     setLoading(true);
 
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbxoV7zFVG8BmfF9T60EbCRuEqpmVIR2igbeWAca7kdL-R07Lhdmmk14xOskgSToLPA6/exec', {
+      await fetch(process.env.REACT_APP_UserDetailApi, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,6 +37,7 @@ const SignupForm = () => {
         mode: 'no-cors',
         body: JSON.stringify({
           ...formData,
+          type: 'addRegistration',
           status: 'Data entered'
         }),
       });
@@ -59,7 +62,7 @@ const SignupForm = () => {
               <TextField
                 fullWidth
                 label="Name"
-                name="name"
+                name="Name"
                 value={formData.name}
                 onChange={handleChange}
                 margin="normal"
@@ -69,7 +72,7 @@ const SignupForm = () => {
               <TextField
                 fullWidth
                 label="Email"
-                name="email"
+                name="Email"
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
@@ -80,7 +83,7 @@ const SignupForm = () => {
               <TextField
                 fullWidth
                 label="Password"
-                name="password"
+                name="Password"
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -105,7 +108,6 @@ const SignupForm = () => {
             <Typography variant="h6" color="primary">
               Your data is being submitted and reviewed by admin.
             </Typography>
-            {/* <CircularProgress sx={{ mt: 3 }} /> */}
           </Box>
         )}
       </Box>

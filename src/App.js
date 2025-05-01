@@ -60,6 +60,7 @@ import OpsWelcome from './components/OPS/OpsWelcome';
 import Audit from './components/OPS/LaptopAudit';
 import LaptopDetails from "./Pages/LaptopTagging/LaptopDetails";
 import SignupForm from './Pages/Login/OpsLogin/SignupForm';
+import Registration from './components/Header/Registration';
 
 
 function App() {
@@ -199,6 +200,7 @@ function App() {
               />
               <Route path="/edit-user/:id" element={<EditUserPage />} />
               <Route path="/signup" element={<SignupForm />} />
+              <Route path="/registration" element={<Registration />} />
               
               <Route path="/yearly-reporting/:id" element={
                 <PrivateRoute reqired={'ngo'} ngoType="1 to many">

@@ -1,8 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Typography, Box, Container, Grid, FormLabel, CircularProgress } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Container,
+  Grid,
+  FormLabel,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Paper,
+  Divider,
+  Alert,
+  Fade,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import EmailIcon from '@mui/icons-material/Email';
 import login_ngo from "./assets/login_ngo.svg";
-import AttentionNeeded from "../../../components/AttentionNeeded/AttentionNeeded"
+import AttentionNeeded from "../../../components/AttentionNeeded/AttentionNeeded";
 
 function Opslogin() {
   const [email, setEmail] = useState('');
@@ -15,13 +35,18 @@ function Opslogin() {
   const [pendingStatuses, setPendingStatuses] = useState([]);
   const navigate = useNavigate();
   const [openSignup, setOpenSignup] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [openForgotModal, setOpenForgotModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotMessage, setForgotMessage] = useState('');
+  const [forgotSubmitting, setForgotSubmitting] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
           `${process.env.REACT_APP_UserDetailApi}`,
-          // 'https://script.google.com/macros/s/AKfycbzuFPeG0cosIEGBocwuJ72DWUH6zcg7MtawkOuvOifXqHnm1QlaR7ESxiLKzGua-WQp/exec'
         );
         const result = await response.json();
         setData(result);
@@ -31,7 +56,6 @@ function Opslogin() {
     };
     fetchData();
   }, []);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,12 +81,10 @@ function Opslogin() {
       }
       else
         if (user?.Role?.includes('ngo')) {
-          // navigate('/beneficiarydata');
           try {
             // First API call to fetch registration data
             const response = await fetch(
               `${process.env.REACT_APP_NgoInformationApi}?type=registration`
-              // 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
             );
             const result = await response.json();
             const finduser = result.data.find(item => item.Id === user["Ngo Id"]);
@@ -72,7 +94,6 @@ function Opslogin() {
                 // Second API call to check document status
                 const documentResponse = await fetch(
                   `${process.env.REACT_APP_NgoInformationApi}?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
-                  // `https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
                 );
                 const documentResult = await documentResponse.json();
 
@@ -90,9 +111,9 @@ function Opslogin() {
                     if (value.status !== "Success" && value.status !== "Pending Verification") {
                       if (value.status === "") {
                         emptyStatuses.push(key);
-                      } 
+                      }
                       failed.push(key); // Collect keys with failed statuses
-                      
+
                     } else if (value.status === "Pending Verification") {
                       pending.push(key); // Collect keys with pending verification statuses
                     }
@@ -117,7 +138,6 @@ function Opslogin() {
                 if (pending.length > 0) {
                   // If there are pending statuses, navigate to /documentupload
                   setPendingStatuses(pending); // Update state to handle pending statuses
-                  // navigate('/documentupload', { state: { pendingStatuses: pending } });
                   navigate('/submission-success');
                   return;
                 }
@@ -158,6 +178,58 @@ function Opslogin() {
     }
     setLoder(false);
   };
+
+  const handleForgotPasswordSubmit = async () => {
+    if (!forgotEmail) {
+      setForgotMessage('Please enter your email address');
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(forgotEmail)) {
+      setForgotMessage('Please enter a valid email address');
+      return;
+    }
+
+    setForgotSubmitting(true);
+    setForgotMessage('');
+    
+    try {
+      await fetch(`${process.env.REACT_APP_UserDetailApi}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors', // opaque response
+        body: JSON.stringify({ email: forgotEmail, type: 'forgotPassword' }),
+      });
+      
+      // We assume it worked since we can't read the response
+      setForgotSuccess(true);
+      setForgotMessage('Password reset link has been sent to your email');
+      
+      // Reset after 5 seconds
+      setTimeout(() => {
+        if (forgotSuccess) {
+          setOpenForgotModal(false);
+          setForgotEmail('');
+          setForgotMessage('');
+          setForgotSuccess(false);
+        }
+      }, 5000);
+      
+    } catch (error) {
+      console.error('Error sending reset email:', error);
+      setForgotMessage('An error occurred. Please try again later.');
+    } finally {
+      setForgotSubmitting(false);
+    }
+  };
+
+  const handleCloseForgotModal = () => {
+    setOpenForgotModal(false);
+    setForgotEmail('');
+    setForgotMessage('');
+    setForgotSuccess(false);
+  };
+
   return (
     <Container maxWidth="md" sx={{ my: 10 }}>
       <Grid container spacing={10} alignItems="center">
@@ -197,16 +269,159 @@ function Opslogin() {
                 variant="contained"
                 sx={{ width: 'auto', alignSelf: 'start', mt: 2, borderRadius: "100px" }}
               >
-                {loder ? <CircularProgress color='white' /> : "Login"}
+                {loder ? <CircularProgress size={24} color="inherit" /> : "Login"}
               </Button>
-              {/* <Button
+              <Button
                 onClick={() => navigate('/signup')}
                 variant="outlined"
-                sx={{width: 'auto', alignSelf: 'start', mt: 2, borderRadius: "100px" }}
+                sx={{ width: 'auto', alignSelf: 'start', mt: 2, borderRadius: "100px" }}
               >
                 Sign Up
-              </Button>         */}
-              </Box>            
+              </Button>
+            </Box>
+            <Typography
+              sx={{
+                mt: 2,
+                color: 'primary.main',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                width: 'fit-content'
+              }}
+              onClick={() => setOpenForgotModal(true)}
+            >
+              Forgot Password?
+            </Typography>
+            
+            {/* Improved Forgot Password Dialog */}
+            <Dialog 
+              open={openForgotModal} 
+              onClose={handleCloseForgotModal}
+              maxWidth="sm"
+              fullWidth
+              PaperProps={{
+                sx: {
+                  borderRadius: 2,
+                  p: 1
+                }
+              }}
+            >
+              <DialogTitle sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                pb: 1
+              }}>
+                <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+                  Reset Password
+                </Typography>
+                <IconButton 
+                  edge="end" 
+                  color="inherit" 
+                  onClick={handleCloseForgotModal} 
+                  aria-label="close"
+                >
+                  <CloseIcon />
+                </IconButton>
+              </DialogTitle>
+              
+              <Divider />
+              
+              <DialogContent sx={{ py: 3 }}>
+                {forgotSuccess ? (
+                  <Fade in={forgotSuccess}>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center', 
+                      textAlign: 'center',
+                      gap: 2,
+                      py: 2
+                    }}>
+                      <Box sx={{ 
+                        backgroundColor: 'success.light', 
+                        borderRadius: '50%', 
+                        p: 2,
+                        color: 'white'
+                      }}>
+                        <EmailIcon fontSize="large" />
+                      </Box>
+                      
+                      <Typography variant="h6" component="div">
+                        Email Sent Successfully
+                      </Typography>
+                      
+                      <Typography variant="body2" color="text.secondary">
+                        We've sent password reset instructions to:
+                      </Typography>
+                      
+                      <Typography variant="body1" fontWeight="bold">
+                        {forgotEmail}
+                      </Typography>
+                      
+                      <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 400 }}>
+                        Please check your inbox and follow the instructions to reset your password.
+                      </Typography>
+                      
+                      <CircularProgress 
+                        variant="determinate" 
+                        value={100} 
+                        size={20} 
+                        thickness={5}
+                        sx={{ mt: 2, color: 'success.main' }} 
+                      />
+                    </Box>
+                  </Fade>
+                ) : (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Enter your registered email address below. We'll send you instructions to reset your password.
+                    </Typography>
+                    
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      label="Email Address"
+                      type="email"
+                      fullWidth
+                      variant="outlined"
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      error={!!forgotMessage}
+                      helperText={forgotMessage}
+                      InputProps={{
+                        startAdornment: (
+                          <EmailIcon color="action" sx={{ mr: 1 }} />
+                        ),
+                      }}
+                    />
+                  </Box>
+                )}
+              </DialogContent>
+              
+              {!forgotSuccess && (
+                <DialogActions sx={{ px: 3, pb: 3 }}>
+                  <Button 
+                    onClick={handleCloseForgotModal}
+                    variant="outlined"
+                    sx={{ borderRadius: 100, px: 3 }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleForgotPasswordSubmit}
+                    variant="contained"
+                    sx={{ borderRadius: 100, px: 3 }}
+                    disabled={forgotSubmitting}
+                  >
+                    {forgotSubmitting ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : (
+                      "Send Reset Link"
+                    )}
+                  </Button>
+                </DialogActions>
+              )}
+            </Dialog>
           </Box>
         </Grid>
       </Grid>

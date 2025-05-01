@@ -56,6 +56,15 @@ const getInvolvedItems = [
   { text: "Community Partners", href: "/communitypartners" },
 ];
 
+const opsTabs = [
+  { label: "Warehouse Operations", path: "/laptop-tagging" },
+  { label: "Laptop Detail Form", path: "/laptopinventory" },
+  { label: "NGO Form", path: "/ngoregistration" },
+  { label: "Edit Questions", path: "/donormanager" },
+  { label: "Laptop with Issues", path: "/laptop-with-issues" },
+  { label: "Laptop Audit", path: "/audit" },
+];
+
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -129,15 +138,6 @@ const Navbar = () => {
 
   const role = JSON.parse(localStorage.getItem('role') || '[]');
 
-  const opsTabs = [
-    { label: "Warehouse Operations", path: "/laptop-tagging" },
-    { label: "Laptop Detail Form", path: "/laptopinventory" },
-    { label: "NGO Form", path: "/ngoregistration" },
-    { label: "Edit Questions", path: "/donormanager" },
-    { label: "Laptop with Issues", path: "/laptop-with-issues" },
-    { label: "Laptop Audit", path: "/audit" },
-  ];
-
   // Render OPS header with responsiveness
   const renderOpsHeader = () => {
     if (isMobileOrTablet) {
@@ -145,16 +145,16 @@ const Navbar = () => {
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
           {!isRouteMatch(location.pathname, routePatterns) && (
-            <Box 
-              component="img" 
-              src={logo} 
-              alt="Logo" 
-              className="header-logo" 
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              className="header-logo"
               sx={{ cursor: 'pointer' }}
-              onClick={() => navigate("/ops")}
+              onClick={() => navigate("/ngoregistration")}
             />
           )}
-          
+
           <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
             <IconButton
               edge="start"
@@ -165,7 +165,7 @@ const Navbar = () => {
             >
               <MenuIcon />
             </IconButton>
-            
+
             <Avatar
               alt="Profile"
               src={ProfileImg}
@@ -195,10 +195,10 @@ const Navbar = () => {
             >
               <List>
                 {opsTabs.map((tab) => (
-                  <ListItem 
-                    button 
-                    key={tab.path} 
-                    component={Link} 
+                  <ListItem
+                    button
+                    key={tab.path}
+                    component={Link}
                     to={tab.path}
                     selected={activeTab === tab.path}
                     onClick={() => {
@@ -219,16 +219,16 @@ const Navbar = () => {
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
           {!isRouteMatch(location.pathname, routePatterns) && (
-            <Box 
-              component="img" 
-              src={logo} 
-              alt="Logo" 
-              className="header-logo" 
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              className="header-logo"
               sx={{ cursor: 'pointer' }}
-              onClick={() => navigate("/ops")}
+              onClick={() => navigate("/ngoregistration")}
             />
           )}
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', mr: 3 }}>
             <Tabs
               value={activeTab}
@@ -288,6 +288,94 @@ const Navbar = () => {
     }
   };
 
+  const renderAdminHeader = () => {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+        {!isRouteMatch(location.pathname, routePatterns) && (
+          <Box
+            component="img"
+            src={logo}
+            alt="Logo"
+            className="header-logo"
+            sx={{ cursor: 'pointer' }}
+            onClick={() => navigate("/ngo")}
+          />
+        )}
+
+        {isLoggedIn && role.includes("admin") && (
+          <Button
+            variant="contained"
+            sx={{
+              marginLeft: 2,
+              borderRadius: "100px",
+              backgroundColor: "primary.main",
+            }}
+            onClick={() => navigate("/registration")}
+          >
+            <Typography variant="subtitle1" sx={{ color: "#ffffff" }}>
+              Registration
+            </Typography>
+          </Button>
+        )}
+
+        <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', ml: 0 }}>
+          <Tabs
+            value={activeTab}
+            onChange={(e, newValue) => {
+              setActiveTab(newValue);
+              navigate(newValue);
+            }}
+            sx={{
+              minHeight: 'unset',
+              '& .MuiTabs-indicator': { display: 'none' },
+              '& .MuiTabs-flexContainer': {
+                gap: '0px'
+              }
+            }}
+          >
+            {opsTabs.map((tab) => (
+              <Tab
+                key={tab.path}
+                label={
+                  <Typography variant="body1" component="span">
+                    {tab.label}
+                  </Typography>
+                }
+                value={tab.path}
+                component={Link}
+                to={tab.path}
+                sx={{
+                  color: 'text.secondary',
+                  textTransform: 'none',
+                  minWidth: 'unset',
+                  minHeight: 'unset',
+                  px: 2,
+                  py: 1,
+                  '&.Mui-selected': {
+                    color: 'text.primary',
+                    fontWeight: 'medium'
+                  }
+                }}
+              />
+            ))}
+          </Tabs>
+        </Box>
+
+        <Avatar
+          alt="Profile"
+          src={ProfileImg}
+          sx={{
+            width: 40,
+            height: 40,
+            cursor: "pointer",
+            "&:hover": { opacity: 0.8 },
+          }}
+          onClick={handleProfileClick}
+        />
+      </Box>
+    );
+  };
+
   return (
     <AppBar
       position="sticky"
@@ -317,22 +405,32 @@ const Navbar = () => {
             <BackButton />
           ) : (
             <>
-              {!isLoggedIn && (
-                <Box
-                  component="img"
-                  src={logo}
-                  alt="Logo"
-                  className="header-logo"
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    const role = JSON.parse(localStorage.getItem("role") || "[]");
-                    if (role.includes("ops")) {
-                      navigate("/ops");
-                    } else {
-                      navigate("/");
-                    }
-                  }}
-                />
+              {isLoggedIn && role.includes("admin") ? (
+                renderAdminHeader()
+              ) : isLoggedIn && role.includes("ops") ? (
+                renderOpsHeader()
+              ) : (
+                <>
+                  {!isLoggedIn && (
+                    <Box
+                      component="img"
+                      src={logo}
+                      alt="Logo"
+                      className="header-logo"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const role = JSON.parse(localStorage.getItem("role") || "[]");
+                        if (role.includes("ops")) {
+                          navigate("/ops");
+                        }else if (role.includes("admin")) {
+                          navigate("/ngo");
+                        } else {
+                          navigate("/");
+                        }
+                      }}
+                    />
+                  )}
+                </>
               )}
             </>
           )}
@@ -360,52 +458,22 @@ const Navbar = () => {
             </Box>
           )}
 
-          {isLoggedIn && (() => {
-            const role = JSON.parse(localStorage.getItem("role") || "[]");
-
-            // Admin Role Header
-            if (role.includes("admin")) {
-              return (
-                <Box className="drop">
-                  <Avatar
-                    alt="Profile"
-                    src={ProfileImg}
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      cursor: "pointer",
-                      "&:hover": { opacity: 0.8 },
-                      ml: 'auto'
-                    }}
-                    onClick={handleProfileClick}
-                  />
-                </Box>
-              );
-            }
-
-            // OPS Role Header
-            if (role.includes("ops")) {
-              return renderOpsHeader();
-            }
-
-            // Default logged-in header
-            return (
-              <Box className="drop">
-                <Avatar
-                  alt="Profile"
-                  src={ProfileImg}
-                  sx={{
-                    width: 40,
-                    height: 40,
-                    cursor: "pointer",
-                    "&:hover": { opacity: 0.8 },
-                    ml: 'auto'
-                  }}
-                  onClick={handleProfileClick}
-                />
-              </Box>
-            );
-          })()}
+          {isLoggedIn && !role.includes("admin") && !role.includes("ops") && (
+            <Box className="drop">
+              <Avatar
+                alt="Profile"
+                src={ProfileImg}
+                sx={{
+                  width: 40,
+                  height: 40,
+                  cursor: "pointer",
+                  "&:hover": { opacity: 0.8 },
+                  ml: 'auto'
+                }}
+                onClick={handleProfileClick}
+              />
+            </Box>
+          )}
 
           {/* Dashboard Login and Submit Requirements Buttons */}
           <Box sx={{ marginLeft: "auto" }}>
