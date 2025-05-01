@@ -2,8 +2,10 @@ import React from 'react';
 import { Tooltip, IconButton } from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import PrintIcon from '@mui/icons-material/Print';
+import TableChartIcon from '@mui/icons-material/TableChart';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 const ExportTools = ({ data }) => {
   const handleDownloadPDF = () => {
@@ -124,6 +126,18 @@ const ExportTools = ({ data }) => {
     WindowPrint.print();
   };
 
+  const handleDownloadExcel = () => {
+    // Create a worksheet from the filtered data
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    
+    // Create a workbook and add the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Laptop Data");
+    
+    // Generate Excel file and trigger download
+    XLSX.writeFile(workbook, "laptop_data.xlsx");
+  };
+
   return (
     <React.Fragment>
       <Tooltip title={"Download PDF"}>
@@ -134,6 +148,11 @@ const ExportTools = ({ data }) => {
       <Tooltip title={"Print"}>
         <IconButton onClick={handlePrint}>
           <PrintIcon />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title={"Download Excel"}>
+        <IconButton onClick={handleDownloadExcel}>
+          <TableChartIcon />
         </IconButton>
       </Tooltip>
     </React.Fragment>
