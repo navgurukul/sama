@@ -29,7 +29,7 @@ const SignupForm = () => {
     setLoading(true);
 
     try {
-      await fetch(process.env.REACT_APP_UserDetailApi, {
+      await fetch(process.env.REACT_APP_UserDetailsApis, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

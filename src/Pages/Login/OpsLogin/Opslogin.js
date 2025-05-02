@@ -46,7 +46,7 @@ function Opslogin() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_UserDetailApi}`,
+          `${process.env.REACT_APP_UserDetailsApis}`,
         );
         const result = await response.json();
         setData(result);
@@ -194,7 +194,7 @@ function Opslogin() {
     setForgotMessage('');
     
     try {
-      await fetch(`${process.env.REACT_APP_UserDetailApi}`, {
+      await fetch(`${process.env.REACT_APP_UserDetailsApis}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         mode: 'no-cors', // opaque response
@@ -312,7 +312,7 @@ function Opslogin() {
                 pb: 1
               }}>
                 <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-                  Reset Password
+                  Forgot Password
                 </Typography>
                 <IconButton 
                   edge="end" 
@@ -351,7 +351,7 @@ function Opslogin() {
                       </Typography>
                       
                       <Typography variant="body2" color="text.secondary">
-                        We've sent password reset instructions to:
+                        We've sent user name & password to:
                       </Typography>
                       
                       <Typography variant="body1" fontWeight="bold">
@@ -359,7 +359,7 @@ function Opslogin() {
                       </Typography>
                       
                       <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 400 }}>
-                        Please check your inbox and follow the instructions to reset your password.
+                        Please check your inbox and find your user name & password.
                       </Typography>
                       
                       <CircularProgress 
@@ -374,7 +374,7 @@ function Opslogin() {
                 ) : (
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <Typography variant="body2" color="text.secondary">
-                      Enter your registered email address below. We'll send you instructions to reset your password.
+                      Enter your registered email address below. We'll send you the user name & password.
                     </Typography>
                     
                     <TextField
