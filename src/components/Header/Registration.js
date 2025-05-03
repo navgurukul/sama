@@ -63,7 +63,8 @@ const Registration = () => {
     const handleDialogClose = (confirm) => {
         if (confirm) {
             if (newStatus === "Reject") {
-                updateStatusAndRole("Reject", ""); // No role needed
+                // Show another confirmation dialog before rejecting
+                setOpenFinalConfirmDialog(true);
             } else {
                 setOpenRoleDialog(true); // Only open dialog if not rejected
             }
@@ -72,7 +73,8 @@ const Registration = () => {
         }
         setOpenDialog(false);
     };
-    
+
+
 
     const handleRoleDialogClose = (confirm) => {
         if (confirm) {
@@ -85,13 +87,14 @@ const Registration = () => {
 
     const handleFinalConfirmClose = async (confirm) => {
         if (confirm) {
-            await updateStatusAndRole(); // Final update
+            await updateStatusAndRole(); // This works for both Approve and Reject
         } else {
             setSelectedRole('');
             setNewStatus(currentRow.Status);
         }
         setOpenFinalConfirmDialog(false);
     };
+
 
     const updateStatusAndRole = async (statusParam = newStatus, roleParam = selectedRole) => {
         const email = currentRow.Email;
@@ -100,7 +103,7 @@ const Registration = () => {
         updatedData[index].Status = statusParam;
         updatedData[index].Role = roleParam;
         setData(updatedData);
-    
+
         try {
             const response = await fetch(process.env.REACT_APP_UserDetailApi, {
                 method: 'POST',
@@ -121,7 +124,7 @@ const Registration = () => {
             console.error('Error updating:', error);
         }
     };
-    
+
 
     if (loading) {
         return (
@@ -218,10 +221,12 @@ const Registration = () => {
                 </DialogActions>
             </Dialog>
             <Dialog open={openFinalConfirmDialog} onClose={() => setOpenFinalConfirmDialog(false)}>
-                <DialogTitle>Confirm Role & Status</DialogTitle>
+                <DialogTitle>Confirm {newStatus === "Reject" ? "Rejection" : "Role & Status"}</DialogTitle>
                 <DialogContent>
                     <Typography>
-                        Are you sure you want to set status to <strong>{newStatus}</strong> and role to <strong>{selectedRole}</strong> for <strong>{currentRow?.Name}</strong>?
+                        {newStatus === "Reject"
+                            ? `Are you sure you want to reject ${currentRow?.Name}?`
+                            : `Are you sure you want to set status to ${newStatus} and role to ${selectedRole} for ${currentRow?.Name}?`}
                     </Typography>
                 </DialogContent>
                 <DialogActions>
@@ -229,6 +234,7 @@ const Registration = () => {
                     <Button onClick={() => handleFinalConfirmClose(true)}>Yes</Button>
                 </DialogActions>
             </Dialog>
+
 
         </Container>
     );
