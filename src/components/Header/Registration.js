@@ -496,8 +496,7 @@ const Registration = () => {
 
                 <DialogActions sx={{ px: 3, pb: 2 }}>
                     <Button
-                        variant="outlined"
-                        color="secondary"
+                        color="primary"
                         onClick={() => {
                             setRejectReason('');
                             setOpenReasonDialog(false);

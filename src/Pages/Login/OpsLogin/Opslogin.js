@@ -13,8 +13,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  IconButton,
+  InputAdornment
 } from '@mui/material';
 import login_ngo from "./assets/login_ngo.svg";
+import EmailIcon from '@mui/icons-material/Email';
+import CloseIcon from '@mui/icons-material/Close'
 import AttentionNeeded from "../../../components/AttentionNeeded/AttentionNeeded"
 
 function Opslogin() {
@@ -183,7 +187,7 @@ function Opslogin() {
       setForgotMessage('Please enter your email.');
       return;
     }
-  
+
     try {
       await fetch(`${process.env.REACT_APP_UserDetailApi}`, {
         method: 'POST',
@@ -191,7 +195,7 @@ function Opslogin() {
         mode: 'no-cors', // opaque response
         body: JSON.stringify({ email: forgotEmail, type: 'forgotPassword' }),
       });
-  
+
       // We assume it worked (since no way to read the response)
       setForgotMessage('If your email is registered, you will receive reset instructions.');
     } catch (error) {
@@ -199,10 +203,10 @@ function Opslogin() {
       setForgotMessage('An error occurred. Please try again later.');
     }
   };
-  
-  
-  
-  
+
+
+
+
 
   return (
     <Container maxWidth="md" sx={{ my: 10 }}>
@@ -265,30 +269,84 @@ function Opslogin() {
             >
               Forgot Password?
             </Typography>
-            <Dialog open={openForgotModal} onClose={() => setOpenForgotModal(false)}>
-              <DialogTitle>Reset Password</DialogTitle>
-              <DialogContent>
+            <Dialog
+              open={openForgotModal}
+              onClose={() => setOpenForgotModal(false)}
+              PaperProps={{
+                sx: {
+                  borderRadius: 2,
+                  p: 2,
+                  width: '100%',
+                  maxWidth: 500,
+                },
+              }}
+            >
+              <DialogTitle
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: '1.3rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderBottom: '1px solid #e0e0e0',
+                  pb: 1,
+                }}
+              >
+                Forgot Password
+                <IconButton
+                  onClick={() => setOpenForgotModal(false)}
+                  size="small"
+                >
+                  <CloseIcon />
+                </IconButton>
+              </DialogTitle>
+
+              <DialogContent sx={{ mt: 1 }}>
+                <Typography sx={{ mb: 2 }}>
+                  Enter your registered email address below. We’ll send you the user name & password.
+                </Typography>
+
                 <TextField
                   autoFocus
                   margin="dense"
-                  label="Enter your registered email"
+                  label="Email Address" // <-- This is correct
                   type="email"
                   fullWidth
                   variant="outlined"
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <EmailIcon />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
+
+
                 {forgotMessage && (
-                  <Typography sx={{ mt: 1, color: 'success.main' }}>{forgotMessage}</Typography>
+                  <Typography sx={{ mt: 1, color: 'success.main' }}>
+                    {forgotMessage}
+                  </Typography>
                 )}
               </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setOpenForgotModal(false)}>Back to login</Button>
-                <Button onClick={handleForgotPasswordSubmit}>
-                  Submit
+
+              <DialogActions sx={{ justifyContent: 'flex-end', px: 3, pb: 2 }}>
+                <Button onClick={() => setOpenForgotModal(false)} variant="outlined">
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ backgroundColor: '#4C6B49' }}
+                  onClick={handleForgotPasswordSubmit}
+                >
+                  Confirm
                 </Button>
               </DialogActions>
             </Dialog>
+
 
           </Box>
         </Grid>

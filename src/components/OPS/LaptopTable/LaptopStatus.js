@@ -1,22 +1,62 @@
 import React, {useEffect, useState} from 'react';
 import { Select, MenuItem, Checkbox } from '@mui/material';
 
-export const LaptopStatusDropdown = ({ value, onChange }) => {
+
+// export const LaptopStatusDropdown = ({ value, onChange }) => {
+//   return (
+//     <Select
+//       value={value || ''}
+//       onChange={onChange}
+//       displayEmpty
+//       style={{ borderRadius: "20px" }}
+//       fullWidth
+//     >
+//       <MenuItem value="Laptop Received">Laptop Received</MenuItem>
+//       <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
+//       <MenuItem value="To be dispatch">To Be Dispatch</MenuItem>
+//       <MenuItem value="Donated">Allocated</MenuItem>
+//     </Select>
+//   );
+// };
+
+
+export const LaptopStatusDropdown = ({ value = 'In Transit', onChange }) => {
+  let options = [];
+
+  if (value === 'In Transit') {
+    options = ['Laptop Received'];
+  } else if (value === 'Laptop Received') {
+    options = ['Allocated'];
+  } else if (value === 'Allocated') {
+    options = ['Distributed'];
+  } else if (value === 'Distributed') {
+    options = ['Distributed']; // Locked final status
+  }
+
   return (
     <Select
-      value={value || ''}
+      value={value}
       onChange={onChange}
       displayEmpty
       style={{ borderRadius: "20px" }}
       fullWidth
     >
-      <MenuItem value="Laptop Received">Laptop Received</MenuItem>
-      <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
-      <MenuItem value="To be dispatch">To Be Dispatch</MenuItem>
-      <MenuItem value="Donated">Allocated</MenuItem>
+      {/* Always show the current value as the selected option */}
+      <MenuItem value={value}>{value}</MenuItem>
+
+      {/* Show valid next status only if it's different from current */}
+      {options.map(
+        (status) =>
+          status !== value && (
+            <MenuItem key={status} value={status}>
+              {status}
+            </MenuItem>
+          )
+      )}
     </Select>
   );
 };
+
 
 
 export const AssignedTo = ({ value, onChange }) => {
