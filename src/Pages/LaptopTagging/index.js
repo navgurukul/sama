@@ -164,7 +164,6 @@ function LaptopTagging() {
 
   // Modified to accept pre-filtered data and maintain selections
   const handleSearch = (preFilteredData = null) => {
-    // Use either the provided pre-filtered data or all data
     const dataToFilter = preFilteredData || allData;
 
     if (!idQuery && !macQuery) {
@@ -241,7 +240,6 @@ function LaptopTagging() {
     setStatusFilter('all');
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
-    // Reset data to all data (or search results if search is active)
     if (idQuery || macQuery) {
       handleSearch();
     } else {
@@ -265,10 +263,8 @@ function LaptopTagging() {
   const handleWorkingToggle = (event, rowIndex) => {
     event.stopPropagation();
     const laptopData = data[rowIndex];
-    // Invert the logic - checked means Not Working
     const newStatus = event.target.checked ? "Not Working" : "Working";
 
-    // Immediately update the UI for better responsiveness
     const updatedData = [...data];
     updatedData[rowIndex].Working = newStatus;
     setData(updatedData);
@@ -460,7 +456,6 @@ function LaptopTagging() {
     setOpen(true);
   };
 
-  // Calculate visible selections - items that are currently both selected and displayed
   const visibleSelections = data
     .filter(item => selectedRows.includes(item.ID))
     .map(item => data.findIndex(d => d.ID === item.ID))
@@ -470,20 +465,19 @@ function LaptopTagging() {
   const columns = getTableColumns(
     data,
     taggedLaptops,
-    handleWorkingToggle,    // For Working checkbox
-    handleStatusChange,     // For Status dropdown
-    handleAssignedToChange, // For Assigned To dropdown
-    handleDonatedToChange,  // For Donated To dropdown
+    handleWorkingToggle,    
+    handleStatusChange,     
+    handleAssignedToChange, 
+    handleDonatedToChange,  
     (props) => (
       <EditButton
         {...props}
-        setRefresh={setRefresh}  // Make sure this is passed
-        refresh={refresh}        // And this too
+        setRefresh={setRefresh}  
+        refresh={refresh}        
       />
     )
   );
 
-  // Get count of hidden selections (selected but not visible in current filter/search)
   const hiddenSelectionsCount = selectedRows.length - visibleSelections.length;
 
   return (
@@ -544,48 +538,6 @@ function LaptopTagging() {
         </Grid>
       )}
 
-      {/* Data Table */}
-      {/* {loading ? (
-        <CircularProgress />
-      ) : (
-        // <div style={{ position: 'relative' }}>
-          <MUIDataTable
-            elevation={0}
-            title={`Laptop Data (${data.length} records)`}
-            data={data}
-            columns={columns}
-            options={{
-              responsive: 'standard',
-              customToolbar: () => <ExportTools data={data} />,
-              selectableRows: 'multiple',
-              onRowSelectionChange: handleRowSelection,
-              rowsSelected: visibleSelections,
-              download: false,
-              print: false,
-              sort: false,
-              viewColumns: true,
-              selectToolbarPlacement: 'none', // This removes the delete icon
-              fixedHeader: true,
-              tableBodyHeight: 'calc(100vh - 300px)',
-              rowsPerPageOptions: [10, 25, 50, 100],
-              textLabels: {
-                body: {
-                  noMatch: loading ?
-                    <CircularProgress size={24} /> :
-                    'Sorry, no matching records found',
-                },
-              },
-              setTableProps: () => ({
-                sx: {
-                  '& .MuiTableCell-head': {
-                    backgroundColor: '#f5f5f5',
-                  },
-                  '& .MuiCheckbox-root': {
-                    padding: '0 0 0 12px', // Adjust checkbox padding
-                  },
-                },
-              }),
-            }} */}
       <div id="tableToPrint">
         {loading ? (
           <CircularProgress />
