@@ -89,8 +89,8 @@ const BulkEditPanel = ({
               <MenuItem value="all">No Change</MenuItem>
               <MenuItem value="Laptop Received">Laptop Received</MenuItem>
               <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
-              <MenuItem value="Laptop Tagged">Allocated</MenuItem>
-              <MenuItem value="Laptop Shipped">To be dispatch</MenuItem>
+              <MenuItem value="Allocated">Allocated</MenuItem>
+              <MenuItem value="To be dispatch">To be dispatch</MenuItem>
             </Select>
             <Button
               variant="contained"
