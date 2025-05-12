@@ -43,7 +43,7 @@ function Opslogin() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_UserDetailApi}`,
+          `${process.env.REACT_APP_UserDetailsApis}`,
           // 'https://script.google.com/macros/s/AKfycbzuFPeG0cosIEGBocwuJ72DWUH6zcg7MtawkOuvOifXqHnm1QlaR7ESxiLKzGua-WQp/exec'
         );
         const result = await response.json();
@@ -189,7 +189,7 @@ function Opslogin() {
     }
 
     try {
-      await fetch(`${process.env.REACT_APP_UserDetailApi}`, {
+      await fetch(`${process.env.REACT_APP_UserDetailsApis}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         mode: 'no-cors', // opaque response

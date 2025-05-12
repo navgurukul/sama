@@ -30,7 +30,7 @@ const SignupForm = () => {
 
   useEffect(() => {
     // Fetch the registration data from the backend
-    fetch(`${process.env.REACT_APP_UserDetailApi}?type=getRegistration`) // Replace with your actual Google Apps Script URL
+    fetch(`${process.env.REACT_APP_UserDetailsApis}?type=getRegistration`) // Replace with your actual Google Apps Script URL
       .then((response) => response.json())
       .then((data) => {
         // Extract email addresses from the response
@@ -58,7 +58,7 @@ const SignupForm = () => {
     }
 
     try {
-      await fetch(process.env.REACT_APP_UserDetailApi, {
+      await fetch(process.env.REACT_APP_UserDetailsApis, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

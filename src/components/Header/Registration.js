@@ -42,7 +42,7 @@ const Registration = () => {
     const fetchData = async () => {
         try {
             const response = await fetch(
-                `${process.env.REACT_APP_UserDetailApi}?type=getRegistration`
+                `${process.env.REACT_APP_UserDetailsApis}?type=getRegistration`
             );
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -113,7 +113,7 @@ const Registration = () => {
         setData(updatedData);
 
         try {
-            const response = await fetch(process.env.REACT_APP_UserDetailApi, {
+            const response = await fetch(process.env.REACT_APP_UserDetailsApis, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
