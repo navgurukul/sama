@@ -68,7 +68,7 @@ const Registration = () => {
     const handleDialogClose = (confirm) => {
         if (confirm) {
             if (newStatus === 'Reject') {
-                updateStatusAndRole('Reject', '', rejectionReason); // Send rejection reason
+                setOpenFinalConfirmDialog(true);
             } else {
                 setOpenRoleDialog(true); // Only open dialog if not rejected
             }
@@ -233,11 +233,12 @@ const Registration = () => {
             </Dialog>
 
             <Dialog open={openFinalConfirmDialog} onClose={() => setOpenFinalConfirmDialog(false)}>
-                <DialogTitle>Confirm Role & Status</DialogTitle>
+                <DialogTitle>Confirm {newStatus === "Reject" ? "Rejection" : "Role & Status"}</DialogTitle>
                 <DialogContent>
                     <Typography>
-                        Are you sure you want to set status to <strong>{newStatus}</strong> and role to <strong>{selectedRole}</strong> for <strong>{currentRow?.Name}</strong>?
-                    </Typography>
+                        {newStatus === "Reject"
+                            ? `Are you sure you want to reject ${currentRow?.Name}?`
+                            : `Are you sure you want to set status to ${newStatus} and role to ${selectedRole} for ${currentRow?.Name}?`}                    </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => handleFinalConfirmClose(false)}>Cancel</Button>
