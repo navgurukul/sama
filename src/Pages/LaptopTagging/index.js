@@ -5,6 +5,10 @@ import {
   CircularProgress,
   Grid,
   Typography,
+  Paper,
+  FormControl,
+  Select,
+  MenuItem
 } from '@mui/material';
 import MUIDataTable from "mui-datatables";
 import './styles.css';
@@ -15,6 +19,7 @@ import ConfirmationModal from '../../components/OPS/LaptopTable/ConfirmationModa
 import ExportTools from '../../components/OPS/LaptopTable/ExportTools';
 import EditButton from './EditButton';
 import { getTableColumns } from '../../components/OPS/LaptopTable/LaptopTable';
+import BulkDataUpload from './BulkDataUpload';
 
 
 function LaptopTagging() {
@@ -40,6 +45,28 @@ function LaptopTagging() {
 
   const printRef = useRef();
 
+  // Add this state to track selected rows
+  const [selectedRows, setSelectedRows] = useState([]);
+  // Track if the selection is being handled by a search/filter operation
+  const [isProcessingSelection, setIsProcessingSelection] = useState(false);
+
+  const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
+    // If this is triggered by a filter/search operation, ignore it
+    if (isProcessingSelection) return;
+
+    // Get the last clicked row ID
+    const lastSelectedId = data[rowsSelected[rowsSelected.length - 1]]?.ID;
+
+    if (!lastSelectedId) return;
+
+    setSelectedRows(prev => {
+      // Toggle selection - remove if already selected, add if not
+      return prev.includes(lastSelectedId)
+        ? prev.filter(id => id !== lastSelectedId)
+        : [...prev, lastSelectedId];
+    });
+  };
+
   // Fetch data on component mount and when refresh state changes
   useEffect(() => {
     const loadData = async () => {
@@ -58,35 +85,31 @@ function LaptopTagging() {
     loadData();
   }, [refresh]);
 
-  
-
   // Apply filters when filter values change
   useEffect(() => {
     applyFilters();
   }, [workingFilter, statusFilter, majorIssueFilter, minorIssueFilter, allData]);
 
   // Filter application logic
-  // Modified applyFilters function for LaptopTagging.js
   const applyFilters = () => {
-    let filteredData = [...allData];
-    
+    let filteredData = applyAdditionalFilters(allData);
+
     // Apply working filter
     if (workingFilter !== 'all') {
-      filteredData = filteredData.filter(laptop => 
+      filteredData = filteredData.filter(laptop =>
         laptop.Working === workingFilter
       );
     }
-    
+
     // Apply status filter
     if (statusFilter !== 'all') {
-      filteredData = filteredData.filter(laptop => 
+      filteredData = filteredData.filter(laptop =>
         laptop.Status === statusFilter
       );
     }
-    
+
     // Apply major issue filter
     if (majorIssueFilter !== 'all') {
-      
       if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
         // General yes/no filter
         filteredData = filteredData.filter(laptop => {
@@ -96,19 +119,18 @@ function LaptopTagging() {
       } else {
         // Specific issue filter - check if the specific issue exists in the MajorIssueDetails field
         filteredData = filteredData.filter(laptop => {
-
           // Assuming MajorIssueDetails is either an array or a comma-separated string
-          const issueDetails = typeof laptop["Major Issues"] === 'string' 
+          const issueDetails = typeof laptop["Major Issues"] === 'string'
             ? laptop["Major Issues"].split(',').map(issue => issue.trim())
-            : Array.isArray(laptop["Major Issues"]) 
+            : Array.isArray(laptop["Major Issues"])
               ? laptop["Major Issues"]
               : [];
-              
+
           return issueDetails.includes(majorIssueFilter);
         });
       }
     }
-    
+
     // Apply minor issue filter
     if (minorIssueFilter !== 'all') {
       if (minorIssueFilter === 'yes' || minorIssueFilter === 'no') {
@@ -120,103 +142,97 @@ function LaptopTagging() {
       } else {
         // Specific issue filter - check if the specific issue exists in the MinorIssueDetails field
         filteredData = filteredData.filter(laptop => {
-
           // Assuming MinorIssueDetails is either an array or a comma-separated string
-          const issueDetails = typeof laptop["Minor Issues"]=== 'string' 
+          const issueDetails = typeof laptop["Minor Issues"] === 'string'
             ? laptop["Minor Issues"].split(',').map(issue => issue.trim())
-            : Array.isArray(laptop["Minor Issues"]) 
-              ? laptop["Minor Issues"] 
+            : Array.isArray(laptop["Minor Issues"])
+              ? laptop["Minor Issues"]
               : [];
-              
+
           return issueDetails.includes(minorIssueFilter);
         });
       }
     }
-    
-    // If there are specific ID or MAC queries, those take precedence
+
+    // Don't reset selections during filtering
     if (idQuery || macQuery) {
-      handleSearch();
+      handleSearch(filteredData);
     } else {
       setData(filteredData);
     }
   };
 
-// Also update the handleSearch function to handle specific issues
-  const handleSearch = () => {
+  // Modified to accept pre-filtered data and maintain selections
+  const handleSearch = (preFilteredData = null) => {
+    const dataToFilter = preFilteredData || allData;
+
     if (!idQuery && !macQuery) {
-      applyFilters();
+      setData(dataToFilter);
       return;
     }
-    
-    let filtered = allData.filter(laptop => {
-      if (idQuery) {
-        return String(laptop.ID).toUpperCase() === idQuery.toUpperCase();
-      }
-      if (macQuery) {
-        return String(laptop['Mac address']).toUpperCase() === macQuery.toUpperCase();
-      }
+
+    // Filter by ID/MAC query
+    let filtered = dataToFilter.filter(laptop => {
+      if (idQuery) return String(laptop.ID).toUpperCase().includes(idQuery.toUpperCase());
+      if (macQuery) return String(laptop['Mac address']).toUpperCase().includes(macQuery.toUpperCase());
       return false;
     });
 
-    // Apply additional filters to search results
+    // Important: Don't modify the selectedRows here
+    // Just update the displayed data
+    setData(filtered);
+  };
+
+  // Helper function to apply additional filters to already filtered data
+  const applyAdditionalFilters = (dataToFilter) => {
+    let filtered = [...dataToFilter];
+
     if (workingFilter !== 'all') {
-      filtered = filtered.filter(laptop => 
-        laptop.Working === workingFilter
-      );
+      filtered = filtered.filter(laptop => laptop.Working === workingFilter);
     }
-    
+
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(laptop => 
-        laptop.Status === statusFilter
-      );
+      filtered = filtered.filter(laptop => laptop.Status === statusFilter);
     }
-    
+
     if (majorIssueFilter !== 'all') {
       if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
-        // General yes/no filter
         filtered = filtered.filter(laptop => {
           const hasMajorIssue = laptop.MajorIssue === true || laptop.MajorIssue === "Yes";
           return majorIssueFilter === 'yes' ? hasMajorIssue : !hasMajorIssue;
         });
       } else {
-        // Specific issue filter
         filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop.MajorIssueDetails === 'string' 
+          const issueDetails = typeof laptop.MajorIssueDetails === 'string'
             ? laptop.MajorIssueDetails.split(',').map(issue => issue.trim())
-            : Array.isArray(laptop.MajorIssueDetails) 
-              ? laptop.MajorIssueDetails 
+            : Array.isArray(laptop.MajorIssueDetails)
+              ? laptop.MajorIssueDetails
               : [];
-              
           return issueDetails.includes(majorIssueFilter);
         });
       }
     }
-    
-    // Apply minor issue filter
+
     if (minorIssueFilter !== 'all') {
       if (minorIssueFilter === 'yes' || minorIssueFilter === 'no') {
-        // General yes/no filter
         filtered = filtered.filter(laptop => {
           const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
           return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
         });
       } else {
-        // Specific issue filter
         filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop.MinorIssueDetails === 'string' 
+          const issueDetails = typeof laptop.MinorIssueDetails === 'string'
             ? laptop.MinorIssueDetails.split(',').map(issue => issue.trim())
-            : Array.isArray(laptop.MinorIssueDetails) 
-              ? laptop.MinorIssueDetails 
+            : Array.isArray(laptop.MinorIssueDetails)
+              ? laptop.MinorIssueDetails
               : [];
-              
           return issueDetails.includes(minorIssueFilter);
         });
       }
     }
-    
-    setData(filtered);
-  };
 
+    return filtered;
+  };
 
   // Reset filters but keep search terms
   const handleResetFilters = () => {
@@ -224,7 +240,6 @@ function LaptopTagging() {
     setStatusFilter('all');
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
-    // Reset data to all data (or search results if search is active)
     if (idQuery || macQuery) {
       handleSearch();
     } else {
@@ -241,35 +256,32 @@ function LaptopTagging() {
     setStatusFilter('all');
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
+    setSelectedRows([]); // Clear selections on full reset
     setData(allData);
   };
-
 
   const handleWorkingToggle = (event, rowIndex) => {
     event.stopPropagation();
     const laptopData = data[rowIndex];
-    // Invert the logic - checked means Not Working
     const newStatus = event.target.checked ? "Not Working" : "Working";
-    
-    // Immediately update the UI for better responsiveness
+
     const updatedData = [...data];
     updatedData[rowIndex].Working = newStatus;
     setData(updatedData);
-  
+
     setSelectedRowIndex(rowIndex);
     setUpdateField('Working');
     setUpdateValue(newStatus);
     setOpen(true);
   };
-  
-  
+
   // Status change handler
   const handleStatusChange = (event, rowIndex) => {
     const newValue = event.target.value;
     const updatedData = [...data];
     updatedData[rowIndex].Status = newValue;
     setData(updatedData);
-    
+
     setSelectedRowIndex(rowIndex);
     setUpdateField('Status');
     setUpdateValue(newValue);
@@ -277,116 +289,151 @@ function LaptopTagging() {
   };
 
   // Assigned To handler
-const handleAssignedToChange = (event, rowIndex) => {
-  const newValue = event.target.value;
-  const updatedData = [...data];
-  updatedData[rowIndex]["Assigned To"] = newValue;
-  setData(updatedData);
-  
-  setSelectedRowIndex(rowIndex);
-  setUpdateField('Assigned To');
-  setUpdateValue(newValue);
-  setOpen(true);
-};
+  const handleAssignedToChange = (event, rowIndex) => {
+    const newValue = event.target.value;
+    const updatedData = [...data];
+    updatedData[rowIndex]["Assigned To"] = newValue;
+    setData(updatedData);
 
-// Donated To handler
-const handleDonatedToChange = (event, rowIndex) => {
-  const newValue = event.target.value;
-  const updatedData = [...data];
-  updatedData[rowIndex]["Allocated To"] = newValue;
-  setData(updatedData);
-  
-  setSelectedRowIndex(rowIndex);
-  setUpdateField('Allocated To');
-  setUpdateValue(newValue);
-  setOpen(true);
-};
+    setSelectedRowIndex(rowIndex);
+    setUpdateField('Assigned To');
+    setUpdateValue(newValue);
+    setOpen(true);
+  };
+
+  // Donated To handler
+  const handleDonatedToChange = (event, rowIndex) => {
+    const newValue = event.target.value;
+    const updatedData = [...data];
+    updatedData[rowIndex]["Allocated To"] = newValue;
+    setData(updatedData);
+
+    setSelectedRowIndex(rowIndex);
+    setUpdateField('Allocated To');
+    setUpdateValue(newValue);
+    setOpen(true);
+  };
 
   const getModalProps = () => {
     let title, message;
-    
-    switch(updateField) {
-      case 'Working':
-        title = "Working Status";
-        message = `Are you sure you want to mark this laptop as ${updateValue}?`;
-        break;
-      case 'Status':
-        title = "Status Update";
-        message = `Are you sure you want to change the status to "${updateValue}"?`;
-        break;
-      case 'Assigned To':
-        title = "Assignment Update";
-        message = `Are you sure you want to assign this laptop to "${updateValue}"?`;
-        break;
-      case 'Allocated To':
-        title = "Donation Update";
-        message = `Are you sure you want to mark this laptop as allocated to "${updateValue}"?`;
-        break;
-      default:
-        title = "Confirm Update";
-        message = "Are you sure you want to make this change?";
+
+    if (selectedRows.length > 0) {
+      title = `Bulk Update ${updateField}`;
+      message = `Are you sure you want to update ${selectedRows.length} laptops' ${updateField} to "${updateValue}"?`;
+    } else {
+      switch (updateField) {
+        case 'Working':
+          title = "Working Status";
+          message = `Are you sure you want to mark this laptop as ${updateValue}?`;
+          break;
+        case 'Status':
+          title = "Status Update";
+          message = `Are you sure you want to change the status to "${updateValue}"?`;
+          break;
+        case 'Assigned To':
+          title = "Assignment Update";
+          message = `Are you sure you want to assign this laptop to "${updateValue}"?`;
+          break;
+        case 'Allocated To':
+          title = "Donation Update";
+          message = `Are you sure you want to mark this laptop as allocated to "${updateValue}"?`;
+          break;
+        default:
+          title = "Confirm Update";
+          message = "Are you sure you want to make this change?";
+      }
     }
-    
     return { title, message };
   };
 
-
   const handleModalConfirm = async () => {
-    if (selectedRowIndex === null) {
-      setOpen(false);
-      return;
+    if (selectedRows.length > 0 && updateField && updateValue) {
+      // Handle bulk update
+      const currentDate = new Date().toISOString().split('T')[0];
+      const SavedData = JSON.parse(localStorage.getItem('_AuthSama_'));
+      const userEmail = SavedData?.[0]?.email || "Email not found";
+      const lastUpdatedBy = userEmail || 'Unknown';
+
+      try {
+        // Update each selected row
+        for (const laptopId of selectedRows) {
+          const laptopData = allData.find(laptop => laptop.ID === laptopId);
+          if (!laptopData) continue;
+
+          const payload = {
+            type: "laptopLabeling",
+            id: laptopId,
+            working: updateField === 'Working' ? updateValue : laptopData.Working,
+            status: updateField === 'Status' ? updateValue : laptopData.Status,
+            assignedTo: updateField === 'Assigned To' ? updateValue : laptopData["Assigned To"],
+            donatedTo: updateField === 'Allocated To' ? updateValue : laptopData["Allocated To"],
+            donorCompanyName: laptopData["Donor Company Name"],
+            ram: laptopData.RAM,
+            rom: laptopData.ROM,
+            manufacturerModel: laptopData["Manufacturer Model"],
+            inventoryLocation: laptopData["Inventory Location"],
+            macAddress: laptopData["Mac address"],
+            processor: laptopData["Processor"],
+            others: laptopData["Others"],
+            laptopWeight: laptopData["laptop weight"],
+            conditionStatus: laptopData["Condition Status"],
+            manufacturingDate: laptopData["Manufacturing Date"],
+            majorIssue: laptopData["MajorIssue"],
+            minorIssue: laptopData["MinorIssue"],
+            batteryCapacity: laptopData["Battery Capacity"],
+            lastUpdatedOn: currentDate,
+            lastUpdatedBy: lastUpdatedBy,
+          };
+
+          await updateLaptopData(payload);
+        }
+
+        setRefresh(!refresh);
+        setSelectedRows([]); // Clear selection after update
+      } catch (error) {
+        console.error('Error updating laptops:', error);
+      }
+    } else if (selectedRowIndex !== null) {
+      // Handle single row update
+      const laptopData = data[selectedRowIndex];
+      const currentDate = new Date().toISOString().split('T')[0];
+      const SavedData = JSON.parse(localStorage.getItem('_AuthSama_'));
+      const userEmail = SavedData?.[0]?.email || "Email not found";
+      const lastUpdatedBy = userEmail || 'Unknown';
+
+      const payload = {
+        type: "laptopLabeling",
+        id: laptopData.ID,
+        working: updateField === 'Working' ? updateValue : laptopData.Working,
+        status: updateField === 'Status' ? updateValue : laptopData.Status,
+        assignedTo: updateField === 'Assigned To' ? updateValue : laptopData["Assigned To"],
+        donatedTo: updateField === 'Allocated To' ? updateValue : laptopData["Allocated To"],
+        donorCompanyName: laptopData["Donor Company Name"],
+        ram: laptopData.RAM,
+        rom: laptopData.ROM,
+        manufacturerModel: laptopData["Manufacturer Model"],
+        inventoryLocation: laptopData["Inventory Location"],
+        macAddress: laptopData["Mac address"],
+        processor: laptopData["Processor"],
+        others: laptopData["Others"],
+        laptopWeight: laptopData["laptop weight"],
+        conditionStatus: laptopData["Condition Status"],
+        manufacturingDate: laptopData["Manufacturing Date"],
+        majorIssue: laptopData["MajorIssue"],
+        minorIssue: laptopData["MinorIssue"],
+        batteryCapacity: laptopData["Battery Capacity"],
+        lastUpdatedOn: currentDate,
+        lastUpdatedBy: lastUpdatedBy,
+      };
+
+      try {
+        await updateLaptopData(payload);
+        setRefresh(!refresh);
+      } catch (error) {
+        console.error('Error updating laptop:', error);
+      }
     }
-  
-    const rowIndex = selectedRowIndex;
-    const laptopData = data[rowIndex];
-    const laptopId = laptopData?.ID;
-    const currentDate = new Date().toISOString().split('T')[0];
-    
-    const SavedData = JSON.parse(localStorage.getItem('_AuthSama_')); 
-    const userEmail = SavedData?.[0]?.email || "Email not found";
 
-    const lastUpdatedBy = userEmail || 'Unknown';
-
-    // Create the payload with all fields
-    const payload = {
-      type: "laptopLabeling",
-      id: laptopId,
-      working: updateField === 'Working' ? updateValue : laptopData.Working,
-      // working: !changeStatus ? (!isChecked ? "Working" : "Not Working") : laptopData.Working,
-      status: updateField === 'Status' ? updateValue : laptopData.Status,
-      assignedTo: updateField === 'Assigned To' ? updateValue : laptopData["Assigned To"],
-      donatedTo: updateField === 'Allocated To' ? updateValue : laptopData["Allocated To"],
-      // Include all other fields unchanged
-      donorCompanyName: laptopData["Donor Company Name"],
-      ram: laptopData.RAM,
-      rom: laptopData.ROM,
-      manufacturerModel: laptopData["Manufacturer Model"],
-      inventoryLocation: laptopData["Inventory Location"],
-      macAddress: laptopData["Mac address"],
-      processor: laptopData["Processor"],
-      others: laptopData["Others"],
-      laptopWeight: laptopData["laptop weight"],
-      conditionStatus: laptopData["Condition Status"],
-      manufacturingDate: laptopData["Manufacturing Date"],
-      majorIssue: laptopData["MajorIssue"],
-      minorIssue: laptopData["MinorIssue"],
-      batteryCapacity : laptopData["Battery Capacity"],
-      lastUpdatedOn: currentDate,
-      lastUpdatedBy: lastUpdatedBy,
-    };
-  
-    try {
-      await updateLaptopData(payload);
-      setRefresh(!refresh);
-    } catch (error) {
-      const originalData = [...data];
-    originalData[rowIndex].Working = updateValue === "Working" ? "Not Working" : "Working";
-    setData(originalData);
-
-      console.error('Error updating the laptop:', error);
-    }
-  
-    // Reset all state
     setOpen(false);
     setSelectedRowIndex(null);
     setUpdateField(null);
@@ -399,45 +446,55 @@ const handleDonatedToChange = (event, rowIndex) => {
     setSelectedRowIndex(null);
     setIsChecked(false);
     setModelStatus(false);
-    
   };
 
-  
+  const handleBulkUpdate = (field, value) => {
+    if (selectedRows.length === 0) return;
+
+    setUpdateField(field);
+    setUpdateValue(value);
+    setOpen(true);
+  };
+
+  const visibleSelections = data
+    .filter(item => selectedRows.includes(item.ID))
+    .map(item => data.findIndex(d => d.ID === item.ID))
+    .filter(index => index !== -1);
+
   // Define table columns
   const columns = getTableColumns(
     data,
     taggedLaptops,
-    handleWorkingToggle,    // For Working checkbox
-    handleStatusChange,     // For Status dropdown
-    handleAssignedToChange, // For Assigned To dropdown
-    handleDonatedToChange,  // For Donated To dropdown
+    handleWorkingToggle,    
+    handleStatusChange,     
+    handleAssignedToChange, 
+    handleDonatedToChange,  
     (props) => (
-      <EditButton 
+      <EditButton
         {...props}
-        setRefresh={setRefresh}  // Make sure this is passed
-        refresh={refresh}        // And this too
+        setRefresh={setRefresh}  
+        refresh={refresh}        
       />
-      
     )
-    
   );
+
+  const hiddenSelectionsCount = selectedRows.length - visibleSelections.length;
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
-
       {/* Search Bar */}
-      <SearchBar 
+      <SearchBar
         idQuery={idQuery}
         setIdQuery={setIdQuery}
         macQuery={macQuery}
         setMacQuery={setMacQuery}
-        onSearch={handleSearch}
+        onSearch={() => handleSearch()}
         handleReset={handleReset}
         loading={loading}
       />
-        
+
       {/* Filter Panel */}
-      <FilterPanel 
+      <FilterPanel
         workingFilter={workingFilter}
         setWorkingFilter={setWorkingFilter}
         statusFilter={statusFilter}
@@ -449,10 +506,38 @@ const handleDonatedToChange = (event, rowIndex) => {
         onResetFilters={handleResetFilters}
       />
 
-      {/* Action Buttons */}
-      
+      {selectedRows.length > 0 && (
+        <BulkDataUpload
+          selectedRows={selectedRows}
+          data={data}
+          onBulkUpdate={handleBulkUpdate}
+          workingFilter={workingFilter}
+          statusFilter={statusFilter}
+        />
+      )}
 
-      {/* Data Table */}
+      {selectedRows.length > 0 && (
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => setSelectedRows([])}
+            >
+              Clear Selection ({selectedRows.length} selected)
+            </Button>
+          </Grid>
+
+          {hiddenSelectionsCount > 0 && (
+            <Grid item>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Note: {hiddenSelectionsCount} selected item(s) not shown in current view
+              </Typography>
+            </Grid>
+          )}
+        </Grid>
+      )}
+
       <div id="tableToPrint">
         {loading ? (
           <CircularProgress />
@@ -466,18 +551,25 @@ const handleDonatedToChange = (event, rowIndex) => {
               responsive: 'scrollMinHeight',
               customToolbar: () => <ExportTools data={data} />,
               filterType: 'checkbox',
-              selectableRows: 'none', 
+              selectableRows: 'multiple',
+              onRowSelectionChange: handleRowSelection,
+              selectToolbarPlacement: 'none',
+              rowsSelected: data
+                .map((item, index) => selectedRows.includes(item.ID) ? index : -1)
+                .filter(index => index !== -1),
               download: false,
               print: false,
               sort: false,
-              viewColumns: true  
+              viewColumns: true
             }}
           />
         )}
       </div>
-     
+
+
+
       {/* Confirmation Modal */}
-      <ConfirmationModal 
+      <ConfirmationModal
         open={open}
         onClose={handleModalClose}
         onConfirm={handleModalConfirm}
@@ -487,9 +579,8 @@ const handleDonatedToChange = (event, rowIndex) => {
       {/* Hidden div for printing */}
       <div ref={printRef} style={{ display: 'none' }}></div>
     </Container>
+
   );
 }
 
 export default LaptopTagging;
-
-
