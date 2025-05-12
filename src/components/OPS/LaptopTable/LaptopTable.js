@@ -11,64 +11,22 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "Not Updated";
-    
-    try {
-      // Check if the dateString is in the format 'dd-MM-yyyy HH:mm:ss'
-      const [datePart, timePart] = dateString.split(' ');
-      const [day, month, year] = datePart.split('-');
-      
-      if (day && month && year) {
-        // Create a date string in ISO format
-        const isoDateString = `${year}-${month}-${day}T${timePart || '00:00:00'}`;
-        
-        const date = new Date(isoDateString);
-        if (!isNaN(date.getTime())) {
-          // Format date part
-          const formattedDate = date.toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-          });
-          
-          // Add time if available
-          if (timePart) {
-            const [hours, minutes, seconds] = timePart.split(':');
-            const time = new Date();
-            time.setHours(parseInt(hours), parseInt(minutes), parseInt(seconds));
-            const formattedTime = time.toLocaleTimeString("en-IN", {
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-              hour12: true
-            });
-            return `${formattedDate}, ${formattedTime}`;
-          }
-          return formattedDate;
-        }
-      }
-      
-      // Handle cases where date format is unexpected
-      const date = new Date(dateString);
-      if (!isNaN(date.getTime())) {
-        return date.toLocaleString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: true
-        });
-      }
+    if (!dateString) return '';
+    const date = new Date(dateString);
   
-      return dateString;
-    } catch (error) {
-      console.error("Date parsing error:", error, dateString);
-      return dateString;
-    }
+    const datePart = date.toLocaleDateString(); // original format (MM/DD/YYYY or per locale)
+    const timePart = date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false, // 24-hour format
+    });
+  
+    return `${datePart}, ${timePart}`;
   };
   
+  
+
   
   return [
     { 
