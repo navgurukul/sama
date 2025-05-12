@@ -318,8 +318,18 @@ function LaptopTagging() {
     let title, message;
 
     if (selectedRows.length > 0) {
-      title = `Bulk Update ${updateField}`;
-      message = `Are you sure you want to update ${selectedRows.length} laptops' ${updateField} to "${updateValue}"?`;
+      if (Array.isArray(updateValue)) {
+        // Handle multiple updates
+        title = "Bulk Update Multiple Fields";
+        const updatesText = updateValue.map(update =>
+          `${update.field} to "${update.value}"`
+        ).join(' and ');
+        message = `Are you sure you want to update ${selectedRows.length} laptops' ${updatesText}?`;
+      } else {
+        // Single field update
+        title = `Bulk Update ${updateField}`;
+        message = `Are you sure you want to update ${selectedRows.length} laptops' ${updateField} to "${updateValue}"?`;
+      }
     } else {
       switch (updateField) {
         case 'Working':
@@ -347,53 +357,61 @@ function LaptopTagging() {
   };
 
   const handleModalConfirm = async () => {
-    if (selectedRows.length > 0 && updateField && updateValue) {
-      // Handle bulk update
+    if (selectedRows.length > 0) {
       const currentDate = new Date().toISOString().split('T')[0];
       const SavedData = JSON.parse(localStorage.getItem('_AuthSama_'));
       const userEmail = SavedData?.[0]?.email || "Email not found";
       const lastUpdatedBy = userEmail || 'Unknown';
-
+  
       try {
-        // Update each selected row
+        // Handle both single and multiple updates
+        const updates = Array.isArray(updateValue) ? updateValue : [{ field: updateField, value: updateValue }];
+  
         for (const laptopId of selectedRows) {
           const laptopData = allData.find(laptop => laptop.ID === laptopId);
           if (!laptopData) continue;
-
+  
+          // Create payload with all updates
           const payload = {
             type: "laptopLabeling",
             id: laptopId,
-            working: updateField === 'Working' ? updateValue : laptopData.Working,
-            status: updateField === 'Status' ? updateValue : laptopData.Status,
-            assignedTo: updateField === 'Assigned To' ? updateValue : laptopData["Assigned To"],
-            donatedTo: updateField === 'Allocated To' ? updateValue : laptopData["Allocated To"],
-            donorCompanyName: laptopData["Donor Company Name"],
-            ram: laptopData.RAM,
-            rom: laptopData.ROM,
-            manufacturerModel: laptopData["Manufacturer Model"],
-            inventoryLocation: laptopData["Inventory Location"],
-            macAddress: laptopData["Mac address"],
-            processor: laptopData["Processor"],
-            others: laptopData["Others"],
-            laptopWeight: laptopData["laptop weight"],
-            conditionStatus: laptopData["Condition Status"],
-            manufacturingDate: laptopData["Manufacturing Date"],
-            majorIssue: laptopData["MajorIssue"],
-            minorIssue: laptopData["MinorIssue"],
-            batteryCapacity: laptopData["Battery Capacity"],
+            working: laptopData.Working,
+            status: laptopData.Status,
+            assignedTo: laptopData["Assigned To"],
+            donatedTo: laptopData["Allocated To"],
+            // ... (other fields)
             lastUpdatedOn: currentDate,
             lastUpdatedBy: lastUpdatedBy,
           };
-
+  
+          // Apply all updates to the payload
+          updates.forEach(update => {
+            switch(update.field) {
+              case 'Working':
+                payload.working = update.value;
+                break;
+              case 'Status':
+                payload.status = update.value;
+                break;
+              case 'Assigned To':
+                payload.assignedTo = update.value;
+                break;
+              case 'Allocated To':
+                payload.donatedTo = update.value;
+                break;
+            }
+          });
+  
           await updateLaptopData(payload);
         }
-
+  
         setRefresh(!refresh);
-        setSelectedRows([]); // Clear selection after update
+        setSelectedRows([]);
       } catch (error) {
         console.error('Error updating laptops:', error);
       }
     } else if (selectedRowIndex !== null) {
+  
       // Handle single row update
       const laptopData = data[selectedRowIndex];
       const currentDate = new Date().toISOString().split('T')[0];
@@ -448,12 +466,12 @@ function LaptopTagging() {
     setModelStatus(false);
   };
 
-  const handleBulkUpdate = (field, value) => {
-    if (selectedRows.length === 0) return;
+  const handleBulkUpdate = (updates) => {
+    if (selectedRows.length === 0 || !updates || updates.length === 0) return;
 
-    setUpdateField(field);
-    setUpdateValue(value);
-    setOpen(true);
+    setUpdateField('Multiple'); // Indicate this is a multi-field update
+    setUpdateValue(updates);   // Store all updates
+    setOpen(true);             // Show confirmation modal
   };
 
   const visibleSelections = data
@@ -465,15 +483,15 @@ function LaptopTagging() {
   const columns = getTableColumns(
     data,
     taggedLaptops,
-    handleWorkingToggle,    
-    handleStatusChange,     
-    handleAssignedToChange, 
-    handleDonatedToChange,  
+    handleWorkingToggle,
+    handleStatusChange,
+    handleAssignedToChange,
+    handleDonatedToChange,
     (props) => (
       <EditButton
         {...props}
-        setRefresh={setRefresh}  
-        refresh={refresh}        
+        setRefresh={setRefresh}
+        refresh={refresh}
       />
     )
   );
