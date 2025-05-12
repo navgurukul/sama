@@ -14,15 +14,12 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  Paper,
-  Divider,
-  Alert,
-  Fade,
+  InputAdornment
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import EmailIcon from '@mui/icons-material/Email';
 import login_ngo from "./assets/login_ngo.svg";
-import AttentionNeeded from "../../../components/AttentionNeeded/AttentionNeeded";
+import EmailIcon from '@mui/icons-material/Email';
+import CloseIcon from '@mui/icons-material/Close'
+import AttentionNeeded from "../../../components/AttentionNeeded/AttentionNeeded"
 
 function Opslogin() {
   const [email, setEmail] = useState('');
@@ -39,14 +36,15 @@ function Opslogin() {
   const [openForgotModal, setOpenForgotModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotMessage, setForgotMessage] = useState('');
-  const [forgotSubmitting, setForgotSubmitting] = useState(false);
-  const [forgotSuccess, setForgotSuccess] = useState(false);
+
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_UserDetailsApis}`,
+          `${process.env.REACT_APP_UserDetailApi}`,
+          // 'https://script.google.com/macros/s/AKfycbzuFPeG0cosIEGBocwuJ72DWUH6zcg7MtawkOuvOifXqHnm1QlaR7ESxiLKzGua-WQp/exec'
         );
         const result = await response.json();
         setData(result);
@@ -56,6 +54,7 @@ function Opslogin() {
     };
     fetchData();
   }, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,10 +80,12 @@ function Opslogin() {
       }
       else
         if (user?.Role?.includes('ngo')) {
+          // navigate('/beneficiarydata');
           try {
             // First API call to fetch registration data
             const response = await fetch(
               `${process.env.REACT_APP_NgoInformationApi}?type=registration`
+              // 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
             );
             const result = await response.json();
             const finduser = result.data.find(item => item.Id === user["Ngo Id"]);
@@ -94,6 +95,7 @@ function Opslogin() {
                 // Second API call to check document status
                 const documentResponse = await fetch(
                   `${process.env.REACT_APP_NgoInformationApi}?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
+                  // `https://script.google.com/macros/s/AKfycbxmnB0YHUm_mPxf1i-Cv465D1kSOrB0w1-dJS1slov_UQPZ0QxMERy_kZ8uZ5KASjBi/exec?type=MultipleDocsGet&userId=${user["Ngo Id"]}`
                 );
                 const documentResult = await documentResponse.json();
 
@@ -138,6 +140,7 @@ function Opslogin() {
                 if (pending.length > 0) {
                   // If there are pending statuses, navigate to /documentupload
                   setPendingStatuses(pending); // Update state to handle pending statuses
+                  // navigate('/documentupload', { state: { pendingStatuses: pending } });
                   navigate('/submission-success');
                   return;
                 }
@@ -181,54 +184,29 @@ function Opslogin() {
 
   const handleForgotPasswordSubmit = async () => {
     if (!forgotEmail) {
-      setForgotMessage('Please enter your email address');
+      setForgotMessage('Please enter your email.');
       return;
     }
 
-    if (!/\S+@\S+\.\S+/.test(forgotEmail)) {
-      setForgotMessage('Please enter a valid email address');
-      return;
-    }
-
-    setForgotSubmitting(true);
-    setForgotMessage('');
-    
     try {
-      await fetch(`${process.env.REACT_APP_UserDetailsApis}`, {
+      await fetch(`${process.env.REACT_APP_UserDetailApi}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         mode: 'no-cors', // opaque response
         body: JSON.stringify({ email: forgotEmail, type: 'forgotPassword' }),
       });
-      
-      // We assume it worked since we can't read the response
-      setForgotSuccess(true);
-      setForgotMessage('Password reset link has been sent to your email');
-      
-      // Reset after 5 seconds
-      setTimeout(() => {
-        if (forgotSuccess) {
-          setOpenForgotModal(false);
-          setForgotEmail('');
-          setForgotMessage('');
-          setForgotSuccess(false);
-        }
-      }, 5000);
-      
+
+      // We assume it worked (since no way to read the response)
+      setForgotMessage('If your email is registered, you will receive reset instructions.');
     } catch (error) {
       console.error('Error sending reset email:', error);
       setForgotMessage('An error occurred. Please try again later.');
-    } finally {
-      setForgotSubmitting(false);
     }
   };
 
-  const handleCloseForgotModal = () => {
-    setOpenForgotModal(false);
-    setForgotEmail('');
-    setForgotMessage('');
-    setForgotSuccess(false);
-  };
+
+
+
 
   return (
     <Container maxWidth="md" sx={{ my: 10 }}>
@@ -269,7 +247,7 @@ function Opslogin() {
                 variant="contained"
                 sx={{ width: 'auto', alignSelf: 'start', mt: 2, borderRadius: "100px" }}
               >
-                {loder ? <CircularProgress size={24} color="inherit" /> : "Login"}
+                {loder ? <CircularProgress color='white' /> : "Login"}
               </Button>
               <Button
                 onClick={() => navigate('/signup')}
@@ -291,137 +269,85 @@ function Opslogin() {
             >
               Forgot Password?
             </Typography>
-            
-            {/* Improved Forgot Password Dialog */}
-            <Dialog 
-              open={openForgotModal} 
-              onClose={handleCloseForgotModal}
-              maxWidth="sm"
-              fullWidth
+            <Dialog
+              open={openForgotModal}
+              onClose={() => setOpenForgotModal(false)}
               PaperProps={{
                 sx: {
                   borderRadius: 2,
-                  p: 1
-                }
+                  p: 2,
+                  width: '100%',
+                  maxWidth: 500,
+                },
               }}
             >
-              <DialogTitle sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                pb: 1
-              }}>
-                <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-                  Forgot Password
-                </Typography>
-                <IconButton 
-                  edge="end" 
-                  color="inherit" 
-                  onClick={handleCloseForgotModal} 
-                  aria-label="close"
+              <DialogTitle
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: '1.3rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderBottom: '1px solid #e0e0e0',
+                  pb: 1,
+                }}
+              >
+                Forgot Password
+                <IconButton
+                  onClick={() => setOpenForgotModal(false)}
+                  size="small"
                 >
                   <CloseIcon />
                 </IconButton>
               </DialogTitle>
-              
-              <Divider />
-              
-              <DialogContent sx={{ py: 3 }}>
-                {forgotSuccess ? (
-                  <Fade in={forgotSuccess}>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      flexDirection: 'column', 
-                      alignItems: 'center', 
-                      textAlign: 'center',
-                      gap: 2,
-                      py: 2
-                    }}>
-                      <Box sx={{ 
-                        backgroundColor: 'success.light', 
-                        borderRadius: '50%', 
-                        p: 2,
-                        color: 'white'
-                      }}>
-                        <EmailIcon fontSize="large" />
-                      </Box>
-                      
-                      <Typography variant="h6" component="div">
-                        Email Sent Successfully
-                      </Typography>
-                      
-                      <Typography variant="body2" color="text.secondary">
-                        We've sent user name & password to:
-                      </Typography>
-                      
-                      <Typography variant="body1" fontWeight="bold">
-                        {forgotEmail}
-                      </Typography>
-                      
-                      <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 400 }}>
-                        Please check your inbox and find your user name & password.
-                      </Typography>
-                      
-                      <CircularProgress 
-                        variant="determinate" 
-                        value={100} 
-                        size={20} 
-                        thickness={5}
-                        sx={{ mt: 2, color: 'success.main' }} 
-                      />
-                    </Box>
-                  </Fade>
-                ) : (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Enter your registered email address below. We'll send you the user name & password.
-                    </Typography>
-                    
-                    <TextField
-                      autoFocus
-                      margin="dense"
-                      label="Email Address"
-                      type="email"
-                      fullWidth
-                      variant="outlined"
-                      value={forgotEmail}
-                      onChange={(e) => setForgotEmail(e.target.value)}
-                      error={!!forgotMessage}
-                      helperText={forgotMessage}
-                      InputProps={{
-                        startAdornment: (
-                          <EmailIcon color="action" sx={{ mr: 1 }} />
-                        ),
-                      }}
-                    />
-                  </Box>
+
+              <DialogContent sx={{ mt: 1 }}>
+                <Typography sx={{ mb: 2 }}>
+                  Enter your registered email address below. We’ll send you the user name & password.
+                </Typography>
+
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  label="Email Address" // <-- This is correct
+                  type="email"
+                  fullWidth
+                  variant="outlined"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <EmailIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+
+
+                {forgotMessage && (
+                  <Typography sx={{ mt: 1, color: 'success.main' }}>
+                    {forgotMessage}
+                  </Typography>
                 )}
               </DialogContent>
-              
-              {!forgotSuccess && (
-                <DialogActions sx={{ px: 3, pb: 3 }}>
-                  <Button 
-                    onClick={handleCloseForgotModal}
-                    variant="outlined"
-                    sx={{ borderRadius: 100, px: 3 }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={handleForgotPasswordSubmit}
-                    variant="contained"
-                    sx={{ borderRadius: 100, px: 3 }}
-                    disabled={forgotSubmitting}
-                  >
-                    {forgotSubmitting ? (
-                      <CircularProgress size={24} color="inherit" />
-                    ) : (
-                      "Send Reset Link"
-                    )}
-                  </Button>
-                </DialogActions>
-              )}
+
+              <DialogActions sx={{ justifyContent: 'flex-end', px: 3, pb: 2 }}>
+                <Button onClick={() => setOpenForgotModal(false)} variant="outlined">
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ backgroundColor: '#4C6B49' }}
+                  onClick={handleForgotPasswordSubmit}
+                >
+                  Confirm
+                </Button>
+              </DialogActions>
             </Dialog>
+
+
           </Box>
         </Grid>
       </Grid>
