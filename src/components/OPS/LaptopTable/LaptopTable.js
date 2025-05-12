@@ -11,45 +11,24 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "Not Updated";
-    try {
-      const date = new Date(dateString);
-      if (!isNaN(date.getTime())) {
-        return date.toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric"
-        });
-      }
+    if (!dateString) return '';
+    const date = new Date(dateString);
+  
+    const datePart = date.toLocaleDateString(); 
+    const timePart = date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false, 
       
-      const parts = dateString.split(' ');
-      if (parts.length === 3) {
-        const months = {
-          'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-          'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-        };
-        
-        const day = parseInt(parts[0], 10);
-        const month = months[parts[1]];
-        const year = parseInt(parts[2], 10);
-        
-        if (!isNaN(day) && month !== undefined && !isNaN(year)) {
-          const newDate = new Date(year, month, day);
-          return newDate.toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-          });
-        }
-      }
-      
-      return dateString; 
-    } catch (error) {
-      console.error("Date parsing error:", error);
-      return dateString; 
-    }
+    });
+  
+    return `${datePart}, ${timePart}`;
   };
+  
+  
 
+  
   return [
     { 
       name: "ID", 

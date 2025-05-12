@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -9,13 +9,13 @@ import {
 } from '@mui/material';
 
 const SignupForm = () => {
-  
+
   const [formData, setFormData] = useState({
     Name: '',
     Email: '',
     Password: '',
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -24,9 +24,38 @@ const SignupForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const [existingEmails, setExistingEmails] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+
+
+  useEffect(() => {
+    // Fetch the registration data from the backend
+    fetch(`${process.env.REACT_APP_UserDetailsApis}?type=getRegistration`) // Replace with your actual Google Apps Script URL
+      .then((response) => response.json())
+      .then((data) => {
+        // Extract email addresses from the response
+        const emails = data.map((user) => user.Email.toLowerCase());
+        setExistingEmails(emails);
+      })
+      .catch((err) => {
+        console.error('Error fetching registration data:', err);
+      });
+  }, []);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage(''); // Reset error message before submitting
+
+    const normalizedEmail = formData.Email.trim().toLowerCase();
+
+    // Check if email already exists in the list
+    if (existingEmails.includes(normalizedEmail)) {
+      setErrorMessage('Your account already exists.'); // Show error message below submit button
+      setLoading(false);
+      return; // Stop further submission if email exists
+    }
 
     try {
       await fetch(process.env.REACT_APP_UserDetailsApis, {
@@ -34,21 +63,25 @@ const SignupForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        mode: 'no-cors',
+        mode: 'no-cors', // Continue using no-cors for now
         body: JSON.stringify({
           ...formData,
           type: 'addRegistration',
-          status: 'Data entered'
+          status: 'Data entered',
         }),
       });
 
-      setSubmitted(true); // hide form and show success message
+      setSubmitted(true); // Hide form and show success message
     } catch (error) {
       console.error('Error submitting form:', error);
+      alert('Something went wrong.');
     } finally {
       setLoading(false);
     }
   };
+
+
+
 
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>
@@ -101,12 +134,17 @@ const SignupForm = () => {
               >
                 {loading ? <CircularProgress size={24} /> : 'Submit'}
               </Button>
+              {errorMessage && (
+                <Box sx={{mt: 1}}>
+                  <Typography sx={{color: 'red',}}>{errorMessage}</Typography>
+                </Box>
+              )}
             </Box>
           </>
         ) : (
           <Box sx={{ textAlign: 'center', mt: 6 }}>
             <Typography variant="h6" color="primary">
-              Your data is being submitted and reviewed by admin.
+              Your data is being submitted and reviewed by admin. 
             </Typography>
           </Box>
         )}
