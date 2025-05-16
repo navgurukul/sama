@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -9,11 +9,13 @@ import {
 } from '@mui/material';
 
 const SignupForm = () => {
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
+    Name: '',
+    Email: '',
+    Password: '',
   });
+
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -22,30 +24,64 @@ const SignupForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const [existingEmails, setExistingEmails] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+
+
+  useEffect(() => {
+    // Fetch the registration data from the backend
+    fetch(`${process.env.REACT_APP_UserDetailsApis}?type=getRegistration`) // Replace with your actual Google Apps Script URL
+      .then((response) => response.json())
+      .then((data) => {
+        // Extract email addresses from the response
+        const emails = data.map((user) => user.Email.toLowerCase());
+        setExistingEmails(emails);
+      })
+      .catch((err) => {
+        console.error('Error fetching registration data:', err);
+      });
+  }, []);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage(''); // Reset error message before submitting
+
+    const normalizedEmail = formData.Email.trim().toLowerCase();
+
+    // Check if email already exists in the list
+    if (existingEmails.includes(normalizedEmail)) {
+      setErrorMessage('Your account already exists.'); // Show error message below submit button
+      setLoading(false);
+      return; // Stop further submission if email exists
+    }
 
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbxoV7zFVG8BmfF9T60EbCRuEqpmVIR2igbeWAca7kdL-R07Lhdmmk14xOskgSToLPA6/exec', {
+      await fetch(process.env.REACT_APP_UserDetailsApis, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        mode: 'no-cors',
+        mode: 'no-cors', // Continue using no-cors for now
         body: JSON.stringify({
           ...formData,
-          status: 'Data entered'
+          type: 'addRegistration',
+          status: 'Data entered',
         }),
       });
 
-      setSubmitted(true); // hide form and show success message
+      setSubmitted(true); // Hide form and show success message
     } catch (error) {
       console.error('Error submitting form:', error);
+      alert('Something went wrong.');
     } finally {
       setLoading(false);
     }
   };
+
+
+
 
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>
@@ -59,7 +95,7 @@ const SignupForm = () => {
               <TextField
                 fullWidth
                 label="Name"
-                name="name"
+                name="Name"
                 value={formData.name}
                 onChange={handleChange}
                 margin="normal"
@@ -69,7 +105,7 @@ const SignupForm = () => {
               <TextField
                 fullWidth
                 label="Email"
-                name="email"
+                name="Email"
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
@@ -80,7 +116,7 @@ const SignupForm = () => {
               <TextField
                 fullWidth
                 label="Password"
-                name="password"
+                name="Password"
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -98,14 +134,18 @@ const SignupForm = () => {
               >
                 {loading ? <CircularProgress size={24} /> : 'Submit'}
               </Button>
+              {errorMessage && (
+                <Box sx={{mt: 1}}>
+                  <Typography sx={{color: 'red',}}>{errorMessage}</Typography>
+                </Box>
+              )}
             </Box>
           </>
         ) : (
           <Box sx={{ textAlign: 'center', mt: 6 }}>
             <Typography variant="h6" color="primary">
-              Your data is being submitted and reviewed by admin.
+              Your data is being submitted and reviewed by admin. 
             </Typography>
-            {/* <CircularProgress sx={{ mt: 3 }} /> */}
           </Box>
         )}
       </Box>

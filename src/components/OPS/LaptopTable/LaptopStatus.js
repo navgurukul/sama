@@ -1,23 +1,53 @@
 import React, {useEffect, useState} from 'react';
 import { Select, MenuItem, Checkbox } from '@mui/material';
 
-export const LaptopStatusDropdown = ({ value, onChange }) => {
+export const LaptopStatusDropdown = ({ value = 'In Transit', onChange }) => {
+  let options = [];
+
+  switch (value) {
+    case 'In Transit':
+      options = ['Laptop Received'];
+      break;
+    case 'Laptop Received':
+      options = ['Laptop Refurbished', 'To Be Dispatch'];
+      break;
+    case 'Laptop Refurbished':
+      options = ['To Be Dispatch'];
+      break;
+    case 'To Be Dispatch':
+      options = ['Allocated'];
+      break;
+    case 'Allocated':
+      options = ['Distributed'];
+      break;
+    case 'Distributed':
+    default:
+      options = []; // Final status
+      break;
+  }
+
   return (
     <Select
-      value={value || ''}
+      value={value}
       onChange={onChange}
       displayEmpty
-      style={{ borderRadius: "20px" }}
+      style={{ borderRadius: '20px' }}
       fullWidth
     >
-      <MenuItem value="Laptop Received">Laptop Received</MenuItem>
-      <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
-      <MenuItem value="To be dispatch">To Be Dispatch</MenuItem>
-      <MenuItem value="Donated">Allocated</MenuItem>
+      {/* Always show the current value */}
+      <MenuItem value={value}>{value}</MenuItem>
+
+      {/* Show valid next statuses if any */}
+      {options.map((status) =>
+        status !== value ? (
+          <MenuItem key={status} value={status}>
+            {status}
+          </MenuItem>
+        ) : null
+      )}
     </Select>
   );
 };
-
 
 export const AssignedTo = ({ value, onChange }) => {
   return (
