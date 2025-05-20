@@ -19,7 +19,7 @@ import ConfirmationModal from '../../components/OPS/LaptopTable/ConfirmationModa
 import ExportTools from '../../components/OPS/LaptopTable/ExportTools';
 import EditButton from './EditButton';
 import { getTableColumns } from '../../components/OPS/LaptopTable/LaptopTable';
-import BulkDataUpload from './BulkDataUpload';
+import BulkEditPanel from './BulkEditPanel';
 
 
 function LaptopTagging() {
@@ -362,56 +362,73 @@ function LaptopTagging() {
       const SavedData = JSON.parse(localStorage.getItem('_AuthSama_'));
       const userEmail = SavedData?.[0]?.email || "Email not found";
       const lastUpdatedBy = userEmail || 'Unknown';
-  
+
       try {
         // Handle both single and multiple updates
         const updates = Array.isArray(updateValue) ? updateValue : [{ field: updateField, value: updateValue }];
-  
+
         for (const laptopId of selectedRows) {
           const laptopData = allData.find(laptop => laptop.ID === laptopId);
           if (!laptopData) continue;
-  
+
           // Create payload with all updates
           const payload = {
             type: "laptopLabeling",
             id: laptopId,
+            donorCompanyName: laptopData["Donor Company Name"],
+            ram: laptopData.RAM,
+            rom: laptopData.ROM,
+            manufacturerModel: laptopData["Manufacturer Model"],
+            processor: laptopData.Processor,
+            manufacturingDate: laptopData["Manufacturing Date"],
+            conditionStatus: laptopData["Condition Status"],
+            // Fix the property names to match what the backend expects
+            majorIssue: laptopData["Major Issues"], // Keep proper reference
+            minorIssue: laptopData["Minor Issues"], // Keep proper reference
+            otherIssues: laptopData["Other Issues"],
+            inventoryLocation: laptopData["Inventory Location"],
+            laptopWeight: laptopData["laptop weight"],
+            macAddress: laptopData["Mac address"],
+            batteryCapacity: laptopData["Battery Capacity"],
+            commentForIssues: laptopData["Comment for the Issues"],
+            // Fields that might be updated
             working: laptopData.Working,
             status: laptopData.Status,
             assignedTo: laptopData["Assigned To"],
             donatedTo: laptopData["Allocated To"],
-            // ... (other fields)
+            // Metadata
             lastUpdatedOn: currentDate,
             lastUpdatedBy: lastUpdatedBy,
           };
-  
+
           // Apply all updates to the payload
           updates.forEach(update => {
-            switch(update.field) {
-              case 'Working':
+            switch (update.field) {
+              case 'working':
                 payload.working = update.value;
                 break;
-              case 'Status':
+              case 'status':
                 payload.status = update.value;
                 break;
-              case 'Assigned To':
+              case 'assignedTo':
                 payload.assignedTo = update.value;
                 break;
-              case 'Allocated To':
+              case 'donatedTo':  // This matches the backend field name
                 payload.donatedTo = update.value;
                 break;
             }
           });
-  
+
           await updateLaptopData(payload);
         }
-  
+
         setRefresh(!refresh);
         setSelectedRows([]);
       } catch (error) {
         console.error('Error updating laptops:', error);
       }
     } else if (selectedRowIndex !== null) {
-  
+      // Single row update logic remains unchanged  
       // Handle single row update
       const laptopData = data[selectedRowIndex];
       const currentDate = new Date().toISOString().split('T')[0];
@@ -469,9 +486,26 @@ function LaptopTagging() {
   const handleBulkUpdate = (updates) => {
     if (selectedRows.length === 0 || !updates || updates.length === 0) return;
 
-    setUpdateField('Multiple'); // Indicate this is a multi-field update
-    setUpdateValue(updates);   // Store all updates
-    setOpen(true);             // Show confirmation modal
+
+    // Transform updates to match backend field names
+    const backendUpdates = updates.map(update => {
+      switch (update.field) {
+        case 'Allocated To':
+          return { field: 'donatedTo', value: update.value };
+        case 'Assigned To':
+          return { field: 'assignedTo', value: update.value };
+        case 'Working':
+          return { field: 'working', value: update.value };
+        case 'Status':
+          return { field: 'status', value: update.value };
+        default:
+          return update;
+      }
+    });
+
+    setUpdateField('Multiple');
+    setUpdateValue(backendUpdates); // Store the transformed updates
+    setOpen(true);
   };
 
   const visibleSelections = data
@@ -525,9 +559,8 @@ function LaptopTagging() {
       />
 
       {selectedRows.length > 0 && (
-        <BulkDataUpload
+        <BulkEditPanel
           selectedRows={selectedRows}
-          data={data}
           onBulkUpdate={handleBulkUpdate}
           workingFilter={workingFilter}
           statusFilter={statusFilter}
