@@ -371,7 +371,6 @@ function LaptopTagging() {
           const laptopData = allData.find(laptop => laptop.ID === laptopId);
           if (!laptopData) continue;
 
-          // Create payload with all updates
           const payload = {
             type: "laptopLabeling",
             id: laptopId,
@@ -382,8 +381,8 @@ function LaptopTagging() {
             processor: laptopData.Processor,
             manufacturingDate: laptopData["Manufacturing Date"],
             conditionStatus: laptopData["Condition Status"],
-            majorIssue: laptopData["Major Issues"], 
-            minorIssue: laptopData["Minor Issues"], 
+            majorIssues: laptopData["Major Issues"] ? laptopData["Major Issues"].split(",") : [],
+            minorIssues: laptopData["Minor Issues"] ? laptopData["Minor Issues"].split(",") : [],
             otherIssues: laptopData["Other Issues"],
             inventoryLocation: laptopData["Inventory Location"],
             laptopWeight: laptopData["laptop weight"],
@@ -410,7 +409,7 @@ function LaptopTagging() {
               case 'assignedTo':
                 payload.assignedTo = update.value;
                 break;
-              case 'donatedTo':  // This matches the backend field name
+              case 'donatedTo': 
                 payload.donatedTo = update.value;
                 break;
             }
@@ -425,8 +424,6 @@ function LaptopTagging() {
         console.error('Error updating laptops:', error);
       }
     } else if (selectedRowIndex !== null) {
-      // Single row update logic remains unchanged  
-      // Handle single row update
       const laptopData = data[selectedRowIndex];
       const currentDate = new Date().toISOString().split('T')[0];
       const SavedData = JSON.parse(localStorage.getItem('_AuthSama_'));
@@ -451,8 +448,8 @@ function LaptopTagging() {
         laptopWeight: laptopData["laptop weight"],
         conditionStatus: laptopData["Condition Status"],
         manufacturingDate: laptopData["Manufacturing Date"],
-        majorIssue: laptopData["MajorIssue"],
-        minorIssue: laptopData["MinorIssue"],
+        majorIssues: laptopData["Major Issues"] ? laptopData["Major Issues"].split(",") : [],
+        minorIssues: laptopData["Minor Issues"] ? laptopData["Minor Issues"].split(",") : [],
         batteryCapacity: laptopData["Battery Capacity"],
         lastUpdatedOn: currentDate,
         lastUpdatedBy: lastUpdatedBy,
