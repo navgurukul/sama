@@ -382,21 +382,18 @@ function LaptopTagging() {
             processor: laptopData.Processor,
             manufacturingDate: laptopData["Manufacturing Date"],
             conditionStatus: laptopData["Condition Status"],
-            // Fix the property names to match what the backend expects
-            majorIssue: laptopData["Major Issues"], // Keep proper reference
-            minorIssue: laptopData["Minor Issues"], // Keep proper reference
+            majorIssue: laptopData["Major Issues"], 
+            minorIssue: laptopData["Minor Issues"], 
             otherIssues: laptopData["Other Issues"],
             inventoryLocation: laptopData["Inventory Location"],
             laptopWeight: laptopData["laptop weight"],
             macAddress: laptopData["Mac address"],
             batteryCapacity: laptopData["Battery Capacity"],
             commentForIssues: laptopData["Comment for the Issues"],
-            // Fields that might be updated
             working: laptopData.Working,
             status: laptopData.Status,
             assignedTo: laptopData["Assigned To"],
             donatedTo: laptopData["Allocated To"],
-            // Metadata
             lastUpdatedOn: currentDate,
             lastUpdatedBy: lastUpdatedBy,
           };
