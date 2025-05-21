@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Button,
     Grid,
@@ -19,12 +19,30 @@ const BulkEditPanel = ({
     workingFilter,
     statusFilter
 }) => {
+    const [approvedNgos, setApprovedNgos] = useState([]);
     const [bulkWorking, setBulkWorking] = useState(workingFilter);
     const [bulkStatus, setBulkStatus] = useState(statusFilter);
     const [bulkAssignedTo, setBulkAssignedTo] = useState('all');
-    const [bulkDonatedTo, setBulkDonatedTo] = useState('all');
+    const [bulkAllocatedTo, setBulkAllocatedTo] = useState('all');
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [pendingUpdates, setPendingUpdates] = useState([]);
+
+    useEffect(() => {
+        const fetchApprovedNgos = async () => {
+            try {
+                const response = await fetch(
+                    `${process.env.REACT_APP_NgoInformationApi}?type=registration`
+                );
+                const responseData = await response.json();
+                const filteredNgos = responseData.data.filter(ngo => ngo.Status === "Approved");
+                setApprovedNgos(filteredNgos.map(ngo => ngo.organizationName));
+            } catch (error) {
+                console.error("Error fetching NGO data:", error);
+            }
+        };
+
+        fetchApprovedNgos();
+    }, []);
 
     const handleBulkUpdate = () => {
         const updates = [];
@@ -41,8 +59,8 @@ const BulkEditPanel = ({
             updates.push({ field: 'Assigned To', value: bulkAssignedTo });
         }
 
-        if (bulkDonatedTo !== 'all') {
-            updates.push({ field: 'Allocated To', value: bulkDonatedTo });
+        if (bulkAllocatedTo !== 'all') {
+            updates.push({ field: 'Allocated To', value: bulkAllocatedTo });
         }
 
         if (updates.length > 0) {
@@ -52,7 +70,6 @@ const BulkEditPanel = ({
     };
 
     const confirmUpdates = () => {
-        // Send all pending updates to parent component
         onBulkUpdate(pendingUpdates);
         setConfirmOpen(false);
         resetForm();
@@ -62,7 +79,7 @@ const BulkEditPanel = ({
         setBulkWorking(workingFilter);
         setBulkStatus(statusFilter);
         setBulkAssignedTo('all');
-        setBulkDonatedTo('all');
+        setBulkAllocatedTo('all');
     };
 
     const generateConfirmationMessage = () => {
@@ -138,6 +155,24 @@ const BulkEditPanel = ({
                             </Select>
                         </FormControl>
                     </Grid>
+                    <Grid item xs={12} md={3}>
+                        <FormControl fullWidth>
+                            <Typography variant="subtitle2" gutterBottom>
+                                Allocated To
+                            </Typography>
+                            <Select
+                                value={bulkAllocatedTo}
+                                onChange={(e) => setBulkAllocatedTo(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                            >
+                                <MenuItem value="all">No Change</MenuItem>
+                                {approvedNgos.map(ngo => (
+                                    <MenuItem key={ngo} value={ngo}>{ngo}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
                     <Grid item xs={12}>
                         <Button
                             variant="contained"
@@ -147,7 +182,7 @@ const BulkEditPanel = ({
                                 (bulkWorking === 'all' || bulkWorking === workingFilter) &&
                                 (bulkStatus === 'all' || bulkStatus === statusFilter) &&
                                 bulkAssignedTo === 'all' &&
-                                bulkDonatedTo === 'all'
+                                bulkAllocatedTo === 'all'
                             }
                         >
                             Apply All Changes
