@@ -205,8 +205,33 @@ const Navbar = () => {
                       setActiveTab(tab.path);
                       navigate(tab.path);
                     }}
+                    sx={{
+                      backgroundColor: activeTab === tab.path ? 'primary.main' : 'transparent',
+                      borderRadius: '4px',
+                      my: 0.5,
+                      '&.Mui-selected': {
+                        backgroundColor: 'primary.main',
+                        '& .MuiListItemText-primary': {
+                          color: 'common.white'
+                        },
+                        '&:hover': {
+                          backgroundColor: 'primary.dark',
+                        }
+                      },
+                      '&:hover': {
+                        backgroundColor: activeTab === tab.path ? 'primary.dark' : 'action.hover',
+                      }
+                    }}
                   >
-                    <ListItemText primary={tab.label} />
+                    <ListItemText
+                      primary={tab.label}
+                      primaryTypographyProps={{
+                        sx: {
+                          fontWeight: 'medium',
+                          color: activeTab === tab.path ? 'common.white' : 'text.primary'
+                        }
+                      }}
+                    />
                   </ListItem>
                 ))}
               </List>
@@ -232,10 +257,7 @@ const Navbar = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', mr: 3 }}>
             <Tabs
               value={activeTab}
-              onChange={(e, newValue) => {
-                setActiveTab(newValue);
-                navigate(newValue);
-              }}
+              onChange={(e, newValue) => setActiveTab(newValue)}
               sx={{
                 minHeight: 'unset',
                 '& .MuiTabs-indicator': { display: 'none' },
@@ -247,25 +269,24 @@ const Navbar = () => {
               {opsTabs.map((tab) => (
                 <Tab
                   key={tab.path}
-                  label={
-                    <Typography variant="body1" component="span">
-                      {tab.label}
-                    </Typography>
-                  }
-                  value={tab.path}
+                  label={<Typography variant="body1" sx={{
+                    color: activeTab === tab.path ? 'common.white' : 'text.primary'
+                  }}>{tab.label}</Typography>} value={tab.path}
                   component={Link}
                   to={tab.path}
                   sx={{
-                    color: 'text.secondary',
                     textTransform: 'none',
                     minWidth: 'unset',
                     minHeight: 'unset',
                     px: 2,
                     py: 1,
-                    '&.Mui-selected': {
-                      color: 'text.primary',
-                      fontWeight: 'medium'
-                    }
+                    color: 'transparent',
+                    fontWeight: 'medium',
+                    backgroundColor: activeTab === tab.path ? 'primary.main' : 'transparent',
+                    borderRadius: '100px',
+                    '&:hover': {
+                      backgroundColor: activeTab === tab.path ? 'primary.main' : 'action.hover',
+                    },
                   }}
                 />
               ))}
@@ -422,7 +443,7 @@ const Navbar = () => {
                         const role = JSON.parse(localStorage.getItem("role") || "[]");
                         if (role.includes("ops")) {
                           navigate("/ops");
-                        }else if (role.includes("admin")) {
+                        } else if (role.includes("admin")) {
                           navigate("/ngo");
                         } else {
                           navigate("/");
