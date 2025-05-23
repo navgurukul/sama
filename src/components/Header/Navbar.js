@@ -75,6 +75,7 @@ const Navbar = () => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
   const isMobileOrTablet = useMediaQuery("(max-width:" + breakpoints.values.md + "px)");
+  const registrationActive = location.pathname === "/registration";
 
   const routePatterns = [
     "/user-details",
@@ -205,8 +206,33 @@ const Navbar = () => {
                       setActiveTab(tab.path);
                       navigate(tab.path);
                     }}
+                    sx={{
+                      backgroundColor: activeTab === tab.path ? 'primary.main' : 'transparent',
+                      borderRadius: '4px',
+                      my: 0.5,
+                      '&.Mui-selected': {
+                        backgroundColor: 'primary.main',
+                        '& .MuiListItemText-primary': {
+                          color: 'common.white'
+                        },
+                        '&:hover': {
+                          backgroundColor: 'primary.dark',
+                        }
+                      },
+                      '&:hover': {
+                        backgroundColor: activeTab === tab.path ? 'primary.dark' : 'action.hover',
+                      }
+                    }}
                   >
-                    <ListItemText primary={tab.label} />
+                    <ListItemText
+                      primary={tab.label}
+                      primaryTypographyProps={{
+                        sx: {
+                          fontWeight: 'medium',
+                          color: activeTab === tab.path ? 'common.white' : 'text.primary'
+                        }
+                      }}
+                    />
                   </ListItem>
                 ))}
               </List>
@@ -232,10 +258,7 @@ const Navbar = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', mr: 3 }}>
             <Tabs
               value={activeTab}
-              onChange={(e, newValue) => {
-                setActiveTab(newValue);
-                navigate(newValue);
-              }}
+              onChange={(e, newValue) => setActiveTab(newValue)}
               sx={{
                 minHeight: 'unset',
                 '& .MuiTabs-indicator': { display: 'none' },
@@ -247,25 +270,24 @@ const Navbar = () => {
               {opsTabs.map((tab) => (
                 <Tab
                   key={tab.path}
-                  label={
-                    <Typography variant="body1" component="span">
-                      {tab.label}
-                    </Typography>
-                  }
-                  value={tab.path}
+                  label={<Typography variant="body1" sx={{
+                    color: activeTab === tab.path ? 'common.white' : 'text.primary'
+                  }}>{tab.label}</Typography>} value={tab.path}
                   component={Link}
                   to={tab.path}
                   sx={{
-                    color: 'text.secondary',
                     textTransform: 'none',
                     minWidth: 'unset',
                     minHeight: 'unset',
                     px: 2,
                     py: 1,
-                    '&.Mui-selected': {
-                      color: 'text.primary',
-                      fontWeight: 'medium'
-                    }
+                    color: 'transparent',
+                    fontWeight: 'medium',
+                    backgroundColor: activeTab === tab.path ? 'primary.main' : 'transparent',
+                    borderRadius: '100px',
+                    '&:hover': {
+                      backgroundColor: activeTab === tab.path ? 'primary.main' : 'action.hover',
+                    },
                   }}
                 />
               ))}
@@ -290,7 +312,7 @@ const Navbar = () => {
 
   const renderAdminHeader = () => {
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2, pl:2 }}>
         {!isRouteMatch(location.pathname, routePatterns) && (
           <Box
             component="img"
@@ -303,19 +325,28 @@ const Navbar = () => {
         )}
 
         {isLoggedIn && role.includes("admin") && (
-          <Button
-            variant="contained"
-            sx={{
-              marginLeft: 2,
-              borderRadius: "100px",
-              backgroundColor: "primary.main",
-            }}
-            onClick={() => navigate("/registration")}
-          >
-            <Typography variant="subtitle1" sx={{ color: "#ffffff" }}>
-              Registration
-            </Typography>
-          </Button>
+         <Button
+         variant="body1"
+         onClick={() => navigate("/registration")}
+         sx={{
+          textTransform: 'none',
+          minWidth: 'unset',
+          minHeight: 'unset',
+          px: 2,
+          py: 1,
+          ml: 2, 
+          color: registrationActive ? 'common.white' : 'text.primary',
+          fontWeight: 'medium',
+          backgroundColor: registrationActive ? 'primary.main' : 'transparent',
+          borderRadius: '100px',
+          '&:hover': {
+            backgroundColor: registrationActive ? 'primary.main' : 'action.hover',
+            color: registrationActive ? 'common.white' : 'text.primary',
+          },
+        }}
+       >
+         Registration
+       </Button>
         )}
 
         <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', ml: 0 }}>
@@ -337,24 +368,28 @@ const Navbar = () => {
               <Tab
                 key={tab.path}
                 label={
-                  <Typography variant="body1" component="span">
-                    {tab.label}
-                  </Typography>
+                <Typography variant="body1" sx={{
+                  color: activeTab === tab.path ? 'common.white' : 'text.primary'
+                }}>{tab.label}
+                </Typography>
                 }
                 value={tab.path}
                 component={Link}
                 to={tab.path}
                 sx={{
-                  color: 'text.secondary',
                   textTransform: 'none',
                   minWidth: 'unset',
                   minHeight: 'unset',
                   px: 2,
                   py: 1,
-                  '&.Mui-selected': {
-                    color: 'text.primary',
-                    fontWeight: 'medium'
-                  }
+                  color: 'transparent',
+                  fontWeight: 'medium',
+                  backgroundColor: activeTab === tab.path ? 'primary.main' : 'transparent',
+                  borderRadius: '100px',
+                  '&:hover': {
+                    backgroundColor: activeTab === tab.path ? 'primary.main' : 'action.hover',
+                  },
+                
                 }}
               />
             ))}
@@ -422,7 +457,7 @@ const Navbar = () => {
                         const role = JSON.parse(localStorage.getItem("role") || "[]");
                         if (role.includes("ops")) {
                           navigate("/ops");
-                        }else if (role.includes("admin")) {
+                        } else if (role.includes("admin")) {
                           navigate("/ngo");
                         } else {
                           navigate("/");
