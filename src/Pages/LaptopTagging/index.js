@@ -45,26 +45,17 @@ function LaptopTagging() {
 
   const printRef = useRef();
 
-  // Add this state to track selected rows
   const [selectedRows, setSelectedRows] = useState([]);
-  // Track if the selection is being handled by a search/filter operation
   const [isProcessingSelection, setIsProcessingSelection] = useState(false);
 
   const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
-    // If this is triggered by a filter/search operation, ignore it
     if (isProcessingSelection) return;
 
-    // Get the last clicked row ID
-    const lastSelectedId = data[rowsSelected[rowsSelected.length - 1]]?.ID;
+  // Get the IDs of all selected rows
+  const newSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
 
-    if (!lastSelectedId) return;
-
-    setSelectedRows(prev => {
-      // Toggle selection - remove if already selected, add if not
-      return prev.includes(lastSelectedId)
-        ? prev.filter(id => id !== lastSelectedId)
-        : [...prev, lastSelectedId];
-    });
+  // Update the selectedRows state
+  setSelectedRows(newSelectedIds);
   };
 
   // Fetch data on component mount and when refresh state changes
@@ -90,6 +81,14 @@ function LaptopTagging() {
     applyFilters();
   }, [workingFilter, statusFilter, majorIssueFilter, minorIssueFilter, allData]);
 
+
+  useEffect(() => {
+    if (!isProcessingSelection && selectedRows.length === 0) {
+      setIsProcessingSelection(true);
+      // Any cleanup or reset logic if needed
+      setIsProcessingSelection(false);
+    }
+  }, [selectedRows, isProcessingSelection]);
   // Filter application logic
   const applyFilters = () => {
     let filteredData = applyAdditionalFilters(allData);
@@ -602,6 +601,7 @@ function LaptopTagging() {
               rowsSelected: data
                 .map((item, index) => selectedRows.includes(item.ID) ? index : -1)
                 .filter(index => index !== -1),
+              onRowsDelete: () => false,
               download: false,
               print: false,
               sort: false,
