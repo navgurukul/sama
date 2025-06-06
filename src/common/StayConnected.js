@@ -10,7 +10,6 @@ const StayConnected = () => {
     const [errors, setErrors] = useState({});
     const [successMessage, setSuccessMessage] = useState(false);
 
-    const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwA0FA1FJeqcZIrVDvrTVhahbNBtMUmOTFeFsOllll-iPWoM4yfsB5-38E-XKyyTml-7A/exec";
 
 
     const handleSubscribe = async () => {
@@ -29,10 +28,13 @@ const StayConnected = () => {
         }
 
         try {
-            const capitalizedData = { email: email.trim() };
-
+            const capitalizedData = {
+                formType: "email",
+                email: email.trim()
+            };
+            
             await fetch(
-                "https://script.google.com/macros/s/AKfycbwA0FA1FJeqcZIrVDvrTVhahbNBtMUmOTFeFsOllll-iPWoM4yfsB5-38E-XKyyTml-7A/exec",
+                `${process.env.REACT_APP_GetInvolvedForm}`,
                 {
                     method: "POST",
                     headers: {
