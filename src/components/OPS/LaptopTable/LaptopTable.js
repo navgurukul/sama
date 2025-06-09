@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Box, Chip } from '@mui/material';
+import { Typography, Box, Chip, Button } from '@mui/material';
 import { LaptopStatusDropdown, AssignedTo, DonatedTo, LaptopWorkingCheckbox } from './LaptopStatus';
 
 export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton, refresh, setRefresh) => {
@@ -10,7 +10,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
     return minorIssues.includes("battery") || majorIssues.includes("battery");
   };
 
-  
+
   const formatDate = (dateString) => {
     if (!dateString) return "Not Updated";
     try {
@@ -22,18 +22,18 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           year: "numeric"
         });
       }
-      
+
       const parts = dateString.split(' ');
       if (parts.length === 3) {
         const months = {
           'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
           'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
         };
-        
+
         const day = parseInt(parts[0], 10);
         const month = months[parts[1]];
         const year = parseInt(parts[2], 10);
-        
+
         if (!isNaN(day) && month !== undefined && !isNaN(year)) {
           const newDate = new Date(year, month, day);
           return newDate.toLocaleDateString("en-IN", {
@@ -43,43 +43,43 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           });
         }
       }
-      
-      return dateString; 
+
+      return dateString;
     } catch (error) {
       console.error("Date parsing error:", error);
-      return dateString; 
+      return dateString;
     }
   };
-  
-  
 
-  
+
+
+
   return [
-    { 
-      name: "ID", 
+    {
+      name: "ID",
       label: "Serial No",
       options: {
         filter: false,
         customBodyRender: (value, tableMeta) => {
-            const rowIndex = tableMeta.rowIndex;
-            const laptop = data[rowIndex];
-            const hasBatteryProblem = hasBatteryIssue(laptop);
-            
-            return (
-              <Box>
-                <Typography variant="body2">
-                  {laptop.ID}
-                </Typography>
-                {hasBatteryProblem && (
-                  <Chip 
-                    label="Battery Issue" 
-                    color="error" 
-                    size="small" 
-                    sx={{ mt: 1 }} 
-                  />
-                )}
-              </Box>
-            );
+          const rowIndex = tableMeta.rowIndex;
+          const laptop = data[rowIndex];
+          const hasBatteryProblem = hasBatteryIssue(laptop);
+
+          return (
+            <Box>
+              <Typography variant="body2">
+                {laptop.ID}
+              </Typography>
+              {hasBatteryProblem && (
+                <Chip
+                  label="Battery Issue"
+                  color="error"
+                  size="small"
+                  sx={{ mt: 1 }}
+                />
+              )}
+            </Box>
+          );
         },
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -89,8 +89,8 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         })
       }
     },
-    { 
-      name: "Donor Company Name", 
+    {
+      name: "Donor Company Name",
       label: "Company Name",
       options: {
         filter: false,
@@ -102,8 +102,8 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         })
       }
     },
-    { 
-      name: "RAM", 
+    {
+      name: "RAM",
       label: "RAM",
       options: {
         setCellProps: () => ({
@@ -114,8 +114,8 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         })
       }
     },
-    { 
-      name: "ROM", 
+    {
+      name: "ROM",
       label: "ROM",
       options: {
         setCellProps: () => ({
@@ -126,8 +126,8 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         })
       }
     },
-    { 
-      name: "Manufacturer Model", 
+    {
+      name: "Manufacturer Model",
       label: "Manufacturer Model",
       options: {
         filter: false,
@@ -139,15 +139,15 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         })
       }
     },
-    { 
-      name: "Minor Issues", 
+    {
+      name: "Minor Issues",
       label: "Minor Issues",
       options: {
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptop = data[rowIndex];
-          
+
           return (
             <Typography variant="body2">
               {laptop["Minor Issues"] || "None"}
@@ -162,8 +162,8 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         })
       }
     },
-    { 
-      name: "Major Issues", 
+    {
+      name: "Major Issues",
       label: "Major Issues",
       options: {
         filter: false,
@@ -171,18 +171,18 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           const rowIndex = tableMeta.rowIndex;
           const laptop = data[rowIndex];
           const hasBatteryProblem = hasBatteryIssue(laptop);
-          
+
           return (
             <Box>
               <Typography variant="body2">
                 {laptop["Major Issues"] || "None"}
               </Typography>
               {hasBatteryProblem && (
-                <Chip 
-                  label="Battery Issue" 
-                  color="error" 
-                  size="small" 
-                  sx={{ mt: 1 }} 
+                <Chip
+                  label="Battery Issue"
+                  color="error"
+                  size="small"
+                  sx={{ mt: 1 }}
                 />
               )}
             </Box>
@@ -196,8 +196,8 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         })
       }
     },
-    { 
-      name: "Inventory Location", 
+    {
+      name: "Inventory Location",
       label: "Inventory Location",
       options: {
         setCellProps: () => ({
@@ -208,8 +208,8 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         })
       }
     },
-    { 
-      name: "Mac address", 
+    {
+      name: "Mac address",
       label: "Mac Address",
       options: {
         filter: false,
@@ -221,8 +221,8 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         })
       }
     },
-    { 
-      name: "Battery Capacity", 
+    {
+      name: "Battery Capacity",
       label: "Battery Capacity",
       options: {
         filter: false,
@@ -242,7 +242,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           const lastUpdatedOn = laptopData["Last Updated On"] || laptopData.lastUpdatedOn;
-          
+
           return (
             <Typography variant="body2">
               {formatDate(lastUpdatedOn)}
@@ -287,8 +287,8 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           return (
-            <LaptopStatusDropdown 
-              value={laptopData.Status || ''} 
+            <LaptopStatusDropdown
+              value={laptopData.Status || ''}
               onChange={(event) => handleStatusChange(event, rowIndex)}
             />
           );
@@ -309,7 +309,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           return (
-            <AssignedTo 
+            <AssignedTo
               value={laptopData["Assigned To"] || 'Not Assigned'}
               onChange={(event) => handleAssignedToChange(event, rowIndex)}
             />
@@ -332,7 +332,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           return (
-            <DonatedTo 
+            <DonatedTo
               value={laptopData["Allocated To"] || ''}
               onChange={(event) => handleDonatedToChange(event, rowIndex)}
             />
@@ -354,9 +354,9 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           const isWorking = laptopData.Working === "Working";
-        
+
           return (
-            <LaptopWorkingCheckbox 
+            <LaptopWorkingCheckbox
               checked={isWorking}
               onChange={(event) => handleWorkingToggle(event, rowIndex)}
             />
@@ -379,12 +379,12 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           return (
-            <EditButton 
-              laptopData={laptopData} 
+            <EditButton
+              laptopData={laptopData}
               rowIndex={rowIndex}
               data={data}
               setRefresh={setRefresh}
-              refresh={refresh}  
+              refresh={refresh}
             />
           );
         },
@@ -395,6 +395,75 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           className: 'custom-header-cell'
         })
       }
+    },
+    {
+      name: "Inspection Files",
+      label: "Inspection Files",
+      options: {
+        filter: false,
+        customBodyRender: (value, tableMeta) => {
+          const rowIndex = tableMeta.rowIndex;
+          const laptopData = data[rowIndex];
+
+          // Get the raw string from the data
+          const rawLinks = laptopData["Inspection Files"] || laptopData.inspectionFiles;
+
+          if (!rawLinks || typeof rawLinks !== 'string') {
+            return <Typography variant="body2" color="textSecondary">No files</Typography>;
+          }
+
+          // Clean and split the links
+          const cleanedLinks = rawLinks
+            .replace(/'/g, '') // Remove single quotes
+            .split(/,\s*|\s+/) // Split by comma (with optional space) or any whitespace
+            .filter(link => link.startsWith('http'));
+
+          if (cleanedLinks.length === 0) {
+            return <Typography variant="body2" color="textSecondary">No valid links</Typography>;
+          }
+
+          // Display as a list of buttons
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {cleanedLinks.map((link, index) => {
+                // Extract a cleaner display name from the URL
+                const displayName = `Inspection ${index + 1}`;
+
+                return (
+                  <a
+                    key={index}
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      fullWidth
+                      sx={{
+                        justifyContent: 'flex-start',
+                        textTransform: 'none',
+                        fontSize: '0.75rem',
+                        padding: '2px 8px'
+                      }}
+                    >
+                      {displayName}
+                    </Button>
+                  </a>
+                );
+              })}
+            </div>
+          );
+        },
+        setCellProps: () => ({
+          className: 'custom-body-cell'
+        }),
+        setCellHeaderProps: () => ({
+          className: 'custom-header-cell'
+        })
+      }
     }
+
   ];
 };
