@@ -250,33 +250,84 @@ function LaptopDetails() {
   const columns = data[0]
   ? Object.keys(data[0])
       .filter(key => key !== 'barcodeUrl') // Filter out the barcodeUrl key
-      .map((key) => ({
-        name: key,
-        label: key,
-        options: {
-          display: "true",
-          filter: 
-            (
-              key === 'ID' || 
-              key === 'Manufacturing Date' || 
-              key ==='Manufacturer Model' || 
-              key ==='Major Issues'||
-              key ==='Mac address'||
-              key ==='Last Updated On'||
-              key ==='Battery Capacity'||
-              key ==='Date Committed'||
-              key ==='Processor'||
-              key ==='Condition Status'||
-              key ==='Minor Issues'||
-              key ==='Comment for the Issues'||
-              key ==='Allocated To'||
-              key ==='RAM'||
-              key ==='ROM'
-            ) 
-            ? false : true,
-          sort: false,
-        },
-      }))
+      .map((key) => {
+        if (key === "Inspection Files") {
+          return {
+            name: key,
+            label: key,
+            options: {
+              filter: false,
+              sort: false,
+              customBodyRender: (value) => {
+                const links = typeof value === 'string'
+                  ? value
+                      .replace(/'/g, '')
+                      .split(/,\s*|\s+/)
+                      .filter(link => link.startsWith('http'))
+                  : Array.isArray(value)
+                    ? value.filter(link => typeof link === 'string' && link.startsWith('http'))
+                    : [];
+        
+                if (!links.length) {
+                  return (
+                    <span style={{ color: '#999', fontSize: '0.85rem' }}>
+                      No files
+                    </span>
+                  );
+                }
+        
+                return (
+                  <select
+                    onChange={(e) => {
+                      const url = e.target.value;
+                      if (url) window.open(url, '_blank');
+                    }}
+                    defaultValue=""
+                    style={{
+                      padding: '4px 6px',
+                      fontSize: '0.8rem',
+                      borderRadius: '4px'
+                    }}
+                  >
+                    <option value="" disabled>Select file</option>
+                    {links.map((link, index) => (
+                      <option key={index} value={link}>
+                        {`File ${index + 1}`}
+                      </option>
+                    ))}
+                  </select>
+                );
+              },
+            }
+          };
+        }
+        
+        return {
+          name: key,
+          label: key,
+          options: {
+            display: "true",
+            filter: ![
+              'ID',
+              'Manufacturing Date',
+              'Manufacturer Model',
+              'Major Issues',
+              'Mac address',
+              'Last Updated On',
+              'Battery Capacity',
+              'Date Committed',
+              'Processor',
+              'Condition Status',
+              'Minor Issues',
+              'Comment for the Issues',
+              'Allocated To',
+              'RAM',
+              'ROM'
+            ].includes(key),
+            sort: false,
+          },
+        };
+      })
   : [];
 
 
