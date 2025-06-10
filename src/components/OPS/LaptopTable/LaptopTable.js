@@ -405,7 +405,6 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
 
-          // Get the raw string from the data
           const rawLinks = laptopData["Inspection Files"] || laptopData.inspectionFiles;
 
           if (!rawLinks || typeof rawLinks !== 'string') {
@@ -422,38 +421,69 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
             return <Typography variant="body2" color="textSecondary">No valid links</Typography>;
           }
 
-          // Display as a list of buttons
           return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {cleanedLinks.map((link, index) => {
-                // Extract a cleaner display name from the URL
-                const displayName = `Inspection ${index + 1}`;
-
-                return (
-                  <a
+            <Box sx={{ position: 'relative' }}>
+              <Button
+                variant="outlined"
+                size="small"
+                sx={{
+                  minWidth: '100px',
+                  textTransform: 'none',
+                  fontSize: '0.8rem',
+                  padding: '4px 12px',
+                  borderColor: 'divider',
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                View Files ({cleanedLinks.length})
+                <Box component="span" sx={{ ml: 0.5 }}>▼</Box>
+              </Button>
+              <Box
+                component="div"
+                sx={{
+                  position: 'absolute',
+                  right: '0%', 
+                  top: 50,
+                  zIndex: 100,
+                  backgroundColor: 'background.paper',
+                  boxShadow: 3,
+                  borderRadius: 1,
+                  minWidth: '160px',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  display: 'none',
+                  '&:hover': {
+                    display: 'block'
+                  },
+                  'button:hover + &, &:hover': {
+                    display: 'block'
+                  }
+                }}
+              >
+                {cleanedLinks.map((link, index) => (
+                  <Box
                     key={index}
+                    component="a"
                     href={link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ textDecoration: 'none' }}
+                    sx={{
+                      display: 'block',
+                      padding: '8px 16px',
+                      textDecoration: 'none',
+                      color: 'text.primary',
+                      fontSize: '0.8rem',
+                      '&:hover': {
+                        backgroundColor: 'action.selected',
+                        color: 'primary.main'
+                      }
+                    }}
                   >
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      fullWidth
-                      sx={{
-                        justifyContent: 'flex-start',
-                        textTransform: 'none',
-                        fontSize: '0.75rem',
-                        padding: '2px 8px'
-                      }}
-                    >
-                      {displayName}
-                    </Button>
-                  </a>
-                );
-              })}
-            </div>
+                    Inspection File {index + 1}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
           );
         },
         setCellProps: () => ({
@@ -464,6 +494,5 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         })
       }
     }
-
   ];
 };
