@@ -5,6 +5,7 @@ import {
   CircularProgress,
   Grid,
   Typography,
+  Box,
 } from '@mui/material';
 import MUIDataTable from "mui-datatables";
 import './styles.css';
@@ -258,44 +259,89 @@ function LaptopDetails() {
             options: {
               filter: false,
               sort: false,
-              customBodyRender: (value) => {
-                const links = typeof value === 'string'
-                  ? value
-                      .replace(/'/g, '')
-                      .split(/,\s*|\s+/)
-                      .filter(link => link.startsWith('http'))
-                  : Array.isArray(value)
-                    ? value.filter(link => typeof link === 'string' && link.startsWith('http'))
-                    : [];
-        
-                if (!links.length) {
-                  return (
-                    <span style={{ color: '#999', fontSize: '0.85rem' }}>
-                      No files
-                    </span>
-                  );
+              customBodyRender: (value, tableMeta) => {
+                const rowIndex = tableMeta.rowIndex;
+                const laptopData = data[rowIndex];
+      
+                const rawLinks = laptopData["Inspection Files"] || laptopData.inspectionFiles;
+      
+                if (!rawLinks || typeof rawLinks !== 'string') {
+                  return <Typography variant="body2" color="textSecondary">No files</Typography>;
                 }
-        
+      
+                // Clean and split the links
+                const cleanedLinks = rawLinks
+                  .replace(/'/g, '') // Remove single quotes
+                  .split(/,\s*|\s+/) // Split by comma (with optional space) or any whitespace
+                  .filter(link => link.startsWith('http'));
+      
+                if (cleanedLinks.length === 0) {
+                  return <Typography variant="body2" color="textSecondary">No valid links</Typography>;
+                }
+      
                 return (
-                  <select
-                    onChange={(e) => {
-                      const url = e.target.value;
-                      if (url) window.open(url, '_blank');
-                    }}
-                    defaultValue=""
-                    style={{
-                      padding: '4px 6px',
-                      fontSize: '0.8rem',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <option value="" disabled>Select file</option>
-                    {links.map((link, index) => (
-                      <option key={index} value={link}>
-                        {`File ${index + 1}`}
-                      </option>
-                    ))}
-                  </select>
+                  <Box sx={{ position: 'relative' }}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        minWidth: '100px',
+                        textTransform: 'none',
+                        fontSize: '0.8rem',
+                        padding: '4px 12px',
+                        borderColor: 'divider',
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      View Files ({cleanedLinks.length})
+                      <Box component="span" sx={{ ml: 0.5 }}>▼</Box>
+                    </Button>
+                    <Box
+                      component="div"
+                      sx={{
+                        position: 'absolute',
+                        right: '0%', 
+                        top: 50,
+                        zIndex: 100,
+                        backgroundColor: 'background.paper',
+                        boxShadow: 3,
+                        borderRadius: 1,
+                        minWidth: '160px',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        display: 'none',
+                        '&:hover': {
+                          display: 'block'
+                        },
+                        'button:hover + &, &:hover': {
+                          display: 'block'
+                        }
+                      }}
+                    >
+                      {cleanedLinks.map((link, index) => (
+                        <Box
+                          key={index}
+                          component="a"
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{
+                            display: 'block',
+                            padding: '8px 16px',
+                            textDecoration: 'none',
+                            color: 'text.primary',
+                            fontSize: '0.8rem',
+                            '&:hover': {
+                              backgroundColor: 'action.selected',
+                              color: 'primary.main'
+                            }
+                          }}
+                        >
+                          Inspection File {index + 1}
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
                 );
               },
             }
