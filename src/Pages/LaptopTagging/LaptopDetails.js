@@ -5,6 +5,7 @@ import {
   CircularProgress,
   Grid,
   Typography,
+  Box,
 } from '@mui/material';
 import MUIDataTable from "mui-datatables";
 import './styles.css';
@@ -250,33 +251,129 @@ function LaptopDetails() {
   const columns = data[0]
   ? Object.keys(data[0])
       .filter(key => key !== 'barcodeUrl') // Filter out the barcodeUrl key
-      .map((key) => ({
-        name: key,
-        label: key,
-        options: {
-          display: "true",
-          filter: 
-            (
-              key === 'ID' || 
-              key === 'Manufacturing Date' || 
-              key ==='Manufacturer Model' || 
-              key ==='Major Issues'||
-              key ==='Mac address'||
-              key ==='Last Updated On'||
-              key ==='Battery Capacity'||
-              key ==='Date Committed'||
-              key ==='Processor'||
-              key ==='Condition Status'||
-              key ==='Minor Issues'||
-              key ==='Comment for the Issues'||
-              key ==='Allocated To'||
-              key ==='RAM'||
-              key ==='ROM'
-            ) 
-            ? false : true,
-          sort: false,
-        },
-      }))
+      .map((key) => {
+        if (key === "Inspection Files") {
+          return {
+            name: key,
+            label: key,
+            options: {
+              filter: false,
+              sort: false,
+              customBodyRender: (value, tableMeta) => {
+                const rowIndex = tableMeta.rowIndex;
+                const laptopData = data[rowIndex];
+      
+                const rawLinks = laptopData["Inspection Files"] || laptopData.inspectionFiles;
+      
+                if (!rawLinks || typeof rawLinks !== 'string') {
+                  return <Typography variant="body2" color="textSecondary">No files</Typography>;
+                }
+      
+                // Clean and split the links
+                const cleanedLinks = rawLinks
+                  .replace(/'/g, '') // Remove single quotes
+                  .split(/,\s*|\s+/) // Split by comma (with optional space) or any whitespace
+                  .filter(link => link.startsWith('http'));
+      
+                if (cleanedLinks.length === 0) {
+                  return <Typography variant="body2" color="textSecondary">No valid links</Typography>;
+                }
+      
+                return (
+                  <Box sx={{ position: 'relative' }}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        minWidth: '100px',
+                        textTransform: 'none',
+                        fontSize: '0.8rem',
+                        padding: '4px 12px',
+                        borderColor: 'divider',
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      View Files ({cleanedLinks.length})
+                      <Box component="span" sx={{ ml: 0.5 }}>▼</Box>
+                    </Button>
+                    <Box
+                      component="div"
+                      sx={{
+                        position: 'absolute',
+                        right: '0%', 
+                        top: 50,
+                        zIndex: 100,
+                        backgroundColor: 'background.paper',
+                        boxShadow: 3,
+                        borderRadius: 1,
+                        minWidth: '160px',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        display: 'none',
+                        '&:hover': {
+                          display: 'block'
+                        },
+                        'button:hover + &, &:hover': {
+                          display: 'block'
+                        }
+                      }}
+                    >
+                      {cleanedLinks.map((link, index) => (
+                        <Box
+                          key={index}
+                          component="a"
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{
+                            display: 'block',
+                            padding: '8px 16px',
+                            textDecoration: 'none',
+                            color: 'text.primary',
+                            fontSize: '0.8rem',
+                            '&:hover': {
+                              backgroundColor: 'action.selected',
+                              color: 'primary.main'
+                            }
+                          }}
+                        >
+                          Inspection File {index + 1}
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                );
+              },
+            }
+          };
+        }
+        
+        return {
+          name: key,
+          label: key,
+          options: {
+            display: "true",
+            filter: ![
+              'ID',
+              'Manufacturing Date',
+              'Manufacturer Model',
+              'Major Issues',
+              'Mac address',
+              'Last Updated On',
+              'Battery Capacity',
+              'Date Committed',
+              'Processor',
+              'Condition Status',
+              'Minor Issues',
+              'Comment for the Issues',
+              'Allocated To',
+              'RAM',
+              'ROM'
+            ].includes(key),
+            sort: false,
+          },
+        };
+      })
   : [];
 
 

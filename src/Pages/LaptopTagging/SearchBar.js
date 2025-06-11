@@ -6,6 +6,7 @@ const SearchBar = ({ idQuery, setIdQuery, macQuery, setMacQuery, onSearch, handl
     e.preventDefault(); // Prevent default form behavior
     onSearch();
   };
+  
   return (
     <form onSubmit={handleSearchClick}>
       <Grid container spacing={2} style={{ marginBottom: '20px', marginTop: '80px' }}>

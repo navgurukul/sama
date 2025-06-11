@@ -7,10 +7,6 @@ import {
     FormControl,
     Select,
     MenuItem,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions
 } from '@mui/material';
 
 const BulkEditPanel = ({
@@ -24,8 +20,8 @@ const BulkEditPanel = ({
     const [bulkStatus, setBulkStatus] = useState(statusFilter);
     const [bulkAssignedTo, setBulkAssignedTo] = useState('all');
     const [bulkAllocatedTo, setBulkAllocatedTo] = useState('all');
-    const [confirmOpen, setConfirmOpen] = useState(false);
-    const [pendingUpdates, setPendingUpdates] = useState([]);
+    // const [confirmOpen, setConfirmOpen] = useState(false);
+    // const [pendingUpdates, setPendingUpdates] = useState([]);
 
     useEffect(() => {
         const fetchApprovedNgos = async () => {
@@ -64,33 +60,8 @@ const BulkEditPanel = ({
         }
 
         if (updates.length > 0) {
-            setPendingUpdates(updates);
-            setConfirmOpen(true);
+            onBulkUpdate(updates);
         }
-    };
-
-    const confirmUpdates = () => {
-        onBulkUpdate(pendingUpdates);
-        setConfirmOpen(false);
-        resetForm();
-    };
-
-    const resetForm = () => {
-        setBulkWorking(workingFilter);
-        setBulkStatus(statusFilter);
-        setBulkAssignedTo('all');
-        setBulkAllocatedTo('all');
-    };
-
-    const generateConfirmationMessage = () => {
-        if (pendingUpdates.length === 0) return '';
-
-        const laptopText = selectedRows.length === 1 ? 'laptop' : 'laptops';
-        const updatesText = pendingUpdates.map(update =>
-            `${update.field} to "${update.value}"`
-        ).join(' and ');
-
-        return `Are you sure you want to update ${selectedRows.length} ${laptopText}' ${updatesText}?`;
     };
 
     return (
@@ -190,17 +161,6 @@ const BulkEditPanel = ({
                     </Grid>
                 </Grid>
             </Paper>
-
-            <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-                <DialogTitle>Confirm Bulk Update</DialogTitle>
-                <DialogContent>
-                    {generateConfirmationMessage()}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
-                    <Button onClick={confirmUpdates} color="primary">Confirm</Button>
-                </DialogActions>
-            </Dialog>
         </>
     );
 };
