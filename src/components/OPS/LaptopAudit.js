@@ -72,7 +72,11 @@ const Audit = () => {
 
   // Function to sort data
   const handleSort = (field) => {
-    const direction = sortConfig.field === field && sortConfig.direction === 'desc' ? 'asc': 'desc';
+    // If clicking a new column, always start with descending
+    // If clicking the same column, toggle between descending and ascending
+    const direction = sortConfig.field === field 
+      ? sortConfig.direction === 'desc' ? 'asc' : 'desc'
+      : 'desc';
     
     setSortConfig({ field, direction });
     
