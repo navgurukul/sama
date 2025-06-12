@@ -3,17 +3,22 @@ import axios from "axios";
 import MUIDataTable from "mui-datatables";
 import { TextField, Button, Box, Typography } from "@mui/material";
 
-const formatDate = (dateString) => {
-  if (!dateString) return "";
-  const date = new Date(dateString); // No need to add T10:30 if sheet already has full datetime
-  return date.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+const formatDate = (value) => {
+  if (!value || typeof value !== "string") return value;
+
+  let date;
+
+  // Handle DD-MM-YYYY and DD-MM-YYYY HH:mm:ss formats
+  const dateTimeMatch = value.match(/^(\d{2})-(\d{2})-(\d{4})(?:\s+(\d{2}):(\d{2}):(\d{2}))?$/);
+  if (dateTimeMatch) {
+    const [, dd, mm, yyyy, hh = '00', mi = '00', ss = '00'] = dateTimeMatch;
+    date = new Date(`${yyyy}-${mm}-${dd}T${hh}:${mi}:${ss}Z`);
+  } else {
+    // Try parsing directly (e.g., ISO or valid timestamp)
+    date = new Date(value);
+  }
+
+  return isNaN(date.getTime()) ? value : date.toISOString();
 };
 
 const Audit = () => {
@@ -33,12 +38,13 @@ const Audit = () => {
 
       const formattedData = response.data.map((row) => {
         const newRow = { ...row };
-        if (newRow["Date"]) {
-          newRow["Date"] = formatDate(newRow["Date"]);
+        for (let key in newRow) {
+          const value = newRow[key];
+          if (typeof value === "string" && /\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2}/.test(value)) {
+            newRow[key] = formatDate(value);
+          }
         }
-        if (newRow["Last Updated On"]) {
-          newRow["Last Updated On"] = formatDate(newRow["Last Updated On"]);
-        }
+  
         return newRow;
       });
 
