@@ -3,23 +3,19 @@ import axios from "axios";
 import MUIDataTable from "mui-datatables";
 import { TextField, Button, Box, Typography } from "@mui/material";
 
-const formatDate = (value) => {
-  if (!value || typeof value !== "string") return value;
-
-  let date;
-
-  // Handle DD-MM-YYYY and DD-MM-YYYY HH:mm:ss formats
-  const dateTimeMatch = value.match(/^(\d{2})-(\d{2})-(\d{4})(?:\s+(\d{2}):(\d{2}):(\d{2}))?$/);
-  if (dateTimeMatch) {
-    const [, dd, mm, yyyy, hh = '00', mi = '00', ss = '00'] = dateTimeMatch;
-    date = new Date(`${yyyy}-${mm}-${dd}T${hh}:${mi}:${ss}Z`);
-  } else {
-    // Try parsing directly (e.g., ISO or valid timestamp)
-    date = new Date(value);
-  }
-
-  return isNaN(date.getTime()) ? value : date.toISOString();
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
 };
+
 
 const Audit = () => {
   const [data, setData] = useState([]);
@@ -36,17 +32,7 @@ const Audit = () => {
         `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=audit`
       );
 
-      const formattedData = response.data.map((row) => {
-        const newRow = { ...row };
-        for (let key in newRow) {
-          const value = newRow[key];
-          if (typeof value === "string" && /\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2}/.test(value)) {
-            newRow[key] = formatDate(value);
-          }
-        }
-  
-        return newRow;
-      });
+      const formattedData = response.data.map((row) => ({ ...row }));
 
       setData(formattedData);
       setFiltered(formattedData);
@@ -72,49 +58,36 @@ const Audit = () => {
 
   // Function to sort data
   const handleSort = (field) => {
-    // If clicking a new column, always start with descending
-    // If clicking the same column, toggle between descending and ascending
-    const direction = sortConfig.field === field 
-      ? sortConfig.direction === 'desc' ? 'asc' : 'desc'
-      : 'desc';
-    
+    const direction =
+      sortConfig.field === field && sortConfig.direction === "desc"
+        ? "asc"
+        : "desc";
+  
     setSortConfig({ field, direction });
-    
+  
     const sortedData = [...filtered].sort((a, b) => {
-      if (a[field] === null || a[field] === undefined) return 1;
-      if (b[field] === null || b[field] === undefined) return -1;
-      
-      // Check if the field might contain dates
-      if (field === "Date" || field === "Updated On" || field.toLowerCase().includes('date')) {
-        const dateA = new Date(a[field]);
-        const dateB = new Date(b[field]);
-        
-        if (isNaN(dateA) || isNaN(dateB)) {
-          // Fall back to string comparison if dates are invalid
-          return direction === 'desc' 
-            ? a[field].toString().localeCompare(b[field].toString())
-            : b[field].toString().localeCompare(a[field].toString());
-        }
-        
-        return direction === 'desc' ? dateA - dateB : dateB - dateA;
+      const valA = a[field];
+      const valB = b[field];
+  
+      if (!valA) return 1;
+      if (!valB) return -1;
+  
+      // If sorting by Updated On (raw), sort by actual Date object
+      if (field === "Updated On") {
+        const dateA = new Date(valA);
+        const dateB = new Date(valB);
+        return direction === "asc" ? dateA - dateB : dateB - dateA;
       }
-      
-      // Check if the field contains numbers
-      if (!isNaN(a[field]) && !isNaN(b[field])) {
-        return direction === 'asc' 
-          ? Number(a[field]) - Number(b[field])
-          : Number(b[field]) - Number(a[field]);
-      }
-      
-      // Default string comparison
-      return direction === 'asc' 
-        ? a[field].toString().localeCompare(b[field].toString())
-        : b[field].toString().localeCompare(a[field].toString());
+  
+      // Default: String sort
+      return direction === "asc"
+        ? valA.toString().localeCompare(valB.toString())
+        : valB.toString().localeCompare(valA.toString());
     });
-    
+  
     setFiltered(sortedData);
   };
-
+  
   // Custom cell rendering function for "Updated On" column
   const customCellRender = (value, tableMeta, updateValue, displayData) => {
     const columnName = columns[tableMeta.columnIndex].name;
@@ -125,34 +98,38 @@ const Audit = () => {
   };
 
   // Dynamically create columns from keys
-  const columns = data[0]
-    ? Object.keys(data[0]).map((key) => ({
+  const columns = filtered.length > 0
+  ? Object.entries(filtered[0]).map(([key]) => {
+      const isUpdatedOn = key === "Updated On";
+
+      return {
         name: key,
         label: key,
         options: {
           display: "true",
           filter: true,
-          sort: key==="Updated On" ? true : false,
-          sortThirdClickReset: true,
+          sort: isUpdatedOn,
+          sortDirection: sortConfig.field === key ? sortConfig.direction : "none",
           onSort: () => handleSort(key),
-          sortDirection: sortConfig.field === key ? sortConfig.direction : 'none',
-          customBodyRenderLite: (dataIndex, rowIndex) => {
-            const value = filtered[dataIndex][key];
-            if (key === "Updated On") {
-              return <Typography variant="body2">{value}</Typography>;
-            }
-            return value;
+          customBodyRenderLite: (index) => {
+            const cellValue = filtered[index][key];
+            return isUpdatedOn ? (
+              <Typography variant="body2">{formatDate(cellValue)}</Typography>
+            ) : (
+              cellValue
+            );
           },
-          // For the column header
-          customHeadLabelRender: (columnMeta) => {
-            if (columnMeta.name === "Updated On") {
-              return <Typography variant="body2" component="div">Updated On</Typography>;
-            }
-            return columnMeta.label;
-          }
+          customHeadLabelRender: ({ name, label }) =>
+            name === "Updated On" ? (
+              <Typography variant="body2">Updated On</Typography>
+            ) : (
+              label
+            ),
         },
-      }))
-    : [];
+      };
+    })
+  : [];
+
 
   const options = {
     selectableRows: "none",
