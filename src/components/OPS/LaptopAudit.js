@@ -57,12 +57,16 @@ const Audit = () => {
     if (searchId.trim() === "") {
       setFiltered(data);
     } else {
-      const filteredData = data.filter((row) =>
-        row["ID"]?.toLowerCase().includes(searchId.toLowerCase())
-      );
+      const filteredData = data.filter((row) => {
+        const id = row["ID"];
+        return typeof id === "string"
+          ? id.toLowerCase().includes(searchId.toLowerCase())
+          : id?.toString().toLowerCase().includes(searchId.toLowerCase());
+      });
       setFiltered(filteredData);
     }
   };
+  
 
   // Function to sort data
   const handleSort = (field) => {
