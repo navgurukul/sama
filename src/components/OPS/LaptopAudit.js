@@ -12,7 +12,7 @@ const formatDate = (dateString) => {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: true,
+    hour12: false,
   });
 };
 
@@ -26,6 +26,7 @@ const Audit = () => {
     direction: 'asc'
   });
 
+  
   const fetchAuditData = async () => {
     try {
       const response = await axios.get(
@@ -98,37 +99,52 @@ const Audit = () => {
   };
 
   // Dynamically create columns from keys
+  const getUniqueFormattedDates = () => {
+    const uniqueDates = [...new Set(filtered.map(row => row["Updated On"]).filter(Boolean))];
+    return uniqueDates.map(dateString => formatDate(dateString));
+  };
+  
   const columns = filtered.length > 0
-  ? Object.entries(filtered[0]).map(([key]) => {
-      const isUpdatedOn = key === "Updated On";
-
-      return {
-        name: key,
-        label: key,
-        options: {
-          display: "true",
-          filter: true,
-          sort: isUpdatedOn,
-          sortDirection: sortConfig.field === key ? sortConfig.direction : "none",
-          onSort: () => handleSort(key),
-          customBodyRenderLite: (index) => {
-            const cellValue = filtered[index][key];
-            return isUpdatedOn ? (
-              <Typography variant="body2">{formatDate(cellValue)}</Typography>
-            ) : (
-              cellValue
-            );
+    ? Object.entries(filtered[0]).map(([key], columnIndex) => {
+        const isUpdatedOn = key === "Updated On";
+  
+        return {
+          name: key,
+          label: key,
+          options: {
+            display: "true",
+            filter: true,
+            sort: isUpdatedOn,
+            sortDirection: sortConfig.field === key ? sortConfig.direction : "none",
+            onSort: () => handleSort(key),
+            ...(isUpdatedOn && {
+              filterOptions: {
+                names: getUniqueFormattedDates(),
+                logic: (value, filters) => {
+                  const formattedDate = formatDate(value);
+                  return !filters.includes(formattedDate); // hide if not matched
+                }
+              }
+            }),
+            customBodyRenderLite: (index) => {
+              const cellValue = filtered[index][key];
+              return isUpdatedOn ? (
+                <Typography variant="body2">{formatDate(cellValue)}</Typography>
+              ) : (
+                cellValue
+              );
+            },
+            customHeadLabelRender: ({ name, label }) =>
+              name === "Updated On" ? (
+                <Typography variant="body2">Updated On</Typography>
+              ) : (
+                label
+              ),
           },
-          customHeadLabelRender: ({ name, label }) =>
-            name === "Updated On" ? (
-              <Typography variant="body2">Updated On</Typography>
-            ) : (
-              label
-            ),
-        },
-      };
-    })
-  : [];
+        };
+      })
+    : [];
+  
 
 
   const options = {
