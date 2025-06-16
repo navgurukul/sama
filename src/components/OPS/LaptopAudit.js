@@ -5,16 +5,17 @@ import { TextField, Button, Box, Typography } from "@mui/material";
 
 const formatDate = (dateString) => {
   if (!dateString) return "";
-  const date = new Date(dateString); // No need to add T10:30 if sheet already has full datetime
+  const date = new Date(dateString);
   return date.toLocaleString("en-IN", {
     day: "2-digit",
     month: "short",
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: true,
+    hour12: false,
   });
 };
+
 
 const Audit = () => {
   const [data, setData] = useState([]);
@@ -25,22 +26,14 @@ const Audit = () => {
     direction: 'asc'
   });
 
+  
   const fetchAuditData = async () => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=audit`
       );
 
-      const formattedData = response.data.map((row) => {
-        const newRow = { ...row };
-        if (newRow["Date"]) {
-          newRow["Date"] = formatDate(newRow["Date"]);
-        }
-        if (newRow["Last Updated On"]) {
-          newRow["Last Updated On"] = formatDate(newRow["Last Updated On"]);
-        }
-        return newRow;
-      });
+      const formattedData = response.data.map((row) => ({ ...row }));
 
       setData(formattedData);
       setFiltered(formattedData);
@@ -70,45 +63,36 @@ const Audit = () => {
 
   // Function to sort data
   const handleSort = (field) => {
-    const direction = sortConfig.field === field && sortConfig.direction === 'desc' ? 'asc': 'desc';
-    
+    const direction =
+      sortConfig.field === field && sortConfig.direction === "desc"
+        ? "asc"
+        : "desc";
+  
     setSortConfig({ field, direction });
-    
+  
     const sortedData = [...filtered].sort((a, b) => {
-      if (a[field] === null || a[field] === undefined) return 1;
-      if (b[field] === null || b[field] === undefined) return -1;
-      
-      // Check if the field might contain dates
-      if (field === "Date" || field === "Updated On" || field.toLowerCase().includes('date')) {
-        const dateA = new Date(a[field]);
-        const dateB = new Date(b[field]);
-        
-        if (isNaN(dateA) || isNaN(dateB)) {
-          // Fall back to string comparison if dates are invalid
-          return direction === 'desc' 
-            ? a[field].toString().localeCompare(b[field].toString())
-            : b[field].toString().localeCompare(a[field].toString());
-        }
-        
-        return direction === 'desc' ? dateA - dateB : dateB - dateA;
+      const valA = a[field];
+      const valB = b[field];
+  
+      if (!valA) return 1;
+      if (!valB) return -1;
+  
+      // If sorting by Updated On (raw), sort by actual Date object
+      if (field === "Updated On") {
+        const dateA = new Date(valA);
+        const dateB = new Date(valB);
+        return direction === "asc" ? dateA - dateB : dateB - dateA;
       }
-      
-      // Check if the field contains numbers
-      if (!isNaN(a[field]) && !isNaN(b[field])) {
-        return direction === 'asc' 
-          ? Number(a[field]) - Number(b[field])
-          : Number(b[field]) - Number(a[field]);
-      }
-      
-      // Default string comparison
-      return direction === 'asc' 
-        ? a[field].toString().localeCompare(b[field].toString())
-        : b[field].toString().localeCompare(a[field].toString());
+  
+      // Default: String sort
+      return direction === "asc"
+        ? valA.toString().localeCompare(valB.toString())
+        : valB.toString().localeCompare(valA.toString());
     });
-    
+  
     setFiltered(sortedData);
   };
-
+  
   // Custom cell rendering function for "Updated On" column
   const customCellRender = (value, tableMeta, updateValue, displayData) => {
     const columnName = columns[tableMeta.columnIndex].name;
@@ -119,34 +103,53 @@ const Audit = () => {
   };
 
   // Dynamically create columns from keys
-  const columns = data[0]
-    ? Object.keys(data[0]).map((key) => ({
-        name: key,
-        label: key,
-        options: {
-          display: "true",
-          filter: true,
-          sort: key==="Updated On" ? true : false,
-          sortThirdClickReset: true,
-          onSort: () => handleSort(key),
-          sortDirection: sortConfig.field === key ? sortConfig.direction : 'none',
-          customBodyRenderLite: (dataIndex, rowIndex) => {
-            const value = filtered[dataIndex][key];
-            if (key === "Updated On") {
-              return <Typography variant="body2">{value}</Typography>;
-            }
-            return value;
+  const getUniqueFormattedDates = () => {
+    const uniqueDates = [...new Set(filtered.map(row => row["Updated On"]).filter(Boolean))];
+    return uniqueDates.map(dateString => formatDate(dateString));
+  };
+  
+  const columns = filtered.length > 0
+    ? Object.entries(filtered[0]).map(([key], columnIndex) => {
+        const isUpdatedOn = key === "Updated On";
+  
+        return {
+          name: key,
+          label: key,
+          options: {
+            display: "true",
+            filter: true,
+            sort: isUpdatedOn,
+            sortDirection: sortConfig.field === key ? sortConfig.direction : "none",
+            onSort: () => handleSort(key),
+            ...(isUpdatedOn && {
+              filterOptions: {
+                names: getUniqueFormattedDates(),
+                logic: (value, filters) => {
+                  const formattedDate = formatDate(value);
+                  return !filters.includes(formattedDate); // hide if not matched
+                }
+              }
+            }),
+            customBodyRenderLite: (index) => {
+              const cellValue = filtered[index][key];
+              return isUpdatedOn ? (
+                <Typography variant="body2">{formatDate(cellValue)}</Typography>
+              ) : (
+                cellValue
+              );
+            },
+            customHeadLabelRender: ({ name, label }) =>
+              name === "Updated On" ? (
+                <Typography variant="body2">Updated On</Typography>
+              ) : (
+                label
+              ),
           },
-          // For the column header
-          customHeadLabelRender: (columnMeta) => {
-            if (columnMeta.name === "Updated On") {
-              return <Typography variant="body2" component="div">Updated On</Typography>;
-            }
-            return columnMeta.label;
-          }
-        },
-      }))
+        };
+      })
     : [];
+  
+
 
   const options = {
     selectableRows: "none",
