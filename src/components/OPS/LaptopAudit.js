@@ -3,17 +3,28 @@ import axios from "axios";
 import MUIDataTable from "mui-datatables";
 import { TextField, Button, Box, Typography } from "@mui/material";
 
-const formatDate = (dateString) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  return date.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+// const formatDate = (dateString) => {
+//   if (!dateString) return "";
+//   const date = new Date(dateString);
+//   return date.toLocaleString("en-IN", {
+//     day: "2-digit",
+//     month: "short",
+//     year: "numeric",
+//     hour: "2-digit",
+//     minute: "2-digit",
+//     hour12: false,
+//   });
+// };
+
+const parseCustomDateString = (dateStr) => {
+  if (!dateStr) return null;
+  const [datePart, timePart] = dateStr.split(" ");
+  if (!datePart || !timePart) return null;
+
+  const [day, month, year] = datePart.split("-").map(Number);
+  const [hour, minute, second] = timePart.split(":").map(Number);
+
+  return new Date(year, month - 1, day, hour, minute, second);
 };
 
 
@@ -25,6 +36,7 @@ const Audit = () => {
     field: null,
     direction: 'asc'
   });
+
 
   
   const fetchAuditData = async () => {
@@ -59,7 +71,6 @@ const Audit = () => {
       setFiltered(filteredData);
     }
   };
-  
 
   // Function to sort data
   const handleSort = (field) => {
@@ -77,14 +88,12 @@ const Audit = () => {
       if (!valA) return 1;
       if (!valB) return -1;
   
-      // If sorting by Updated On (raw), sort by actual Date object
       if (field === "Updated On") {
-        const dateA = new Date(valA);
-        const dateB = new Date(valB);
+        const dateA = parseCustomDateString(valA);
+        const dateB = parseCustomDateString(valB);
         return direction === "asc" ? dateA - dateB : dateB - dateA;
       }
   
-      // Default: String sort
       return direction === "asc"
         ? valA.toString().localeCompare(valB.toString())
         : valB.toString().localeCompare(valA.toString());
@@ -92,21 +101,22 @@ const Audit = () => {
   
     setFiltered(sortedData);
   };
+  console.log(filtered,data)
   
   // Custom cell rendering function for "Updated On" column
-  const customCellRender = (value, tableMeta, updateValue, displayData) => {
-    const columnName = columns[tableMeta.columnIndex].name;
-    if (columnName === "Updated On") {
-      return <Typography sx={{ fontSize: '1.1rem', fontWeight: 'medium' }}>{value}</Typography>;
-    }
-    return value;
-  };
+  // const customCellRender = (value, tableMeta, updateValue, displayData) => {
+  //   const columnName = columns[tableMeta.columnIndex].name;
+  //   if (columnName === "Updated On") {
+  //     return <Typography sx={{ fontSize: '1.1rem', fontWeight: 'medium' }}>{value}</Typography>;
+  //   }
+  //   return value;
+  // };
 
   // Dynamically create columns from keys
-  const getUniqueFormattedDates = () => {
-    const uniqueDates = [...new Set(filtered.map(row => row["Updated On"]).filter(Boolean))];
-    return uniqueDates.map(dateString => formatDate(dateString));
-  };
+  // const getUniqueFormattedDates = () => {
+  //   const uniqueDates = [...new Set(filtered.map(row => row["Updated On"]).filter(Boolean))];
+  //   return uniqueDates.map(dateString => formatDate(dateString));
+  // };
   
   const columns = filtered.length > 0
     ? Object.entries(filtered[0]).map(([key], columnIndex) => {
@@ -123,21 +133,18 @@ const Audit = () => {
             onSort: () => handleSort(key),
             ...(isUpdatedOn && {
               filterOptions: {
-                names: getUniqueFormattedDates(),
-                logic: (value, filters) => {
-                  const formattedDate = formatDate(value);
-                  return !filters.includes(formattedDate); // hide if not matched
-                }
-              }
+                names: [...new Set(filtered.map(row => row["Updated On"]).filter(Boolean))],
+                logic: (value, filters) => !filters.includes(value)
+              }              
             }),
             customBodyRenderLite: (index) => {
               const cellValue = filtered[index][key];
               return isUpdatedOn ? (
-                <Typography variant="body2">{formatDate(cellValue)}</Typography>
+                <Typography variant="body2">{cellValue}</Typography>
               ) : (
                 cellValue
               );
-            },
+            },                      
             customHeadLabelRender: ({ name, label }) =>
               name === "Updated On" ? (
                 <Typography variant="body2">Updated On</Typography>
@@ -164,9 +171,28 @@ const Audit = () => {
     sortOrder: {
       name: sortConfig.field || '',
       direction: sortConfig.direction
-    }
+    },
+    customSort: (data, colIndex, order) => {
+      const columnName = columns[colIndex]?.name;
+  
+      return data.sort((a, b) => {
+        const valA = a.data[colIndex];
+        const valB = b.data[colIndex];
+  
+        if (columnName === "Updated On") {
+          const dateA = parseCustomDateString(valA);
+          const dateB = parseCustomDateString(valB);
+          return order === "asc" ? dateA - dateB : dateB - dateA;
+        }
+  
+        // Default string comparison
+        return order === "asc"
+          ? valA?.toString().localeCompare(valB?.toString())
+          : valB?.toString().localeCompare(valA?.toString());
+      });
+    },
   };
-
+  
   return (
     <Box sx={{ padding: 3 }}>
       <Typography variant="h5" gutterBottom align="center">
