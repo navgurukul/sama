@@ -101,7 +101,6 @@ const Audit = () => {
   
     setFiltered(sortedData);
   };
-  console.log(filtered,data)
   
   // Custom cell rendering function for "Updated On" column
   // const customCellRender = (value, tableMeta, updateValue, displayData) => {
