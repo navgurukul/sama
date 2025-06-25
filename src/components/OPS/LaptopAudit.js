@@ -3,20 +3,8 @@ import axios from "axios";
 import MUIDataTable from "mui-datatables";
 import { TextField, Button, Box, Typography } from "@mui/material";
 
-// const formatDate = (dateString) => {
-//   if (!dateString) return "";
-//   const date = new Date(dateString);
-//   return date.toLocaleString("en-IN", {
-//     day: "2-digit",
-//     month: "short",
-//     year: "numeric",
-//     hour: "2-digit",
-//     minute: "2-digit",
-//     hour12: false,
-//   });
-// };
 
-const parseCustomDateString = (dateStr) => {
+const formatDate = (dateStr) => {
   if (!dateStr) return null;
   const [datePart, timePart] = dateStr.split(" ");
   if (!datePart || !timePart) return null;
@@ -26,6 +14,7 @@ const parseCustomDateString = (dateStr) => {
 
   return new Date(year, month - 1, day, hour, minute, second);
 };
+
 
 
 const Audit = () => {
@@ -85,8 +74,8 @@ const Audit = () => {
       if (!valB) return -1;
   
       if (field === "Updated On") {
-        const dateA = parseCustomDateString(valA);
-        const dateB = parseCustomDateString(valB);
+        const dateA = formatDate(valA);
+        const dateB = formatDate(valB);
         return direction === "asc" ? dateA - dateB : dateB - dateA;
       }
   
@@ -97,22 +86,6 @@ const Audit = () => {
   
     setFiltered(sortedData);
   };
-  
-  
-  // Custom cell rendering function for "Updated On" column
-  // const customCellRender = (value, tableMeta, updateValue, displayData) => {
-  //   const columnName = columns[tableMeta.columnIndex].name;
-  //   if (columnName === "Updated On") {
-  //     return <Typography sx={{ fontSize: '1.1rem', fontWeight: 'medium' }}>{value}</Typography>;
-  //   }
-  //   return value;
-  // };
-
-  // Dynamically create columns from keys
-  // const getUniqueFormattedDates = () => {
-  //   const uniqueDates = [...new Set(filtered.map(row => row["Updated On"]).filter(Boolean))];
-  //   return uniqueDates.map(dateString => formatDate(dateString));
-  // };
   
   const columns = filtered.length > 0
     ? Object.entries(filtered[0]).map(([key], columnIndex) => {
@@ -176,8 +149,8 @@ const Audit = () => {
         const valB = b.data[colIndex];
   
         if (columnName === "Updated On") {
-          const dateA = parseCustomDateString(valA);
-          const dateB = parseCustomDateString(valB);
+          const dateA = formatDate(valA);
+          const dateB = formatDate(valB);
           return order === "asc" ? dateA - dateB : dateB - dateA;
         }
   

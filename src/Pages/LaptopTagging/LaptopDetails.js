@@ -36,6 +36,7 @@ function LaptopDetails() {
   const [minorIssueFilter, setMinorIssueFilter] = useState('all');
   const [updateField, setUpdateField] = useState(null);
   const [updateValue, setUpdateValue] = useState(null);
+  const [allocatedToFilter, setAllocatedToFilter] = useState('');
 
   const printRef = useRef();
 
@@ -61,7 +62,7 @@ function LaptopDetails() {
   // Apply filters when filter values change
   useEffect(() => {
     applyFilters();
-  }, [workingFilter, statusFilter, majorIssueFilter, minorIssueFilter, allData]);
+  }, [workingFilter, statusFilter, majorIssueFilter, minorIssueFilter, allocatedToFilter, allData]);
 
   // Filter application logic
   // Modified applyFilters function for LaptopTagging.js
@@ -82,6 +83,11 @@ function LaptopDetails() {
         laptop.Status === statusFilter
       );
     }
+    if (allocatedToFilter) {
+      filteredData = filteredData.filter(laptop => 
+        laptop["Allocated To"] === allocatedToFilter
+      );
+    }
     
     // Apply major issue filter
     if (majorIssueFilter !== 'all') {
@@ -92,7 +98,8 @@ function LaptopDetails() {
           const hasMajorIssue = laptop.MajorIssue === true || laptop.MajorIssue === "Yes";
           return majorIssueFilter === 'yes' ? hasMajorIssue : !hasMajorIssue;
         });
-      } else {
+      } 
+      else {
         // Specific issue filter - check if the specific issue exists in the MajorIssueDetails field
         filteredData = filteredData.filter(laptop => {
 
@@ -106,6 +113,7 @@ function LaptopDetails() {
           return issueDetails.includes(majorIssueFilter);
         });
       }
+      
     }
     
     // Apply minor issue filter
@@ -172,6 +180,11 @@ function LaptopDetails() {
         laptop.Status === statusFilter
       );
     }
+    if (allocatedToFilter) {
+      filtered = filtered.filter(laptop => 
+        laptop["Allocated To"] === allocatedToFilter
+      );
+    }
     
     // Apply major issue filter
     if (majorIssueFilter !== 'all') {
@@ -227,6 +240,7 @@ function LaptopDetails() {
     setStatusFilter('all');
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
+    setAllocatedToFilter('');
     // Reset data to all data (or search results if search is active)
     if (idQuery || macQuery) {
       handleSearch();
@@ -244,6 +258,7 @@ function LaptopDetails() {
     setStatusFilter('all');
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
+    setAllocatedToFilter('');
     setData(allData);
   };
 
@@ -401,6 +416,8 @@ function LaptopDetails() {
         setMajorIssueFilter={setMajorIssueFilter}
         minorIssueFilter={minorIssueFilter}
         setMinorIssueFilter={setMinorIssueFilter}
+        allocatedToFilter={allocatedToFilter}
+        setAllocatedToFilter={setAllocatedToFilter}
         onResetFilters={handleResetFilters}
       />
 

@@ -1,27 +1,33 @@
-import React from 'react';
-import { 
-  Paper, 
-  Typography, 
-  Grid, 
-  FormControl, 
-  Select, 
-  MenuItem, 
-  Button, 
-  Box, 
-  Chip 
+import React, { useState, useEffect } from 'react';
+import {
+  Paper,
+  Typography,
+  Grid,
+  FormControl,
+  Select,
+  MenuItem,
+  Button,
+  Box,
+  Chip,
+  IconButton
 } from '@mui/material';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
-const FilterPanel = ({ 
-  workingFilter, 
-  setWorkingFilter, 
-  statusFilter, 
+const FilterPanel = ({
+  workingFilter,
+  setWorkingFilter,
+  statusFilter,
   setStatusFilter,
   majorIssueFilter,
   setMajorIssueFilter,
   minorIssueFilter,
   setMinorIssueFilter,
-  onResetFilters 
+  allocatedToFilter,        // Add this prop
+  setAllocatedToFilter,     // Add this prop
+  onResetFilters
 }) => {
+
   // Options for major issues in the select field
   const majorIssueOptions = [
     "Fan",
@@ -39,7 +45,7 @@ const FilterPanel = ({
     "Water Damage",
     "USB Ports",
   ];
-  
+
   // Options for minor issues in the select field
   const minorIssuesOptions = [
     "Cosmetic Wear",
@@ -51,9 +57,30 @@ const FilterPanel = ({
     "Port Wear",
     "Touchpad Sensitivity",
     "CMOS Battery",
-    "RAM Issue" ,
+    "RAM Issue",
 
   ];
+
+  const [showAllocatedToFilter, setShowAllocatedToFilter] = useState(false);
+  const [allocatedToOptions, setAllocatedToOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchAllocatedToOptions = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_NgoInformationApi}?type=registration`
+        );
+        const responseData = await response.json();
+        const filtered = responseData.data.filter((ngo) => ngo.Status === 'Approved');
+        const names = filtered.map((ngo) => ngo.organizationName);
+        setAllocatedToOptions(names);
+      } catch (err) {
+        console.error('Error fetching allocated to options:', err);
+      }
+    };
+
+    fetchAllocatedToOptions();
+  }, []);
 
   return (
     <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
@@ -143,10 +170,36 @@ const FilterPanel = ({
             </Select>
           </FormControl>
         </Grid>
+        <Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {showAllocatedToFilter && (
+            <Grid item xs={12} md={2.9}>
+              <FormControl fullWidth>
+                <Typography variant="subtitle2" gutterBottom>Allocated To</Typography>
+                <Select
+                  value={allocatedToFilter}
+                  onChange={(e) => setAllocatedToFilter(e.target.value)}
+                  variant="outlined"
+                  size="small"
+                  displayEmpty
+                >
+                  <MenuItem value="">All</MenuItem>
+                  {allocatedToOptions.map((name) => (
+                    <MenuItem key={name} value={name}>{name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          )}
+
+          <IconButton onClick={() => setShowAllocatedToFilter(prev => !prev)}>
+            {showAllocatedToFilter ? <ExpandLess /> : <ExpandMore />}
+          </IconButton>
+        </Grid>
+
         <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button 
-            variant="outlined" 
-            color="secondary" 
+          <Button
+            variant="outlined"
+            color="secondary"
             onClick={onResetFilters}
           >
             Reset Filters
@@ -155,41 +208,49 @@ const FilterPanel = ({
       </Grid>
 
       {/* Applied filters chips */}
-      {(workingFilter !== 'all' || statusFilter !== 'all' || majorIssueFilter !== 'all' || minorIssueFilter !== 'all') && (
+      {(workingFilter !== 'all' || statusFilter !== 'all' || majorIssueFilter !== 'all' || minorIssueFilter !== 'all' || allocatedToFilter) && (
         <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
           <Typography variant="subtitle2">Applied Filters:</Typography>
           {workingFilter !== 'all' && (
-            <Chip 
-              label={workingFilter === 'working' ? 'Working' : 'Not Working'} 
-              color="primary" 
+            <Chip
+              label={workingFilter === 'working' ? 'Working' : 'Not Working'}
+              color="primary"
               onDelete={() => setWorkingFilter('all')}
             />
           )}
           {statusFilter !== 'all' && (
-            <Chip 
-              label={`Status: ${statusFilter}`} 
-              color="secondary" 
+            <Chip
+              label={`Status: ${statusFilter}`}
+              color="secondary"
               onDelete={() => setStatusFilter('all')}
             />
           )}
           {majorIssueFilter !== 'all' && (
-            <Chip 
-              label={majorIssueFilter === 'yes' ? 'Major Issue: Yes' : 
-                     majorIssueFilter === 'no' ? 'Major Issue: No' : 
-                     `Major Issue: ${majorIssueFilter}`} 
-              color="error" 
+            <Chip
+              label={majorIssueFilter === 'yes' ? 'Major Issue: Yes' :
+                majorIssueFilter === 'no' ? 'Major Issue: No' :
+                  `Major Issue: ${majorIssueFilter}`}
+              color="error"
               onDelete={() => setMajorIssueFilter('all')}
             />
           )}
           {minorIssueFilter !== 'all' && (
-            <Chip 
-              label={minorIssueFilter === 'yes' ? 'Minor Issue: Yes' : 
-                    minorIssueFilter === 'no' ? 'Minor Issue: No' : 
-                    `Minor Issue: ${minorIssueFilter}`} 
-              color="warning" 
+            <Chip
+              label={minorIssueFilter === 'yes' ? 'Minor Issue: Yes' :
+                minorIssueFilter === 'no' ? 'Minor Issue: No' :
+                  `Minor Issue: ${minorIssueFilter}`}
+              color="warning"
               onDelete={() => setMinorIssueFilter('all')}
             />
           )}
+          {allocatedToFilter && (
+            <Chip
+              label={`Allocated To: ${allocatedToFilter}`}
+              color="info"
+              onDelete={() => setAllocatedToFilter('')}
+            />
+          )}
+
         </Box>
       )}
     </Paper>
@@ -197,3 +258,4 @@ const FilterPanel = ({
 };
 
 export default FilterPanel;
+
