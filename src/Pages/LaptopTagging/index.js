@@ -52,11 +52,11 @@ function LaptopTagging() {
   const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
     if (isProcessingSelection) return;
 
-  // Get the IDs of all selected rows
-  const newSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
+    // Get the IDs of all selected rows
+    const newSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
 
-  // Update the selectedRows state
-  setSelectedRows(newSelectedIds);
+    // Update the selectedRows state
+    setSelectedRows(newSelectedIds);
   };
 
   // Fetch data on component mount and when refresh state changes
@@ -108,7 +108,7 @@ function LaptopTagging() {
       );
     }
     if (allocatedToFilter) {
-      filteredData = filteredData.filter(laptop => 
+      filteredData = filteredData.filter(laptop =>
         laptop["Allocated To"] === allocatedToFilter
       );
     }
@@ -121,7 +121,7 @@ function LaptopTagging() {
           const hasMajorIssue = laptop.MajorIssue === true || laptop.MajorIssue === "Yes";
           return majorIssueFilter === 'yes' ? hasMajorIssue : !hasMajorIssue;
         });
-      } 
+      }
       else {
         // Specific issue filter - check if the specific issue exists in the MajorIssueDetails field
         filteredData = filteredData.filter(laptop => {
@@ -145,12 +145,12 @@ function LaptopTagging() {
           const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
           return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
         });
-      } 
+      }
       if (allocatedToFilter) {
-        filteredData = filteredData.filter(laptop => 
+        filteredData = filteredData.filter(laptop =>
           laptop["Allocated To"] === allocatedToFilter
         );
-      }else {
+      } else {
         // Specific issue filter - check if the specific issue exists in the MinorIssueDetails field
         filteredData = filteredData.filter(laptop => {
           // Assuming MinorIssueDetails is either an array or a comma-separated string
@@ -176,7 +176,7 @@ function LaptopTagging() {
   // Modified to accept pre-filtered data and maintain selections
   const handleSearch = (preFilteredData = null) => {
     const dataToFilter = preFilteredData || allData;
-    
+
     if (!idQuery && !macQuery) {
       let filtered = applyAdditionalFilters(dataToFilter);
       setData(dataToFilter);
@@ -207,7 +207,7 @@ function LaptopTagging() {
       filtered = filtered.filter(laptop => laptop.Status === statusFilter);
     }
     if (allocatedToFilter) {
-      filtered = filtered.filter(laptop => 
+      filtered = filtered.filter(laptop =>
         laptop["Allocated To"] === allocatedToFilter
       );
     }
@@ -220,10 +220,10 @@ function LaptopTagging() {
         });
       } else {
         filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop.MajorIssueDetails === 'string'
-            ? laptop.MajorIssueDetails.split(',').map(issue => issue.trim())
-            : Array.isArray(laptop.MajorIssueDetails)
-              ? laptop.MajorIssueDetails
+          const issueDetails = typeof laptop["Major Issues"] === 'string'
+            ? laptop["Major Issues"].split(',').map(issue => issue.trim())
+            : Array.isArray(laptop["Major Issues"])
+              ? laptop["Major Issues"]
               : [];
           return issueDetails.includes(majorIssueFilter);
         });
@@ -236,14 +236,15 @@ function LaptopTagging() {
           const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
           return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
         });
-      } 
+      }
       else {
         filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop.MinorIssueDetails === 'string'
-            ? laptop.MinorIssueDetails.split(',').map(issue => issue.trim())
-            : Array.isArray(laptop.MinorIssueDetails)
-              ? laptop.MinorIssueDetails
+          const issueDetails = typeof laptop["Minor Issues"] === 'string'
+            ? laptop["Minor Issues"].split(',').map(issue => issue.trim())
+            : Array.isArray(laptop["Minor Issues"])
+              ? laptop["Minor Issues"]
               : [];
+
           return issueDetails.includes(minorIssueFilter);
         });
       }
@@ -429,7 +430,7 @@ function LaptopTagging() {
               case 'assignedTo':
                 payload.assignedTo = update.value;
                 break;
-              case 'donatedTo': 
+              case 'donatedTo':
                 payload.donatedTo = update.value;
                 break;
             }

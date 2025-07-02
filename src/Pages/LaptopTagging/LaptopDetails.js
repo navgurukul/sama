@@ -14,7 +14,30 @@ import SearchBar from './SearchBar';
 import FilterPanel from '../../components/OPS/LaptopTable/FilterPanel';
 import ExportTools from '../../components/OPS/LaptopTable/ExportTools';
 
+const formatDate = (dateString) => {
+  if (!dateString) return "Not Updated";
 
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      // Handle cases where dateString is already in a different format
+      return dateString;
+    }
+
+    // Format as DD-MM-YYYY HH:MM:SS
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+  } catch (error) {
+    console.error("Date formatting error:", error);
+    return dateString;
+  }
+};
 
 function LaptopDetails() {
   // States
@@ -68,54 +91,54 @@ function LaptopDetails() {
   // Modified applyFilters function for LaptopTagging.js
   const applyFilters = () => {
     let filteredData = [...allData];
-    
+
     // Apply working filter
     if (workingFilter !== 'all') {
       filteredData = filteredData.filter(laptop =>
         laptop.Working === workingFilter
-      
+
       );
     }
-    
+
     // Apply status filter
     if (statusFilter !== 'all') {
-      filteredData = filteredData.filter(laptop => 
+      filteredData = filteredData.filter(laptop =>
         laptop.Status === statusFilter
       );
     }
     if (allocatedToFilter) {
-      filteredData = filteredData.filter(laptop => 
+      filteredData = filteredData.filter(laptop =>
         laptop["Allocated To"] === allocatedToFilter
       );
     }
-    
+
     // Apply major issue filter
     if (majorIssueFilter !== 'all') {
-      
+
       if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
         // General yes/no filter
         filteredData = filteredData.filter(laptop => {
           const hasMajorIssue = laptop.MajorIssue === true || laptop.MajorIssue === "Yes";
           return majorIssueFilter === 'yes' ? hasMajorIssue : !hasMajorIssue;
         });
-      } 
+      }
       else {
         // Specific issue filter - check if the specific issue exists in the MajorIssueDetails field
         filteredData = filteredData.filter(laptop => {
 
           // Assuming MajorIssueDetails is either an array or a comma-separated string
-          const issueDetails = typeof laptop["Major Issues"] === 'string' 
+          const issueDetails = typeof laptop["Major Issues"] === 'string'
             ? laptop["Major Issues"].split(',').map(issue => issue.trim())
-            : Array.isArray(laptop["Major Issues"]) 
+            : Array.isArray(laptop["Major Issues"])
               ? laptop["Major Issues"]
               : [];
-              
+
           return issueDetails.includes(majorIssueFilter);
         });
       }
-      
+
     }
-    
+
     // Apply minor issue filter
     if (minorIssueFilter !== 'all') {
       if (minorIssueFilter === 'yes' || minorIssueFilter === 'no') {
@@ -129,17 +152,17 @@ function LaptopDetails() {
         filteredData = filteredData.filter(laptop => {
 
           // Assuming MinorIssueDetails is either an array or a comma-separated string
-          const issueDetails = typeof laptop["Minor Issues"]=== 'string' 
+          const issueDetails = typeof laptop["Minor Issues"] === 'string'
             ? laptop["Minor Issues"].split(',').map(issue => issue.trim())
-            : Array.isArray(laptop["Minor Issues"]) 
-              ? laptop["Minor Issues"] 
+            : Array.isArray(laptop["Minor Issues"])
+              ? laptop["Minor Issues"]
               : [];
-              
+
           return issueDetails.includes(minorIssueFilter);
         });
       }
     }
-    
+
     // If there are specific ID or MAC queries, those take precedence
     if (idQuery || macQuery) {
       handleSearch();
@@ -151,13 +174,13 @@ function LaptopDetails() {
   console.log('Filtered Data:', data);
 
 
-// Also update the handleSearch function to handle specific issues
+  // Also update the handleSearch function to handle specific issues
   const handleSearch = () => {
     if (!idQuery && !macQuery) {
       applyFilters();
       return;
     }
-    
+
     let filtered = allData.filter(laptop => {
       if (idQuery) {
         return String(laptop.ID).toUpperCase() === idQuery.toUpperCase();
@@ -170,22 +193,22 @@ function LaptopDetails() {
 
     // Apply additional filters to search results
     if (workingFilter !== 'all') {
-      filtered = filtered.filter(laptop => 
+      filtered = filtered.filter(laptop =>
         laptop.Working === workingFilter
       );
     }
-    
+
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(laptop => 
+      filtered = filtered.filter(laptop =>
         laptop.Status === statusFilter
       );
     }
     if (allocatedToFilter) {
-      filtered = filtered.filter(laptop => 
+      filtered = filtered.filter(laptop =>
         laptop["Allocated To"] === allocatedToFilter
       );
     }
-    
+
     // Apply major issue filter
     if (majorIssueFilter !== 'all') {
       if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
@@ -197,17 +220,17 @@ function LaptopDetails() {
       } else {
         // Specific issue filter
         filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop.MajorIssueDetails === 'string' 
-            ? laptop.MajorIssueDetails.split(',').map(issue => issue.trim())
-            : Array.isArray(laptop.MajorIssueDetails) 
-              ? laptop.MajorIssueDetails 
+          const issueDetails = typeof laptop["Major Issues"] === 'string'
+            ? laptop["Major Issues"].split(',').map(issue => issue.trim())
+            : Array.isArray(laptop["Major Issues"])
+              ? laptop["Major Issues"]
               : [];
-              
+
           return issueDetails.includes(majorIssueFilter);
         });
       }
     }
-    
+
     // Apply minor issue filter
     if (minorIssueFilter !== 'all') {
       if (minorIssueFilter === 'yes' || minorIssueFilter === 'no') {
@@ -219,17 +242,17 @@ function LaptopDetails() {
       } else {
         // Specific issue filter
         filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop.MinorIssueDetails === 'string' 
-            ? laptop.MinorIssueDetails.split(',').map(issue => issue.trim())
-            : Array.isArray(laptop.MinorIssueDetails) 
-              ? laptop.MinorIssueDetails 
+          const issueDetails = typeof laptop["Minor Issues"] === 'string'
+            ? laptop["Minor Issues"].split(',').map(issue => issue.trim())
+            : Array.isArray(laptop["Minor Issues"])
+              ? laptop["Minor Issues"]
               : [];
-              
+
           return issueDetails.includes(minorIssueFilter);
         });
       }
     }
-    
+
     setData(filtered);
   };
 
@@ -264,7 +287,7 @@ function LaptopDetails() {
 
 
   const columns = data[0]
-  ? Object.keys(data[0])
+    ? Object.keys(data[0])
       .filter(key => key !== 'barcodeUrl') // Filter out the barcodeUrl key
       .map((key) => {
         if (key === "Inspection Files") {
@@ -277,23 +300,23 @@ function LaptopDetails() {
               customBodyRender: (value, tableMeta) => {
                 const rowIndex = tableMeta.rowIndex;
                 const laptopData = data[rowIndex];
-      
+
                 const rawLinks = laptopData["Inspection Files"] || laptopData.inspectionFiles;
-      
+
                 if (!rawLinks || typeof rawLinks !== 'string') {
                   return <Typography variant="body2" color="textSecondary">No files</Typography>;
                 }
-      
+
                 // Clean and split the links
                 const cleanedLinks = rawLinks
                   .replace(/'/g, '') // Remove single quotes
                   .split(/,\s*|\s+/) // Split by comma (with optional space) or any whitespace
                   .filter(link => link.startsWith('http'));
-      
+
                 if (cleanedLinks.length === 0) {
                   return <Typography variant="body2" color="textSecondary">No valid links</Typography>;
                 }
-      
+
                 return (
                   <Box sx={{ position: 'relative' }}>
                     <Button
@@ -315,7 +338,7 @@ function LaptopDetails() {
                       component="div"
                       sx={{
                         position: 'absolute',
-                        right: '0%', 
+                        right: '0%',
                         top: 50,
                         zIndex: 100,
                         backgroundColor: 'background.paper',
@@ -362,7 +385,21 @@ function LaptopDetails() {
             }
           };
         }
-        
+        if (key === "Last Updated On" || key === "Date Committed" || key === "Manufacturing Date") {
+          return {
+            name: key,
+            label: key,
+            options: {
+              filter: false,
+              sort: false,
+              customBodyRender: (value) => (
+                <Typography variant="body2">
+                  {formatDate(value)}
+                </Typography>
+              )
+            }
+          };
+        }
         return {
           name: key,
           label: key,
@@ -389,14 +426,14 @@ function LaptopDetails() {
           },
         };
       })
-  : [];
+    : [];
 
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
 
       {/* Search Bar */}
-      <SearchBar 
+      <SearchBar
         idQuery={idQuery}
         setIdQuery={setIdQuery}
         macQuery={macQuery}
@@ -405,9 +442,9 @@ function LaptopDetails() {
         handleReset={handleReset}
         loading={loading}
       />
-        
+
       {/* Filter Panel */}
-      <FilterPanel 
+      <FilterPanel
         workingFilter={workingFilter}
         setWorkingFilter={setWorkingFilter}
         statusFilter={statusFilter}
@@ -422,7 +459,7 @@ function LaptopDetails() {
       />
 
       {/* Action Buttons */}
-      
+
 
       {/* Data Table */}
       <div id="tableToPrint">
@@ -438,17 +475,17 @@ function LaptopDetails() {
               responsive: 'scrollMinHeight',
               customToolbar: () => <ExportTools data={data} />,
               filterType: 'checkbox',
-              selectableRows: 'none', 
+              selectableRows: 'none',
               download: false,
               print: false,
               sort: false,
-              viewColumns: false  
+              viewColumns: false
             }}
           />
         )}
       </div>
-     
-     
+
+
 
       {/* Hidden div for printing */}
       <div ref={printRef} style={{ display: 'none' }}></div>
