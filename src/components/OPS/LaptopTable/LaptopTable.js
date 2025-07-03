@@ -13,45 +13,28 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
 
   const formatDate = (dateString) => {
     if (!dateString) return "Not Updated";
+
     try {
       const date = new Date(dateString);
-      if (!isNaN(date.getTime())) {
-        return date.toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric"
-        });
+      if (isNaN(date.getTime())) {
+        // Handle cases where dateString is already in a different format
+        return dateString;
       }
 
-      const parts = dateString.split(' ');
-      if (parts.length === 3) {
-        const months = {
-          'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-          'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-        };
+      // Format as DD-MM-YYYY HH:MM:SS
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
 
-        const day = parseInt(parts[0], 10);
-        const month = months[parts[1]];
-        const year = parseInt(parts[2], 10);
-
-        if (!isNaN(day) && month !== undefined && !isNaN(year)) {
-          const newDate = new Date(year, month, day);
-          return newDate.toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-          });
-        }
-      }
-
-      return dateString;
+      return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
     } catch (error) {
-      console.error("Date parsing error:", error);
+      console.error("Date formatting error:", error);
       return dateString;
     }
   };
-
-
 
 
   return [
@@ -442,7 +425,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
                 component="div"
                 sx={{
                   position: 'absolute',
-                  right: '0%', 
+                  right: '0%',
                   top: 50,
                   zIndex: 100,
                   backgroundColor: 'background.paper',

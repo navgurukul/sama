@@ -42,6 +42,7 @@ function LaptopTagging() {
   const [minorIssueFilter, setMinorIssueFilter] = useState('all');
   const [updateField, setUpdateField] = useState(null);
   const [updateValue, setUpdateValue] = useState(null);
+  const [allocatedToFilter, setAllocatedToFilter] = useState('');
 
   const printRef = useRef();
 
@@ -51,11 +52,11 @@ function LaptopTagging() {
   const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
     if (isProcessingSelection) return;
 
-  // Get the IDs of all selected rows
-  const newSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
+    // Get the IDs of all selected rows
+    const newSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
 
-  // Update the selectedRows state
-  setSelectedRows(newSelectedIds);
+    // Update the selectedRows state
+    setSelectedRows(newSelectedIds);
   };
 
   // Fetch data on component mount and when refresh state changes
@@ -79,7 +80,7 @@ function LaptopTagging() {
   // Apply filters when filter values change
   useEffect(() => {
     applyFilters();
-  }, [workingFilter, statusFilter, majorIssueFilter, minorIssueFilter, allData]);
+  }, [workingFilter, statusFilter, majorIssueFilter, minorIssueFilter, allocatedToFilter, allData]);
 
 
   useEffect(() => {
@@ -106,6 +107,11 @@ function LaptopTagging() {
         laptop.Status === statusFilter
       );
     }
+    if (allocatedToFilter) {
+      filteredData = filteredData.filter(laptop =>
+        laptop["Allocated To"] === allocatedToFilter
+      );
+    }
 
     // Apply major issue filter
     if (majorIssueFilter !== 'all') {
@@ -115,7 +121,8 @@ function LaptopTagging() {
           const hasMajorIssue = laptop.MajorIssue === true || laptop.MajorIssue === "Yes";
           return majorIssueFilter === 'yes' ? hasMajorIssue : !hasMajorIssue;
         });
-      } else {
+      }
+      else {
         // Specific issue filter - check if the specific issue exists in the MajorIssueDetails field
         filteredData = filteredData.filter(laptop => {
           // Assuming MajorIssueDetails is either an array or a comma-separated string
@@ -138,6 +145,11 @@ function LaptopTagging() {
           const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
           return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
         });
+      }
+      if (allocatedToFilter) {
+        filteredData = filteredData.filter(laptop =>
+          laptop["Allocated To"] === allocatedToFilter
+        );
       } else {
         // Specific issue filter - check if the specific issue exists in the MinorIssueDetails field
         filteredData = filteredData.filter(laptop => {
@@ -166,6 +178,7 @@ function LaptopTagging() {
     const dataToFilter = preFilteredData || allData;
 
     if (!idQuery && !macQuery) {
+      let filtered = applyAdditionalFilters(dataToFilter);
       setData(dataToFilter);
       return;
     }
@@ -176,7 +189,7 @@ function LaptopTagging() {
       if (macQuery) return String(laptop['Mac address']).toUpperCase().includes(macQuery.toUpperCase());
       return false;
     });
-
+    filtered = applyAdditionalFilters(filtered);
     // Important: Don't modify the selectedRows here
     // Just update the displayed data
     setData(filtered);
@@ -193,6 +206,11 @@ function LaptopTagging() {
     if (statusFilter !== 'all') {
       filtered = filtered.filter(laptop => laptop.Status === statusFilter);
     }
+    if (allocatedToFilter) {
+      filtered = filtered.filter(laptop =>
+        laptop["Allocated To"] === allocatedToFilter
+      );
+    }
 
     if (majorIssueFilter !== 'all') {
       if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
@@ -202,10 +220,10 @@ function LaptopTagging() {
         });
       } else {
         filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop.MajorIssueDetails === 'string'
-            ? laptop.MajorIssueDetails.split(',').map(issue => issue.trim())
-            : Array.isArray(laptop.MajorIssueDetails)
-              ? laptop.MajorIssueDetails
+          const issueDetails = typeof laptop["Major Issues"] === 'string'
+            ? laptop["Major Issues"].split(',').map(issue => issue.trim())
+            : Array.isArray(laptop["Major Issues"])
+              ? laptop["Major Issues"]
               : [];
           return issueDetails.includes(majorIssueFilter);
         });
@@ -218,13 +236,15 @@ function LaptopTagging() {
           const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
           return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
         });
-      } else {
+      }
+      else {
         filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop.MinorIssueDetails === 'string'
-            ? laptop.MinorIssueDetails.split(',').map(issue => issue.trim())
-            : Array.isArray(laptop.MinorIssueDetails)
-              ? laptop.MinorIssueDetails
+          const issueDetails = typeof laptop["Minor Issues"] === 'string'
+            ? laptop["Minor Issues"].split(',').map(issue => issue.trim())
+            : Array.isArray(laptop["Minor Issues"])
+              ? laptop["Minor Issues"]
               : [];
+
           return issueDetails.includes(minorIssueFilter);
         });
       }
@@ -239,6 +259,7 @@ function LaptopTagging() {
     setStatusFilter('all');
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
+    setAllocatedToFilter('');
     if (idQuery || macQuery) {
       handleSearch();
     } else {
@@ -255,6 +276,7 @@ function LaptopTagging() {
     setStatusFilter('all');
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
+    setAllocatedToFilter('');
     setSelectedRows([]); // Clear selections on full reset
     setData(allData);
   };
@@ -408,7 +430,7 @@ function LaptopTagging() {
               case 'assignedTo':
                 payload.assignedTo = update.value;
                 break;
-              case 'donatedTo': 
+              case 'donatedTo':
                 payload.donatedTo = update.value;
                 break;
             }
@@ -548,6 +570,8 @@ function LaptopTagging() {
         setMajorIssueFilter={setMajorIssueFilter}
         minorIssueFilter={minorIssueFilter}
         setMinorIssueFilter={setMinorIssueFilter}
+        allocatedToFilter={allocatedToFilter}
+        setAllocatedToFilter={setAllocatedToFilter}
         onResetFilters={handleResetFilters}
       />
 
