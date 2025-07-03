@@ -152,7 +152,7 @@ const Navbar = () => {
               alt="Logo"
               className="header-logo"
               sx={{ cursor: 'pointer' }}
-              onClick={() => navigate("/ngoregistration")}
+              onClick={() => navigate("/ops")}
             />
           )}
 
@@ -251,7 +251,7 @@ const Navbar = () => {
               alt="Logo"
               className="header-logo"
               sx={{ cursor: 'pointer' }}
-              onClick={() => navigate("/ngoregistration")}
+              onClick={() => navigate("/ops")}
             />
           )}
 
