@@ -69,8 +69,10 @@ function LaptopDetails() {
       setLoading(true);
       try {
         const result = await fetchLaptopData();
-        setAllData(result);
-        setData(result);
+        const reversedData = [...result].reverse();
+
+        setAllData(reversedData);
+        setData(reversedData);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {

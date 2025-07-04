@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, Box, Chip, Button } from '@mui/material';
 import { LaptopStatusDropdown, AssignedTo, DonatedTo, LaptopWorkingCheckbox } from './LaptopStatus';
 
-export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton, refresh, setRefresh) => {
+export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton, refresh, setRefresh, sortConfig, handleSort) => {
   // Helper function to check if laptop has battery issues
   const hasBatteryIssue = (laptop) => {
     const minorIssues = laptop["Minor Issues"]?.toLowerCase() || "";
@@ -36,12 +36,12 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
     }
   };
 
-
   return [
     {
       name: "ID",
       label: "Serial No",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -76,6 +76,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Donor Company Name",
       label: "Company Name",
       options: {
+        sort: false,
         filter: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -89,6 +90,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "RAM",
       label: "RAM",
       options: {
+        sort: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
         }),
@@ -101,6 +103,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "ROM",
       label: "ROM",
       options: {
+        sort: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
         }),
@@ -113,6 +116,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Manufacturer Model",
       label: "Manufacturer Model",
       options: {
+        sort: false,
         filter: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -126,6 +130,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Minor Issues",
       label: "Minor Issues",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -149,6 +154,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Major Issues",
       label: "Major Issues",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -183,6 +189,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Inventory Location",
       label: "Inventory Location",
       options: {
+        sort: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
         }),
@@ -195,6 +202,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Mac address",
       label: "Mac Address",
       options: {
+        sort: false,
         filter: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -208,6 +216,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Battery Capacity",
       label: "Battery Capacity",
       options: {
+        sort: false,
         filter: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -221,6 +230,9 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "updatedOn",
       label: "Last Updated On",
       options: {
+        filter: false,
+        sort: true,
+        sortDirection: sortConfig.field === "Last Updated On" ? sortConfig.direction : "none",
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
@@ -237,13 +249,36 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         }),
         setCellHeaderProps: () => ({
           className: 'custom-header-cell'
-        })
+        }),
+        customHeadLabelRender: ({ label, index }) => (
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              cursor: 'pointer',
+              userSelect: 'none',
+              '&:hover': { backgroundColor: 'action.hover' }
+            }}
+            onClick={() => handleSort("Last Updated On")}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+              {label}
+            </Typography>
+            <Box sx={{ ml: 2, }}>
+              {sortConfig.field === "Last Updated On" ? 
+                (sortConfig.direction === "asc" ? "▲" : "▼") : 
+                "↕"
+              }
+            </Box>
+          </Box>
+        )
       }
     },
     {
       name: "lastUpdatedBy",
       label: "Last Updated By",
       options: {
+        sort: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
@@ -266,6 +301,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Status",
       label: "Status",
       options: {
+        sort: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
@@ -288,6 +324,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Assigned To",
       label: "Assigned To",
       options: {
+        sort: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
@@ -310,6 +347,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Allocated To",
       label: "Allocated To",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -333,6 +371,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Working",
       label: "Not Working",
       options: {
+        sort: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
@@ -357,6 +396,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Edit",
       label: "Edit",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -383,6 +423,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Inspection Files",
       label: "Inspection Files",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;

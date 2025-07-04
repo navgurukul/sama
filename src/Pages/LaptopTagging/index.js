@@ -21,7 +21,28 @@ import EditButton from './EditButton';
 import { getTableColumns } from '../../components/OPS/LaptopTable/LaptopTable';
 import BulkEditPanel from './BulkEditPanel';
 
+const formatDateForSort = (dateStr) => {
+  if (!dateStr) return new Date(0); // Return epoch time for null dates
 
+  try {
+    // Handle different date formats
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      // Try parsing DD-MM-YYYY HH:MM:SS format
+      const [datePart, timePart] = dateStr.split(" ");
+      if (datePart && timePart) {
+        const [day, month, year] = datePart.split("-").map(Number);
+        const [hour, minute, second] = timePart.split(":").map(Number);
+        return new Date(year, month - 1, day, hour, minute, second);
+      }
+      return new Date(0);
+    }
+    return date;
+  } catch (error) {
+    console.error("Date parsing error:", error);
+    return new Date(0);
+  }
+};
 function LaptopTagging() {
   // States
   const [allData, setAllData] = useState([]);
@@ -49,6 +70,46 @@ function LaptopTagging() {
   const [selectedRows, setSelectedRows] = useState([]);
   const [isProcessingSelection, setIsProcessingSelection] = useState(false);
 
+  // Sort configuration state
+  const [sortConfig, setSortConfig] = useState({
+    field: null,
+    direction: 'asc'
+  });
+
+  // Enhanced handleSort function for date sorting
+  const handleSort = (field) => {
+    const direction =
+      sortConfig.field === field && sortConfig.direction === "desc"
+        ? "asc"
+        : "desc";
+
+    setSortConfig({ field, direction });
+
+    const sortedData = [...data].sort((a, b) => {
+      const valA = a[field];
+      const valB = b[field];
+
+      if (!valA && !valB) return 0;
+      if (!valA) return 1;
+      if (!valB) return -1;
+
+      // Special handling for date fields
+      if (field === "Last Updated On" || field === "updatedOn") {
+        const dateA = formatDateForSort(valA);
+        const dateB = formatDateForSort(valB);
+        return direction === "asc" ? dateA - dateB : dateB - dateA;
+      }
+
+      // Default string comparison for other fields
+      return direction === "asc"
+        ? valA.toString().localeCompare(valB.toString())
+        : valB.toString().localeCompare(valA.toString());
+    });
+
+    setData(sortedData);
+  };
+
+
   const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
     if (isProcessingSelection) return;
 
@@ -65,8 +126,11 @@ function LaptopTagging() {
       setLoading(true);
       try {
         const result = await fetchLaptopData();
-        setAllData(result);
-        setData(result);
+        // Reverse the data to show the most recent entries first
+        const reversedData = [...result].reverse();
+
+        setAllData(reversedData);
+        setData(reversedData);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -278,6 +342,7 @@ function LaptopTagging() {
     setMinorIssueFilter('all');
     setAllocatedToFilter('');
     setSelectedRows([]); // Clear selections on full reset
+    setSortConfig({ field: null, direction: 'asc' }); // Reset sort config
     setData(allData);
   };
 
@@ -528,6 +593,7 @@ function LaptopTagging() {
     .map(item => data.findIndex(d => d.ID === item.ID))
     .filter(index => index !== -1);
 
+
   // Define table columns
   const columns = getTableColumns(
     data,
@@ -542,10 +608,17 @@ function LaptopTagging() {
         setRefresh={setRefresh}
         refresh={refresh}
       />
-    )
+    ),
+    refresh,
+    setRefresh,
+    sortConfig,  // Pass sortConfig
+    handleSort   // Pass handleSort
   );
 
   const hiddenSelectionsCount = selectedRows.length - visibleSelections.length;
+
+
+
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
@@ -628,8 +701,28 @@ function LaptopTagging() {
               onRowsDelete: () => false,
               download: false,
               print: false,
-              sort: false,
-              viewColumns: true
+              sort: true,
+              viewColumns: true,
+              sortOrder: {
+                name: sortConfig.field || '',
+                direction: sortConfig.direction
+              },
+              customSort: (data, colIndex, order) => {
+                const columnName = columns[colIndex]?.name;
+                return data.sort((a, b) => {
+                  const valA = a.data[colIndex];
+                  const valB = b.data[colIndex];
+
+                  if (columnName === "updatedOn" || columnName === "Last Updated On") {
+                    const dateA = new Date(valA);
+                    const dateB = new Date(valB);
+                    return order === "asc" ? dateA - dateB : dateB - dateA;
+                  }
+                  return order === "asc"
+                    ? valA?.toString().localeCompare(valB?.toString())
+                    : valB?.toString().localeCompare(valA?.toString());
+                });
+              },
             }}
           />
         )}
