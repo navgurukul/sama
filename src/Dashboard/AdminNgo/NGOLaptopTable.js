@@ -135,17 +135,17 @@ function NGOLaptopTable({ ngoData }) {
   }, []);
 
   useEffect(() => {
-    if (laptopData.length > 0 && selectedNgo && selectedNgo.organizationName) {
-      const filtered = laptopData.filter(laptop => 
-        laptop["Donated To"] &&
-        selectedNgo.organizationName &&
-        laptop["Donated To"] === selectedNgo.organizationName
-      );
+    if (laptopData.length > 0) {
+      // Show all laptops that have "Allocated To" field populated
+      const filtered = laptopData.filter(laptop => {
+        return laptop["Allocated To"] && laptop["Allocated To"].trim() !== '';
+      });
+      console.log('Filtered laptops count:', filtered.length);
       setFilteredData(filtered);
     } else {
       setFilteredData([]);
     }
-  }, [laptopData, selectedNgo]);
+  }, [laptopData]);
   
   const handleNgoChange = (event) => {
     setSelectedNgoId(event.target.value);
@@ -213,7 +213,7 @@ function NGOLaptopTable({ ngoData }) {
         working: currentLaptop.Working || "",
         status: currentLaptop.Status || "",
         assignedTo: currentLaptop["Assigned To"] || "",
-        donatedTo: currentLaptop["Donated To"] || "",
+        donatedTo: currentLaptop["Allocated To"] || "",
         donorCompanyName: currentLaptop["Donor Company Name"] || "",
         ram: currentLaptop.RAM || "",
         rom: currentLaptop.ROM || "",
