@@ -43,6 +43,7 @@ const formatDateForSort = (dateStr) => {
     return new Date(0);
   }
 };
+
 function LaptopTagging() {
   // States
   const [allData, setAllData] = useState([]);
@@ -78,36 +79,58 @@ function LaptopTagging() {
 
   // Enhanced handleSort function for date sorting
   const handleSort = (field) => {
-    const direction =
-      sortConfig.field === field && sortConfig.direction === "desc"
-        ? "asc"
-        : "desc";
+  let direction;
 
-    setSortConfig({ field, direction });
+  if (sortConfig.field !== field) {
+    direction = "asc";
+  } 
+  else {
+    switch (sortConfig.direction) {
+      case "none":
+        direction = "asc";  // First click → oldest first
+        break;
+      case "asc":
+        direction = "desc"; // Second click → newest first
+        break;
+      case "desc":
+        direction = "none"; // Third click → back to default
+        break;
+      default:
+        direction = "asc";
+    }
+  }
 
-    const sortedData = [...data].sort((a, b) => {
-      const valA = a[field];
-      const valB = b[field];
+  setSortConfig({ field, direction });
 
-      if (!valA && !valB) return 0;
-      if (!valA) return 1;
-      if (!valB) return -1;
+  if (direction === "none") {
+    applyFilters(); // This reloads the default reversed data
+    return;
+  }
 
-      // Special handling for date fields
-      if (field === "Last Updated On" || field === "updatedOn") {
-        const dateA = formatDateForSort(valA);
-        const dateB = formatDateForSort(valB);
-        return direction === "asc" ? dateA - dateB : dateB - dateA;
-      }
+  // Apply sorting
+  const sortedData = [...data].sort((a, b) => {
+    const valA = a[field];
+    const valB = b[field];
 
-      // Default string comparison for other fields
-      return direction === "asc"
-        ? valA.toString().localeCompare(valB.toString())
-        : valB.toString().localeCompare(valA.toString());
-    });
+    if (!valA && !valB) return 0;
+    if (!valA) return 1;
+    if (!valB) return -1;
 
-    setData(sortedData);
-  };
+    // Date sorting
+    if (field === "Last Updated On" || field === "updatedOn") {
+      const dateA = formatDateForSort(valA);
+      const dateB = formatDateForSort(valB);
+      return direction === "asc" ? dateA - dateB : dateB - dateA;
+    }
+
+    // Default string sorting
+    return direction === "asc"
+      ? valA.toString().localeCompare(valB.toString())
+      : valB.toString().localeCompare(valA.toString());
+  });
+
+  setData(sortedData);
+};
 
 
   const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {

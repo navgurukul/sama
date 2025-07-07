@@ -39,6 +39,31 @@ const formatDate = (dateString) => {
   }
 };
 
+
+const formatDateForSort = (dateStr) => {
+  if (!dateStr) return new Date(0); // Return epoch time for null dates
+
+  try {
+    // Handle different date formats
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      // Try parsing DD-MM-YYYY HH:MM:SS format
+      const [datePart, timePart] = dateStr.split(" ");
+      if (datePart && timePart) {
+        const [day, month, year] = datePart.split("-").map(Number);
+        const [hour, minute, second] = timePart.split(":").map(Number);
+        return new Date(year, month - 1, day, hour, minute, second);
+      }
+      return new Date(0);
+    }
+    return date;
+  } catch (error) {
+    console.error("Date parsing error:", error);
+    return new Date(0);
+  }
+};
+
+
 function LaptopDetails() {
   // States
   const [allData, setAllData] = useState([]);
@@ -88,6 +113,48 @@ function LaptopDetails() {
   useEffect(() => {
     applyFilters();
   }, [workingFilter, statusFilter, majorIssueFilter, minorIssueFilter, allocatedToFilter, allData]);
+
+  // Add this new state after your existing useState declarations
+  // Change your existing sortConfig state to:
+  const [sortConfig, setSortConfig] = useState({
+    field: null,
+    direction: 'none' // Start with 'none' instead of 'asc'
+  });
+
+
+
+
+  const handleSort = (field) => {
+    const direction =
+      sortConfig.field === field && sortConfig.direction === "desc"
+        ? "asc"
+        : "desc";
+
+    setSortConfig({ field, direction });
+
+    const sortedData = [...data].sort((a, b) => {
+      const valA = a[field];
+      const valB = b[field];
+
+      if (!valA && !valB) return 0;
+      if (!valA) return 1;
+      if (!valB) return -1;
+
+      // Special handling for date fields
+      if (field === "Last Updated On" || field === "Date Committed" || field === "Manufacturing Date") {
+        const dateA = formatDateForSort(valA);
+        const dateB = formatDateForSort(valB);
+        return direction === "asc" ? dateA - dateB : dateB - dateA;
+      }
+
+      // Default string comparison for other fields
+      return direction === "asc"
+        ? valA.toString().localeCompare(valB.toString())
+        : valB.toString().localeCompare(valA.toString());
+    });
+
+    setData(sortedData);
+  };
 
   // Filter application logic
   // Modified applyFilters function for LaptopTagging.js
@@ -284,6 +351,7 @@ function LaptopDetails() {
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
     setAllocatedToFilter('');
+    setSortConfig({ field: null, direction: 'none' }); // Change to 'none'
     setData(allData);
   };
 
@@ -292,6 +360,44 @@ function LaptopDetails() {
     ? Object.keys(data[0])
       .filter(key => key !== 'barcodeUrl') // Filter out the barcodeUrl key
       .map((key) => {
+        if (key === "Last Updated On") {
+          return {
+            name: key,
+            label: key,
+            options: {
+              filter: false,
+              sort: true,
+              sortDirection: sortConfig.field === key ? sortConfig.direction : "none",
+              customBodyRender: (value) => (
+                <Typography variant="body2" noWrap>
+                  {formatDate(value)}
+                </Typography>
+              ),
+              customHeadLabelRender: ({ label }) => (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    
+                  }}
+                  onClick={() => handleSort(key)}
+                >
+                  <Typography variant="body2"  sx={{ fontWeight: 500, fontFamily: 'Raleway, sans-serif', fontSize: "14px", color: "rgba(0, 0, 0, 0.87)",whiteSpace: 'nowrap' }}>
+                    {label}
+                  </Typography>
+
+                </Box>
+              ),
+              setCellProps: () => ({
+                className: 'custom-body-cell',
+              }),
+              setCellHeaderProps: () => ({
+                className: 'custom-header-cell',
+              }),
+            },
+          };
+        }
         if (key === "Inspection Files") {
           return {
             name: key,
@@ -387,7 +493,7 @@ function LaptopDetails() {
             }
           };
         }
-        if (key === "Last Updated On" || key === "Date Committed" || key === "Manufacturing Date") {
+        if (key === "Date Committed" || key === "Manufacturing Date") {
           return {
             name: key,
             label: key,
@@ -480,8 +586,28 @@ function LaptopDetails() {
               selectableRows: 'none',
               download: false,
               print: false,
-              sort: false,
-              viewColumns: false
+              sort: true,
+              viewColumns: false,
+              sortOrder: {
+                name: sortConfig.field || '',
+                direction: sortConfig.direction
+              },
+              customSort: (data, colIndex, order) => {
+                const columnName = columns[colIndex]?.name;
+                return data.sort((a, b) => {
+                  const valA = a.data[colIndex];
+                  const valB = b.data[colIndex];
+
+                  if (columnName === "updatedOn" || columnName === "Last Updated On") {
+                    const dateA = new Date(valA);
+                    const dateB = new Date(valB);
+                    return order === "asc" ? dateA - dateB : dateB - dateA;
+                  }
+                  return order === "asc"
+                    ? valA?.toString().localeCompare(valB?.toString())
+                    : valB?.toString().localeCompare(valA?.toString());
+                });
+              },
             }}
           />
         )}

@@ -239,39 +239,40 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           const lastUpdatedOn = laptopData["Last Updated On"] || laptopData.lastUpdatedOn;
 
           return (
-            <Typography variant="body2">
+            <Typography variant="body2" noWrap>
               {formatDate(lastUpdatedOn)}
             </Typography>
           );
         },
+        
+        customHeadLabelRender: ({ label, index }) => (
+          <Box 
+            
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              cursor: 'pointer',
+              
+            }}
+            onClick={() => handleSort("Last Updated On")}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 'bold', color: "rgba(0, 0, 0, 0.87)", fontFamily: "Montserrat !important", fontSize: "16px !important" ,whiteSpace: 'nowrap' }}>
+              {label}
+            </Typography>
+            <Box sx={{ml:1,}}>
+              {sortConfig.field === "Last Updated On" ? 
+                (sortConfig.direction === "asc" ? "↑" : "↓") : 
+                "↕"
+              }
+            </Box>
+          </Box>
+        ),
         setCellProps: () => ({
           className: 'custom-body-cell'
         }),
         setCellHeaderProps: () => ({
           className: 'custom-header-cell'
         }),
-        customHeadLabelRender: ({ label, index }) => (
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              cursor: 'pointer',
-              userSelect: 'none',
-              '&:hover': { backgroundColor: 'action.hover' }
-            }}
-            onClick={() => handleSort("Last Updated On")}
-          >
-            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-              {label}
-            </Typography>
-            <Box sx={{ ml: 2, }}>
-              {sortConfig.field === "Last Updated On" ? 
-                (sortConfig.direction === "asc" ? "▲" : "▼") : 
-                "↕"
-              }
-            </Box>
-          </Box>
-        )
       }
     },
     {
@@ -284,7 +285,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           const laptopData = data[rowIndex];
 
           return (
-            <Typography variant="body2">
+            <Typography variant="body2" noWrap>
               {laptopData["Last Updated By"] || laptopData.lastUpdatedBy || "Not Available"}
             </Typography>
           );
