@@ -72,8 +72,8 @@ const AdminNgo = () => {
   const dialogRef = useRef(null);
   const NgoType = ["1 to one", "1 to many"];
   const AssociatedDoner = ["Accenture", "Amazon"];
-  
-  
+
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -87,7 +87,7 @@ const AdminNgo = () => {
         setEditStatus(false);
 
         const laptopsRequiredOptions = [
-          ...new Set(data.map((item) => item.beneficiariesCount)),
+          ...new Set(data.map((item) => item["Laptop require"])),
         ];
         const purposeOptions = [
           ...new Set(data.map((item) => item.expectedOutcome)),
@@ -162,7 +162,7 @@ const AdminNgo = () => {
   const handleStatusChange = (id, newStatus) => {
     setSelectedStatus(newStatus);
     setNgoIdToChange(id);
-    setOpenDialog(true); 
+    setOpenDialog(true);
   };
 
   const handleConfirmStatusChange = async (e) => {
@@ -191,7 +191,7 @@ const AdminNgo = () => {
             type: "NGO",
             ngoType: type,
           }),
-        }  
+        }
       );
 
       if (response.ok) {
@@ -215,7 +215,7 @@ const AdminNgo = () => {
         ngo.location?.toLowerCase().includes(searchTerm) ||
         ngo.contactNumber?.toString().includes(searchTerm)) &&
       (filters.laptopsRequired === "" ||
-        ngo.beneficiariesCount === filters.laptopsRequired) &&
+        ngo["Laptop require"] === filters.laptopsRequired) &&
       (filters.purpose === "" || ngo.expectedOutcome === filters.purpose) &&
       (filters.location === "" || ngo.location === filters.location) &&
       (filters.status === "" || ngo.Status === filters.status)
@@ -250,21 +250,21 @@ const AdminNgo = () => {
       setOpen(false);
     }
   };
-  
+
   const sendToBackend = async (id, donor) => {
-    
+
     try {
       const response = await fetch(
         `${process.env.REACT_APP_NgoInformationApi}?type=donorUpdate`,
-         {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id : id, donor: donor, type : "donorUpdate" }),
-      });
-  
+        {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: id, donor: donor, type: "donorUpdate" }),
+        });
+
       const result = await response.json();
       console.log("Success:", result);
     } catch (error) {
@@ -307,7 +307,7 @@ const AdminNgo = () => {
           <Grid container spacing={2} sx={{ mt: 2 }}>
             <Box sx={{ display: "flex" }}>
               <FilterListIcon sx={{ mt: 3, ml: 2 }} />
-              <Typography  sx={classes.filter}>
+              <Typography sx={classes.filter}>
                 Filters
               </Typography>
             </Box>
@@ -437,7 +437,7 @@ const AdminNgo = () => {
                       <TableCell sx={classes.tablecell}>{ngo.Id}</TableCell>
                       <TableCell sx={classes.tablecell}>
                         <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1,justifyContent:"space-between" }}
+                          sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "space-between" }}
                         >
                           {ngo.organizationName}
                           {ngo["Ngo Type"] === "1 to many" && (
@@ -514,7 +514,7 @@ const AdminNgo = () => {
                           </Select>
                         </FormControl>
                       </TableCell>
-                      
+
                       <TableCell sx={classes.tablecell}>
                         <FormControl fullWidth>
                           <Select
@@ -546,33 +546,33 @@ const AdminNgo = () => {
                         </FormControl>
                       </TableCell>
                       <>
-                      <TableCell sx={classes.tablecell}>
-                        <FormControl fullWidth>
-                          <Select
-                          value={ngo["Doner"] || donorSelections[ngo.Id]}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setDonorSelections(prev => ({
-                              ...prev,
-                              [ngo.Id]: e.target.value
-                            }));
-                            handleDonerChange(e);
-                            setNgoIdToChange(ngo.Id);
-                          }}
+                        <TableCell sx={classes.tablecell}>
+                          <FormControl fullWidth>
+                            <Select
+                              value={ngo["Doner"] || donorSelections[ngo.Id]}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setDonorSelections(prev => ({
+                                  ...prev,
+                                  [ngo.Id]: e.target.value
+                                }));
+                                handleDonerChange(e);
+                                setNgoIdToChange(ngo.Id);
+                              }}
 
-                            disabled={!!ngo["Doner"]}
-                            IconComponent={ngo["Doner"] ? () => null : undefined}
-                          >
-                            {AssociatedDoner.map((option) => (
-                              <MenuItem key={option} value={option} onClick={(e) => e.stopPropagation()}>
-                                {option}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </TableCell>
-                    </>
+                              disabled={!!ngo["Doner"]}
+                              IconComponent={ngo["Doner"] ? () => null : undefined}
+                            >
+                              {AssociatedDoner.map((option) => (
+                                <MenuItem key={option} value={option} onClick={(e) => e.stopPropagation()}>
+                                  {option}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </TableCell>
+                      </>
                       <TableCell sx={{ border: "none" }}>
                         <IconButton
                           onClick={(e) => {
