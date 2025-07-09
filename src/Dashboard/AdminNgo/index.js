@@ -466,7 +466,7 @@ const AdminNgo = () => {
                         {ngo.contactNumber}
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
-                        {ngo.beneficiariesCount}
+                        {ngo["Laptop require"]}
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
                         {ngo.location}
