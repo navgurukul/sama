@@ -22,11 +22,10 @@ function PrivateRoute({ children, reqired, ngoType }) {
   // }
   if (reqired === "ngo") {
     if (!roles?.includes("ngo")) {
-      alert("Page not found.");
-      return <Navigate to="/" />;
+       return <Navigate to="/ngo" />
+      
     }
     if (ngoType && userNgoType !== ngoType) {
-      alert("Page not found.");
       if (ngoType === "1 to one"){
         return <Navigate to="/preliminary" />
       }else {
