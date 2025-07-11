@@ -133,15 +133,16 @@ function LaptopTagging() {
 };
 
 
-  const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
-    if (isProcessingSelection) return;
+const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
+  if (isProcessingSelection) return;
 
-    // Get the IDs of all selected rows
-    const newSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
-
-    // Update the selectedRows state
-    setSelectedRows(newSelectedIds);
-  };
+  const currentlyVisibleSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
+  const currentlyVisibleIds = data.map(item => item.ID);
+  const hiddenSelectedIds = selectedRows.filter(id => !currentlyVisibleIds.includes(id));
+  const newSelectedIds = [...hiddenSelectedIds, ...currentlyVisibleSelectedIds];
+  const uniqueSelectedIds = [...new Set(newSelectedIds)];
+  setSelectedRows(uniqueSelectedIds);
+};
 
   // Fetch data on component mount and when refresh state changes
   useEffect(() => {
