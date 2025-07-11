@@ -65,6 +65,8 @@ function LaptopTagging() {
   const [updateField, setUpdateField] = useState(null);
   const [updateValue, setUpdateValue] = useState(null);
   const [allocatedToFilter, setAllocatedToFilter] = useState('');
+  const [pendingChange, setPendingChange] = useState(null);
+
 
   const printRef = useRef();
 
@@ -79,70 +81,70 @@ function LaptopTagging() {
 
   // Enhanced handleSort function for date sorting
   const handleSort = (field) => {
-  let direction;
+    let direction;
 
-  if (sortConfig.field !== field) {
-    direction = "asc";
-  } 
-  else {
-    switch (sortConfig.direction) {
-      case "none":
-        direction = "asc";  // First click → oldest first
-        break;
-      case "asc":
-        direction = "desc"; // Second click → newest first
-        break;
-      case "desc":
-        direction = "none"; // Third click → back to default
-        break;
-      default:
-        direction = "asc";
+    if (sortConfig.field !== field) {
+      direction = "asc";
     }
-  }
-
-  setSortConfig({ field, direction });
-
-  if (direction === "none") {
-    applyFilters(); // This reloads the default reversed data
-    return;
-  }
-
-  // Apply sorting
-  const sortedData = [...data].sort((a, b) => {
-    const valA = a[field];
-    const valB = b[field];
-
-    if (!valA && !valB) return 0;
-    if (!valA) return 1;
-    if (!valB) return -1;
-
-    // Date sorting
-    if (field === "Last Updated On" || field === "updatedOn") {
-      const dateA = formatDateForSort(valA);
-      const dateB = formatDateForSort(valB);
-      return direction === "asc" ? dateA - dateB : dateB - dateA;
+    else {
+      switch (sortConfig.direction) {
+        case "none":
+          direction = "asc";  // First click → oldest first
+          break;
+        case "asc":
+          direction = "desc"; // Second click → newest first
+          break;
+        case "desc":
+          direction = "none"; // Third click → back to default
+          break;
+        default:
+          direction = "asc";
+      }
     }
 
-    // Default string sorting
-    return direction === "asc"
-      ? valA.toString().localeCompare(valB.toString())
-      : valB.toString().localeCompare(valA.toString());
-  });
+    setSortConfig({ field, direction });
 
-  setData(sortedData);
-};
+    if (direction === "none") {
+      applyFilters(); // This reloads the default reversed data
+      return;
+    }
+
+    // Apply sorting
+    const sortedData = [...data].sort((a, b) => {
+      const valA = a[field];
+      const valB = b[field];
+
+      if (!valA && !valB) return 0;
+      if (!valA) return 1;
+      if (!valB) return -1;
+
+      // Date sorting
+      if (field === "Last Updated On" || field === "updatedOn") {
+        const dateA = formatDateForSort(valA);
+        const dateB = formatDateForSort(valB);
+        return direction === "asc" ? dateA - dateB : dateB - dateA;
+      }
+
+      // Default string sorting
+      return direction === "asc"
+        ? valA.toString().localeCompare(valB.toString())
+        : valB.toString().localeCompare(valA.toString());
+    });
+
+    setData(sortedData);
+  };
 
 
-const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
-  if (isProcessingSelection) return;
+  const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
+    if (isProcessingSelection) return;
 
-  const currentlyVisibleSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
-  const currentlyVisibleIds = data.map(item => item.ID);
-  const hiddenSelectedIds = selectedRows.filter(id => !currentlyVisibleIds.includes(id));
-  const newSelectedIds = [...hiddenSelectedIds, ...currentlyVisibleSelectedIds];
-  const uniqueSelectedIds = [...new Set(newSelectedIds)];
-  setSelectedRows(uniqueSelectedIds);
-};
+    const currentlyVisibleSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
+    const currentlyVisibleIds = data.map(item => item.ID);
+    const hiddenSelectedIds = selectedRows.filter(id => !currentlyVisibleIds.includes(id));
+    const newSelectedIds = [...hiddenSelectedIds, ...currentlyVisibleSelectedIds];
+    const uniqueSelectedIds = [...new Set(newSelectedIds)];
+    setSelectedRows(uniqueSelectedIds);
+  };
 
   // Fetch data on component mount and when refresh state changes
   useEffect(() => {
@@ -375,52 +377,59 @@ const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) 
     const laptopData = data[rowIndex];
     const newStatus = event.target.checked ? "Not Working" : "Working";
 
-    const updatedData = [...data];
-    updatedData[rowIndex].Working = newStatus;
-    setData(updatedData);
+    // const updatedData = [...data];
+    // updatedData[rowIndex].Working = newStatus;
+    // setData(updatedData);
 
     setSelectedRowIndex(rowIndex);
     setUpdateField('Working');
     setUpdateValue(newStatus);
+    setPendingChange({ rowIndex, field: 'Working', value: newStatus }); // Add this
     setOpen(true);
   };
 
   // Status change handler
   const handleStatusChange = (event, rowIndex) => {
     const newValue = event.target.value;
-    const updatedData = [...data];
-    updatedData[rowIndex].Status = newValue;
-    setData(updatedData);
+
+    // const updatedData = [...data];
+    // updatedData[rowIndex].Status = newValue;
+    // setData(updatedData);
 
     setSelectedRowIndex(rowIndex);
     setUpdateField('Status');
     setUpdateValue(newValue);
+    setPendingChange({ rowIndex, field: 'Status', value: newValue }); // Add this
     setOpen(true);
   };
 
   // Assigned To handler
   const handleAssignedToChange = (event, rowIndex) => {
     const newValue = event.target.value;
-    const updatedData = [...data];
-    updatedData[rowIndex]["Assigned To"] = newValue;
-    setData(updatedData);
+
+    // const updatedData = [...data];
+    // updatedData[rowIndex]["Assigned To"] = newValue;
+    // setData(updatedData);
 
     setSelectedRowIndex(rowIndex);
     setUpdateField('Assigned To');
     setUpdateValue(newValue);
+    setPendingChange({ rowIndex, field: 'Assigned To', value: newValue }); // Add this
     setOpen(true);
   };
 
   // Donated To handler
   const handleDonatedToChange = (event, rowIndex) => {
     const newValue = event.target.value;
-    const updatedData = [...data];
-    updatedData[rowIndex]["Allocated To"] = newValue;
-    setData(updatedData);
+
+    // const updatedData = [...data];
+    // updatedData[rowIndex]["Allocated To"] = newValue;
+    // setData(updatedData);
 
     setSelectedRowIndex(rowIndex);
     setUpdateField('Allocated To');
     setUpdateValue(newValue);
+    setPendingChange({ rowIndex, field: 'Allocated To', value: newValue }); // Add this
     setOpen(true);
   };
 
@@ -467,6 +476,11 @@ const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) 
   };
 
   const handleModalConfirm = async () => {
+    if (pendingChange && selectedRowIndex !== null) {
+      const updatedData = [...data];
+      updatedData[pendingChange.rowIndex][pendingChange.field] = pendingChange.value;
+      setData(updatedData);
+    }
     if (selectedRows.length > 0) {
       const currentDate = new Date().toISOString().split('T')[0];
       const SavedData = JSON.parse(localStorage.getItem('_AuthSama_'));
@@ -585,6 +599,7 @@ const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) 
     setSelectedRowIndex(null);
     setIsChecked(false);
     setModelStatus(false);
+    setPendingChange(null);
   };
 
   const handleBulkUpdate = (updates) => {
