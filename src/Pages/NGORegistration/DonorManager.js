@@ -128,29 +128,38 @@ const DonorManager = () => {
       <Typography variant="h5" pt={4} pb={2} gutterBottom>Donor Management</Typography>
 
       {/* Buttons to toggle between Edit and Add New Donor */}
-      <Box mb={3}>
-        <Button
-          variant="contained"
-          color={isEditMode ? 'primary' : 'default'}
-          onClick={() => {
-            setIsEditMode(true);
-            resetForm();  // Clear fields when switching to Edit Donor
-          }}
-          sx={{ mr: 2 }}
-        >
-          Edit Donor
-        </Button>
-        <Button
-          variant="contained"
-          color={!isEditMode ? 'primary' : 'default'}
-          onClick={() => {
-            setIsEditMode(false);
-            resetForm();  // Clear fields when switching to Add New Donor
-          }}
-        >
-          Add New Donor
-        </Button>
-      </Box>
+          <Box
+  mb={0}
+  sx={{
+    display: 'flex',
+    flexDirection: { xs: 'column', sm: 'row' },
+    justifyContent: { xs: 'center', sm: 'flex-end' },
+    alignItems: 'center',
+    gap: 2,
+    mt: 2,
+  }}
+>
+  <Button
+    variant="contained"
+    color={isEditMode ? 'primary' : 'default'}
+    onClick={() => {
+      setIsEditMode(true);
+      resetForm();  // Clear fields when switching to Edit Donor
+    }}
+  >
+    Edit Donor
+  </Button>
+  <Button
+    variant="contained"
+    color={!isEditMode ? 'primary' : 'default'}
+    onClick={() => {
+      setIsEditMode(false);
+      resetForm();  // Clear fields when switching to Add New Donor
+    }}
+  >
+    Add New Donor
+  </Button>
+</Box>
 
       {/* Edit Donor Form */}
       {isEditMode && (
@@ -174,28 +183,41 @@ const DonorManager = () => {
             {renderQuestionsList()}
           </Grid>
         </Box>
+        
       )}
 
       {/* Add New Donor Form */}
       {!isEditMode && (
-        <Box mb={3}>
-          <Typography variant="h5" gutterBottom>Add New Donor</Typography>
-          <TextField
-            label="Donor Name"
-            variant="outlined"
-            fullWidth
-            value={donorName}
-            onChange={(e) => setDonorName(e.target.value)}
-            placeholder="Enter Donor Name"
-            sx={{ mb: 2 }}
-          />
-          <Typography variant="h6">Select Questions:</Typography>
-          <Grid container spacing={2} mt={2}>
-            {renderQuestionsList()}
-          </Grid>
-        </Box>
-      )}
+   <Box
+    mt={{ xs: 2, sm: -5 }}
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: { xs: 'center', sm: 'flex-start' },
+      px: { xs: 2, sm: 0 },
+    }}
+   >
+    <TextField
+      label="Donor Name"
+      variant="outlined"
+      value={donorName}
+      onChange={(e) => setDonorName(e.target.value)}
+      placeholder="Enter Donor Name"
+      sx={{
+        mb: 4,
+        width: { xs: '100%', sm: '80%', md: '60%' },
+      }}
+    />
 
+    <Typography variant="h6" alignSelf={{ xs: 'center', sm: 'flex-start' }}>
+      Select Questions:
+    </Typography>
+
+    <Grid container spacing={2} mt={2}>
+      {renderQuestionsList()}
+    </Grid>
+  </Box>
+)}
       {/* Submit Button */}
       <Box mt={3}>
         <Button

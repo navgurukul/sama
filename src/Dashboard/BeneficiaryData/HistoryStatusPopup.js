@@ -64,7 +64,6 @@ const HistoryStatusPopup = ({ open, onClose, id, email, monthYear  }) => {
             );
             if (filteredData.length > 0) {
               setStatusData(filteredData);
-              console.log("stayus",filteredData)
               setSelectedName(filteredData[0].name); // Set default name
             }
             setLoading(false);

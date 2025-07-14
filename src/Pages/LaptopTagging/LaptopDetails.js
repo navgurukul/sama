@@ -240,7 +240,6 @@ function LaptopDetails() {
     }
   };
 
-  console.log('Filtered Data:', data);
 
 
   // Also update the handleSearch function to handle specific issues

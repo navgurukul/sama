@@ -140,7 +140,6 @@ function NGOLaptopTable({ ngoData }) {
       const filtered = laptopData.filter(laptop => {
         return laptop["Allocated To"] && laptop["Allocated To"].trim() !== '';
       });
-      console.log('Filtered laptops count:', filtered.length);
       setFilteredData(filtered);
     } else {
       setFilteredData([]);

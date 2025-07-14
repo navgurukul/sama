@@ -247,7 +247,8 @@ function Opslogin() {
                 variant="contained"
                 sx={{ width: 'auto', alignSelf: 'start', mt: 2, borderRadius: "100px" }}
               >
-                {loder ? <CircularProgress color='white' /> : "Login"}
+                 {loder ? <CircularProgress color='white' /> : "Login"} 
+                
               </Button>
               <Button
                 onClick={() => navigate('/signup')}

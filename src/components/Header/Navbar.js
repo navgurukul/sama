@@ -74,7 +74,9 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const isActive = useMediaQuery("(max-width:" + breakpoints.values.sm + "px)");
-  const isMobileOrTablet = useMediaQuery("(max-width:" + breakpoints.values.md + "px)");
+  const isMobileOrTablet = useMediaQuery(
+    "(max-width:" + breakpoints.values.md + "px)"
+  );
   const registrationActive = location.pathname === "/registration";
 
   const routePatterns = [
@@ -90,14 +92,21 @@ const Navbar = () => {
     "monthly-report",
     "yearly-report",
     "corpretedb/DataViewDetail",
-    "/corpretedb/NGOTrainedTable"
+    "/corpretedb/NGOTrainedTable",
   ];
-
   useEffect(() => {
     const authData = localStorage.getItem("_AuthSama_");
+    const role = JSON.parse(localStorage.getItem("role") || "[]");
+
     setIsLoggedIn(!!authData);
-    setActiveTab(location.pathname);
-  }, [location.pathname]);
+    if (authData && location.pathname === "/") {
+      if (role.includes("admin")) {
+        navigate("/ngo");
+      } else if (role.includes("ops")) {
+        navigate("/ops");
+      }
+    }
+  }, [location.pathname, navigate]);
 
   const handleMenuToggle = () => {
     setMenuVisible(!menuVisible);
@@ -137,14 +146,14 @@ const Navbar = () => {
     setMobileDrawerOpen(!mobileDrawerOpen);
   };
 
-  const role = JSON.parse(localStorage.getItem('role') || '[]');
+  const role = JSON.parse(localStorage.getItem("role") || "[]");
 
   // Render OPS header with responsiveness
   const renderOpsHeader = () => {
     if (isMobileOrTablet) {
       // Mobile/Tablet View for OPS
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+        <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
           {!isRouteMatch(location.pathname, routePatterns) && (
             <Box
               component="img"
@@ -156,7 +165,7 @@ const Navbar = () => {
             />
           )}
 
-          <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
             <IconButton
               edge="start"
               color="inherit"
@@ -185,7 +194,7 @@ const Navbar = () => {
             open={mobileDrawerOpen}
             onClose={handleDrawerToggle}
             sx={{
-              '& .MuiDrawer-paper': { width: 280, boxSizing: 'border-box' },
+              "& .MuiDrawer-paper": { width: 280, boxSizing: "border-box" },
             }}
           >
             <Box
@@ -207,30 +216,37 @@ const Navbar = () => {
                       navigate(tab.path);
                     }}
                     sx={{
-                      backgroundColor: activeTab === tab.path ? 'primary.main' : 'transparent',
-                      borderRadius: '4px',
+                      backgroundColor:
+                        activeTab === tab.path ? "primary.main" : "transparent",
+                      borderRadius: "4px",
                       my: 0.5,
-                      '&.Mui-selected': {
-                        backgroundColor: 'primary.main',
-                        '& .MuiListItemText-primary': {
-                          color: 'common.white'
+                      "&.Mui-selected": {
+                        backgroundColor: "primary.main",
+                        "& .MuiListItemText-primary": {
+                          color: "common.white",
                         },
-                        '&:hover': {
-                          backgroundColor: 'primary.dark',
-                        }
+                        "&:hover": {
+                          backgroundColor: "primary.dark",
+                        },
                       },
-                      '&:hover': {
-                        backgroundColor: activeTab === tab.path ? 'primary.dark' : 'action.hover',
-                      }
+                      "&:hover": {
+                        backgroundColor:
+                          activeTab === tab.path
+                            ? "primary.dark"
+                            : "action.hover",
+                      },
                     }}
                   >
                     <ListItemText
                       primary={tab.label}
                       primaryTypographyProps={{
                         sx: {
-                          fontWeight: 'medium',
-                          color: activeTab === tab.path ? 'common.white' : 'text.primary'
-                        }
+                          fontWeight: "medium",
+                          color:
+                            activeTab === tab.path
+                              ? "common.white"
+                              : "text.primary",
+                        },
                       }}
                     />
                   </ListItem>
@@ -243,7 +259,7 @@ const Navbar = () => {
     } else {
       // Desktop View for OPS
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+        <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
           {!isRouteMatch(location.pathname, routePatterns) && (
             <Box
               component="img"
@@ -255,38 +271,55 @@ const Navbar = () => {
             />
           )}
 
-          <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', mr: 3 }}>
+          <Box
+            sx={{ display: "flex", alignItems: "center", ml: "auto", mr: 3 }}
+          >
             <Tabs
               value={activeTab}
               onChange={(e, newValue) => setActiveTab(newValue)}
               sx={{
-                minHeight: 'unset',
-                '& .MuiTabs-indicator': { display: 'none' },
-                '& .MuiTabs-flexContainer': {
-                  gap: '8px'
-                }
+                minHeight: "unset",
+                "& .MuiTabs-indicator": { display: "none" },
+                "& .MuiTabs-flexContainer": {
+                  gap: "8px",
+                },
               }}
             >
               {opsTabs.map((tab) => (
                 <Tab
                   key={tab.path}
-                  label={<Typography variant="body1" sx={{
-                    color: activeTab === tab.path ? 'common.white' : 'text.primary'
-                  }}>{tab.label}</Typography>} value={tab.path}
+                  label={
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color:
+                          activeTab === tab.path
+                            ? "common.white"
+                            : "text.primary",
+                      }}
+                    >
+                      {tab.label}
+                    </Typography>
+                  }
+                  value={tab.path}
                   component={Link}
                   to={tab.path}
                   sx={{
-                    textTransform: 'none',
-                    minWidth: 'unset',
-                    minHeight: 'unset',
+                    textTransform: "none",
+                    minWidth: "unset",
+                    minHeight: "unset",
                     px: 2,
                     py: 1,
-                    color: 'transparent',
-                    fontWeight: 'medium',
-                    backgroundColor: activeTab === tab.path ? 'primary.main' : 'transparent',
-                    borderRadius: '100px',
-                    '&:hover': {
-                      backgroundColor: activeTab === tab.path ? 'primary.main' : 'action.hover',
+                    color: "transparent",
+                    fontWeight: "medium",
+                    backgroundColor:
+                      activeTab === tab.path ? "primary.main" : "transparent",
+                    borderRadius: "100px",
+                    "&:hover": {
+                      backgroundColor:
+                        activeTab === tab.path
+                          ? "primary.main"
+                          : "action.hover",
                     },
                   }}
                 />
@@ -312,44 +345,56 @@ const Navbar = () => {
 
   const renderAdminHeader = () => {
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2, pl:2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+          gap: 2,
+          pl: 2,
+        }}
+      >
         {!isRouteMatch(location.pathname, routePatterns) && (
           <Box
             component="img"
             src={logo}
             alt="Logo"
             className="header-logo"
-            sx={{ cursor: 'pointer' }}
+            sx={{ cursor: "pointer" }}
             onClick={() => navigate("/ngo")}
           />
         )}
 
         {isLoggedIn && role.includes("admin") && (
-         <Button
-         variant="body1"
-         onClick={() => navigate("/registration")}
-         sx={{
-          textTransform: 'none',
-          minWidth: 'unset',
-          minHeight: 'unset',
-          px: 2,
-          py: 1,
-          ml: 2, 
-          color: registrationActive ? 'common.white' : 'text.primary',
-          fontWeight: 'medium',
-          backgroundColor: registrationActive ? 'primary.main' : 'transparent',
-          borderRadius: '100px',
-          '&:hover': {
-            backgroundColor: registrationActive ? 'primary.main' : 'action.hover',
-            color: registrationActive ? 'common.white' : 'text.primary',
-          },
-        }}
-       >
-         Registration
-       </Button>
+          <Button
+            variant="body1"
+            onClick={() => navigate("/registration")}
+            sx={{
+              textTransform: "none",
+              minWidth: "unset",
+              minHeight: "unset",
+              px: 2,
+              py: 1,
+              ml: 2,
+              color: registrationActive ? "common.white" : "text.primary",
+              // fontWeight: 'medium',
+              backgroundColor: registrationActive
+                ? "primary.main"
+                : "transparent",
+              borderRadius: "100px",
+              fontWeight: "normal",
+              "&:hover": {
+                backgroundColor: registrationActive
+                  ? "primary.main"
+                  : "action.hover",
+                color: registrationActive ? "common.white" : "text.primary",
+              },
+            }}
+          >
+            Registration
+          </Button>
         )}
-
-        <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', ml: 0 }}>
+        <Box sx={{ display: "flex", alignItems: "center", ml: "auto", ml: 0 }}>
           <Tabs
             value={activeTab}
             onChange={(e, newValue) => {
@@ -357,39 +402,47 @@ const Navbar = () => {
               navigate(newValue);
             }}
             sx={{
-              minHeight: 'unset',
-              '& .MuiTabs-indicator': { display: 'none' },
-              '& .MuiTabs-flexContainer': {
-                gap: '0px'
-              }
+              minHeight: "unset",
+              "& .MuiTabs-indicator": { display: "none" },
+              "& .MuiTabs-flexContainer": {
+                gap: "0px",
+              },
             }}
           >
             {opsTabs.map((tab) => (
               <Tab
                 key={tab.path}
                 label={
-                <Typography variant="body1" sx={{
-                  color: activeTab === tab.path ? 'common.white' : 'text.primary'
-                }}>{tab.label}
-                </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color:
+                        activeTab === tab.path
+                          ? "common.white"
+                          : "text.primary",
+                    }}
+                  >
+                    {tab.label}
+                  </Typography>
                 }
                 value={tab.path}
                 component={Link}
                 to={tab.path}
                 sx={{
-                  textTransform: 'none',
-                  minWidth: 'unset',
-                  minHeight: 'unset',
+                  textTransform: "none",
+                  minWidth: "unset",
+                  minHeight: "unset",
                   px: 2,
                   py: 1,
-                  color: 'transparent',
-                  fontWeight: 'medium',
-                  backgroundColor: activeTab === tab.path ? 'primary.main' : 'transparent',
-                  borderRadius: '100px',
-                  '&:hover': {
-                    backgroundColor: activeTab === tab.path ? 'primary.main' : 'action.hover',
+                  color: "transparent",
+                  fontWeight: "medium",
+                  backgroundColor:
+                    activeTab === tab.path ? "primary.main" : "transparent",
+                  borderRadius: "100px",
+                  "&:hover": {
+                    backgroundColor:
+                      activeTab === tab.path ? "primary.main" : "action.hover",
                   },
-                
                 }}
               />
             ))}
@@ -423,7 +476,9 @@ const Navbar = () => {
       }}
       className="header"
     >
-      <Box sx={{ paddingX: "16px", margin: 0, justifyContent: "space-between" }}>
+      <Box
+        sx={{ paddingX: "16px", margin: 0, justifyContent: "space-between" }}
+      >
         <Toolbar
           disableGutters
           sx={{
@@ -444,6 +499,15 @@ const Navbar = () => {
                 renderAdminHeader()
               ) : isLoggedIn && role.includes("ops") ? (
                 renderOpsHeader()
+              ) : isLoggedIn && role.includes("ngo") ? (
+                  <Box
+                    component="img"
+                    src={logo}
+                    alt="Logo"
+                    className="header-logo"
+                    sx={{ cursor: "pointer", height: 40 }}
+                    onClick={() => navigate("/")}
+                  />
               ) : (
                 <>
                   {!isLoggedIn && (
@@ -452,9 +516,11 @@ const Navbar = () => {
                       src={logo}
                       alt="Logo"
                       className="header-logo"
-                      sx={{ cursor: 'pointer' }}
+                      sx={{ cursor: "pointer" }}
                       onClick={() => {
-                        const role = JSON.parse(localStorage.getItem("role") || "[]");
+                        const role = JSON.parse(
+                          localStorage.getItem("role") || "[]"
+                        );
                         if (role.includes("ops")) {
                           navigate("/ops");
                         } else if (role.includes("admin")) {
@@ -503,7 +569,7 @@ const Navbar = () => {
                   height: 40,
                   cursor: "pointer",
                   "&:hover": { opacity: 0.8 },
-                  ml: 'auto'
+                  ml: "auto",
                 }}
                 onClick={handleProfileClick}
               />
@@ -535,7 +601,10 @@ const Navbar = () => {
                       },
                     }}
                   >
-                    <Typography variant="subtitle1" sx={{ color: "primary.main" }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ color: "primary.main" }}
+                    >
                       Submit Requirements
                     </Typography>
                   </Button>
@@ -586,7 +655,9 @@ const Navbar = () => {
         {/* Mobile Menu for Non-logged-in Users */}
         {!isLoggedIn && (
           <Box
-            className={`mobile-menu ${isActive && menuVisible ? "visible" : ""}`}
+            className={`mobile-menu ${
+              isActive && menuVisible ? "visible" : ""
+            }`}
           >
             <DropdownMenu
               title="Discover Us"
@@ -598,18 +669,20 @@ const Navbar = () => {
               menuItems={getInvolvedItems}
               onItemClick={() => handleTabClick()}
             />
-            <Box sx={{
-              alignItems: "right",
-              justifyContent: "right",
-              borderRadius: 1,
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              gap: 1,
-              padding: 1,
-              marginLeft: "8px",
-              marginTop: { xs: "0px", md: "20px" },
-            }}>
+            <Box
+              sx={{
+                alignItems: "right",
+                justifyContent: "right",
+                borderRadius: 1,
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+                padding: 1,
+                marginLeft: "8px",
+                marginTop: { xs: "0px", md: "20px" },
+              }}
+            >
               <MuiLink
                 sx={{
                   margin: "0 5px",
