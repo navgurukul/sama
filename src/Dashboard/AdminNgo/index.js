@@ -266,7 +266,6 @@ const AdminNgo = () => {
       });
   
       const result = await response.json();
-      console.log("Success:", result);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -466,7 +465,7 @@ const AdminNgo = () => {
                         {ngo.contactNumber}
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
-                        {ngo.beneficiariesCount}
+                        {ngo["Laptop require"]}
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
                         {ngo.location}

@@ -21,6 +21,28 @@ import EditButton from './EditButton';
 import { getTableColumns } from '../../components/OPS/LaptopTable/LaptopTable';
 import BulkEditPanel from './BulkEditPanel';
 
+const formatDateForSort = (dateStr) => {
+  if (!dateStr) return new Date(0); // Return epoch time for null dates
+
+  try {
+    // Handle different date formats
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      // Try parsing DD-MM-YYYY HH:MM:SS format
+      const [datePart, timePart] = dateStr.split(" ");
+      if (datePart && timePart) {
+        const [day, month, year] = datePart.split("-").map(Number);
+        const [hour, minute, second] = timePart.split(":").map(Number);
+        return new Date(year, month - 1, day, hour, minute, second);
+      }
+      return new Date(0);
+    }
+    return date;
+  } catch (error) {
+    console.error("Date parsing error:", error);
+    return new Date(0);
+  }
+};
 
 function LaptopTagging() {
   // States
@@ -42,20 +64,83 @@ function LaptopTagging() {
   const [minorIssueFilter, setMinorIssueFilter] = useState('all');
   const [updateField, setUpdateField] = useState(null);
   const [updateValue, setUpdateValue] = useState(null);
+  const [allocatedToFilter, setAllocatedToFilter] = useState('');
 
   const printRef = useRef();
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [isProcessingSelection, setIsProcessingSelection] = useState(false);
 
+  // Sort configuration state
+  const [sortConfig, setSortConfig] = useState({
+    field: null,
+    direction: 'asc'
+  });
+
+  // Enhanced handleSort function for date sorting
+  const handleSort = (field) => {
+  let direction;
+
+  if (sortConfig.field !== field) {
+    direction = "asc";
+  } 
+  else {
+    switch (sortConfig.direction) {
+      case "none":
+        direction = "asc";  // First click → oldest first
+        break;
+      case "asc":
+        direction = "desc"; // Second click → newest first
+        break;
+      case "desc":
+        direction = "none"; // Third click → back to default
+        break;
+      default:
+        direction = "asc";
+    }
+  }
+
+  setSortConfig({ field, direction });
+
+  if (direction === "none") {
+    applyFilters(); // This reloads the default reversed data
+    return;
+  }
+
+  // Apply sorting
+  const sortedData = [...data].sort((a, b) => {
+    const valA = a[field];
+    const valB = b[field];
+
+    if (!valA && !valB) return 0;
+    if (!valA) return 1;
+    if (!valB) return -1;
+
+    // Date sorting
+    if (field === "Last Updated On" || field === "updatedOn") {
+      const dateA = formatDateForSort(valA);
+      const dateB = formatDateForSort(valB);
+      return direction === "asc" ? dateA - dateB : dateB - dateA;
+    }
+
+    // Default string sorting
+    return direction === "asc"
+      ? valA.toString().localeCompare(valB.toString())
+      : valB.toString().localeCompare(valA.toString());
+  });
+
+  setData(sortedData);
+};
+
+
   const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
     if (isProcessingSelection) return;
 
-  // Get the IDs of all selected rows
-  const newSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
+    // Get the IDs of all selected rows
+    const newSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
 
-  // Update the selectedRows state
-  setSelectedRows(newSelectedIds);
+    // Update the selectedRows state
+    setSelectedRows(newSelectedIds);
   };
 
   // Fetch data on component mount and when refresh state changes
@@ -64,8 +149,11 @@ function LaptopTagging() {
       setLoading(true);
       try {
         const result = await fetchLaptopData();
-        setAllData(result);
-        setData(result);
+        // Reverse the data to show the most recent entries first
+        const reversedData = [...result].reverse();
+
+        setAllData(reversedData);
+        setData(reversedData);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -79,7 +167,7 @@ function LaptopTagging() {
   // Apply filters when filter values change
   useEffect(() => {
     applyFilters();
-  }, [workingFilter, statusFilter, majorIssueFilter, minorIssueFilter, allData]);
+  }, [workingFilter, statusFilter, majorIssueFilter, minorIssueFilter, allocatedToFilter, allData]);
 
 
   useEffect(() => {
@@ -106,6 +194,11 @@ function LaptopTagging() {
         laptop.Status === statusFilter
       );
     }
+    if (allocatedToFilter) {
+      filteredData = filteredData.filter(laptop =>
+        laptop["Allocated To"] === allocatedToFilter
+      );
+    }
 
     // Apply major issue filter
     if (majorIssueFilter !== 'all') {
@@ -115,7 +208,8 @@ function LaptopTagging() {
           const hasMajorIssue = laptop.MajorIssue === true || laptop.MajorIssue === "Yes";
           return majorIssueFilter === 'yes' ? hasMajorIssue : !hasMajorIssue;
         });
-      } else {
+      }
+      else {
         // Specific issue filter - check if the specific issue exists in the MajorIssueDetails field
         filteredData = filteredData.filter(laptop => {
           // Assuming MajorIssueDetails is either an array or a comma-separated string
@@ -138,6 +232,11 @@ function LaptopTagging() {
           const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
           return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
         });
+      }
+      if (allocatedToFilter) {
+        filteredData = filteredData.filter(laptop =>
+          laptop["Allocated To"] === allocatedToFilter
+        );
       } else {
         // Specific issue filter - check if the specific issue exists in the MinorIssueDetails field
         filteredData = filteredData.filter(laptop => {
@@ -166,6 +265,7 @@ function LaptopTagging() {
     const dataToFilter = preFilteredData || allData;
 
     if (!idQuery && !macQuery) {
+      let filtered = applyAdditionalFilters(dataToFilter);
       setData(dataToFilter);
       return;
     }
@@ -176,7 +276,7 @@ function LaptopTagging() {
       if (macQuery) return String(laptop['Mac address']).toUpperCase().includes(macQuery.toUpperCase());
       return false;
     });
-
+    filtered = applyAdditionalFilters(filtered);
     // Important: Don't modify the selectedRows here
     // Just update the displayed data
     setData(filtered);
@@ -193,6 +293,11 @@ function LaptopTagging() {
     if (statusFilter !== 'all') {
       filtered = filtered.filter(laptop => laptop.Status === statusFilter);
     }
+    if (allocatedToFilter) {
+      filtered = filtered.filter(laptop =>
+        laptop["Allocated To"] === allocatedToFilter
+      );
+    }
 
     if (majorIssueFilter !== 'all') {
       if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
@@ -202,10 +307,10 @@ function LaptopTagging() {
         });
       } else {
         filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop.MajorIssueDetails === 'string'
-            ? laptop.MajorIssueDetails.split(',').map(issue => issue.trim())
-            : Array.isArray(laptop.MajorIssueDetails)
-              ? laptop.MajorIssueDetails
+          const issueDetails = typeof laptop["Major Issues"] === 'string'
+            ? laptop["Major Issues"].split(',').map(issue => issue.trim())
+            : Array.isArray(laptop["Major Issues"])
+              ? laptop["Major Issues"]
               : [];
           return issueDetails.includes(majorIssueFilter);
         });
@@ -218,13 +323,15 @@ function LaptopTagging() {
           const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
           return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
         });
-      } else {
+      }
+      else {
         filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop.MinorIssueDetails === 'string'
-            ? laptop.MinorIssueDetails.split(',').map(issue => issue.trim())
-            : Array.isArray(laptop.MinorIssueDetails)
-              ? laptop.MinorIssueDetails
+          const issueDetails = typeof laptop["Minor Issues"] === 'string'
+            ? laptop["Minor Issues"].split(',').map(issue => issue.trim())
+            : Array.isArray(laptop["Minor Issues"])
+              ? laptop["Minor Issues"]
               : [];
+
           return issueDetails.includes(minorIssueFilter);
         });
       }
@@ -239,6 +346,7 @@ function LaptopTagging() {
     setStatusFilter('all');
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
+    setAllocatedToFilter('');
     if (idQuery || macQuery) {
       handleSearch();
     } else {
@@ -255,7 +363,9 @@ function LaptopTagging() {
     setStatusFilter('all');
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
+    setAllocatedToFilter('');
     setSelectedRows([]); // Clear selections on full reset
+    setSortConfig({ field: null, direction: 'asc' }); // Reset sort config
     setData(allData);
   };
 
@@ -408,7 +518,7 @@ function LaptopTagging() {
               case 'assignedTo':
                 payload.assignedTo = update.value;
                 break;
-              case 'donatedTo': 
+              case 'donatedTo':
                 payload.donatedTo = update.value;
                 break;
             }
@@ -506,6 +616,7 @@ function LaptopTagging() {
     .map(item => data.findIndex(d => d.ID === item.ID))
     .filter(index => index !== -1);
 
+
   // Define table columns
   const columns = getTableColumns(
     data,
@@ -520,10 +631,17 @@ function LaptopTagging() {
         setRefresh={setRefresh}
         refresh={refresh}
       />
-    )
+    ),
+    refresh,
+    setRefresh,
+    sortConfig,  // Pass sortConfig
+    handleSort   // Pass handleSort
   );
 
   const hiddenSelectionsCount = selectedRows.length - visibleSelections.length;
+
+
+
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
@@ -548,6 +666,8 @@ function LaptopTagging() {
         setMajorIssueFilter={setMajorIssueFilter}
         minorIssueFilter={minorIssueFilter}
         setMinorIssueFilter={setMinorIssueFilter}
+        allocatedToFilter={allocatedToFilter}
+        setAllocatedToFilter={setAllocatedToFilter}
         onResetFilters={handleResetFilters}
       />
 
@@ -604,8 +724,28 @@ function LaptopTagging() {
               onRowsDelete: () => false,
               download: false,
               print: false,
-              sort: false,
-              viewColumns: true
+              sort: true,
+              viewColumns: true,
+              sortOrder: {
+                name: sortConfig.field || '',
+                direction: sortConfig.direction
+              },
+              customSort: (data, colIndex, order) => {
+                const columnName = columns[colIndex]?.name;
+                return data.sort((a, b) => {
+                  const valA = a.data[colIndex];
+                  const valB = b.data[colIndex];
+
+                  if (columnName === "updatedOn" || columnName === "Last Updated On") {
+                    const dateA = new Date(valA);
+                    const dateB = new Date(valB);
+                    return order === "asc" ? dateA - dateB : dateB - dateA;
+                  }
+                  return order === "asc"
+                    ? valA?.toString().localeCompare(valB?.toString())
+                    : valB?.toString().localeCompare(valA?.toString());
+                });
+              },
             }}
           />
         )}

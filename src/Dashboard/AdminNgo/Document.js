@@ -16,7 +16,7 @@ const Document = ({ngoData, id}) => {
   const [documents, setDocuments] = useState(null);
 //   const { id } = useParams();
 
-    console.log("NgoData", ngoData);
+
 
 
   // Fetch documents

@@ -190,7 +190,6 @@ function CommunityForm() {
         }
     };
 
-    console.log(formData)
 
     return (
         <Container maxWidth="lg"  >
