@@ -164,7 +164,7 @@ const PreliminaryForm = ({ userId }) => {
       ...formData,
       courses: transformedCourses, // Replace the courses array with the transformed format
     };
-    console.log(payload, "payload");
+
     
     try {
       const response = await fetch(

@@ -52,7 +52,6 @@ const AttentionNeeded = () => {
               }
               return true; 
             }) || [];  
-            console.log("filteredFailedStatuses",filteredFailedStatuses);        
           setDocumentsToReupload(failedDocuments);
         } catch (error) {
           console.error('Error fetching data:', error);

@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, Box, Chip, Button } from '@mui/material';
 import { LaptopStatusDropdown, AssignedTo, DonatedTo, LaptopWorkingCheckbox } from './LaptopStatus';
 
-export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton, refresh, setRefresh) => {
+export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton, refresh, setRefresh, sortConfig, handleSort) => {
   // Helper function to check if laptop has battery issues
   const hasBatteryIssue = (laptop) => {
     const minorIssues = laptop["Minor Issues"]?.toLowerCase() || "";
@@ -13,52 +13,35 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
 
   const formatDate = (dateString) => {
     if (!dateString) return "Not Updated";
+
     try {
       const date = new Date(dateString);
-      if (!isNaN(date.getTime())) {
-        return date.toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric"
-        });
+      if (isNaN(date.getTime())) {
+        // Handle cases where dateString is already in a different format
+        return dateString;
       }
 
-      const parts = dateString.split(' ');
-      if (parts.length === 3) {
-        const months = {
-          'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-          'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-        };
+      // Format as DD-MM-YYYY HH:MM:SS
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
 
-        const day = parseInt(parts[0], 10);
-        const month = months[parts[1]];
-        const year = parseInt(parts[2], 10);
-
-        if (!isNaN(day) && month !== undefined && !isNaN(year)) {
-          const newDate = new Date(year, month, day);
-          return newDate.toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-          });
-        }
-      }
-
-      return dateString;
+      return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
     } catch (error) {
-      console.error("Date parsing error:", error);
+      console.error("Date formatting error:", error);
       return dateString;
     }
   };
-
-
-
 
   return [
     {
       name: "ID",
       label: "Serial No",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -93,6 +76,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Donor Company Name",
       label: "Company Name",
       options: {
+        sort: false,
         filter: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -106,6 +90,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "RAM",
       label: "RAM",
       options: {
+        sort: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
         }),
@@ -118,6 +103,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "ROM",
       label: "ROM",
       options: {
+        sort: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
         }),
@@ -130,6 +116,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Manufacturer Model",
       label: "Manufacturer Model",
       options: {
+        sort: false,
         filter: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -143,6 +130,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Minor Issues",
       label: "Minor Issues",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -166,6 +154,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Major Issues",
       label: "Major Issues",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -200,6 +189,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Inventory Location",
       label: "Inventory Location",
       options: {
+        sort: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
         }),
@@ -212,6 +202,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Mac address",
       label: "Mac Address",
       options: {
+        sort: false,
         filter: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -225,6 +216,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Battery Capacity",
       label: "Battery Capacity",
       options: {
+        sort: false,
         filter: false,
         setCellProps: () => ({
           className: 'custom-body-cell'
@@ -238,35 +230,62 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "updatedOn",
       label: "Last Updated On",
       options: {
+        filter: false,
+        sort: true,
+        sortDirection: sortConfig.field === "Last Updated On" ? sortConfig.direction : "none",
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           const lastUpdatedOn = laptopData["Last Updated On"] || laptopData.lastUpdatedOn;
 
           return (
-            <Typography variant="body2">
+            <Typography variant="body2" noWrap>
               {formatDate(lastUpdatedOn)}
             </Typography>
           );
         },
+        
+        customHeadLabelRender: ({ label, index }) => (
+          <Box 
+            
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              cursor: 'pointer',
+              
+            }}
+            onClick={() => handleSort("Last Updated On")}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 'bold', color: "rgba(0, 0, 0, 0.87)", fontFamily: "Montserrat !important", fontSize: "16px !important" ,whiteSpace: 'nowrap' }}>
+              {label}
+            </Typography>
+            <Box sx={{ml:1,}}>
+              {sortConfig.field === "Last Updated On" ? 
+                (sortConfig.direction === "asc" ? "↑" : "↓") : 
+                "↕"
+              }
+            </Box>
+          </Box>
+        ),
         setCellProps: () => ({
           className: 'custom-body-cell'
         }),
         setCellHeaderProps: () => ({
           className: 'custom-header-cell'
-        })
+        }),
       }
     },
     {
       name: "lastUpdatedBy",
       label: "Last Updated By",
       options: {
+        sort: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
 
           return (
-            <Typography variant="body2">
+            <Typography variant="body2" noWrap>
               {laptopData["Last Updated By"] || laptopData.lastUpdatedBy || "Not Available"}
             </Typography>
           );
@@ -283,6 +302,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Status",
       label: "Status",
       options: {
+        sort: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
@@ -305,6 +325,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Assigned To",
       label: "Assigned To",
       options: {
+        sort: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
@@ -327,6 +348,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Allocated To",
       label: "Allocated To",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -350,6 +372,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Working",
       label: "Not Working",
       options: {
+        sort: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
@@ -374,6 +397,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Edit",
       label: "Edit",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -400,6 +424,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
       name: "Inspection Files",
       label: "Inspection Files",
       options: {
+        sort: false,
         filter: false,
         customBodyRender: (value, tableMeta) => {
           const rowIndex = tableMeta.rowIndex;
@@ -442,7 +467,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
                 component="div"
                 sx={{
                   position: 'absolute',
-                  right: '0%', 
+                  right: '0%',
                   top: 50,
                   zIndex: 100,
                   backgroundColor: 'background.paper',

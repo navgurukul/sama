@@ -193,7 +193,6 @@ const MonthlyReportingForm = () => {
         state: formData,
       };
 
-      console.log("Submitting data:", submissionData);
 
       await fetch(
         `${process.env.REACT_APP_NgoInformationApi}?type=SendMonthlyReport`,

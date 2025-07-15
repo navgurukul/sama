@@ -190,7 +190,6 @@ function CorporateForm() {
         }
     };
 
-    console.log(formData)
 
     return (
         <Container maxWidth="lg"  style={{ marginTop: "0px" }}>

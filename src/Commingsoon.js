@@ -103,7 +103,7 @@ const ComingSoonPage = () => {
         }}
       >
         <CardContent>
-        <img
+         <img
         src="/samalogo.png"
         alt="Logo"
         style={{ width: '100px', marginBottom: '20px' }}

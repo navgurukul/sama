@@ -72,7 +72,6 @@ const TestimonialSlider = () => {
 
   const isMobile = useMediaQuery('(max-width:600px)');
 
-  console.log(testimonials)
   
   const groupedTestimonials = isMobile
     ? testimonials.map((testimonial, inde) => [testimonial])

@@ -75,7 +75,6 @@ const BeneficiaryProfile = () => {
               return parseInt(bYear) - parseInt(aYear);
             }
 
-            console.log(statusHistoryData, " statusHistoryData ");
 
             // If years are same, compare months
             const months = [
