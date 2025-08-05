@@ -1,15 +1,103 @@
 import React from 'react';
 import { Typography, Box, Chip, Button } from '@mui/material';
 import { LaptopStatusDropdown, AssignedTo, DonatedTo, LaptopWorkingCheckbox } from './LaptopStatus';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
-export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton, refresh, setRefresh, sortConfig, handleSort) => {
+export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton, refresh, setRefresh, sortConfig, handleSort, activityData = {}) => {
   // Helper function to check if laptop has battery issues
   const hasBatteryIssue = (laptop) => {
     const minorIssues = laptop["Minor Issues"]?.toLowerCase() || "";
     const majorIssues = laptop["Major Issues"]?.toLowerCase() || "";
     return minorIssues.includes("battery") || majorIssues.includes("battery");
   };
+  const generateActivityPDF = (laptopId, activityData, summaryData) => {
+    const doc = new jsPDF();
 
+    // Set font and add title
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text(`Activity Report - ${laptopId}`, 14, 20);
+
+    // Add date
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
+
+    // Convert duration to readable format
+
+
+    // Prepare summary data - separate usage categories and AFK
+    const usageCategories = [
+      ['Browsing', summaryData.usage?.browsing || '0 sec'],
+      ['Programming', summaryData.usage?.programming || '0 sec'],
+      ['Other', summaryData.usage?.other || '0 sec']
+    ];
+
+    // Add usage categories table
+    doc.autoTable({
+      startY: 40,
+      head: [['Activity Category', 'Time Spent']],
+      body: usageCategories,
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      styles: {
+        cellPadding: 5,
+        fontSize: 10
+      },
+      columnStyles: {
+        0: { cellWidth: 'wrap' },
+        1: { cellWidth: 'auto' }
+      }
+    });
+
+    // Add AFK section separately
+    doc.setFont('helvetica', 'bold');
+    doc.text('AFK Time:', 14, doc.lastAutoTable.finalY + 15);
+    doc.setFont('helvetica', 'normal');
+    doc.text(summaryData.afk || '0 sec', 50, doc.lastAutoTable.finalY + 15);
+
+    // Add activity log section if needed
+    if (activityData && activityData.length > 0) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('Detailed Activity Log', 14, doc.lastAutoTable.finalY + 25);
+
+      const activityRows = activityData.map(entry => [
+        entry.time,
+        entry.app || '-',
+        entry.title?.substring(0, 30) || '-',
+        formatDuration(entry.duration),
+        entry.category
+      ]);
+
+      doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 30,
+        head: [['Time', 'App', 'Title', 'Duration', 'Category']],
+        body: activityRows,
+        styles: {
+          fontSize: 8,
+          cellPadding: 3
+        }
+      });
+    }
+
+    doc.save(`Activity_Report_${laptopId}.pdf`);
+  };
+  const formatDuration = (duration) => {
+    if (typeof duration === 'string') return duration;
+    if (typeof duration !== 'number') return "0 sec";
+
+    const mins = Math.floor(duration / 60);
+    const hrs = Math.floor(mins / 60);
+    const remainingMins = mins % 60;
+
+    if (hrs > 0) return `${hrs} hr ${remainingMins} min`;
+    if (mins > 0) return `${mins} min`;
+    return `${duration} sec`;
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return "Not Updated";
@@ -244,24 +332,24 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
             </Typography>
           );
         },
-        
+
         customHeadLabelRender: ({ label, index }) => (
-          <Box 
-            
-            sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+          <Box
+
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
               cursor: 'pointer',
-              
+
             }}
             onClick={() => handleSort("Last Updated On")}
           >
-            <Typography variant="body2" sx={{ fontWeight: 'bold', color: "rgba(0, 0, 0, 0.87)", fontFamily: "Montserrat !important", fontSize: "16px !important" ,whiteSpace: 'nowrap' }}>
+            <Typography variant="body2" sx={{ fontWeight: 'bold', color: "rgba(0, 0, 0, 0.87)", fontFamily: "Montserrat !important", fontSize: "16px !important", whiteSpace: 'nowrap' }}>
               {label}
             </Typography>
-            <Box sx={{ml:1,}}>
-              {sortConfig.field === "Last Updated On" ? 
-                (sortConfig.direction === "asc" ? "↑" : "↓") : 
+            <Box sx={{ ml: 1, }}>
+              {sortConfig.field === "Last Updated On" ?
+                (sortConfig.direction === "asc" ? "↑" : "↓") :
                 "↕"
               }
             </Box>
@@ -509,6 +597,96 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
                 ))}
               </Box>
             </Box>
+          );
+        },
+        setCellProps: () => ({
+          className: 'custom-body-cell'
+        }),
+        setCellHeaderProps: () => ({
+          className: 'custom-header-cell'
+        })
+      }
+    },
+    {
+      name: "Activity Watch PDF",
+      label: "Activity PDF",
+      options: {
+        sort: false,
+        filter: false,
+        customBodyRender: (value, tableMeta) => {
+          const rowIndex = tableMeta.rowIndex;
+          const laptopData = data[rowIndex];
+          const laptopId = laptopData.ID;
+
+          // Only show for laptops with ActivityWatch data
+          const awLaptops = ['roshni-ThinkPad-E14', 'navgurukul-ThinkPad-E14'];
+          if (!awLaptops.includes(laptopId)) {
+            return <Typography variant="body2">N/A</Typography>;
+          }
+
+          const handleDownload = async () => {
+            try {
+              const [activityRes, summaryRes] = await Promise.all([
+                fetch(`http://localhost:5000/api/activity/${laptopId}`),
+                fetch(`http://localhost:5000/api/summary/${laptopId}`)
+              ]);
+
+              if (!activityRes.ok || !summaryRes.ok) {
+                throw new Error(`API request failed: ${activityRes.status} ${summaryRes.status}`);
+              }
+
+              const [activityData, summaryData] = await Promise.all([
+                activityRes.json(),
+                summaryRes.json()
+              ]);
+
+              generateActivityPDF(laptopId, activityData, summaryData);
+            } catch (error) {
+              console.error('Download failed:', error);
+              alert('Failed to generate PDF. Please check console for details.');
+            }
+          };
+
+          return (
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={handleDownload}
+              sx={{
+                textTransform: 'none',
+                fontSize: '0.75rem',
+                padding: '4px 8px'
+              }}
+            >
+              Download
+            </Button>
+          );
+        },
+        setCellProps: () => ({
+          className: 'custom-body-cell'
+        }),
+        setCellHeaderProps: () => ({
+          className: 'custom-header-cell'
+        })
+      }
+    },
+    {
+      name: "AFK_Time", // We use ID to match with activity data
+      label: "AFK Time",
+      options: {
+        sort: true,
+        filter: false,
+        customBodyRender: (value, tableMeta) => {
+          const rowIndex = tableMeta.rowIndex;
+          const laptopId = data[rowIndex].ID;
+
+          // Get AFK time from activity data
+          const afkTime = activityData[laptopId]?.afk || '0 sec';
+
+          return (
+            <Typography variant="body2">
+              {afkTime}
+            </Typography>
           );
         },
         setCellProps: () => ({
