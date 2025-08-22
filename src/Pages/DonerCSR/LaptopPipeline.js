@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from 'react'; 
 import {
   Box,
   Typography,
@@ -38,43 +38,7 @@ const theme = createTheme({
   },
 });
 
-const stages = [
-  {
-    title: "Pickup Requested",
-    subtitle: "Corporate requests submitted",
-    avg: "1-2 days",
-    count: 12,
-    icon: <Truck size={20} color="white" />,
-  },
-  {
-    title: "Assessment",
-    subtitle: "Quality evaluation in progress",
-    avg: "2-3 days",
-    count: 8,
-    icon: <Tools size={20} color="white" />,
-  },
-  {
-    title: "Refurbishment",
-    subtitle: "Hardware restoration & software setup",
-    avg: "5-7 days",
-    count: 15,
-    icon: <RefreshCw size={20} color="white" />,
-  },
-  {
-    title: "Distribution",
-    subtitle: "Ready for NGO delivery",
-    avg: "1-2 days",
-    count: 22,
-    icon: <Package size={20} color="white" />,
-  },
-  {
-    title: "Active Usage",
-    subtitle: "In use by beneficiaries",
-    avg: "Ongoing",
-    count: 398,
-    icon: <Users size={20} color="white" />,
-  },
-];
+
 
 const processingTimes = [
   { label: "Pickup to Assessment", value: "2.1 days", change: "-0.3 days", changeType: "down" },
@@ -88,12 +52,12 @@ const processingData = [
     change: '-0.3 days',
     isPositive: true
   },
-  {
-    title: 'Assessment to Refurbishment',
-    days: '1.8 days',
-    change: '+0.2 days',
-    isPositive: false
-  },
+  // {
+  //   title: 'Assessment to Refurbishment',
+  //   days: '1.8 days',
+  //   change: '+0.2 days',
+  //   isPositive: false
+  // },
   {
     title: 'Refurbishment Process',
     days: '6.2 days',
@@ -166,6 +130,76 @@ const insights = [
 ];
 
 const LaptopPipeline = () => {
+const [laptopData, setLaptopData] = useState([]);
+  const [totalLaptops, setTotalLaptops] = useState(0);
+  const [refurbishedCount, setRefurbishedCount] = useState(0);
+  const [distributedCount, setDistributedCount] = useState(0);
+
+
+ useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`
+        );
+        const data = await response.json();
+        setLaptopData(data || []);
+
+        // Calculate counts
+        setTotalLaptops(data.length);
+        setRefurbishedCount(
+          data.filter(item => item.Status === "Laptop Refurbished").length
+        );
+        setDistributedCount(
+          data.filter(item => item.Status === "Distributed").length
+        );
+      } catch (error) {
+        console.error("Error fetching laptop data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  
+  const stages = [
+  {
+    title: "Pickup Requested",
+    subtitle: "Corporate requests submitted",
+    avg: "1-2 days",
+    count: totalLaptops,
+    icon: <Package size={30} color="#1976d2" />,
+  },
+  // {
+  //   title: "Assessment",
+  //   subtitle: "Quality evaluation in progress",
+  //   avg: "2-3 days",
+  //   count: 8,
+    // icon: <Tools size={30} color="#1976d2" />,
+  // },
+  {
+    title: "Refurbishment",
+    subtitle: "Hardware restoration & software setup",
+    avg: "5-7 days",
+    count: refurbishedCount,
+    icon: <Tools size={30} color="#1976d2" />,
+  },
+  {
+    title: "Distribution",
+    subtitle: "Ready for NGO delivery",
+    avg: "1-2 days",
+    count: distributedCount,
+    icon: <Truck size={30} color="#1976d2" />,
+  },
+  {
+    title: "Active Usage",
+    subtitle: "In use by beneficiaries",
+    avg: "Ongoing",
+    count: 398,
+    icon: <Users size={30} color="#1976d2" />,
+  },
+];
+
+
   return (
     <>
       <Box
@@ -242,12 +276,13 @@ const LaptopPipeline = () => {
           </Typography>
           <Grid container spacing={2}>
             {stages.map((stage) => (
-              <Grid item xs={12} key={stage.title}>
+              <Grid item xs={12} key={stage.title} >
                 <Card
                   sx={{
                     bgcolor: "#e3f2fd",
                     borderRadius: 2,
                     boxShadow: "none",
+
                   }}
                 >
                   <CardContent
@@ -258,21 +293,21 @@ const LaptopPipeline = () => {
                     }}
                   >
                     <Box display="flex" alignItems="center" gap={2}>
-                      <Box
-                        sx={{
-                          bgcolor: "#1976d2",
-                          borderRadius: "8px",
-                          width: 40,
-                          height: 40,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {stage.icon}
-                      </Box>
                       <Box>
-                        <Typography variant="subtitle1" fontWeight={600}>
+                        <Box
+                          sx={{
+                            // bgcolor: "#1976d2",
+                            borderRadius: "8px",
+                            width: 40,
+                            height: 40,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {stage.icon}
+                        </Box>
+                        <Typography variant="subtitle1" fontWeight={600} sx={{ color: "black" }}>
                           {stage.title}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -286,7 +321,7 @@ const LaptopPipeline = () => {
                         </Typography>
                       </Box>
                     </Box>
-                    <Typography variant="h5" fontWeight={700}>
+                    <Typography variant="h6" fontWeight={700}>
                       {stage.count}
                     </Typography>
                   </CardContent>

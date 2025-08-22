@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -17,42 +17,85 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import ComputerIcon from "@mui/icons-material/Computer";
 import DownloadIcon from "@mui/icons-material/Download";
 
-const laptopData = [
-  {
-    id: "DL-2024-001",
-    model: "ThinkPad E14",
-    status: "Active Usage",
-    statusColor: "success",
-    location: "Mumbai",
-    beneficiary: "Rahul Kumar",
-    usageHours: "156 hrs",
-    lastActivity: "2 hours ago",
-  },
-  {
-    id: "DL-2024-002",
-    model: "HP ProBook 450",
-    status: "Distribution",
-    statusColor: "info",
-    location: "Bangalore",
-    beneficiary: "Pending Assignment",
-    usageHours: "0 hrs",
-    lastActivity: "1 day ago",
-  },
-  {
-    id: "DL-2024-003",
-    model: "Dell Latitude 5420",
-    status: "Refurbishment",
-    statusColor: "warning",
-    location: "Sama Warehouse",
-    beneficiary: "Pending",
-    usageHours: "0 hrs",
-    lastActivity: "3 days ago",
-  },
-];
-
 export default function LaptopTracking() {
+  const [laptopData, setLaptopData] = useState([]);
+  const [search, setSearch] = useState("");
+  const [searchId, setSearchId] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`
+        );
+        const data = await response.json();
+
+        setLaptopData(data || []);
+      } catch (error) {
+        console.error("Error fetching laptop data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Function to get color based on status
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case "in transit":
+        return "warning";
+      case "to be dispatch":
+        return "secondary";
+      case "laptop received":
+        return "info";
+      case "laptop refurbished":
+        return "success";
+      case "allocated":
+        return "primary";
+      case "distributed":
+        return "success";
+      default:
+        return "default";
+    }
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "N/A";
+    const [datePart, timePart] = dateStr.split(" ");
+    if (!datePart || !timePart) return "N/A";
+
+    const [day, month, year] = datePart.split("-").map(Number);
+    const [hour, minute, second] = timePart.split(":").map(Number);
+
+    // Return string in the same format
+    return `${String(day).padStart(2, "0")}-${String(month).padStart(2, "0")}-${year} ${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:${String(second).padStart(2, "0")}`;
+  };
+
+  const handleExport = () => {
+  if (!laptopData || laptopData.length === 0) {
+    alert("No data available to export");
+    return;
+  }
+
+  const headers = Object.keys(laptopData[0]).join(","); // Get table headers
+  const rows = laptopData.map(row => Object.values(row).join(",")); // Get table rows
+
+  const csvContent = [headers, ...rows].join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "report.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
   return (
     <>
+      {/* ======= HEADER ======= */}
       <Box
         display="flex"
         justifyContent="space-between"
@@ -96,31 +139,29 @@ export default function LaptopTracking() {
             color="primary"
             startIcon={<DownloadIcon />}
             sx={{ borderRadius: "10px", textTransform: "none" }}
+            onClick={handleExport}
           >
             Export Report
           </Button>
         </Box>
       </Box>
+
+      {/* ======= MAIN CONTENT ======= */}
       <Box p={3}>
-        <Paper elevation={2} sx={{ bgcolor: '#f9f9f9', minHeight: '100vh' }}>
-
-
+        <Paper elevation={2} sx={{ bgcolor: "#f9f9f9", minHeight: "100vh" }}>
           <Box p={2}>
+            {/* Heading + Search */}
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-              {/* Left side: Heading */}
-              <Typography
-                variant="h5"
-                sx={{ fontWeight: "bold", color: "#333" }}
-              >
+              <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
                 Laptop Tracking
               </Typography>
-
-              {/* Right side: Search + Filter */}
               <Box display="flex" alignItems="center" gap={2}>
                 <TextField
-                  size="small"
-                  placeholder="Search by laptop ID..."
+                  label="Search by ID"
                   variant="outlined"
+                  size="small"
+                  value={searchId}
+                  onChange={(e) => setSearchId(e.target.value)}
                   sx={{ width: "250px" }}
                 />
                 <Button variant="outlined" startIcon={<FilterAltIcon />}>
@@ -129,7 +170,7 @@ export default function LaptopTracking() {
               </Box>
             </Box>
 
-            {/* ====== Table Section ====== */}
+            {/* ====== TABLE ====== */}
             <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
               <Table>
                 <TableHead>
@@ -144,26 +185,29 @@ export default function LaptopTracking() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {laptopData.map((row) => (
-                    <TableRow key={row.id} hover>
-                      <TableCell sx={{ color: "primary.main", cursor: "pointer" }}>
-                        {row.id}
-                      </TableCell>
-                      <TableCell>{row.model}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={row.status}
-                          color={row.statusColor}
-                          variant="outlined"
-                        />
-                      </TableCell>
-                      <TableCell>{row.location}</TableCell>
-                      <TableCell>{row.beneficiary}</TableCell>
-                      <TableCell>{row.usageHours}</TableCell>
-                      <TableCell>{row.lastActivity}</TableCell>
-                    </TableRow>
-                  ))}
+                  {laptopData
+                    .filter((row) => row.ID?.toLowerCase().includes(searchId.toLowerCase()))
+                    .map((row, index) => (
+                      <TableRow key={index} hover>
+                        <TableCell sx={{ color: "primary.main", cursor: "pointer" }}>
+                          {row.ID}
+                        </TableCell>
+                        <TableCell>{row["Manufacturer Model"]}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={row.Status || "In Transit"}
+                            color={getStatusColor(row.Status)}
+                            variant="outlined"
+                          />
+                        </TableCell>
+                        <TableCell>{row["Inventory Location"] || "N/A"}</TableCell>
+                        <TableCell>{row["Allocated To"] || row["Assigned To"] || "Pending"}</TableCell>
+                        <TableCell>{"N/A"}</TableCell>
+                        <TableCell>{formatDate(row["Last Updated On"])}</TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
+
               </Table>
             </TableContainer>
           </Box>
