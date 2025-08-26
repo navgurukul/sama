@@ -35,9 +35,117 @@ const Overview = () => {
   const [totalLaptops, setTotalLaptops] = useState(0);
 
   const theme = useTheme();
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
-  const isMediumScreen = useMediaQuery(theme.breakpoints.up('md'));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.up('sm'));
+  const [laptopData, setLaptopData] = useState([]);
+  const [ngoData, setNgoData] = useState([]);
+  const [approvedCount, setApprovedCount] = useState(0);
+  const [showAll, setShowAll] = useState(false);
+  const [ngoPartner, setNgoPartner] = useState([]);
+  const [userData, setUserData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const laptopRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`);
+        const laptopJson = await laptopRes.json();
+
+        const ngoRes = await fetch(`${process.env.REACT_APP_NgoInformationApi}?type=registration`);
+        const ngoJson = await ngoRes.json();
+
+        const userRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData`);
+        const userJson = await userRes.json();
+
+        const approved = ngoJson.data.filter((ngo) => ngo.Status === "Approved");
+
+        const partners = approved.map((ngo) => {
+          const laptopsAllocated = laptopJson.filter(
+            (laptop) =>
+              String(laptop["Allocated To"]).trim().toLowerCase() ===
+              String(ngo.organizationName).trim().toLowerCase()
+          ).length;
+
+          const beneficiariesCount = userJson.filter(
+            (user) => String(user.Ngo).trim() === String(ngo.Id).trim()
+          ).length;
+
+          return {
+            name: ngo.organizationName,
+            status: ngo.Status,
+            location: ngo.location || "Unknown",
+            laptops: laptopsAllocated,
+            beneficiaries: beneficiariesCount,
+            lastDelivery: ngo.lastDelivery || "N/A",
+          };
+        });
+
+        setNgoPartner(partners);
+        setLaptopData(laptopJson || []);
+        setUserData(userJson || []);
+        setApprovedCount(approved.length);
+      } catch (err) {
+        console.error("Error fetching overview data:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+// Mapping through Sheets
+
+  ngoData.map((ngo) => {
+    console.log("Checking NGO:", ngo.organizationName);
+
+    const laptops = laptopData.filter((row) => {
+      const allocatedTo = String(row["Allocated To"]).trim().toLowerCase();
+      const ngoName = String(ngo.organizationName).trim().toLowerCase();
+
+      const match = allocatedTo === ngoName;
+
+      if (match) {
+        console.log("✅ Match found:", allocatedTo, "<->", ngoName);
+      }
+
+      return match;
+    }).length;
+
+    console.log(`Laptops for ${ngo.organizationName}:`, laptops);
+
+    const beneficiariesCount = userData.filter(
+      (user) => String(user.Ngo || user.ngoId) === String(ngo.ID)
+    ).length;
+
+
+    console.log(`Beneficiaries for ${ngo.organizationName}:`, beneficiariesCount);
+
+    return {
+      ...ngo,
+      laptopCount: laptops,
+      beneficiaryCount: beneficiariesCount, // ✅ use the correct variable here
+    };
+  });
+
+// Total Counting
+  const totalLaptops = laptopData.length;
+  const refurbishedCount = laptopData.filter(
+    (laptop) => laptop.Status === "Laptop Refurbished"
+  ).length;
+  const distributedCount = laptopData.filter(
+    (laptop) => laptop.Status === "Distributed"
+  ).length;
+  const ngolaptopCount = laptopData.filter(
+    (laptop) => laptop.ID === "Distributed"
+  ).length;
+  const totalBeneficiaries = ngoPartner.reduce(
+    (sum, partner) => sum + (partner.beneficiaries || 0),
+    0
+  );
+  const totalProcessed = refurbishedCount + distributedCount;
+  const successRate =
+    totalLaptops > 0 ? ((refurbishedCount / totalLaptops) * 100).toFixed(2) : 0;
+  const ngosServedCount = ngoPartner.filter(
+    (partner) => partner.laptops > 0 
+  ).length;
+
 
 
      useEffect(() => {
@@ -204,41 +312,7 @@ const Overview = () => {
     },
   ];
 
-  const ngoPartners = [
-    {
-      name: "Akshara Foundation",
-      location: "Bangalore, Karnataka",
-      laptops: 45,
-      beneficiaries: 120,
-      lastDelivery: "2 days ago",
-      status: "Active",
-    },
-    {
-      name: "Teach for India",
-      location: "Mumbai, Maharashtra",
-      laptops: 32,
-      beneficiaries: 95,
-      lastDelivery: "1 week ago",
-      status: "Active",
-    },
-    {
-      name: "Digital Empowerment Foundation",
-      location: "Delhi, NCR",
-      laptops: 28,
-      beneficiaries: 95,
-      lastDelivery: "3 days ago",
-      status: "Active",
-    },
-    {
-      name: "Pratham Education Foundation",
-      location: "Pune, Maharashtra",
-      laptops: 22,
-      beneficiaries: 60,
-      lastDelivery: "2 weeks ago",
-      status: "Pending",
-    },
-  ];
-
+  // 
   const getStatusIcon = (status) => {
     if (status === "completed")
       return <CheckCircle size={16} style={{ color: "green" }} />;
@@ -255,7 +329,6 @@ const Overview = () => {
       variant="outlined"
     />
   );
-
 
   return (
     <>
@@ -301,10 +374,6 @@ const Overview = () => {
 
       }}>
 
-
-        {/* Header */}
-
-        {/* Main Title */}
         <Box sx={{ mb: 3 }}>
           <Typography
             variant="h5"
@@ -321,7 +390,7 @@ const Overview = () => {
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Total Laptops Collected"
-              value="1,247"
+              value={totalLaptops}
               subtitle="Lifetime donations from corporates"
               growth="+15.2% from last month"
               icon={Package}
@@ -330,25 +399,27 @@ const Overview = () => {
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Successfully Refurbished"
-              value="1,174"
-              subtitle="94.2% success rate"
+              value={refurbishedCount}
+              subtitle={`${successRate}% success rate`}
               growth="+8.1% from last month"
               icon={CheckCircle}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
+
             <MetricCard
               title="Active Beneficiaries"
-              value="892"
+              value={totalBeneficiaries}
               subtitle="Currently using laptops"
               growth="+23.6% from last month"
               icon={Users}
             />
+
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="NGO Partners"
-              value="45"
+              value={approvedCount}
               subtitle="Organizations served"
               growth="+12% from last month"
               icon={Building}
@@ -357,7 +428,7 @@ const Overview = () => {
         </Grid>
 
         {/* Secondary Metrics Row */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
+        {/* <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={6} md={4}>
             <SecondaryCard
               title="Environmental Impact"
@@ -385,7 +456,7 @@ const Overview = () => {
               iconColor="#ff9800"
             />
           </Grid>
-        </Grid>
+        </Grid> */}
 
         {/* Laptop Journey Pipeline */}
         <Card sx={{
@@ -407,12 +478,13 @@ const Overview = () => {
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {[
                 { icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: "45 laptops", bgColor: "#e3f2fd", iconColor: "#1976d2" },
-                { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
-                { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: "28 laptops", bgColor: "#e8f5e8", iconColor: "#388e3c" },
-                { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: "156 laptops", bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
-                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: "142 laptops", bgColor: "#ffebee", iconColor: "#d32f2f" }
+                // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
+                { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
+                { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
+                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${distributedCount}`, bgColor: "#ffebee", iconColor: "#d32f2f" }
               ].map((step, index) => (
-                <Grid item xs={6} sm={4} md={2.4} key={index}>
+                // <Grid item xs={6} sm={4} md={2.4} key={index}>
+                <Grid item xs={6} sm={4} md={3} key={index}>
                   <PipelineStep
                     icon={step.icon}
                     title={step.title}
@@ -432,16 +504,16 @@ const Overview = () => {
             }}>
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="Total Processed" value="403" />
+                  <SummaryMetric label="Total Processed" value={totalProcessed} />
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="Success Rate" value="94.2%" color="#4caf50" />
+                  <SummaryMetric label="Success Rate" value={`${successRate}%`} color="#4caf50" />
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <SummaryMetric label="Avg. Processing Time" value="12 days" />
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="NGOs Served" value="28" />
+                  <SummaryMetric label="NGOs Served" value={ngosServedCount} />
                 </Grid>
               </Grid>
             </Box>
@@ -526,73 +598,80 @@ const Overview = () => {
                   Organizations receiving laptop distributions
                 </Typography>
 
-                {ngoPartners.map((partner, index) => (
-                  <Box key={partner.name} mb={3}>
-                    <Box display="flex" justifyContent="space-between" mb={1}>
-                      <Typography variant="body2" fontWeight={600}>
-                        {partner.name}
+                {(showAll ? ngoPartner : ngoPartner.slice(0, 3)).map(
+                  (partner, index) => (
+                    <Box key={partner.name} mb={3}>
+                      <Box display="flex" justifyContent="space-between" mb={1}>
+                        <Typography variant="body2" fontWeight={600}>
+                          {partner.name}
+                        </Typography>
+                        {getStatusChip(partner.status)}
+                      </Box>
+
+                      <Typography variant="caption" color="text.secondary">
+                        📍 {partner.location}
                       </Typography>
-                      {getStatusChip(partner.status)}
-                    </Box>
 
-                    <Typography variant="caption" color="text.secondary">
-                      📍 {partner.location}
-                    </Typography>
-
-                    <Box display="flex" justifyContent="space-between" mt={2}>
-                      <Box display="flex" gap={4}>
-                        <Box textAlign="center">
-                          <Box display="flex" alignItems="center" gap={0.5}>
-                            <Laptop size={16} color="#555" />
-                            <Typography
-                              variant="subtitle1"
-                              fontWeight={600}
-                              color="primary"
-                            >
-                              {partner.laptops}
+                      <Box display="flex" justifyContent="space-between" mt={2}>
+                        <Box display="flex" gap={4}>
+                          <Box textAlign="center">
+                            <Box display="flex" alignItems="center" gap={0.5}>
+                              <Laptop size={16} color="#555" />
+                              <Typography
+                                variant="subtitle1"
+                                fontWeight={600}
+                                color="primary"
+                              >
+                                {partner.laptops}
+                              </Typography>
+                            </Box>
+                            <Typography variant="caption" color="text.secondary">
+                              Laptops
                             </Typography>
                           </Box>
-                          <Typography variant="caption" color="text.secondary">
-                            Laptops
-                          </Typography>
+
+                          <Box textAlign="center">
+                            <Box display="flex" alignItems="center" gap={0.5}>
+                              <Users size={16} color="#555" />
+                              <Typography
+                                variant="subtitle1"
+                                fontWeight={600}
+                                color="success.main"
+                              >
+                                {partner.beneficiaries}
+                              </Typography>
+                            </Box>
+                            <Typography variant="caption" color="text.secondary">
+                              Beneficiaries
+                            </Typography>
+                          </Box>
                         </Box>
 
-                        <Box textAlign="center">
-                          <Box display="flex" alignItems="center" gap={0.5}>
-                            <Users size={16} color="#555" />
-                            <Typography
-                              variant="subtitle1"
-                              fontWeight={600}
-                              color="success.main"
-                            >
-                              {partner.beneficiaries}
-                            </Typography>
-                          </Box>
+                        <Box textAlign="right">
+                          <Typography variant="body2" fontWeight={500}>
+                            {partner.lastDelivery}
+                          </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            Beneficiaries
+                            Last delivery
                           </Typography>
                         </Box>
                       </Box>
 
-                      <Box textAlign="right">
-                        <Typography variant="body2" fontWeight={500}>
-                          {partner.lastDelivery}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Last delivery
-                        </Typography>
-                      </Box>
+                      {index < ngoPartner.length - 1 && <Divider sx={{ mt: 2 }} />}
                     </Box>
+                  )
+                )}
 
-                    {index < ngoPartners.length - 1 && (
-                      <Divider sx={{ mt: 2 }} />
-                    )}
-                  </Box>
-                ))}
-
-                <Button size="small" sx={{ mt: 2 }} color="primary">
-                  View all NGO partners →
-                </Button>
+                {ngoPartner.length > 3 && (
+                  <Button
+                    size="small"
+                    sx={{ mt: 2 }}
+                    color="primary"
+                    onClick={() => setShowAll(!showAll)}
+                  >
+                    {showAll ? "Hide NGO partners ↑" : "View all NGO partners →"}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </Grid>

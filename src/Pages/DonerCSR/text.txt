@@ -1,0 +1,204 @@
+import React from "react";
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip
+} from "@mui/material";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import ComputerIcon from "@mui/icons-material/Computer";
+import DownloadIcon from "@mui/icons-material/Download";
+
+const laptopData = [
+  {
+    id: "DL-2024-001",
+    model: "ThinkPad E14",
+    status: "Active Usage",
+    statusColor: "success",
+    location: "Mumbai",
+    beneficiary: "Rahul Kumar",
+    usageHours: "156 hrs",
+    lastActivity: "2 hours ago",
+  },
+  {
+    id: "DL-2024-002",
+    model: "HP ProBook 450",
+    status: "Distribution",
+    statusColor: "info",
+    location: "Bangalore",
+    beneficiary: "Pending Assignment",
+    usageHours: "0 hrs",
+    lastActivity: "1 day ago",
+  },
+  {
+    id: "DL-2024-003",
+    model: "Dell Latitude 5420",
+    status: "Refurbishment",
+    statusColor: "warning",
+    location: "Sama Warehouse",
+    beneficiary: "Pending",
+    usageHours: "0 hrs",
+    lastActivity: "3 days ago",
+  },
+];
+
+export default function LaptopTracking() {
+  return (
+    <>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        px={2}
+        py={2}
+        borderBottom="1px solid #eee"
+      >
+        {/* Left Section */}
+        <Box display="flex" alignItems="center" gap={1.5}>
+          <Box
+            sx={{
+              backgroundColor: "#4CAF50",
+              color: "white",
+              p: 1,
+              borderRadius: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ComputerIcon fontSize="small" />
+          </Box>
+          <Box>
+            <Typography variant="subtitle1" fontWeight="bold" color="black">
+              Corporate CSR Dashboard
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Laptop Donation Impact Tracking
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Right Section */}
+        <Box display="flex" alignItems="center" gap={2}>
+          <Typography variant="body2" color="text.secondary">
+            Corporate Partner
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<DownloadIcon />}
+            sx={{ borderRadius: "10px", textTransform: "none" }}
+          >
+            Export Report
+          </Button>
+        </Box>
+      </Box>
+      <Box p={3}>
+        <Paper elevation={2} sx={{ bgcolor: '#f9f9f9', minHeight: '100vh' }}>
+
+
+          <Box p={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              {/* Left side: Heading */}
+              <Typography
+                variant="h5"
+                sx={{ fontWeight: "bold", color: "#333" }}
+              >
+                Laptop Tracking
+              </Typography>
+
+              {/* Right side: Search + Filter */}
+              <Box display="flex" alignItems="center" gap={2}>
+                <TextField
+                  size="small"
+                  placeholder="Search by laptop ID..."
+                  variant="outlined"
+                  sx={{ width: "250px" }}
+                />
+                <Button variant="outlined" startIcon={<FilterAltIcon />}>
+                  Filter
+                </Button>
+              </Box>
+            </Box>
+
+            {/* ====== Table Section ====== */}
+            <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell><b>LAPTOP ID</b></TableCell>
+                    <TableCell><b>MODEL</b></TableCell>
+                    <TableCell><b>STATUS</b></TableCell>
+                    <TableCell><b>CURRENT LOCATION</b></TableCell>
+                    <TableCell><b>BENEFICIARY</b></TableCell>
+                    <TableCell><b>USAGE HOURS</b></TableCell>
+                    <TableCell><b>LAST ACTIVITY</b></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {laptopData.map((row) => (
+                    <TableRow key={row.id} hover>
+                      <TableCell sx={{ color: "primary.main", cursor: "pointer" }}>
+                        {row.id}
+                      </TableCell>
+                      <TableCell>{row.model}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={row.status}
+                          color={row.statusColor}
+                          variant="outlined"
+                        />
+                      </TableCell>
+                      <TableCell>{row.location}</TableCell>
+                      <TableCell>{row.beneficiary}</TableCell>
+                      <TableCell>{row.usageHours}</TableCell>
+                      <TableCell>{row.lastActivity}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </Paper>
+      </Box>
+    </>
+  );
+}
+ in this call API  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`
+        );
+        const data = await response.json();
+        setLaptopData(data || []);
+
+        // Calculate counts
+        setTotalLaptops(data.length);
+        setRefurbishedCount(
+          data.filter(item => item.Status === "Laptop Refurbished").length
+        );
+        setDistributedCount(
+          data.filter(item => item.Status === "Distributed").length
+        );
+      } catch (error) {
+        console.error("Error fetching laptop data:", error);
+      }
+    };
+
+    fetchData();
+  }, []); this API and  <TableCell><b>LAPTOP ID</b></TableCell> show the ID  <TableCell><b>MODEL</b></TableCell> show in 27,6:  "Manufacturer Model",coloum in sheet and <TableCell><b>STATUS</b></TableCell> there are
+  total 6 Status  'In Transit':
+      Laptop Received':
+      Laptop Refurbished':
+      To Be Dispatch':
+      Allocated':
+      Distributed': so the main and first onle is in transit so instad of Active Usage keep in transit
