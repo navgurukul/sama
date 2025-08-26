@@ -67,6 +67,7 @@ import LaptopPipeline from './Pages/DonerCSR/LaptopPipeline';
 import LaptopTracking from './Pages/DonerCSR/LaptopTracking';
 import ImpactAnalysis from './Pages/DonerCSR/ImpactAnalysis';
 import Ngopartner from './Pages/DonerCSR/Ngopartner';
+import Pickup from './Pages/Pickup/Pickup';
 
 function App() {
   return (
@@ -87,7 +88,7 @@ function App() {
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/about-initiative" element={<LandingPage />} />
               <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
-              <Route path="corporate" element={<CorporateteDb />} />
+              <Route path="/corporate" element={<CorporateteDb />} />
               <Route path="/corpretedb/DataViewDetail" element={<DetailView />} />
               <Route path="/corpretedb/NGOTrainedTable" element={<NGOTrainedTable />} />
               <Route path="/donorcsr" element={<Sidebar />}>
@@ -261,6 +262,7 @@ function App() {
                   </PrivateRoute>
                 }
               />
+              <Route path="/pickup" element={<Pickup />} />
             </Routes>
             {" "}
           </div>

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'; import {
+import React, {useState, useEffect}  from 'react';
+import {
   Box,
   Card,
   CardContent,
@@ -30,6 +31,9 @@ import {
 } from 'lucide-react';
 
 const Overview = () => {
+  const [pickups, setPickups] = useState([]);
+  const [totalLaptops, setTotalLaptops] = useState(0);
+
   const theme = useTheme();
   const [laptopData, setLaptopData] = useState([]);
   const [ngoData, setNgoData] = useState([]);
@@ -143,6 +147,32 @@ const Overview = () => {
   ).length;
 
 
+
+     useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
+          // method: "GET",
+          // headers: {
+          //   "Content-Type": "application/json",
+          // },
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+          setPickups(data.data);
+          setTotalLaptops(data.totalLaptops);
+        }
+      } catch (error) {
+        console.error("Error fetching pickup data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  console.log("Pickups:", pickups, "Total Laptops:", totalLaptops);
+  
   // Components
   const MetricCard = ({ title, value, subtitle, growth, icon: Icon }) => (
     <Card sx={{
@@ -299,9 +329,6 @@ const Overview = () => {
       variant="outlined"
     />
   );
-
-
-
 
   return (
     <>
