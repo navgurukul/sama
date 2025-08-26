@@ -38,7 +38,7 @@ const Overview = () => {
   const [ngoPartner, setNgoPartner] = useState([]);
   const [userData, setUserData] = useState([]);
 
- useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const laptopRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`);
@@ -68,7 +68,7 @@ const Overview = () => {
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
-            beneficiaries: beneficiariesCount, 
+            beneficiaries: beneficiariesCount,
             lastDelivery: ngo.lastDelivery || "N/A",
           };
         });
@@ -85,7 +85,10 @@ const Overview = () => {
     fetchData();
   }, []);
 
-ngoData.map((ngo) => {
+
+// Mapping through Sheets
+
+  ngoData.map((ngo) => {
     console.log("Checking NGO:", ngo.organizationName);
 
     const laptops = laptopData.filter((row) => {
@@ -117,7 +120,7 @@ ngoData.map((ngo) => {
     };
   });
 
-
+// Total Counting
   const totalLaptops = laptopData.length;
   const refurbishedCount = laptopData.filter(
     (laptop) => laptop.Status === "Laptop Refurbished"
@@ -128,7 +131,16 @@ ngoData.map((ngo) => {
   const ngolaptopCount = laptopData.filter(
     (laptop) => laptop.ID === "Distributed"
   ).length;
-
+  const totalBeneficiaries = ngoPartner.reduce(
+    (sum, partner) => sum + (partner.beneficiaries || 0),
+    0
+  );
+  const totalProcessed = refurbishedCount + distributedCount;
+  const successRate =
+    totalLaptops > 0 ? ((refurbishedCount / totalLaptops) * 100).toFixed(2) : 0;
+  const ngosServedCount = ngoPartner.filter(
+    (partner) => partner.laptops > 0 
+  ).length;
 
 
   // Components
@@ -288,10 +300,7 @@ ngoData.map((ngo) => {
     />
   );
 
-const totalBeneficiaries = ngoPartner.reduce(
-  (sum, partner) => sum + (partner.beneficiaries || 0),
-  0
-);
+
 
 
   return (
@@ -364,7 +373,7 @@ const totalBeneficiaries = ngoPartner.reduce(
             <MetricCard
               title="Successfully Refurbished"
               value={refurbishedCount}
-              subtitle="94.2% success rate"
+              subtitle={`${successRate}% success rate`}
               growth="+8.1% from last month"
               icon={CheckCircle}
             />
@@ -445,7 +454,7 @@ const totalBeneficiaries = ngoPartner.reduce(
                 // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
                 { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
                 { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
-                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${distributedCount}` , bgColor: "#ffebee", iconColor: "#d32f2f" }
+                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${distributedCount}`, bgColor: "#ffebee", iconColor: "#d32f2f" }
               ].map((step, index) => (
                 // <Grid item xs={6} sm={4} md={2.4} key={index}>
                 <Grid item xs={6} sm={4} md={3} key={index}>
@@ -468,16 +477,16 @@ const totalBeneficiaries = ngoPartner.reduce(
             }}>
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="Total Processed" value="403" />
+                  <SummaryMetric label="Total Processed" value={totalProcessed} />
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="Success Rate" value="94.2%" color="#4caf50" />
+                  <SummaryMetric label="Success Rate" value={`${successRate}%`} color="#4caf50" />
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <SummaryMetric label="Avg. Processing Time" value="12 days" />
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="NGOs Served" value="28" />
+                  <SummaryMetric label="NGOs Served" value={ngosServedCount} />
                 </Grid>
               </Grid>
             </Box>

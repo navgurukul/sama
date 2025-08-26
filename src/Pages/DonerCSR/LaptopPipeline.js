@@ -194,7 +194,7 @@ const [laptopData, setLaptopData] = useState([]);
     title: "Active Usage",
     subtitle: "In use by beneficiaries",
     avg: "Ongoing",
-    count: 398,
+    count: distributedCount,
     icon: <Users size={30} color="#1976d2" />,
   },
 ];
@@ -334,7 +334,7 @@ const [laptopData, setLaptopData] = useState([]);
         {/* Processing Times */}
 
         {/* Processing Times */}
-        <ThemeProvider theme={theme}>
+        {/* <ThemeProvider theme={theme}>
           <Box sx={{ mt: 4 }}>
             <Card
               sx={{
@@ -370,7 +370,6 @@ const [laptopData, setLaptopData] = useState([]);
                       alignItems: "center",
                     }}
                   >
-                    {/* Left Side */}
                     <Box>
                       <Typography
                         variant="body2"
@@ -395,7 +394,6 @@ const [laptopData, setLaptopData] = useState([]);
                       </Typography>
                     </Box>
 
-                    {/* Right Side */}
                     <Typography
                       variant="body2"
                       sx={{
@@ -411,9 +409,9 @@ const [laptopData, setLaptopData] = useState([]);
               </CardContent>
             </Card>
           </Box>
-        </ThemeProvider>
+        </ThemeProvider> */}
 
-        <Card sx={{
+        {/* <Card sx={{
           mb: 3,
           boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
           border: '1px solid #e0e0e0',
@@ -523,7 +521,7 @@ const [laptopData, setLaptopData] = useState([]);
               </Stack>
             </Box>
           </CardContent>
-        </Card>
+        </Card> */}
       </Box>
     </>
   );

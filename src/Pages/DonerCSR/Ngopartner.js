@@ -166,11 +166,11 @@ const Ngopartner = () => {
 
                 <Grid container spacing={4}>
                   <Grid item xs={4} textAlign="center">
-                    <Typography variant="h5" fontWeight="bold">{partner.laptops}</Typography>
+                    <Typography variant="h6" fontWeight="bold">{partner.laptops}</Typography>
                     <Typography variant="body2" color="text.secondary">Laptops</Typography>
                   </Grid>
                   <Grid item xs={4} textAlign="center">
-                    <Typography variant="h5" fontWeight="bold">{partner.beneficiaries}</Typography>
+                    <Typography variant="h6" fontWeight="bold">{partner.beneficiaries}</Typography>
                     <Typography variant="body2" color="text.secondary">Beneficiaries</Typography>
                   </Grid>
                   <Grid item xs={4} textAlign="center">
