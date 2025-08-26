@@ -32,7 +32,7 @@ import {
 
 const Overview = () => {
   const [pickups, setPickups] = useState([]);
-  const [totalLaptops, setTotalLaptops] = useState(0);
+  const [totalLaptopss, setTotalLaptopss] = useState(0);
 
   const theme = useTheme();
   const [laptopData, setLaptopData] = useState([]);
@@ -161,7 +161,7 @@ const Overview = () => {
 
         if (data.status === "success") {
           setPickups(data.data);
-          setTotalLaptops(data.totalLaptops);
+          setTotalLaptopss(data.totalLaptops);
         }
       } catch (error) {
         console.error("Error fetching pickup data:", error);
@@ -171,7 +171,7 @@ const Overview = () => {
     fetchData();
   }, []);
 
-  console.log("Pickups:", pickups, "Total Laptops:", totalLaptops);
+  // console.log("Pickups:", pickups, "Total Laptops:", totalLaptops);
   
   // Components
   const MetricCard = ({ title, value, subtitle, growth, icon: Icon }) => (
