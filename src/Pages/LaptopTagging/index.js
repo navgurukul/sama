@@ -512,7 +512,7 @@ function LaptopTagging() {
             laptopWeight: laptopData["laptop weight"],
             macAddress: laptopData["Mac address"],
             batteryCapacity: laptopData["Battery Capacity"],
-            commentForIssues: laptopData["Comment for the Issues"],
+            comment: laptopData["Comment for the Issues"],
             working: laptopData.Working,
             status: laptopData.Status,
             assignedTo: laptopData["Assigned To"],
