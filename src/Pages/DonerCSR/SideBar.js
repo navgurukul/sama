@@ -31,12 +31,12 @@ const navItems = [
       // { label: "Pickup Requests", icon: <ClipboardList size={20} />, path: "/donorcsr/requests" },
     ],
   },
-  {
-    section: "Administration",
-    items: [
-      { label: "Settings", icon: <Settings size={20} />, path: "/donorcsr/settings" },
-    ],
-  },
+  // {
+  //   section: "Administration",
+  //   items: [
+  //     { label: "Settings", icon: <Settings size={20} />, path: "/donorcsr/settings" },
+  //   ],
+  // },
 ];
 
 const Sidebar = () => {
