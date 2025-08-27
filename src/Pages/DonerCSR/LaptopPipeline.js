@@ -134,7 +134,35 @@ const [laptopData, setLaptopData] = useState([]);
   const [totalLaptops, setTotalLaptops] = useState(0);
   const [refurbishedCount, setRefurbishedCount] = useState(0);
   const [distributedCount, setDistributedCount] = useState(0);
+  const [totalLaptopss, setTotalLaptopss] = useState(0);
+  
 
+   useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const res = await fetch(
+            // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
+            'https://script.google.com/macros/s/AKfycbxWGV8prp8U6oPvej2Qm6_w3c38qzMmHFidxhDBvMa1Cek5TAn9DHrloIbrx74OfBY2_Q/exec?type=pickupget', {
+            // method: "GET",
+            // headers: {
+            //   "Content-Type": "application/json",
+            // },
+          });
+          const data = await res.json();
+  
+          if (data.status === "success") {
+            console.log("Fetched pickup data:", data.data);
+            
+            // setPickups(data.data);
+            setTotalLaptopss(data.totalLaptops);
+          }
+        } catch (error) {
+          console.error("Error fetching pickup data:", error);
+        }
+      };
+  
+      fetchData();
+    }, []);
 
  useEffect(() => {
     const fetchData = async () => {

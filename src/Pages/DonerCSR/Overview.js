@@ -151,7 +151,9 @@ const Overview = () => {
      useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
+        const res = await fetch(
+          // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
+          'https://script.google.com/macros/s/AKfycbxWGV8prp8U6oPvej2Qm6_w3c38qzMmHFidxhDBvMa1Cek5TAn9DHrloIbrx74OfBY2_Q/exec?type=pickupget', {
           // method: "GET",
           // headers: {
           //   "Content-Type": "application/json",
@@ -160,6 +162,8 @@ const Overview = () => {
         const data = await res.json();
 
         if (data.status === "success") {
+          console.log("Fetched pickup data:", data.data);
+          
           setPickups(data.data);
           setTotalLaptopss(data.totalLaptops);
         }
@@ -477,7 +481,7 @@ const Overview = () => {
             {/* Pipeline Steps */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {[
-                { icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: "45 laptops", bgColor: "#e3f2fd", iconColor: "#1976d2" },
+                { icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: `${totalLaptopss} laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2" },
                 // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
                 { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
                 { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },

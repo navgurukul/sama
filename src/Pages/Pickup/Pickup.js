@@ -90,7 +90,8 @@ const Pickup = () => {
     setLoading(true);
     try {
         await fetch(
-          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=Pickup`,
+        //   `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
+          `https://script.google.com/macros/s/AKfycbxWGV8prp8U6oPvej2Qm6_w3c38qzMmHFidxhDBvMa1Cek5TAn9DHrloIbrx74OfBY2_Q/exec?type=Pickup`,
           {
             method: "POST",
             body: JSON.stringify(payload),
@@ -107,7 +108,7 @@ const Pickup = () => {
       } catch (error) {
         console.error("Error uploading data:", error); // Log the error
         alert("Failed to upload data. Please try again."); // Error alert
-      } finally {
+      } finally {       
       setLoading(false);
     }
   };
