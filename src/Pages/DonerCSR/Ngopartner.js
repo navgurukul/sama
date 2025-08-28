@@ -8,7 +8,12 @@ import {
   Button,
   Avatar,
   Grid,
-  Container
+  Container,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell
 } from '@mui/material';
 import { Business, LocationOn } from '@mui/icons-material';
 import ComputerIcon from "@mui/icons-material/Computer";
@@ -16,7 +21,10 @@ import DownloadIcon from "@mui/icons-material/Download";
 
 const Ngopartner = () => {
   const [ngoPartner, setNgoPartner] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(4); // Show only 4 initially
+  const [visibleCount, setVisibleCount] = useState(4);
+  const [expandedCard, setExpandedCard] = useState(null);
+  const [activeType, setActiveType] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,23 +48,24 @@ const Ngopartner = () => {
             (laptop) =>
               String(laptop["Allocated To"]).trim().toLowerCase() ===
               String(ngo.organizationName).trim().toLowerCase()
-          ).length;
+          );
 
-          const beneficiariesCount = userJson.filter(
+          const beneficiariesList = userJson.filter(
             (user) =>
               String(user.Ngo).trim() === String(ngo.Id).trim() ||
               String(user.ngoId).trim() === String(ngo.Id).trim()
-          ).length;
+          );
 
           return {
             id: ngo.Id,
             name: ngo.organizationName,
             status: ngo.Status,
             location: ngo.location || "Unknown",
-            laptops: laptopsAllocated,
-            beneficiaries: beneficiariesCount,
+            laptops: laptopsAllocated,        // store array, not length
+            beneficiaries: beneficiariesList, // store array, not length
             lastDelivery: ngo.lastDelivery || "N/A",
           };
+
         });
 
         setNgoPartner(partners);
@@ -71,6 +80,46 @@ const Ngopartner = () => {
   const handleShowMore = () => {
     setVisibleCount((prev) => prev + 4);
   };
+
+  const handleToggle = (id, type) => {
+    if (expandedCard === id && activeType === type) {
+      setExpandedCard(null);
+      setActiveType(null);
+    } else {
+      setExpandedCard(id);
+      setActiveType(type);
+    }
+  };
+
+  const handleExport = () => {
+  let csvContent = "data:text/csv;charset=utf-8,";
+
+  ngoPartner.forEach(partner => {
+    csvContent += `\n${partner.name} - Laptop Data\n`;
+    csvContent += "Laptop ID,Manufacturer Model,Status,Working\n";
+    partner.laptops.forEach(item => {
+      csvContent += `${item.ID},${item["Manufacturer Model"]},${item.Status},${item.Working ? "Yes" : "No"}\n`;
+    });
+
+    csvContent += `\n${partner.name} - Beneficiary Data\n`;
+    csvContent += "NGO,Status,Laptop Assigned\n";
+    partner.beneficiaries.forEach(item => {
+      csvContent += `${item.Ngo},${item.status},${item["Laptop Assigned"]}\n`;
+    });
+
+    csvContent += "\n";
+  });
+
+  const blob = new Blob([decodeURIComponent(encodeURI(csvContent))], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "NGO_Laptop_Report.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 
   return (
     <>
@@ -116,6 +165,7 @@ const Ngopartner = () => {
             color="primary"
             startIcon={<DownloadIcon />}
             sx={{ borderRadius: "10px", textTransform: "none" }}
+            onClick={handleExport}
           >
             Export Report
           </Button>
@@ -166,11 +216,31 @@ const Ngopartner = () => {
 
                 <Grid container spacing={4}>
                   <Grid item xs={4} textAlign="center">
-                    <Typography variant="h6" fontWeight="bold">{partner.laptops}</Typography>
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                      sx={{
+                        cursor: "pointer",
+                        color: expandedCard === partner.id && activeType === "laptops" ? "green" : "inherit"
+                      }}
+                      onClick={() => handleToggle(partner.id, "laptops")}
+                    >
+                      {partner.laptops.length}
+                    </Typography>
                     <Typography variant="body2" color="text.secondary">Laptops</Typography>
                   </Grid>
                   <Grid item xs={4} textAlign="center">
-                    <Typography variant="h6" fontWeight="bold">{partner.beneficiaries}</Typography>
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                      sx={{
+                        cursor: "pointer",
+                        color: expandedCard === partner.id && activeType === "beneficiaries" ? "green" : "inherit"
+                      }}
+                      onClick={() => handleToggle(partner.id, "beneficiaries")}
+                    >
+                      {partner.beneficiaries.length}
+                    </Typography>
                     <Typography variant="body2" color="text.secondary">Beneficiaries</Typography>
                   </Grid>
                   <Grid item xs={4} textAlign="center">
@@ -178,6 +248,57 @@ const Ngopartner = () => {
                     <Typography variant="body2" color="text.secondary">Last delivery</Typography>
                   </Grid>
                 </Grid>
+                {expandedCard === partner.id && (
+                  <Box mt={3}>
+                    {/* Dynamic Title */}
+                    <Typography variant="h6" gutterBottom>
+                      {activeType === "laptops"
+                        ? `${partner.name} - Laptop Data`
+                        : `${partner.name} - Beneficiary Data`}
+                    </Typography>
+
+                    <Table size="small">
+                      <TableHead>
+                        {activeType === "laptops" ? (
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
+                          </TableRow>
+                        ) : (
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>NGO</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>Laptop Assigned</TableCell>
+                          </TableRow>
+                        )}
+                      </TableHead>
+
+                      <TableBody>
+                        {activeType === "laptops"
+                          ? partner.laptops.map((item, index) => (
+                            <TableRow key={index}>
+                              <TableCell>{item.ID}</TableCell>
+                              <TableCell>{item["Manufacturer Model"]}</TableCell>
+                              <TableCell>{item.Status}</TableCell>
+                              <TableCell>{item.Working ? "Yes" : "No"}</TableCell>
+                            </TableRow>
+                          ))
+                          : partner.beneficiaries.map((item, index) => (
+                            <TableRow key={index}>
+                              <TableCell>{item.Ngo}</TableCell>
+                              <TableCell>{item.status}</TableCell>
+                              <TableCell>{item["Laptop Assigned"]}</TableCell>
+                            </TableRow>
+                          ))}
+
+                      </TableBody>
+                    </Table>
+                  </Box>
+                )}
+
+
               </CardContent>
             </Card>
           ))}
