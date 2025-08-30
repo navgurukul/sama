@@ -87,6 +87,35 @@ function LaptopDetails() {
   const [allocatedToFilter, setAllocatedToFilter] = useState('');
 
   const printRef = useRef();
+  const [activityData, setActivityData] = useState({});
+
+  useEffect(() => {
+    const fetchActivityData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/summary');
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Activity Data:', data); // Debug log
+          // Transform data to be keyed by laptop ID if needed
+          const transformedData = {};
+          Object.keys(data).forEach(key => {
+            if (data[key]) {
+              transformedData[key] = {
+                afk: data[key].afk || '0 sec',
+                // other activity data if needed
+              };
+            }
+          });
+          setActivityData(transformedData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch activity data:', error);
+      }
+    };
+
+    fetchActivityData();
+  }, [refresh]); // Add refresh as dependency
+
 
   // Fetch data on component mount and when refresh state changes
   useEffect(() => {
@@ -120,9 +149,6 @@ function LaptopDetails() {
     field: null,
     direction: 'none' // Start with 'none' instead of 'asc'
   });
-
-
-
 
   const handleSort = (field) => {
     const direction =
@@ -354,187 +380,215 @@ function LaptopDetails() {
     setData(allData);
   };
 
-
   const columns = data[0]
-    ? Object.keys(data[0])
-      .filter(key => key !== 'barcodeUrl') // Filter out the barcodeUrl key
-      .map((key) => {
-        if (key === "Last Updated On") {
+    ? [
+      ...Object.keys(data[0])
+        .filter(key => key !== 'barcodeUrl')
+        .map((key) => {
+          if (key === "Last Updated On") {
+            return {
+              name: key,
+              label: key,
+              options: {
+                filter: false,
+                sort: true,
+                sortDirection: sortConfig.field === key ? sortConfig.direction : "none",
+                customBodyRender: (value) => (
+                  <Typography variant="body2" noWrap>
+                    {formatDate(value)}
+                  </Typography>
+                ),
+                customHeadLabelRender: ({ label }) => (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleSort(key)}
+                  >
+                    <Typography variant="body2" sx={{
+                      fontWeight: 500,
+                      fontFamily: 'Raleway, sans-serif',
+                      fontSize: "14px",
+                      color: "rgba(0, 0, 0, 0.87)",
+                      whiteSpace: 'nowrap'
+                    }}>
+                      {label}
+                    </Typography>
+                  </Box>
+                ),
+                setCellProps: () => ({
+                  className: 'custom-body-cell',
+                }),
+                setCellHeaderProps: () => ({
+                  className: 'custom-header-cell',
+                }),
+              },
+            };
+          }
+          if (key === "Inspection Files") {
+            return {
+              name: key,
+              label: key,
+              options: {
+                filter: false,
+                sort: false,
+                customBodyRender: (value, tableMeta) => {
+                  const rowIndex = tableMeta.rowIndex;
+                  const laptopData = data[rowIndex];
+                  const rawLinks = laptopData["Inspection Files"] || laptopData.inspectionFiles;
+
+                  if (!rawLinks || typeof rawLinks !== 'string') {
+                    return <Typography variant="body2" color="textSecondary">No files</Typography>;
+                  }
+
+                  const cleanedLinks = rawLinks
+                    .replace(/'/g, '')
+                    .split(/,\s*|\s+/)
+                    .filter(link => link.startsWith('http'));
+
+                  if (cleanedLinks.length === 0) {
+                    return <Typography variant="body2" color="textSecondary">No valid links</Typography>;
+                  }
+
+                  return (
+                    <Box sx={{ position: 'relative' }}>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                          minWidth: '100px',
+                          textTransform: 'none',
+                          fontSize: '0.8rem',
+                          padding: '4px 12px',
+                          borderColor: 'divider',
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        View Files ({cleanedLinks.length})
+                        <Box component="span" sx={{ ml: 0.5 }}>▼</Box>
+                      </Button>
+                      <Box
+                        component="div"
+                        sx={{
+                          position: 'absolute',
+                          right: '0%',
+                          top: 50,
+                          zIndex: 100,
+                          backgroundColor: 'background.paper',
+                          boxShadow: 3,
+                          borderRadius: 1,
+                          minWidth: '160px',
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          display: 'none',
+                          '&:hover': {
+                            display: 'block'
+                          },
+                          'button:hover + &, &:hover': {
+                            display: 'block'
+                          }
+                        }}
+                      >
+                        {cleanedLinks.map((link, index) => (
+                          <Box
+                            key={index}
+                            component="a"
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{
+                              display: 'block',
+                              padding: '8px 16px',
+                              textDecoration: 'none',
+                              color: 'text.primary',
+                              fontSize: '0.8rem',
+                              '&:hover': {
+                                backgroundColor: 'action.selected',
+                                color: 'primary.main'
+                              }
+                            }}
+                          >
+                            Inspection File {index + 1}
+                          </Box>
+                        ))}
+                      </Box>
+                    </Box>
+                  );
+                },
+              }
+            };
+          }
+          if (key === "Date Committed" || key === "Manufacturing Date") {
+            return {
+              name: key,
+              label: key,
+              options: {
+                filter: false,
+                sort: false,
+                customBodyRender: (value) => (
+                  <Typography variant="body2">
+                    {formatDate(value)}
+                  </Typography>
+                )
+              }
+            };
+          }
           return {
             name: key,
             label: key,
             options: {
-              filter: false,
-              sort: true,
-              sortDirection: sortConfig.field === key ? sortConfig.direction : "none",
-              customBodyRender: (value) => (
-                <Typography variant="body2" noWrap>
-                  {formatDate(value)}
-                </Typography>
-              ),
-              customHeadLabelRender: ({ label }) => (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    
-                  }}
-                  onClick={() => handleSort(key)}
-                >
-                  <Typography variant="body2"  sx={{ fontWeight: 500, fontFamily: 'Raleway, sans-serif', fontSize: "14px", color: "rgba(0, 0, 0, 0.87)",whiteSpace: 'nowrap' }}>
-                    {label}
-                  </Typography>
-
-                </Box>
-              ),
-              setCellProps: () => ({
-                className: 'custom-body-cell',
-              }),
-              setCellHeaderProps: () => ({
-                className: 'custom-header-cell',
-              }),
+              display: "true",
+              filter: ![
+                'ID',
+                'Manufacturing Date',
+                'Manufacturer Model',
+                'Major Issues',
+                'Mac address',
+                'Last Updated On',
+                'Battery Capacity',
+                'Date Committed',
+                'Processor',
+                'Condition Status',
+                'Minor Issues',
+                'Comment for the Issues',
+                'Allocated To',
+                'RAM',
+                'ROM'
+              ].includes(key),
+              sort: false,
             },
           };
-        }
-        if (key === "Inspection Files") {
-          return {
-            name: key,
-            label: key,
-            options: {
-              filter: false,
-              sort: false,
-              customBodyRender: (value, tableMeta) => {
-                const rowIndex = tableMeta.rowIndex;
-                const laptopData = data[rowIndex];
+        }),
+      // AFK Time Column
+      {
+        name: "AFK_Time",
+        label: "AFK Time",
+        options: {
+          sort: true,
+          filter: false,
+          customBodyRender: (value, tableMeta) => {
+            const rowIndex = tableMeta.rowIndex;
+            const laptopId = data[rowIndex]?.ID;
+            const afkTime = activityData[laptopId]?.afk || 'N/A';
 
-                const rawLinks = laptopData["Inspection Files"] || laptopData.inspectionFiles;
-
-                if (!rawLinks || typeof rawLinks !== 'string') {
-                  return <Typography variant="body2" color="textSecondary">No files</Typography>;
-                }
-
-                // Clean and split the links
-                const cleanedLinks = rawLinks
-                  .replace(/'/g, '') // Remove single quotes
-                  .split(/,\s*|\s+/) // Split by comma (with optional space) or any whitespace
-                  .filter(link => link.startsWith('http'));
-
-                if (cleanedLinks.length === 0) {
-                  return <Typography variant="body2" color="textSecondary">No valid links</Typography>;
-                }
-
-                return (
-                  <Box sx={{ position: 'relative' }}>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      sx={{
-                        minWidth: '100px',
-                        textTransform: 'none',
-                        fontSize: '0.8rem',
-                        padding: '4px 12px',
-                        borderColor: 'divider',
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      View Files ({cleanedLinks.length})
-                      <Box component="span" sx={{ ml: 0.5 }}>▼</Box>
-                    </Button>
-                    <Box
-                      component="div"
-                      sx={{
-                        position: 'absolute',
-                        right: '0%',
-                        top: 50,
-                        zIndex: 100,
-                        backgroundColor: 'background.paper',
-                        boxShadow: 3,
-                        borderRadius: 1,
-                        minWidth: '160px',
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        display: 'none',
-                        '&:hover': {
-                          display: 'block'
-                        },
-                        'button:hover + &, &:hover': {
-                          display: 'block'
-                        }
-                      }}
-                    >
-                      {cleanedLinks.map((link, index) => (
-                        <Box
-                          key={index}
-                          component="a"
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          sx={{
-                            display: 'block',
-                            padding: '8px 16px',
-                            textDecoration: 'none',
-                            color: 'text.primary',
-                            fontSize: '0.8rem',
-                            '&:hover': {
-                              backgroundColor: 'action.selected',
-                              color: 'primary.main'
-                            }
-                          }}
-                        >
-                          Inspection File {index + 1}
-                        </Box>
-                      ))}
-                    </Box>
-                  </Box>
-                );
-              },
-            }
-          };
-        }
-        if (key === "Date Committed" || key === "Manufacturing Date") {
-          return {
-            name: key,
-            label: key,
-            options: {
-              filter: false,
-              sort: false,
-              customBodyRender: (value) => (
-                <Typography variant="body2">
-                  {formatDate(value)}
-                </Typography>
-              )
-            }
-          };
-        }
-        return {
-          name: key,
-          label: key,
-          options: {
-            display: "true",
-            filter: ![
-              'ID',
-              'Manufacturing Date',
-              'Manufacturer Model',
-              'Major Issues',
-              'Mac address',
-              'Last Updated On',
-              'Battery Capacity',
-              'Date Committed',
-              'Processor',
-              'Condition Status',
-              'Minor Issues',
-              'Comment for the Issues',
-              'Allocated To',
-              'RAM',
-              'ROM'
-            ].includes(key),
-            sort: false,
+            return (
+              <Typography variant="body2">
+                {afkTime}
+              </Typography>
+            );
           },
-        };
-      })
+          setCellProps: () => ({
+            className: 'custom-body-cell'
+          }),
+          setCellHeaderProps: () => ({
+            className: 'custom-header-cell'
+          })
+        }
+      }
+    ]
     : [];
-
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
