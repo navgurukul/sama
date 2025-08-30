@@ -144,7 +144,12 @@ const OpsWelcome = () => {
             )}
 
             {/* Dialog for issue confirmation */}
-            <Dialog open={openDialog} onClose={handleCloseDialog}>
+            <Dialog 
+                open={openDialog} 
+                onClose={handleCloseDialog} 
+                aria-labelledby="confirm-dialog-title"
+                aria-describedby="confirm-dialog-description"
+            >
                 <DialogTitle>Issue Resolution</DialogTitle>
                 <DialogContent>
                     {selectedLaptop && (
@@ -158,11 +163,12 @@ const OpsWelcome = () => {
                         </>
                     )}
                 </DialogContent>
-                <DialogActions >
+                <DialogActions sx={{padding: '20px'}}>
                     <Button 
                         onClick={() => handleIssueResponse(false)} 
-                        color="error"
+                        color="primary"                        
                         variant="outlined"
+
                     >
                         No
                     </Button>
@@ -170,6 +176,7 @@ const OpsWelcome = () => {
                         onClick={() => handleIssueResponse(true)} 
                         color="primary"
                         variant="contained"
+                        autoFocus
                     >
                         Yes
                     </Button>
