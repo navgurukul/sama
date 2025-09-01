@@ -155,7 +155,8 @@ const Overview = () => {
       try {
         const res = await fetch(
           // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
-          'https://script.google.com/macros/s/AKfycbxWGV8prp8U6oPvej2Qm6_w3c38qzMmHFidxhDBvMa1Cek5TAn9DHrloIbrx74OfBY2_Q/exec?type=pickupget', {
+          // 'https://script.google.com/macros/s/AKfycbxWGV8prp8U6oPvej2Qm6_w3c38qzMmHFidxhDBvMa1Cek5TAn9DHrloIbrx74OfBY2_Q/exec?type=pickupget', {
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
           // method: "GET",
           // headers: {
           //   "Content-Type": "application/json",
