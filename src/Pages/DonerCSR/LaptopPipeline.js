@@ -142,7 +142,7 @@ const [laptopData, setLaptopData] = useState([]);
         try {
           const res = await fetch(
             // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
-            'https://script.google.com/macros/s/AKfycbxWGV8prp8U6oPvej2Qm6_w3c38qzMmHFidxhDBvMa1Cek5TAn9DHrloIbrx74OfBY2_Q/exec?type=pickupget', {
+            `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}type=pickupget`, {
             // method: "GET",
             // headers: {
             //   "Content-Type": "application/json",
@@ -194,7 +194,7 @@ const [laptopData, setLaptopData] = useState([]);
     title: "Pickup Requested",
     subtitle: "Corporate requests submitted",
     avg: "1-2 days",
-    count: totalLaptops,
+    count: totalLaptopss,
     icon: <Package size={30} color="#1976d2" />,
   },
   // {
