@@ -1,0 +1,47 @@
+/* Layout wrapper */
+.app-container {
+  display: flex;
+  height: 100vh; /* full height */
+  width: 100%;   /* prevent horizontal scroll */
+  overflow: hidden; /* avoid extra right-side space */
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;  /* fixed width */
+  background: #1a1a1a;
+  color: #fff;
+  padding: 20px;
+  flex-shrink: 0; /* prevent shrinking */
+}
+
+/* Sidebar links */
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  margin-bottom: 12px;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #ccc;
+  font-weight: 500;
+}
+
+.sidebar a.active-link {
+  color: #4caf50;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1; /* take remaining space */
+  overflow-y: auto; /* scroll only content */
+  background: #f5f5f5;
+  padding: 20px;
+  min-height: 100vh; /* ensure it covers screen */
+  box-sizing: border-box;
+}
