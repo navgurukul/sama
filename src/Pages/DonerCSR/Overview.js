@@ -336,7 +336,15 @@ const Overview = () => {
     last24HoursData.forEach(laptop => {
       const status = laptop.Status || "Unknown";
       const allocatedTo = laptop["Allocated To"] || "Unassigned";
-      const lastUpdated = parseDate(laptop["Last Updated On"]);
+
+      // ✅ Special case: if status is "In Transit", use "Date Committed"
+      let lastUpdated;
+      if (status === "In Transit") {
+        lastUpdated = parseDate(laptop["Date Committed"]);
+      } else {
+        lastUpdated = parseDate(laptop["Last Updated On"]);
+      }
+      if (!lastUpdated) return;
 
       let key;
       if (status === "Allocated" || status === "Distributed") {
@@ -385,6 +393,7 @@ const Overview = () => {
   return activities.sort((a, b) => b.lastUpdated - a.lastUpdated);
 };
 
+
   const timeAgo = (timestamp) => {
     if (!timestamp) return "Unknown time";
     const diffMs = Date.now() - timestamp.getTime();
@@ -407,6 +416,10 @@ const Overview = () => {
     return activity.message || `New pickup request by ${activity.allocatedTo}`;
   }
 
+  if (activity.status === "In Transit") {
+    return `${activity.count} new laptop${activity.count > 1 ? "s" : ""} added with status In Transit`;
+  }
+
   const statusMessages = {
     "Laptop Received": "received",
     "Laptop Refurbished": "refurbished",
@@ -425,6 +438,7 @@ const Overview = () => {
     return `${count} ${laptop} ${action}`;
   }
 };
+
   const getActivityColor = (status) => {
   switch (status) {
     case "Distributed":
