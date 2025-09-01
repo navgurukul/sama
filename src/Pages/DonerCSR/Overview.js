@@ -14,6 +14,12 @@ import {
   Divider,
   Chip,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItemButton,
 } from '@mui/material';
 import {
   Package,
@@ -43,6 +49,9 @@ const Overview = () => {
   const [ngoPartner, setNgoPartner] = useState([]);
   const [userData, setUserData] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
+  const [selectedOrg, setSelectedOrg] = useState(null);
+  const [filterOpen, setFilterOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,7 +104,7 @@ const Overview = () => {
   // Mapping through Sheets
 
   ngoData.map((ngo) => {
-   
+
 
     const laptops = laptopData.filter((row) => {
       const allocatedTo = String(row["Allocated To"]).trim().toLowerCase();
@@ -122,9 +131,32 @@ const Overview = () => {
     return {
       ...ngo,
       laptopCount: laptops,
-      beneficiaryCount: beneficiariesCount, 
+      beneficiaryCount: beneficiariesCount,
     };
   });
+
+  // Apply filters based on selectedOrg
+  const filteredLaptopData = selectedOrg
+    ? laptopData.filter(laptop =>
+      String(laptop["Allocated To"]).trim().toLowerCase() ===
+      selectedOrg.trim().toLowerCase()
+    )
+    : laptopData;
+
+  const filteredNgoPartner = selectedOrg
+    ? ngoPartner.filter(ngo =>
+      String(ngo.name).trim().toLowerCase() ===
+      selectedOrg.trim().toLowerCase()
+    )
+    : ngoPartner;
+
+  const filteredPickups = selectedOrg
+    ? pickups.filter(p =>
+      String(p["Donor Company"]).trim().toLowerCase() ===
+      selectedOrg.trim().toLowerCase()
+    )
+    : pickups;
+
 
   // Total Counting
   const totalLaptops = laptopData.length;
@@ -305,8 +337,7 @@ const Overview = () => {
     }
   }
 
-  // Filter data from last 24 hours
-  const last24HoursData = laptopData.filter(laptop => {
+  const last24HoursData = filteredLaptopData.filter(laptop => {
     const lastUpdatedStr = laptop["Last Updated On"];
     if (!lastUpdatedStr) return false;
     const lastUpdated = parseDate(lastUpdatedStr);
@@ -315,83 +346,83 @@ const Overview = () => {
     return hoursAgo <= 24;
   });
 
-  // for pickup
-  const last24HoursPickups = pickups.filter(p => {
-  const dateStr = p["Current Date & Time"];
-  if (!dateStr) return false;
-  const lastUpdated = parseDate(dateStr);
-  if (!lastUpdated) return false;
-  const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
-  return hoursAgo <= 24;
-});
+  const last24HoursPickups = filteredPickups.filter(p => {
+    const dateStr = p["Current Date & Time"];
+    if (!dateStr) return false;
+    const lastUpdated = parseDate(dateStr);
+    if (!lastUpdated) return false;
+    const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
+    return hoursAgo <= 24;
+  });
 
- 
+
+
 
   const getRecentActivities = () => {
-  const activities = [];
+    const activities = [];
 
-  // 1. Laptop-related activities
-  if (last24HoursData.length > 0) {
-    const activityMap = {};
-    last24HoursData.forEach(laptop => {
-      const status = laptop.Status || "Unknown";
-      const allocatedTo = laptop["Allocated To"] || "Unassigned";
+    // 1. Laptop-related activities
+    if (last24HoursData.length > 0) {
+      const activityMap = {};
+      last24HoursData.forEach(laptop => {
+        const status = laptop.Status || "Unknown";
+        const allocatedTo = laptop["Allocated To"] || "Unassigned";
 
-      // ✅ Special case: if status is "In Transit", use "Date Committed"
-      let lastUpdated;
-      if (status === "In Transit") {
-        lastUpdated = parseDate(laptop["Date Committed"]);
-      } else {
-        lastUpdated = parseDate(laptop["Last Updated On"]);
-      }
-      if (!lastUpdated) return;
+        // ✅ Special case: if status is "In Transit", use "Date Committed"
+        let lastUpdated;
+        if (status === "In Transit") {
+          lastUpdated = parseDate(laptop["Date Committed"]);
+        } else {
+          lastUpdated = parseDate(laptop["Last Updated On"]);
+        }
+        if (!lastUpdated) return;
 
-      let key;
-      if (status === "Allocated" || status === "Distributed") {
-        key = `${status}-${allocatedTo}`;
-      } else {
-        key = status;
-      }
+        let key;
+        if (status === "Allocated" || status === "Distributed") {
+          key = `${status}-${allocatedTo}`;
+        } else {
+          key = status;
+        }
 
-      if (!activityMap[key]) {
-        activityMap[key] = {
-          status,
-          allocatedTo: (status === "Allocated" || status === "Distributed") ? allocatedTo : null,
-          count: 0,
-          lastUpdated,
-          id: allocatedTo?.charAt(0).toUpperCase() || "?", // Avatar 
-        };
-      }
-      activityMap[key].count++;
-      if (activityMap[key].lastUpdated < lastUpdated) {
-        activityMap[key].lastUpdated = lastUpdated;
-      }
-    });
-
-    activities.push(...Object.values(activityMap));
-  }
-
-  // 2. Pickup-related activities
-  if (last24HoursPickups.length > 0) {
-    last24HoursPickups.forEach(p => {
-      const donor = p["Donor Company"]?.trim?.() || "Unknown Donor";
-      const pickupId = p["Pickup ID"];
-      const lastUpdated = parseDate(p["Current Date & Time"]);
-
-      activities.push({
-        status: "Pickup Request",
-        allocatedTo: donor,
-        count: 1,
-        lastUpdated,
-        id: pickupId,
-        message: `New pickup request by ${donor}`,
+        if (!activityMap[key]) {
+          activityMap[key] = {
+            status,
+            allocatedTo: (status === "Allocated" || status === "Distributed") ? allocatedTo : null,
+            count: 0,
+            lastUpdated,
+            id: allocatedTo?.charAt(0).toUpperCase() || "?", // Avatar 
+          };
+        }
+        activityMap[key].count++;
+        if (activityMap[key].lastUpdated < lastUpdated) {
+          activityMap[key].lastUpdated = lastUpdated;
+        }
       });
-    });
-  }
 
-  // Sort all activities by time
-  return activities.sort((a, b) => b.lastUpdated - a.lastUpdated);
-};
+      activities.push(...Object.values(activityMap));
+    }
+
+    // 2. Pickup-related activities
+    if (last24HoursPickups.length > 0) {
+      last24HoursPickups.forEach(p => {
+        const donor = p["Donor Company"]?.trim?.() || "Unknown Donor";
+        const pickupId = p["Pickup ID"];
+        const lastUpdated = parseDate(p["Current Date & Time"]);
+
+        activities.push({
+          status: "Pickup Request",
+          allocatedTo: donor,
+          count: 1,
+          lastUpdated,
+          id: pickupId,
+          message: `New pickup request by ${donor}`,
+        });
+      });
+    }
+
+    // Sort all activities by time
+    return activities.sort((a, b) => b.lastUpdated - a.lastUpdated);
+  };
 
 
   const timeAgo = (timestamp) => {
@@ -412,55 +443,55 @@ const Overview = () => {
 
 
   const formatActivityMessage = (activity) => {
-  if (activity.status === "Pickup Request") {
-    return activity.message || `New pickup request by ${activity.allocatedTo}`;
-  }
+    if (activity.status === "Pickup Request") {
+      return activity.message || `New pickup request by ${activity.allocatedTo}`;
+    }
 
-  if (activity.status === "In Transit") {
-    return `${activity.count} new laptop${activity.count > 1 ? "s" : ""} added with status In Transit`;
-  }
+    if (activity.status === "In Transit") {
+      return `${activity.count} new laptop${activity.count > 1 ? "s" : ""} added with status In Transit`;
+    }
 
-  const statusMessages = {
-    "Laptop Received": "received",
-    "Laptop Refurbished": "refurbished",
-    "To be dispatch": "prepared for dispatch",
-    "Distributed": "distributed to",
-    "Allocated": "allocated to"
+    const statusMessages = {
+      "Laptop Received": "received",
+      "Laptop Refurbished": "refurbished",
+      "To be dispatch": "prepared for dispatch",
+      "Distributed": "distributed to",
+      "Allocated": "allocated to"
+    };
+
+    const action = statusMessages[activity.status] || activity.status.toLowerCase();
+    const count = activity.count;
+    const laptop = count === 1 ? "laptop" : "laptops";
+
+    if (activity.status === "Distributed" || activity.status === "Allocated") {
+      return `${count} ${laptop} ${action} ${activity.allocatedTo}`;
+    } else {
+      return `${count} ${laptop} ${action}`;
+    }
   };
 
-  const action = statusMessages[activity.status] || activity.status.toLowerCase();
-  const count = activity.count;
-  const laptop = count === 1 ? "laptop" : "laptops";
-
-  if (activity.status === "Distributed" || activity.status === "Allocated") {
-    return `${count} ${laptop} ${action} ${activity.allocatedTo}`;
-  } else {
-    return `${count} ${laptop} ${action}`;
-  }
-};
-
   const getActivityColor = (status) => {
-  switch (status) {
-    case "Distributed":
-      return "success.main";
-    case "Laptop Refurbished":
-      return "info.main";
-    case "To be dispatch":
-      return "warning.main";
-    case "Laptop Received":
-      return "primary.main";
-    case "Allocated":
-      return "secondary.main";
-    case "Pickup Request":
-      return "error.main"; 
-    default:
-      return "grey.500";
-  }
-};
+    switch (status) {
+      case "Distributed":
+        return "success.main";
+      case "Laptop Refurbished":
+        return "info.main";
+      case "To be dispatch":
+        return "warning.main";
+      case "Laptop Received":
+        return "primary.main";
+      case "Allocated":
+        return "secondary.main";
+      case "Pickup Request":
+        return "error.main";
+      default:
+        return "grey.500";
+    }
+  };
 
 
   const recentActivities = getRecentActivities();
-  
+
   return (
 
     <>
@@ -485,11 +516,21 @@ const Overview = () => {
             <Typography variant="subtitle1" fontWeight="bold" color="black">
               Sama CSR Dashboard
             </Typography>
+
             <Typography variant="body2" sx={{ fontSize: 12, color: '#666' }}>
               Laptop Refurbishment & Distribution Tracking
             </Typography>
           </Box>
         </Box>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => setFilterOpen(true)}
+          sx={{ ml: 40 }}
+        >
+          {selectedOrg ? `Filter: ${selectedOrg}` : "Filter Organization"}
+        </Button>
+
         <Box sx={{ textAlign: 'right' }}>
           <Typography variant="body2" sx={{ fontSize: 12, color: '#666', fontWeight: 'bold' }}>
             Corporate Partner
@@ -497,7 +538,9 @@ const Overview = () => {
           <Typography variant="body2" sx={{ fontSize: 12, color: '#666' }}>
             Dashboard Access
           </Typography>
+
         </Box>
+
       </Box>
       <Divider sx={{ mb: 3, width: '100%' }} />
       <Box sx={{
@@ -522,7 +565,7 @@ const Overview = () => {
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Total Laptops Collected"
-              value={totalLaptops}
+              value={filteredLaptopData.length}
               subtitle="Lifetime donations from corporates"
               growth="+15.2% from last month"
               icon={Package}
@@ -551,7 +594,7 @@ const Overview = () => {
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="NGO Partners"
-              value={approvedCount}
+              value={filteredNgoPartner.length}
               subtitle="Organizations served"
               growth="+12% from last month"
               icon={Building}
@@ -609,7 +652,7 @@ const Overview = () => {
             {/* Pipeline Steps */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {[
-                { icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: `${totalLaptopss} laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2" },
+                { icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: `${filteredPickups.length} laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2" },
                 // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
                 { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
                 { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
@@ -645,14 +688,14 @@ const Overview = () => {
                   <SummaryMetric label="Avg. Processing Time" value="12 days" />
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="NGOs Served" value={ngosServedCount} />
+                  <SummaryMetric label="NGOs Served" value={filteredNgoPartner.length} />
                 </Grid>
               </Grid>
             </Box>
           </CardContent>
         </Card>
         <Grid container spacing={3}>
-          
+
           {/* Recent Activity Section */}
           <Grid item xs={12} md={6}>
             <RecentActivity
@@ -680,7 +723,7 @@ const Overview = () => {
                   Organizations receiving laptop distributions
                 </Typography>
 
-                {(showAll ? ngoPartner : ngoPartner.slice(0, 3)).map(
+                {(showAll ? filteredNgoPartner : filteredNgoPartner.slice(0, 3)).map(
                   (partner, index) => (
                     <Box key={partner.name} mb={3}>
                       <Box display="flex" justifyContent="space-between" mb={1}>
@@ -739,12 +782,12 @@ const Overview = () => {
                         </Box>
                       </Box>
 
-                      {index < ngoPartner.length - 1 && <Divider sx={{ mt: 2 }} />}
+                      {index < filteredNgoPartner.length - 1 && <Divider sx={{ mt: 2 }} />}
                     </Box>
                   )
                 )}
 
-                {ngoPartner.length > 3 && (
+                {filteredNgoPartner.length > 3 && (
                   <Button
                     size="small"
                     sx={{ mt: 2 }}
@@ -759,6 +802,31 @@ const Overview = () => {
           </Grid>
         </Grid>
       </Box>
+      <Dialog open={filterOpen} onClose={() => setFilterOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Select Organization</DialogTitle>
+        <DialogContent dividers>
+          <List>
+            <ListItemButton onClick={() => { setSelectedOrg(null); setFilterOpen(false); }}>
+              Show All
+            </ListItemButton>
+            {ngoPartner.map((ngo) => (
+              <ListItemButton
+                key={ngo.name}
+                onClick={() => {
+                  setSelectedOrg(ngo.name);
+                  setFilterOpen(false);
+                }}
+              >
+                {ngo.name}
+              </ListItemButton>
+            ))}
+          </List>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setFilterOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
     </>
   );
 };
