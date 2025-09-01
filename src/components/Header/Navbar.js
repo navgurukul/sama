@@ -556,6 +556,22 @@ const Navbar = () => {
               >
                 Donate
               </MuiLink>
+              <MuiLink
+                sx={{
+                  textDecoration: 'none',
+                  color: '#4A4A4A',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  textAlign: 'left',
+                  marginTop: '9px',
+                  marginLeft: '8px',
+                }}
+                component={Link}
+                to="/pickup"
+                variant="body1"
+              >
+                Pickup
+              </MuiLink>
             </Box>
           )}
 
@@ -698,6 +714,22 @@ const Navbar = () => {
                 onClick={() => handleTabClick("/donate")}
               >
                 Donate
+              </MuiLink>
+              <MuiLink
+                sx={{
+                  margin: "0 5px",
+                  textDecoration: "none",
+                  color: "#4A4A4A",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  textAlign: "left",
+                }}
+                component={Link}
+                to="/pickup"
+                variant="body1"
+                onClick={() => handleTabClick("/pickup")}
+              >
+                Pickup
               </MuiLink>
             </Box>
             {!isLoggedIn && isActive && (
