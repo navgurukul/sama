@@ -72,25 +72,25 @@ export default function LaptopTracking() {
   };
 
   const handleExport = () => {
-  if (!laptopData || laptopData.length === 0) {
-    alert("No data available to export");
-    return;
-  }
+    if (!laptopData || laptopData.length === 0) {
+      alert("No data available to export");
+      return;
+    }
 
-  const headers = Object.keys(laptopData[0]).join(","); // Get table headers
-  const rows = laptopData.map(row => Object.values(row).join(",")); // Get table rows
+    const headers = Object.keys(laptopData[0]).join(","); // Get table headers
+    const rows = laptopData.map(row => Object.values(row).join(",")); // Get table rows
 
-  const csvContent = [headers, ...rows].join("\n");
+    const csvContent = [headers, ...rows].join("\n");
 
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-  link.setAttribute("download", "report.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
 
   return (
@@ -202,7 +202,13 @@ export default function LaptopTracking() {
                         </TableCell>
                         <TableCell>{row["Inventory Location"] || "N/A"}</TableCell>
                         <TableCell>{row["Allocated To"] || row["Assigned To"] || "Pending"}</TableCell>
-                        <TableCell>{"N/A"}</TableCell>
+      
+                        <TableCell>
+                          {row["Usage Hours"] && row["Usage Hours"] !== ""
+                            ? row["Usage Hours"]
+                            : "Not Available"}
+                        </TableCell>
+
                         <TableCell>{formatDate(row["Last Updated On"])}</TableCell>
                       </TableRow>
                     ))}

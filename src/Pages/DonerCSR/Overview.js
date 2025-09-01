@@ -1,4 +1,5 @@
-import React, {useState, useEffect}  from 'react';
+import React, { useState, useEffect } from 'react';
+import RecentActivity from './RecentActivity';
 import {
   Box,
   Card,
@@ -41,6 +42,7 @@ const Overview = () => {
   const [showAll, setShowAll] = useState(false);
   const [ngoPartner, setNgoPartner] = useState([]);
   const [userData, setUserData] = useState([]);
+  const [showAllActivities, setShowAllActivities] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,10 +92,10 @@ const Overview = () => {
   }, []);
 
 
-// Mapping through Sheets
+  // Mapping through Sheets
 
   ngoData.map((ngo) => {
-    console.log("Checking NGO:", ngo.organizationName);
+   
 
     const laptops = laptopData.filter((row) => {
       const allocatedTo = String(row["Allocated To"]).trim().toLowerCase();
@@ -120,11 +122,11 @@ const Overview = () => {
     return {
       ...ngo,
       laptopCount: laptops,
-      beneficiaryCount: beneficiariesCount, // ✅ use the correct variable here
+      beneficiaryCount: beneficiariesCount, 
     };
   });
 
-// Total Counting
+  // Total Counting
   const totalLaptops = laptopData.length;
   const refurbishedCount = laptopData.filter(
     (laptop) => laptop.Status === "Laptop Refurbished"
@@ -143,12 +145,12 @@ const Overview = () => {
   const successRate =
     totalLaptops > 0 ? ((refurbishedCount / totalLaptops) * 100).toFixed(2) : 0;
   const ngosServedCount = ngoPartner.filter(
-    (partner) => partner.laptops > 0 
+    (partner) => partner.laptops > 0
   ).length;
 
 
 
-     useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetch(
@@ -163,7 +165,7 @@ const Overview = () => {
 
         if (data.status === "success") {
           console.log("Fetched pickup data:", data.data);
-          
+
           setPickups(data.data);
           setTotalLaptopss(data.totalLaptops);
         }
@@ -175,9 +177,6 @@ const Overview = () => {
     fetchData();
   }, []);
 
-  // console.log("Pickups:", pickups, "Total Laptops:", totalLaptops);
-  
-  // Components
   const MetricCard = ({ title, value, subtitle, growth, icon: Icon }) => (
     <Card sx={{
       height: '100%',
@@ -273,57 +272,6 @@ const Overview = () => {
     </Box>
   );
 
-  const recentActivities = [
-    {
-      id: "AF",
-      title: "15 laptops distributed to Akshara Foundation",
-      status: "completed",
-      time: "2 hours ago",
-      avatar: "AF",
-      color: "success.main",
-    },
-    {
-      id: "T",
-      title: "New pickup request from TCS Bangalore",
-      status: "pending",
-      time: "4 hours ago",
-      avatar: "T",
-      color: "warning.main",
-    },
-    {
-      id: "SW",
-      title: "25 laptops completed refurbishment",
-      status: "completed",
-      time: "6 hours ago",
-      avatar: "SW",
-      color: "success.main",
-    },
-    {
-      id: "I",
-      title: "Quality check completed for Infosys donation",
-      status: "completed",
-      time: "1 day ago",
-      avatar: "I",
-      color: "info.main",
-    },
-    {
-      id: "TFI",
-      title: "8 laptops delivered to Teach for India",
-      status: "completed",
-      time: "1 day ago",
-      avatar: "TFI",
-      color: "success.main",
-    },
-  ];
-
-  // 
-  const getStatusIcon = (status) => {
-    if (status === "completed")
-      return <CheckCircle size={16} style={{ color: "green" }} />;
-    if (status === "pending")
-      return <Clock size={16} style={{ color: "orange" }} />;
-    return null;
-  };
 
   const getStatusChip = (status) => (
     <Chip
@@ -333,8 +281,174 @@ const Overview = () => {
       variant="outlined"
     />
   );
+  const getStatusIcon = (status) => {
+    if (status === "Distributed" || status === "Laptop Refurbished")
+      return <CheckCircle size={16} style={{ color: "green" }} />;
+    if (status === "To be dispatch" || status === "Tagged" || status === "Laptop Received")
+      return <Clock size={16} style={{ color: "orange" }} />;
+    return null;
+  };
+  // Fixed date parsing function for DD-MM-YYYY HH:MM:SS format
+  function parseDate(dateString) {
+    if (!dateString || typeof dateString !== "string" || dateString.trim() === "") {
+      return null;
+    }
+    try {
+      const [datePart, timePart] = dateString.trim().split(" ");
+      if (!datePart || !timePart) return null;
+      const [day, month, year] = datePart.split("-");
+      const [hours, minutes, seconds] = timePart.split(":");
+      return new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes), parseInt(seconds));
+    } catch (e) {
+      console.error("Invalid date format:", dateString);
+      return null;
+    }
+  }
 
+  // Filter data from last 24 hours
+  const last24HoursData = laptopData.filter(laptop => {
+    const lastUpdatedStr = laptop["Last Updated On"];
+    if (!lastUpdatedStr) return false;
+    const lastUpdated = parseDate(lastUpdatedStr);
+    if (!lastUpdated) return false;
+    const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
+    return hoursAgo <= 24;
+  });
+
+  // for pickup
+  const last24HoursPickups = pickups.filter(p => {
+  const dateStr = p["Current Date & Time"];
+  if (!dateStr) return false;
+  const lastUpdated = parseDate(dateStr);
+  if (!lastUpdated) return false;
+  const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
+  return hoursAgo <= 24;
+});
+
+ 
+
+  const getRecentActivities = () => {
+  const activities = [];
+
+  // 1. Laptop-related activities
+  if (last24HoursData.length > 0) {
+    const activityMap = {};
+    last24HoursData.forEach(laptop => {
+      const status = laptop.Status || "Unknown";
+      const allocatedTo = laptop["Allocated To"] || "Unassigned";
+      const lastUpdated = parseDate(laptop["Last Updated On"]);
+
+      let key;
+      if (status === "Allocated" || status === "Distributed") {
+        key = `${status}-${allocatedTo}`;
+      } else {
+        key = status;
+      }
+
+      if (!activityMap[key]) {
+        activityMap[key] = {
+          status,
+          allocatedTo: (status === "Allocated" || status === "Distributed") ? allocatedTo : null,
+          count: 0,
+          lastUpdated,
+          id: allocatedTo?.charAt(0).toUpperCase() || "?", // Avatar 
+        };
+      }
+      activityMap[key].count++;
+      if (activityMap[key].lastUpdated < lastUpdated) {
+        activityMap[key].lastUpdated = lastUpdated;
+      }
+    });
+
+    activities.push(...Object.values(activityMap));
+  }
+
+  // 2. Pickup-related activities
+  if (last24HoursPickups.length > 0) {
+    last24HoursPickups.forEach(p => {
+      const donor = p["Donor Company"]?.trim?.() || "Unknown Donor";
+      const pickupId = p["Pickup ID"];
+      const lastUpdated = parseDate(p["Current Date & Time"]);
+
+      activities.push({
+        status: "Pickup Request",
+        allocatedTo: donor,
+        count: 1,
+        lastUpdated,
+        id: pickupId,
+        message: `New pickup request by ${donor}`,
+      });
+    });
+  }
+
+  // Sort all activities by time
+  return activities.sort((a, b) => b.lastUpdated - a.lastUpdated);
+};
+
+  const timeAgo = (timestamp) => {
+    if (!timestamp) return "Unknown time";
+    const diffMs = Date.now() - timestamp.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    if (diffHours === 0) {
+      return diffMins <= 1 ? "Just now" : `${diffMins} mins ago`;
+    } else if (diffHours < 24) {
+      return `${diffHours} hours ago`;
+    } else {
+      const diffDays = Math.floor(diffHours / 24);
+      return `${diffDays} days ago`;
+    }
+  };
+
+
+
+  const formatActivityMessage = (activity) => {
+  if (activity.status === "Pickup Request") {
+    return activity.message || `New pickup request by ${activity.allocatedTo}`;
+  }
+
+  const statusMessages = {
+    "Laptop Received": "received",
+    "Laptop Refurbished": "refurbished",
+    "To be dispatch": "prepared for dispatch",
+    "Distributed": "distributed to",
+    "Allocated": "allocated to"
+  };
+
+  const action = statusMessages[activity.status] || activity.status.toLowerCase();
+  const count = activity.count;
+  const laptop = count === 1 ? "laptop" : "laptops";
+
+  if (activity.status === "Distributed" || activity.status === "Allocated") {
+    return `${count} ${laptop} ${action} ${activity.allocatedTo}`;
+  } else {
+    return `${count} ${laptop} ${action}`;
+  }
+};
+  const getActivityColor = (status) => {
+  switch (status) {
+    case "Distributed":
+      return "success.main";
+    case "Laptop Refurbished":
+      return "info.main";
+    case "To be dispatch":
+      return "warning.main";
+    case "Laptop Received":
+      return "primary.main";
+    case "Allocated":
+      return "secondary.main";
+    case "Pickup Request":
+      return "error.main"; 
+    default:
+      return "grey.500";
+  }
+};
+
+
+  const recentActivities = getRecentActivities();
+  
   return (
+
     <>
       <Box sx={{
         display: 'flex',
@@ -524,68 +638,18 @@ const Overview = () => {
           </CardContent>
         </Card>
         <Grid container spacing={3}>
+          
           {/* Recent Activity Section */}
           <Grid item xs={12} md={6}>
-            <Card variant="outlined" sx={{ borderRadius: 2 }}>
-              <CardContent>
-                <Box display="flex" alignItems="center" mb={1}>
-                  <Calendar size={20} style={{ marginRight: 8, color: "#555" }} />
-                  <Typography variant="h6" fontWeight={600}>
-                    Recent Activity
-                  </Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary" mb={3}>
-                  Latest updates across the platform
-                </Typography>
-
-                {recentActivities.map((activity, index) => (
-                  <Box key={activity.id} mb={2.5}>
-                    <Box display="flex" alignItems="flex-start">
-                      <Avatar
-                        sx={{
-                          bgcolor: activity.color,
-                          width: 32,
-                          height: 32,
-                          fontSize: 12,
-                          mr: 2,
-                        }}
-                      >
-                        {activity.avatar}
-                      </Avatar>
-                      <Box flex={1}>
-                        <Typography variant="body2" fontWeight={500} gutterBottom>
-                          {activity.title}
-                        </Typography>
-                        <Box display="flex" alignItems="center" gap={1}>
-                          {getStatusIcon(activity.status)}
-                          <Typography
-                            variant="caption"
-                            fontWeight={600}
-                            color={
-                              activity.status === "completed"
-                                ? "success.main"
-                                : "warning.main"
-                            }
-                          >
-                            {activity.status}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {activity.time}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Box>
-                    {index < recentActivities.length - 1 && (
-                      <Divider sx={{ mt: 2 }} />
-                    )}
-                  </Box>
-                ))}
-
-                <Button size="small" sx={{ mt: 2 }} color="primary">
-                  View all activities →
-                </Button>
-              </CardContent>
-            </Card>
+            <RecentActivity
+              recentActivities={recentActivities}
+              showAllActivities={showAllActivities}
+              setShowAllActivities={setShowAllActivities}
+              getActivityColor={getActivityColor}
+              formatActivityMessage={formatActivityMessage}
+              getStatusIcon={getStatusIcon}
+              timeAgo={timeAgo}
+            />
           </Grid>
 
           {/* NGO Partners Section */}
