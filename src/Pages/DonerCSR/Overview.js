@@ -57,28 +57,62 @@ const Overview = () => {
         const userJson = await userRes.json();
 
         const approved = ngoJson.data.filter((ngo) => ngo.Status === "Approved");
+function parseDate(dateStr) {
+  if (!dateStr) return null;
+  const iso = Date.parse(dateStr);
+  if (!isNaN(iso)) return new Date(iso);
+  const parts = dateStr.split(/[-/ :]/);
+  if (parts.length >= 3) {
+    const [d, m, y, hh = 0, mm = 0, ss = 0] = parts.map((p) => parseInt(p, 10));
+    return new Date(y, m - 1, d, hh, mm, ss);
+  }
 
-        const partners = approved.map((ngo) => {
-          const laptopsAllocated = laptopJson.filter(
-            (laptop) =>
-              String(laptop["Allocated To"]).trim().toLowerCase() ===
-              String(ngo.organizationName).trim().toLowerCase()
-          ).length;
+  return null;
+}
+const partners = approved.map((ngo) => {
+  const filteredLaptops = laptopJson.filter(
+    (laptop) =>
+      String(laptop["Allocated To"]).trim().toLowerCase() ===
+      String(ngo.organizationName).trim().toLowerCase()
+  );
 
-          const beneficiariesCount = userJson.filter(
-            (user) => String(user.Ngo).trim() === String(ngo.Id).trim()
-          ).length;
+  const laptopsAllocated = filteredLaptops.length;
 
-          return {
-            name: ngo.organizationName,
-            status: ngo.Status,
-            location: ngo.location || "Unknown",
-            laptops: laptopsAllocated,
-            beneficiaries: beneficiariesCount,
-            lastDelivery: ngo.lastDelivery || "N/A",
-          };
-        });
+  const beneficiariesCount = userJson.filter(
+    (user) => String(user.Ngo).trim() === String(ngo.Id).trim()
+  ).length;
+  const deliveries = filteredLaptops
+    .filter(
+      (laptop) =>
+        laptop["Status"]?.trim().toLowerCase() === "distributed" &&
+        laptop["Last Delivery Date"]
+    )
+    .map((laptop) => parseDate(laptop["Last Delivery Date"]))
+    .filter((d) => d !== null);
 
+  const lastDelivery =
+    deliveries.length > 0 ? new Date(Math.max(...deliveries)) : null;
+
+  return {
+    name: ngo.organizationName,
+    status: ngo.Status,
+    location: ngo.location || "Unknown",
+    laptops: laptopsAllocated,
+    beneficiaries: beneficiariesCount,
+    lastDelivery: lastDelivery
+      ? lastDelivery.toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        })
+      : "N/A",
+  };
+});
+
+//
         setNgoPartner(partners);
         setLaptopData(laptopJson || []);
         setUserData(userJson || []);
@@ -95,7 +129,7 @@ const Overview = () => {
   // Mapping through Sheets
 
   ngoData.map((ngo) => {
-   
+
 
     const laptops = laptopData.filter((row) => {
       const allocatedTo = String(row["Allocated To"]).trim().toLowerCase();
@@ -122,7 +156,7 @@ const Overview = () => {
     return {
       ...ngo,
       laptopCount: laptops,
-      beneficiaryCount: beneficiariesCount, 
+      beneficiaryCount: beneficiariesCount,
     };
   });
 
@@ -318,73 +352,73 @@ const Overview = () => {
 
   // for pickup
   const last24HoursPickups = pickups.filter(p => {
-  const dateStr = p["Current Date & Time"];
-  if (!dateStr) return false;
-  const lastUpdated = parseDate(dateStr);
-  if (!lastUpdated) return false;
-  const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
-  return hoursAgo <= 24;
-});
+    const dateStr = p["Current Date & Time"];
+    if (!dateStr) return false;
+    const lastUpdated = parseDate(dateStr);
+    if (!lastUpdated) return false;
+    const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
+    return hoursAgo <= 24;
+  });
 
- 
+
 
   const getRecentActivities = () => {
-  const activities = [];
+    const activities = [];
 
-  // 1. Laptop-related activities
-  if (last24HoursData.length > 0) {
-    const activityMap = {};
-    last24HoursData.forEach(laptop => {
-      const status = laptop.Status || "Unknown";
-      const allocatedTo = laptop["Allocated To"] || "Unassigned";
-      const lastUpdated = parseDate(laptop["Last Updated On"]);
+    // 1. Laptop-related activities
+    if (last24HoursData.length > 0) {
+      const activityMap = {};
+      last24HoursData.forEach(laptop => {
+        const status = laptop.Status || "Unknown";
+        const allocatedTo = laptop["Allocated To"] || "Unassigned";
+        const lastUpdated = parseDate(laptop["Last Updated On"]);
 
-      let key;
-      if (status === "Allocated" || status === "Distributed") {
-        key = `${status}-${allocatedTo}`;
-      } else {
-        key = status;
-      }
+        let key;
+        if (status === "Allocated" || status === "Distributed") {
+          key = `${status}-${allocatedTo}`;
+        } else {
+          key = status;
+        }
 
-      if (!activityMap[key]) {
-        activityMap[key] = {
-          status,
-          allocatedTo: (status === "Allocated" || status === "Distributed") ? allocatedTo : null,
-          count: 0,
-          lastUpdated,
-          id: allocatedTo?.charAt(0).toUpperCase() || "?", // Avatar 
-        };
-      }
-      activityMap[key].count++;
-      if (activityMap[key].lastUpdated < lastUpdated) {
-        activityMap[key].lastUpdated = lastUpdated;
-      }
-    });
-
-    activities.push(...Object.values(activityMap));
-  }
-
-  // 2. Pickup-related activities
-  if (last24HoursPickups.length > 0) {
-    last24HoursPickups.forEach(p => {
-      const donor = p["Donor Company"]?.trim?.() || "Unknown Donor";
-      const pickupId = p["Pickup ID"];
-      const lastUpdated = parseDate(p["Current Date & Time"]);
-
-      activities.push({
-        status: "Pickup Request",
-        allocatedTo: donor,
-        count: 1,
-        lastUpdated,
-        id: pickupId,
-        message: `New pickup request by ${donor}`,
+        if (!activityMap[key]) {
+          activityMap[key] = {
+            status,
+            allocatedTo: (status === "Allocated" || status === "Distributed") ? allocatedTo : null,
+            count: 0,
+            lastUpdated,
+            id: allocatedTo?.charAt(0).toUpperCase() || "?", // Avatar 
+          };
+        }
+        activityMap[key].count++;
+        if (activityMap[key].lastUpdated < lastUpdated) {
+          activityMap[key].lastUpdated = lastUpdated;
+        }
       });
-    });
-  }
 
-  // Sort all activities by time
-  return activities.sort((a, b) => b.lastUpdated - a.lastUpdated);
-};
+      activities.push(...Object.values(activityMap));
+    }
+
+    // 2. Pickup-related activities
+    if (last24HoursPickups.length > 0) {
+      last24HoursPickups.forEach(p => {
+        const donor = p["Donor Company"]?.trim?.() || "Unknown Donor";
+        const pickupId = p["Pickup ID"];
+        const lastUpdated = parseDate(p["Current Date & Time"]);
+
+        activities.push({
+          status: "Pickup Request",
+          allocatedTo: donor,
+          count: 1,
+          lastUpdated,
+          id: pickupId,
+          message: `New pickup request by ${donor}`,
+        });
+      });
+    }
+
+    // Sort all activities by time
+    return activities.sort((a, b) => b.lastUpdated - a.lastUpdated);
+  };
 
   const timeAgo = (timestamp) => {
     if (!timestamp) return "Unknown time";
@@ -404,50 +438,50 @@ const Overview = () => {
 
 
   const formatActivityMessage = (activity) => {
-  if (activity.status === "Pickup Request") {
-    return activity.message || `New pickup request by ${activity.allocatedTo}`;
-  }
+    if (activity.status === "Pickup Request") {
+      return activity.message || `New pickup request by ${activity.allocatedTo}`;
+    }
 
-  const statusMessages = {
-    "Laptop Received": "received",
-    "Laptop Refurbished": "refurbished",
-    "To be dispatch": "prepared for dispatch",
-    "Distributed": "distributed to",
-    "Allocated": "allocated to"
+    const statusMessages = {
+      "Laptop Received": "received",
+      "Laptop Refurbished": "refurbished",
+      "To be dispatch": "prepared for dispatch",
+      "Distributed": "distributed to",
+      "Allocated": "allocated to"
+    };
+
+    const action = statusMessages[activity.status] || activity.status.toLowerCase();
+    const count = activity.count;
+    const laptop = count === 1 ? "laptop" : "laptops";
+
+    if (activity.status === "Distributed" || activity.status === "Allocated") {
+      return `${count} ${laptop} ${action} ${activity.allocatedTo}`;
+    } else {
+      return `${count} ${laptop} ${action}`;
+    }
   };
-
-  const action = statusMessages[activity.status] || activity.status.toLowerCase();
-  const count = activity.count;
-  const laptop = count === 1 ? "laptop" : "laptops";
-
-  if (activity.status === "Distributed" || activity.status === "Allocated") {
-    return `${count} ${laptop} ${action} ${activity.allocatedTo}`;
-  } else {
-    return `${count} ${laptop} ${action}`;
-  }
-};
   const getActivityColor = (status) => {
-  switch (status) {
-    case "Distributed":
-      return "success.main";
-    case "Laptop Refurbished":
-      return "info.main";
-    case "To be dispatch":
-      return "warning.main";
-    case "Laptop Received":
-      return "primary.main";
-    case "Allocated":
-      return "secondary.main";
-    case "Pickup Request":
-      return "error.main"; 
-    default:
-      return "grey.500";
-  }
-};
+    switch (status) {
+      case "Distributed":
+        return "success.main";
+      case "Laptop Refurbished":
+        return "info.main";
+      case "To be dispatch":
+        return "warning.main";
+      case "Laptop Received":
+        return "primary.main";
+      case "Allocated":
+        return "secondary.main";
+      case "Pickup Request":
+        return "error.main";
+      default:
+        return "grey.500";
+    }
+  };
 
 
   const recentActivities = getRecentActivities();
-  
+
   return (
 
     <>
@@ -639,7 +673,7 @@ const Overview = () => {
           </CardContent>
         </Card>
         <Grid container spacing={3}>
-          
+
           {/* Recent Activity Section */}
           <Grid item xs={12} md={6}>
             <RecentActivity

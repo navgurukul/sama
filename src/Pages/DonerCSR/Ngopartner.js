@@ -42,6 +42,19 @@ const Ngopartner = () => {
         ]);
 
         const approved = ngoJson.data?.filter((ngo) => ngo.Status === "Approved") || [];
+        function parseDate(dateStr) {
+          if (!dateStr) return null;
+
+          const iso = Date.parse(dateStr);
+          if (!isNaN(iso)) return new Date(iso);
+
+          const parts = dateStr.split(/[-/ :]/);
+          if (parts.length >= 3) {
+            const [d, m, y, hh = 0, mm = 0, ss = 0] = parts.map((p) => parseInt(p, 10));
+            return new Date(y, m - 1, d, hh, mm, ss);
+          }
+          return null;
+        }
 
         const partners = approved.map((ngo) => {
           const laptopsAllocated = laptopJson.filter(
@@ -55,18 +68,39 @@ const Ngopartner = () => {
               String(user.Ngo).trim() === String(ngo.Id).trim() ||
               String(user.ngoId).trim() === String(ngo.Id).trim()
           );
+          const deliveries = laptopsAllocated
+            .filter(
+              (laptop) =>
+                laptop["Status"]?.trim().toLowerCase() === "distributed" &&
+                laptop["Last Delivery Date"]
+            )
+            .map((laptop) => parseDate(laptop["Last Delivery Date"]))
+            .filter((d) => d !== null);
+
+          const lastDelivery =
+            deliveries.length > 0 ? new Date(Math.max(...deliveries)) : null;
 
           return {
             id: ngo.Id,
             name: ngo.organizationName,
             status: ngo.Status,
             location: ngo.location || "Unknown",
-            laptops: laptopsAllocated,        // store array, not length
-            beneficiaries: beneficiariesList, // store array, not length
-            lastDelivery: ngo.lastDelivery || "N/A",
+            laptops: laptopsAllocated,
+            beneficiaries: beneficiariesList,
+            lastDelivery: lastDelivery
+              ? lastDelivery.toLocaleString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })
+              : "N/A",
           };
-
         });
+
+
 
         setNgoPartner(partners);
       } catch (err) {
@@ -92,33 +126,33 @@ const Ngopartner = () => {
   };
 
   const handleExport = () => {
-  let csvContent = "data:text/csv;charset=utf-8,";
+    let csvContent = "data:text/csv;charset=utf-8,";
 
-  ngoPartner.forEach(partner => {
-    csvContent += `\n${partner.name} - Laptop Data\n`;
-    csvContent += "Laptop ID,Manufacturer Model,Status,Working\n";
-    partner.laptops.forEach(item => {
-      csvContent += `${item.ID},${item["Manufacturer Model"]},${item.Status},${item.Working ? "Yes" : "No"}\n`;
+    ngoPartner.forEach(partner => {
+      csvContent += `\n${partner.name} - Laptop Data\n`;
+      csvContent += "Laptop ID,Manufacturer Model,Status,Working\n";
+      partner.laptops.forEach(item => {
+        csvContent += `${item.ID},${item["Manufacturer Model"]},${item.Status},${item.Working ? "Yes" : "No"}\n`;
+      });
+
+      csvContent += `\n${partner.name} - Beneficiary Data\n`;
+      csvContent += "NGO,Status,Laptop Assigned\n";
+      partner.beneficiaries.forEach(item => {
+        csvContent += `${item.Ngo},${item.status},${item["Laptop Assigned"]}\n`;
+      });
+
+      csvContent += "\n";
     });
 
-    csvContent += `\n${partner.name} - Beneficiary Data\n`;
-    csvContent += "NGO,Status,Laptop Assigned\n";
-    partner.beneficiaries.forEach(item => {
-      csvContent += `${item.Ngo},${item.status},${item["Laptop Assigned"]}\n`;
-    });
-
-    csvContent += "\n";
-  });
-
-  const blob = new Blob([decodeURIComponent(encodeURI(csvContent))], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-  link.setAttribute("download", "NGO_Laptop_Report.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
+    const blob = new Blob([decodeURIComponent(encodeURI(csvContent))], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "NGO_Laptop_Report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
 
   return (
