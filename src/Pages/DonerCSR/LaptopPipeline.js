@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -21,6 +21,7 @@ import {
   RefreshCw,
   Package,
   Users,
+  Download
 } from "lucide-react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
@@ -30,7 +31,7 @@ import {
 } from '@mui/icons-material';
 import ComputerIcon from "@mui/icons-material/Computer";
 import DownloadIcon from "@mui/icons-material/Download";
-
+import DashboardHeader from './DashboardHeader';
 
 const theme = createTheme({
   typography: {
@@ -130,41 +131,44 @@ const insights = [
 ];
 
 const LaptopPipeline = () => {
-const [laptopData, setLaptopData] = useState([]);
+  const [laptopData, setLaptopData] = useState([]);
   const [totalLaptops, setTotalLaptops] = useState(0);
   const [refurbishedCount, setRefurbishedCount] = useState(0);
   const [distributedCount, setDistributedCount] = useState(0);
   const [totalLaptopss, setTotalLaptopss] = useState(0);
-  
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
+  const [pickups, setPickups] = useState([]);
 
-   useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const res = await fetch(
-            // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
-            `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}type=pickupget`, {
-            // method: "GET",
-            // headers: {
-            //   "Content-Type": "application/json",
-            // },
-          });
-          const data = await res.json();
-  
-          if (data.status === "success") {
-            console.log("Fetched pickup data:", data.data);
-            
-            // setPickups(data.data);
-            setTotalLaptopss(data.totalLaptops);
-          }
-        } catch (error) {
-          console.error("Error fetching pickup data:", error);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(
+          // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}type=pickupget`, {
+          // method: "GET",
+          // headers: {
+          //   "Content-Type": "application/json",
+          // },
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+          console.log("Fetched pickup data:", data.data);
+
+          // setPickups(data.data);
+          setTotalLaptopss(data.totalLaptops);
         }
-      };
-  
-      fetchData();
-    }, []);
+      } catch (error) {
+        console.error("Error fetching pickup data:", error);
+      }
+    };
 
- useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -188,96 +192,114 @@ const [laptopData, setLaptopData] = useState([]);
 
     fetchData();
   }, []);
-  
+
+  // Get unique organizations from laptop data and pickups
+  useEffect(() => {
+    const orgSet = new Set();
+
+    // Add organizations from laptop data
+    laptopData.forEach(laptop => {
+      const allocatedTo = laptop["Allocated To"];
+      if (allocatedTo && allocatedTo.trim()) {
+        orgSet.add(allocatedTo.trim());
+      }
+    });
+
+    // Add organizations from pickup data
+    pickups.forEach(pickup => {
+      const donor = pickup["Donor Company"];
+      if (donor && donor.trim()) {
+        orgSet.add(donor.trim());
+      }
+    });
+
+    setUniqueOrganizations(Array.from(orgSet).sort());
+  }, [laptopData, pickups]);
+
+  // Filter functions
+  const getFilteredLaptopData = () => {
+    if (!selectedOrganization) return laptopData;
+    return laptopData.filter(laptop =>
+      String(laptop["Allocated To"]).trim().toLowerCase() ===
+      selectedOrganization.toLowerCase()
+    );
+  };
+
+  const getFilteredPickups = () => {
+    if (!selectedOrganization) return pickups;
+    return pickups.filter(pickup =>
+      String(pickup["Donor Company"]).trim().toLowerCase() ===
+      selectedOrganization.toLowerCase()
+    );
+  };
+
+  // Apply filters to get filtered data
+  const filteredLaptopData = getFilteredLaptopData();
+  const filteredPickups = getFilteredPickups();
+
+  // Calculate counts based on filtered data
+  const refurbishedCountt = filteredLaptopData.filter(
+    item => item.Status === "Laptop Refurbished"
+  ).length;
+
+  const distributedCountt = filteredLaptopData.filter(
+    item => item.Status === "Distributed"
+  ).length;
+
+  const filteredTotalLaptops = selectedOrganization ?
+    filteredPickups.length :
+    totalLaptopss;
+
+
   const stages = [
-  {
-    title: "Pickup Requested",
-    subtitle: "Corporate requests submitted",
-    avg: "1-2 days",
-    count: totalLaptopss,
-    icon: <Package size={30} color="#1976d2" />,
-  },
-  // {
-  //   title: "Assessment",
-  //   subtitle: "Quality evaluation in progress",
-  //   avg: "2-3 days",
-  //   count: 8,
+    {
+      title: "Pickup Requested",
+      subtitle: "Corporate requests submitted",
+      avg: "1-2 days",
+      count: filteredTotalLaptops,
+      icon: <Package size={30} color="#1976d2" />,
+    },
+    // {
+    //   title: "Assessment",
+    //   subtitle: "Quality evaluation in progress",
+    //   avg: "2-3 days",
+    //   count: 8,
     // icon: <Tools size={30} color="#1976d2" />,
-  // },
-  {
-    title: "Refurbishment",
-    subtitle: "Hardware restoration & software setup",
-    avg: "5-7 days",
-    count: refurbishedCount,
-    icon: <Tools size={30} color="#1976d2" />,
-  },
-  {
-    title: "Distribution",
-    subtitle: "Ready for NGO delivery",
-    avg: "1-2 days",
-    count: distributedCount,
-    icon: <Truck size={30} color="#1976d2" />,
-  },
-  {
-    title: "Active Usage",
-    subtitle: "In use by beneficiaries",
-    avg: "Ongoing",
-    count: distributedCount,
-    icon: <Users size={30} color="#1976d2" />,
-  },
-];
+    // },
+    {
+      title: "Refurbishment",
+      subtitle: "Hardware restoration & software setup",
+      avg: "5-7 days",
+      count: refurbishedCountt,
+      icon: <Tools size={30} color="#1976d2" />,
+    },
+    {
+      title: "Distribution",
+      subtitle: "Ready for NGO delivery",
+      avg: "1-2 days",
+      count: distributedCountt,
+      icon: <Truck size={30} color="#1976d2" />,
+    },
+    {
+      title: "Active Usage",
+      subtitle: "In use by beneficiaries",
+      avg: "Ongoing",
+      count: distributedCountt,
+      icon: <Users size={30} color="#1976d2" />,
+    },
+  ];
 
 
   return (
     <>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        px={2}
-        py={2}
-        borderBottom="1px solid #eee"
-      >
-        {/* Left Section */}
-        <Box display="flex" alignItems="center" gap={1.5}>
-          <Box
-            sx={{
-              backgroundColor: "#4CAF50",
-              color: "white",
-              p: 1,
-              borderRadius: "8px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <ComputerIcon fontSize="small" />
-          </Box>
-          <Box>
-            <Typography variant="subtitle1" fontWeight="bold" color="black">
-              Corporate CSR Dashboard
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Laptop Donation Impact Tracking
-            </Typography>
-          </Box>
-        </Box>
 
-        {/* Right Section */}
-        <Box display="flex" alignItems="center" gap={2}>
-          <Typography variant="body2" color="text.secondary">
-            Corporate Partner
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<DownloadIcon />}
-            sx={{ borderRadius: "10px", textTransform: "none" }}
-          >
-            Export Report
-          </Button>
-        </Box>
-      </Box>
+      <DashboardHeader
+        uniqueOrganizations={uniqueOrganizations}
+        onOrganizationChange={setSelectedOrganization}
+        
+      />
+      
+      
       <Box sx={{ p: 4, bgcolor: "#f9fafb", minHeight: "100vh", mt: 4 }}>
         {/* Header */}
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
@@ -301,7 +323,16 @@ const [laptopData, setLaptopData] = useState([]);
         <Box sx={{ mb: 6 }}>
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Current Pipeline Status
+            {selectedOrganization && (
+              <Chip
+                label={`Filtered: ${selectedOrganization}`}
+                size="small"
+                variant="outlined"
+                sx={{ ml: 2 }}
+              />
+            )}
           </Typography>
+
           <Grid container spacing={2}>
             {stages.map((stage) => (
               <Grid item xs={12} key={stage.title} >
