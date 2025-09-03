@@ -156,7 +156,35 @@ const Overview = () => {
       selectedOrg.trim().toLowerCase()
     )
     : pickups;
+  // Refurbished filter (derived from laptopData)
+  const filteredRefurbishedData = selectedOrg
+    ? laptopData.filter(
+      (laptop) =>
+        String(laptop["Allocated To"]).trim().toLowerCase() ===
+        selectedOrg.trim().toLowerCase() &&
+        laptop.Status === "Laptop Refurbished"
+    )
+    : laptopData.filter((laptop) => laptop.Status === "Laptop Refurbished");
 
+  // Distribution filter (derived from laptopData)
+  const filteredDistributionData = selectedOrg
+    ? laptopData.filter(
+      (laptop) =>
+        String(laptop["Allocated To"]).trim().toLowerCase() ===
+        selectedOrg.trim().toLowerCase() &&
+        laptop.Status === "Distributed"
+    )
+    : laptopData.filter((laptop) => laptop.Status === "Distributed");
+
+  // Active Usage filter (beneficiaries actively using laptops)
+  const filteredActiveUsage = selectedOrg
+    ? userData.filter(
+      (user) =>
+        String(user.Ngo).trim().toLowerCase() ===
+        selectedOrg.trim().toLowerCase() &&
+        user.status === "Active"
+    )
+    : userData.filter((user) => user.status === "Active");
 
   // Total Counting
   const totalLaptops = laptopData.length;
@@ -574,7 +602,7 @@ const Overview = () => {
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Successfully Refurbished"
-              value={refurbishedCount}
+              value={filteredRefurbishedData.length}
               subtitle={`${successRate}% success rate`}
               growth="+8.1% from last month"
               icon={CheckCircle}
@@ -584,7 +612,7 @@ const Overview = () => {
 
             <MetricCard
               title="Active Beneficiaries"
-              value={totalBeneficiaries}
+              value={filteredDistributionData.length}
               subtitle="Currently using laptops"
               growth="+23.6% from last month"
               icon={Users}
@@ -654,9 +682,9 @@ const Overview = () => {
               {[
                 { icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: `${filteredPickups.length} laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2" },
                 // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
-                { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
-                { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
-                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${distributedCount}`, bgColor: "#ffebee", iconColor: "#d32f2f" }
+                { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${filteredRefurbishedData.length} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
+                { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${filteredDistributionData.length} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
+                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${filteredDistributionData.length} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f" }
               ].map((step, index) => (
                 // <Grid item xs={6} sm={4} md={2.4} key={index}>
                 <Grid item xs={6} sm={4} md={3} key={index}>
