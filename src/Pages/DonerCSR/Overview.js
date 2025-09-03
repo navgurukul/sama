@@ -38,6 +38,7 @@ import {
   X,
   ChevronDown,
 } from 'lucide-react';
+import OverviewHeader from "./OverviewHeader";
 
 const Overview = () => {
   const [pickups, setPickups] = useState([]);
@@ -129,11 +130,9 @@ const Overview = () => {
     fetchData();
   }, []);
 
-  // Get unique organizations for filter
+  // Filter According to NGO's
   const getUniqueOrganizations = () => {
     const orgSet = new Set();
-
-    // Add organizations from laptop data (Allocated To)
     laptopData.forEach(laptop => {
       const allocatedTo = laptop["Allocated To"];
       if (allocatedTo && allocatedTo.trim()) {
@@ -141,14 +140,12 @@ const Overview = () => {
       }
     });
 
-    // Add organizations from NGO partners
     ngoPartner.forEach(partner => {
       if (partner.name && partner.name.trim()) {
         orgSet.add(partner.name.trim());
       }
     });
 
-    // Add organizations from pickup data
     pickups.forEach(pickup => {
       const donor = pickup["Donor Company"];
       if (donor && donor.trim()) {
@@ -262,24 +259,6 @@ const Overview = () => {
     (partner) => partner.laptops > 0
   ).length;
 
-
-  const handleFilterClick = (event) => {
-    setFilterAnchorEl(event.currentTarget);
-  };
-
-  const handleFilterClose = () => {
-    setFilterAnchorEl(null);
-  };
-
-  const handleOrganizationSelect = (organization) => {
-    setSelectedOrganization(organization);
-    setFilterAnchorEl(null);
-  };
-
-  const handleClearFilter = () => {
-    setSelectedOrganization(null);
-    setFilterAnchorEl(null);
-  };
 
   const MetricCard = ({ title, value, subtitle, growth, icon: Icon }) => (
     <Card sx={{
@@ -568,194 +547,24 @@ const Overview = () => {
   return (
 
     <>
-      <Box sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        mb: 3
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar sx={{
-            width: 32,
-            height: 32,
-            backgroundColor: '#4caf50',
-            mr: 1.5,
-            fontSize: 14,
-            fontWeight: 600
-          }}>
+      <OverviewHeader
+        uniqueOrganizations={uniqueOrganizations}
+        onOrganizationChange={setSelectedOrganization}
+      />
 
-          </Avatar>
-          <Box>
-            <Typography variant="subtitle1" fontWeight="bold" color="black">
-              Sama CSR Dashboard
-            </Typography>
+      <Divider sx={{ mb: 3, width: "100%" }} />
 
-            <Typography variant="body2" sx={{ fontSize: 12, color: '#666' }}>
-              Laptop Refurbishment & Distribution Tracking
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Filter Section */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {selectedOrganization && (
-            <Chip
-              label={selectedOrganization}
-              variant="outlined"
-              size="small"
-              onDelete={handleClearFilter}
-              deleteIcon={<X size={14} />}
-              sx={{
-                maxWidth: 200,
-                '& .MuiChip-label': {
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }
-              }}
-            />
-          )}
-
-          <Button
-            variant="outlined"
-            startIcon={<Filter size={16} />}
-            endIcon={<ChevronDown size={16} />}
-            onClick={handleFilterClick}
-            sx={{
-              textTransform: 'none',
-              fontSize: 14,
-              px: 2,
-              py: 1,
-              borderColor: '#e0e0e0',
-              color: '#666',
-              
-            }}
-          >
-            Filter by Organization
-          </Button>
-          <Box sx={{ textAlign: 'right' }}>
-            <Typography variant="body2" sx={{ fontSize: 12, color: '#666', fontWeight: 'bold' }}>
-              Corporate Partner
-            </Typography>
-            <Typography variant="body2" sx={{ fontSize: 12, color: '#666' }}>
-              Dashboard Access
-            </Typography>
-          </Box>
-
-          <Menu
-            anchorEl={filterAnchorEl}
-            open={Boolean(filterAnchorEl)}
-            onClose={handleFilterClose}
-            PaperProps={{
-              sx: {
-                maxHeight: 300,
-                width: 280,
-                mt: 1,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                border: '1px solid #e0e0e0'
-              }
-            }}
-          >
-            <MenuItem onClick={handleClearFilter} sx={{ py: 1.5 }}>
-              <ListItemIcon>
-                <X size={18} />
-              </ListItemIcon>
-              <ListItemText
-                primary="Clear Filter"
-                primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
-              />
-            </MenuItem>
-            <Divider />
-            {uniqueOrganizations.map((org) => (
-              <MenuItem
-                key={org}
-                onClick={() => handleOrganizationSelect(org)}
-                selected={selectedOrganization === org}
-                sx={{ py: 1.5 }}
-              >
-                <ListItemIcon>
-                  <Building size={18} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={org}
-                  primaryTypographyProps={{
-                    fontSize: 14,
-                    fontWeight: selectedOrganization === org ? 600 : 400,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
-                  }}
-                />
-              </MenuItem>
-            ))}
-          </Menu>
-        </Box>
-      </Box>
-
-      {/* Filter Status Bar */}
-      {selectedOrganization && (
-        <Box sx={{
-          mb: 3,
-          p: 2,
-          backgroundColor: '#f5f5f5',
-          borderRadius: 1,
-          border: '1px solid #e0e0e0'
-        }}>
-          <Typography variant="body2" sx={{ fontSize: 14, color: '#666' }}>
-            Showing data filtered for: <strong>{selectedOrganization}</strong>
-          </Typography>
-        </Box>
-      )}
-
-      <Divider sx={{ mb: 3, width: '100%' }} />
-      <Box sx={{
-        p: 3,
-        pb: 10,
-      }}>
-
+      <Box sx={{ p: 3, pb: 10 }}>
         <Box sx={{ mb: 3 }}>
-          <Typography
-            variant="h5"
-            sx={{ fontWeight: 'bold', color: '#333' }}
-          > CSR Impact Dashboard
+          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
+            CSR Impact Dashboard
           </Typography>
-          <Typography variant="body1" sx={{ color: '#666', fontSize: 16 }}>
+          <Typography variant="body1" sx={{ color: "#666", fontSize: 16 }}>
             {selectedOrganization
               ? `Impact tracking for ${selectedOrganization}`
-              : 'Comprehensive tracking of laptop refurbishment and distribution impact'
-            }
+              : "Comprehensive tracking of laptop refurbishment and distribution impact"}
           </Typography>
-
         </Box>
-
-        {/* <Box sx={{ textAlign: 'right' }}>
-          <Typography variant="body2" sx={{ fontSize: 12, color: '#666', fontWeight: 'bold' }}>
-            Corporate Partner
-          </Typography>
-          <Typography variant="body2" sx={{ fontSize: 12, color: '#666' }}>
-            Dashboard Access
-          </Typography>
-
-        </Box>
-
-      </Box>
-      <Divider sx={{ mb: 3, width: '100%' }} />
-      <Box sx={{
-        p: 3,
-        pb: 10,
-
-      }}>
-
-        <Box sx={{ mb: 3 }}>
-          <Typography
-            variant="h5"
-            sx={{ fontWeight: 'bold', color: '#333' }}
-          > CSR Impact Dashboard
-          </Typography>
-          <Typography variant="body1" sx={{ color: '#666', fontSize: 16 }}>
-            Comprehensive tracking of laptop refurbishment and distribution impact
-          </Typography>
-        </Box> */}
 
         {/* Top Metrics Row */}
         <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -794,7 +603,6 @@ const Overview = () => {
               title="NGO Partners"
               value={selectedOrganization ? filteredNgoPartners.length : approvedCount}
               subtitle={selectedOrganization ? "Matching organizations" : "Organizations served"}
-              // subtitle="Organizations served"
               growth="+12% from last month"
               icon={Building}
             />
