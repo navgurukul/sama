@@ -27,7 +27,7 @@ const navItems = [
       { label: "Laptop Pipeline", icon: <Package size={20} />, path: "/donorcsr/laptop-pipeline" },
       { label: "NGO Partners", icon: <Building size={20} />, path: "/donorcsr/partners" },
       { label: "Laptop Tracking", icon: <Search size={20} />, path: "/donorcsr/laptop-tracking" },
-      { label: "Impact Analytics", icon: <TrendingUp size={20} />, path: "/donorcsr/impact-analytics" },
+      // { label: "Impact Analytics", icon: <TrendingUp size={20} />, path: "/donorcsr/impact-analytics" },
       // { label: "Pickup Requests", icon: <ClipboardList size={20} />, path: "/donorcsr/requests" },
     ],
   },
