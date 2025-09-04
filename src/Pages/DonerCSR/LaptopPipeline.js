@@ -25,10 +25,10 @@ import {
   RefreshCw,
   Package,
   Users,
-  Filter, 
-  ChevronDown, 
-  X, 
-  Building, 
+  Filter,
+  ChevronDown,
+  X,
+  Building,
   Download
 } from "lucide-react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -207,9 +207,9 @@ const LaptopPipeline = () => {
 
     // Add organizations from laptop data
     laptopData.forEach(laptop => {
-      const allocatedTo = laptop["Allocated To"];
-      if (allocatedTo && allocatedTo.trim()) {
-        orgSet.add(allocatedTo.trim());
+      const donorCompany = laptop["Donor Company Name"];
+      if (donorCompany && donorCompany.trim()) {
+        orgSet.add(donorCompany.trim());
       }
     });
 
@@ -221,6 +221,7 @@ const LaptopPipeline = () => {
       }
     });
 
+
     setUniqueOrganizations(Array.from(orgSet).sort());
   }, [laptopData, pickups]);
 
@@ -228,10 +229,11 @@ const LaptopPipeline = () => {
   const getFilteredLaptopData = () => {
     if (!selectedOrganization) return laptopData;
     return laptopData.filter(laptop =>
-      String(laptop["Allocated To"]).trim().toLowerCase() ===
+      String(laptop["Donor Company Name"]).trim().toLowerCase() ===
       selectedOrganization.toLowerCase()
     );
   };
+
 
   const getFilteredPickups = () => {
     if (!selectedOrganization) return pickups;
@@ -258,7 +260,7 @@ const LaptopPipeline = () => {
     filteredPickups.length :
     totalLaptopss;
 
-    const handleFilterClick = (event) => {
+  const handleFilterClick = (event) => {
     setFilterAnchorEl(event.currentTarget);
   };
 
@@ -317,7 +319,7 @@ const LaptopPipeline = () => {
 
   return (
     <>
-<Box
+      <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
@@ -369,7 +371,7 @@ const LaptopPipeline = () => {
               }}
             />
           )}
-          
+
           <Button
             variant="outlined"
             startIcon={<Filter size={16} />}
@@ -395,7 +397,7 @@ const LaptopPipeline = () => {
             color="primary"
             startIcon={<DownloadIcon />}
             sx={{ borderRadius: "10px", textTransform: "none" }}
-            // onClick={handleExport}
+          // onClick={handleExport}
           >
             Export Report
           </Button>
@@ -450,7 +452,7 @@ const LaptopPipeline = () => {
           </Menu>
         </Box>
       </Box>
-      
+
       <Box sx={{ p: 4, bgcolor: "#f9fafb", minHeight: "100vh", mt: 4 }}>
         {/* Header */}
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>

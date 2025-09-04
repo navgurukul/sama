@@ -88,6 +88,7 @@ const Overview = () => {
             laptops: laptopsAllocated,
             beneficiaries: beneficiariesCount,
             lastDelivery: ngo.lastDelivery || "N/A",
+            Doner: ngo.Doner || ngo.Donor || null,
           };
         });
 
@@ -113,6 +114,7 @@ const Overview = () => {
           // headers: {
           //   "Content-Type": "application/json",
           // },
+          mode: "no-cors"
         });
         const data = await res.json();
 
@@ -130,22 +132,25 @@ const Overview = () => {
     fetchData();
   }, []);
 
-  // Filter According to NGO's
   const getUniqueOrganizations = () => {
     const orgSet = new Set();
+
+    // From laptops → Donor Company Name
     laptopData.forEach(laptop => {
-      const allocatedTo = laptop["Allocated To"];
-      if (allocatedTo && allocatedTo.trim()) {
-        orgSet.add(allocatedTo.trim());
+      const donorCompany = laptop["Donor Company Name"];
+      if (donorCompany && donorCompany.trim()) {
+        orgSet.add(donorCompany.trim());
       }
     });
 
+    // From NGOs → Donor
     ngoPartner.forEach(partner => {
-      if (partner.name && partner.name.trim()) {
-        orgSet.add(partner.name.trim());
+      if (partner.Doner && partner.Doner.trim()) {
+        orgSet.add(partner.Doner.trim());
       }
     });
 
+    // From pickups → Donor Company
     pickups.forEach(pickup => {
       const donor = pickup["Donor Company"];
       if (donor && donor.trim()) {
@@ -156,22 +161,27 @@ const Overview = () => {
     return Array.from(orgSet).sort();
   };
 
+
   // Filter functions
   const getFilteredLaptopData = () => {
     if (!selectedOrganization) return laptopData;
     return laptopData.filter(laptop =>
-      String(laptop["Allocated To"]).trim().toLowerCase() ===
+      String(laptop["Donor Company Name"]).trim().toLowerCase() ===
       selectedOrganization.toLowerCase()
     );
   };
 
+
   const getFilteredNgoPartners = () => {
     if (!selectedOrganization) return ngoPartner;
     return ngoPartner.filter(partner =>
-      String(partner.name).trim().toLowerCase() ===
+      String(partner.Doner).trim().toLowerCase() ===
       selectedOrganization.toLowerCase()
+
     );
+
   };
+
 
   const getFilteredPickups = () => {
     if (!selectedOrganization) return pickups;
@@ -180,6 +190,7 @@ const Overview = () => {
       selectedOrganization.toLowerCase()
     );
   };
+
 
   const getFilteredUserData = () => {
     if (!selectedOrganization) return userData;
@@ -671,7 +682,7 @@ const Overview = () => {
                 // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
                 { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
                 { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
-                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${totalBeneficiaries} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f" }
+                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${distributedCount} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f" }
               ].map((step, index) => (
                 // <Grid item xs={6} sm={4} md={2.4} key={index}>
                 <Grid item xs={6} sm={4} md={3} key={index}>

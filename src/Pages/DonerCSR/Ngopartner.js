@@ -69,6 +69,7 @@ const Ngopartner = () => {
           return {
             id: ngo.Id,
             name: ngo.organizationName,
+            donor: ngo.Doner || "Unknown Donor",   // 👈 add donor field
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
@@ -79,9 +80,11 @@ const Ngopartner = () => {
 
         setNgoPartner(partners);
         setFilteredNgoPartner(partners);
-        
-        const orgs = [...new Set(partners.map(partner => partner.name))].sort();
+
+        // collect donor names for dropdown
+        const orgs = [...new Set(partners.map(partner => partner.donor))].sort();
         setUniqueOrganizations(orgs);
+
       } catch (err) {
         console.error("Error fetching NGO partner data:", err);
       }
@@ -91,19 +94,20 @@ const Ngopartner = () => {
   }, []);
 
   //Filter NGO partners by selected organization
-   useEffect(() => {
-    if (selectedOrganization) {
-      const filtered = ngoPartner.filter(partner => 
-        partner.name.toLowerCase() === selectedOrganization.toLowerCase()
-      );
-      setFilteredNgoPartner(filtered);
-    } else {
-      setFilteredNgoPartner(ngoPartner);
-    }
-    
-    setVisibleCount(4);
-    setExpandedCard(null);
-  }, [selectedOrganization, ngoPartner]);
+ useEffect(() => {
+  if (selectedOrganization) {
+    const filtered = ngoPartner.filter(partner => 
+      String(partner.donor).trim().toLowerCase() === 
+      selectedOrganization.toLowerCase()
+    );
+    setFilteredNgoPartner(filtered);
+  } else {
+    setFilteredNgoPartner(ngoPartner);
+  }
+
+  setVisibleCount(4);
+  setExpandedCard(null);
+}, [selectedOrganization, ngoPartner]);
 
   const handleShowMore = () => {
     setVisibleCount((prev) => prev + 4);
@@ -119,7 +123,7 @@ const Ngopartner = () => {
     }
   };
 
-   const handleFilterClick = (event) => {
+  const handleFilterClick = (event) => {
     setFilterAnchorEl(event.currentTarget);
   };
 
@@ -139,7 +143,7 @@ const Ngopartner = () => {
   const handleExport = () => {
     // Use filtered data for export if a filter is applied
     const dataToExport = selectedOrganization ? filteredNgoPartner : ngoPartner;
-    
+
     let csvContent = "data:text/csv;charset=utf-8,";
 
     dataToExport.forEach(partner => {
@@ -171,138 +175,138 @@ const Ngopartner = () => {
   return (
     <>
       <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              px={2}
-              py={2}
-              borderBottom="1px solid #eee"
-            >
-              {/* Left Section */}
-              <Box display="flex" alignItems="center" gap={1.5}>
-                <Box
-                  sx={{
-                    backgroundColor: "#4CAF50",
-                    color: "white",
-                    p: 1,
-                    borderRadius: "8px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <ComputerIcon fontSize="small" />
-                </Box>
-                <Box>
-                  <Typography variant="subtitle1" fontWeight="bold" color="black">
-                    Corporate CSR Dashboard
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Laptop Donation Impact Tracking
-                  </Typography>
-                </Box>
-              </Box>
-      
-              {/* Right Section */}
-              <Box display="flex" alignItems="center" gap={2}>
-                {selectedOrganization && (
-                  <Chip
-                    label={selectedOrganization}
-                    variant="outlined"
-                    size="small"
-                    onDelete={handleClearFilter}
-                    deleteIcon={<X size={14} />}
-                    sx={{
-                      maxWidth: 200,
-                      "& .MuiChip-label": {
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      },
-                    }}
-                  />
-                )}
-                
-                <Button
-                  variant="outlined"
-                  startIcon={<Filter size={16} />}
-                  endIcon={<ChevronDown size={16} />}
-                  onClick={handleFilterClick}
-                  sx={{
-                    textTransform: "none",
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        px={2}
+        py={2}
+        borderBottom="1px solid #eee"
+      >
+        {/* Left Section */}
+        <Box display="flex" alignItems="center" gap={1.5}>
+          <Box
+            sx={{
+              backgroundColor: "#4CAF50",
+              color: "white",
+              p: 1,
+              borderRadius: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ComputerIcon fontSize="small" />
+          </Box>
+          <Box>
+            <Typography variant="subtitle1" fontWeight="bold" color="black">
+              Corporate CSR Dashboard
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Laptop Donation Impact Tracking
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Right Section */}
+        <Box display="flex" alignItems="center" gap={2}>
+          {selectedOrganization && (
+            <Chip
+              label={selectedOrganization}
+              variant="outlined"
+              size="small"
+              onDelete={handleClearFilter}
+              deleteIcon={<X size={14} />}
+              sx={{
+                maxWidth: 200,
+                "& .MuiChip-label": {
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                },
+              }}
+            />
+          )}
+
+          <Button
+            variant="outlined"
+            startIcon={<Filter size={16} />}
+            endIcon={<ChevronDown size={16} />}
+            onClick={handleFilterClick}
+            sx={{
+              textTransform: "none",
+              fontSize: 14,
+              px: 2,
+              py: 1,
+              borderColor: "#e0e0e0",
+              color: "#666",
+            }}
+          >
+            Filter by Organization
+          </Button>
+
+          <Typography variant="body2" color="text.secondary">
+            Corporate Partner
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<DownloadIcon />}
+            sx={{ borderRadius: "10px", textTransform: "none" }}
+            onClick={handleExport}
+          >
+            Export Report
+          </Button>
+
+          {/* Filter Dropdown Menu */}
+          <Menu
+            anchorEl={filterAnchorEl}
+            open={Boolean(filterAnchorEl)}
+            onClose={handleFilterClose}
+            PaperProps={{
+              sx: {
+                maxHeight: 300,
+                width: 280,
+                mt: 1,
+                boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                border: "1px solid #e0e0e0",
+              },
+            }}
+          >
+            <MenuItem onClick={handleClearFilter} sx={{ py: 1.5 }}>
+              <ListItemIcon>
+                <X size={18} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Clear Filter"
+                primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+              />
+            </MenuItem>
+            <Divider />
+            {uniqueOrganizations.map((org) => (
+              <MenuItem
+                key={org}
+                onClick={() => handleOrganizationSelect(org)}
+                selected={selectedOrganization === org}
+                sx={{ py: 1.5 }}
+              >
+                <ListItemIcon>
+                  <Building size={18} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={org}
+                  primaryTypographyProps={{
                     fontSize: 14,
-                    px: 2,
-                    py: 1,
-                    borderColor: "#e0e0e0",
-                    color: "#666",
+                    fontWeight: selectedOrganization === org ? 600 : 400,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
                   }}
-                >
-                  Filter by Organization
-                </Button>
-      
-                <Typography variant="body2" color="text.secondary">
-                  Corporate Partner
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<DownloadIcon />}
-                  sx={{ borderRadius: "10px", textTransform: "none" }}
-                  onClick={handleExport}
-                >
-                  Export Report
-                </Button>
-      
-                {/* Filter Dropdown Menu */}
-                <Menu
-                  anchorEl={filterAnchorEl}
-                  open={Boolean(filterAnchorEl)}
-                  onClose={handleFilterClose}
-                  PaperProps={{
-                    sx: {
-                      maxHeight: 300,
-                      width: 280,
-                      mt: 1,
-                      boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-                      border: "1px solid #e0e0e0",
-                    },
-                  }}
-                >
-                  <MenuItem onClick={handleClearFilter} sx={{ py: 1.5 }}>
-                    <ListItemIcon>
-                      <X size={18} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Clear Filter"
-                      primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
-                    />
-                  </MenuItem>
-                  <Divider />
-                  {uniqueOrganizations.map((org) => (
-                    <MenuItem
-                      key={org}
-                      onClick={() => handleOrganizationSelect(org)}
-                      selected={selectedOrganization === org}
-                      sx={{ py: 1.5 }}
-                    >
-                      <ListItemIcon>
-                        <Building size={18} />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={org}
-                        primaryTypographyProps={{
-                          fontSize: 14,
-                          fontWeight: selectedOrganization === org ? 600 : 400,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      />
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
-            </Box>
+                />
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
+      </Box>
 
       {/* NGO Partners */}
       <Container maxWidth="xl" sx={{ py: 3, bgcolor: '#f9f9f9' }}>
@@ -362,9 +366,9 @@ const Ngopartner = () => {
                       </Box>
                     </Box>
                   </Box>
-                  <Chip 
-                    label={partner.status} 
-                    color={partner.status === "Approved" ? "success" : "warning"} 
+                  <Chip
+                    label={partner.status}
+                    color={partner.status === "Approved" ? "success" : "warning"}
                     variant="outlined"
                   />
                 </Box>
