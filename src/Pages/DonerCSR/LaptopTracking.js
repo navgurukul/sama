@@ -11,16 +11,26 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip
+  Chip,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  IconButton
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import ComputerIcon from "@mui/icons-material/Computer";
 import DownloadIcon from "@mui/icons-material/Download";
+import { Filter, Building, X, ChevronDown } from "lucide-react";
 
 export default function LaptopTracking() {
   const [laptopData, setLaptopData] = useState([]);
   const [search, setSearch] = useState("");
   const [searchId, setSearchId] = useState("");
+  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,8 +39,18 @@ export default function LaptopTracking() {
           `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`
         );
         const data = await response.json();
-
         setLaptopData(data || []);
+
+        // Extract unique organizations from laptop data
+        const orgSet = new Set();
+        data.forEach(laptop => {
+          const donorCompany = laptop["Donor Company Name"];
+          if (donorCompany && donorCompany.trim()) {
+            orgSet.add(donorCompany.trim());
+          }
+        });
+
+        setUniqueOrganizations(Array.from(orgSet).sort());
       } catch (error) {
         console.error("Error fetching laptop data:", error);
       }
@@ -38,6 +58,49 @@ export default function LaptopTracking() {
 
     fetchData();
   }, []);
+
+  // Filter functions
+  const getFilteredLaptopData = () => {
+    let filteredData = laptopData;
+
+    // Filter by organization if selected
+    if (selectedOrganization) {
+      if (!selectedOrganization) return laptopData;
+      return laptopData.filter(laptop =>
+        String(laptop["Donor Company Name"]).trim().toLowerCase() ===
+        selectedOrganization.toLowerCase()
+      );
+    }
+
+    // Filter by ID search
+    if (searchId) {
+      filteredData = filteredData.filter(laptop =>
+        laptop.ID && laptop.ID.toLowerCase().includes(searchId.toLowerCase())
+      );
+    }
+
+    return filteredData;
+  };
+
+  const filteredLaptopData = getFilteredLaptopData();
+
+  const handleFilterClick = (event) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterClose = () => {
+    setFilterAnchorEl(null);
+  };
+
+  const handleOrganizationSelect = (org) => {
+    setSelectedOrganization(org);
+    handleFilterClose();
+  };
+
+  const handleClearFilter = () => {
+    setSelectedOrganization(null);
+    handleFilterClose();
+  };
 
   // Function to get color based on status
   const getStatusColor = (status) => {
@@ -72,26 +135,24 @@ export default function LaptopTracking() {
   };
 
   const handleExport = () => {
-    if (!laptopData || laptopData.length === 0) {
+    if (!filteredLaptopData || filteredLaptopData.length === 0) {
       alert("No data available to export");
       return;
     }
 
-    const headers = Object.keys(laptopData[0]).join(","); // Get table headers
-    const rows = laptopData.map(row => Object.values(row).join(",")); // Get table rows
-
+    const headers = Object.keys(filteredLaptopData[0]).join(",");
+    const rows = filteredLaptopData.map(row => Object.values(row).join(","));
     const csvContent = [headers, ...rows].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", "report.csv");
+    link.setAttribute("download", "laptop_tracking_report.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
-
 
   return (
     <>
@@ -131,6 +192,24 @@ export default function LaptopTracking() {
 
         {/* Right Section */}
         <Box display="flex" alignItems="center" gap={2}>
+          {selectedOrganization && (
+            <Chip
+              label={selectedOrganization}
+              variant="outlined"
+              size="small"
+              onDelete={handleClearFilter}
+              deleteIcon={<X size={14} />}
+              sx={{
+                maxWidth: 200,
+                "& .MuiChip-label": {
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                },
+              }}
+            />
+          )}
+
           <Typography variant="body2" color="text.secondary">
             Corporate Partner
           </Typography>
@@ -143,8 +222,76 @@ export default function LaptopTracking() {
           >
             Export Report
           </Button>
+
+          {/* Filter Dropdown Menu */}
+          <Menu
+            anchorEl={filterAnchorEl}
+            open={Boolean(filterAnchorEl)}
+            onClose={handleFilterClose}
+            PaperProps={{
+              sx: {
+                maxHeight: 300,
+                width: 280,
+                mt: 1,
+                boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                border: "1px solid #e0e0e0",
+              },
+            }}
+          >
+            <MenuItem onClick={handleClearFilter} sx={{ py: 1.5 }}>
+              <ListItemIcon>
+                <X size={18} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Clear Filter"
+                primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+              />
+            </MenuItem>
+            <Divider />
+            {uniqueOrganizations.map((org) => (
+              <MenuItem
+                key={org}
+                onClick={() => handleOrganizationSelect(org)}
+                selected={selectedOrganization === org}
+                sx={{ py: 1.5 }}
+              >
+                <ListItemIcon>
+                  <Building size={18} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={org}
+                  primaryTypographyProps={{
+                    fontSize: 14,
+                    fontWeight: selectedOrganization === org ? 600 : 400,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                />
+              </MenuItem>
+            ))}
+          </Menu>
         </Box>
       </Box>
+
+      {/* Filter Status Bar */}
+      {selectedOrganization && (
+        <Box
+          sx={{
+            p: 2,
+            backgroundColor: "#f5f5f5",
+            borderRadius: 1,
+            border: "1px solid #e0e0e0",
+          }}
+        >
+          <Typography variant="body2" sx={{ fontSize: 14, color: "#666" }}>
+            Showing data filtered for: <strong>{selectedOrganization}</strong>
+            {filteredLaptopData.length > 0 &&
+              ` (${filteredLaptopData.length} laptop${filteredLaptopData.length !== 1 ? 's' : ''})`
+            }
+          </Typography>
+        </Box>
+      )}
 
       {/* ======= MAIN CONTENT ======= */}
       <Box p={3}>
@@ -154,6 +301,14 @@ export default function LaptopTracking() {
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
                 Laptop Tracking
+                {selectedOrganization && (
+                  <Chip
+                    label={selectedOrganization}
+                    size="small"
+                    variant="outlined"
+                    sx={{ ml: 2 }}
+                  />
+                )}
               </Typography>
               <Box display="flex" alignItems="center" gap={2}>
                 <TextField
@@ -164,8 +319,12 @@ export default function LaptopTracking() {
                   onChange={(e) => setSearchId(e.target.value)}
                   sx={{ width: "250px" }}
                 />
-                <Button variant="outlined" startIcon={<FilterAltIcon />}>
-                  Filter
+                <Button
+                  variant="outlined"
+                  startIcon={<FilterAltIcon />}
+                  onClick={handleFilterClick}
+                >
+                  Organization Filter
                 </Button>
               </Box>
             </Box>
@@ -185,9 +344,8 @@ export default function LaptopTracking() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {laptopData
-                    .filter((row) => row.ID?.toLowerCase().includes(searchId.toLowerCase()))
-                    .map((row, index) => (
+                  {filteredLaptopData.length > 0 ? (
+                    filteredLaptopData.map((row, index) => (
                       <TableRow key={index} hover>
                         <TableCell sx={{ color: "primary.main", cursor: "pointer" }}>
                           {row.ID}
@@ -202,18 +360,24 @@ export default function LaptopTracking() {
                         </TableCell>
                         <TableCell>{row["Inventory Location"] || "N/A"}</TableCell>
                         <TableCell>{row["Allocated To"] || row["Assigned To"] || "Pending"}</TableCell>
-      
                         <TableCell>
                           {row["Usage Hours"] && row["Usage Hours"] !== ""
                             ? row["Usage Hours"]
                             : "Not Available"}
                         </TableCell>
-
                         <TableCell>{formatDate(row["Last Updated On"])}</TableCell>
                       </TableRow>
-                    ))}
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          No laptops found matching your criteria
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
-
               </Table>
             </TableContainer>
           </Box>

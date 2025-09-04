@@ -13,18 +13,28 @@ import {
   TableHead,
   TableBody,
   TableRow,
-  TableCell
+  TableCell,
+  Menu,
+  MenuItem,
+  Divider,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
+import { Filter, ChevronDown, X, Building, Download } from "lucide-react";
 import { Business, LocationOn } from '@mui/icons-material';
 import ComputerIcon from "@mui/icons-material/Computer";
 import DownloadIcon from "@mui/icons-material/Download";
 
+
 const Ngopartner = () => {
   const [ngoPartner, setNgoPartner] = useState([]);
+  const [filteredNgoPartner, setFilteredNgoPartner] = useState([]);
   const [visibleCount, setVisibleCount] = useState(4);
   const [expandedCard, setExpandedCard] = useState(null);
   const [activeType, setActiveType] = useState(null);
-
+  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -83,6 +93,7 @@ const Ngopartner = () => {
           return {
             id: ngo.Id,
             name: ngo.organizationName,
+            donor: ngo.Doner || "Unknown Donor",   // 👈 add donor field
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
@@ -97,12 +108,19 @@ const Ngopartner = () => {
                 second: "2-digit",
               })
               : "N/A",
+            lastDelivery: ngo.lastDelivery || "N/A",
           };
         });
 
 
 
         setNgoPartner(partners);
+        setFilteredNgoPartner(partners);
+
+        // collect donor names for dropdown
+        const orgs = [...new Set(partners.map(partner => partner.donor))].sort();
+        setUniqueOrganizations(orgs);
+
       } catch (err) {
         console.error("Error fetching NGO partner data:", err);
       }
@@ -110,6 +128,22 @@ const Ngopartner = () => {
 
     fetchData();
   }, []);
+
+  //Filter NGO partners by selected organization
+ useEffect(() => {
+  if (selectedOrganization) {
+    const filtered = ngoPartner.filter(partner => 
+      String(partner.donor).trim().toLowerCase() === 
+      selectedOrganization.toLowerCase()
+    );
+    setFilteredNgoPartner(filtered);
+  } else {
+    setFilteredNgoPartner(ngoPartner);
+  }
+
+  setVisibleCount(4);
+  setExpandedCard(null);
+}, [selectedOrganization, ngoPartner]);
 
   const handleShowMore = () => {
     setVisibleCount((prev) => prev + 4);
@@ -125,10 +159,30 @@ const Ngopartner = () => {
     }
   };
 
+  const handleFilterClick = (event) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterClose = () => {
+    setFilterAnchorEl(null);
+  };
+
+  const handleOrganizationSelect = (org) => {
+    setSelectedOrganization(org);
+    handleFilterClose();
+  };
+
+  const handleClearFilter = () => {
+    setSelectedOrganization(null);
+    handleFilterClose();
+  };
   const handleExport = () => {
+    // Use filtered data for export if a filter is applied
+    const dataToExport = selectedOrganization ? filteredNgoPartner : ngoPartner;
+
     let csvContent = "data:text/csv;charset=utf-8,";
 
-    ngoPartner.forEach(partner => {
+    dataToExport.forEach(partner => {
       csvContent += `\n${partner.name} - Laptop Data\n`;
       csvContent += "Laptop ID,Manufacturer Model,Status,Working\n";
       partner.laptops.forEach(item => {
@@ -154,10 +208,8 @@ const Ngopartner = () => {
     document.body.removeChild(link);
   };
 
-
   return (
     <>
-      {/* Header */}
       <Box
         display="flex"
         justifyContent="space-between"
@@ -166,6 +218,7 @@ const Ngopartner = () => {
         py={2}
         borderBottom="1px solid #eee"
       >
+        {/* Left Section */}
         <Box display="flex" alignItems="center" gap={1.5}>
           <Box
             sx={{
@@ -190,7 +243,43 @@ const Ngopartner = () => {
           </Box>
         </Box>
 
+        {/* Right Section */}
         <Box display="flex" alignItems="center" gap={2}>
+          {selectedOrganization && (
+            <Chip
+              label={selectedOrganization}
+              variant="outlined"
+              size="small"
+              onDelete={handleClearFilter}
+              deleteIcon={<X size={14} />}
+              sx={{
+                maxWidth: 200,
+                "& .MuiChip-label": {
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                },
+              }}
+            />
+          )}
+
+          <Button
+            variant="outlined"
+            startIcon={<Filter size={16} />}
+            endIcon={<ChevronDown size={16} />}
+            onClick={handleFilterClick}
+            sx={{
+              textTransform: "none",
+              fontSize: 14,
+              px: 2,
+              py: 1,
+              borderColor: "#e0e0e0",
+              color: "#666",
+            }}
+          >
+            Filter by Organization
+          </Button>
+
           <Typography variant="body2" color="text.secondary">
             Corporate Partner
           </Typography>
@@ -203,11 +292,60 @@ const Ngopartner = () => {
           >
             Export Report
           </Button>
+
+          {/* Filter Dropdown Menu */}
+          <Menu
+            anchorEl={filterAnchorEl}
+            open={Boolean(filterAnchorEl)}
+            onClose={handleFilterClose}
+            PaperProps={{
+              sx: {
+                maxHeight: 300,
+                width: 280,
+                mt: 1,
+                boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                border: "1px solid #e0e0e0",
+              },
+            }}
+          >
+            <MenuItem onClick={handleClearFilter} sx={{ py: 1.5 }}>
+              <ListItemIcon>
+                <X size={18} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Clear Filter"
+                primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+              />
+            </MenuItem>
+            <Divider />
+            {uniqueOrganizations.map((org) => (
+              <MenuItem
+                key={org}
+                onClick={() => handleOrganizationSelect(org)}
+                selected={selectedOrganization === org}
+                sx={{ py: 1.5 }}
+              >
+                <ListItemIcon>
+                  <Building size={18} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={org}
+                  primaryTypographyProps={{
+                    fontSize: 14,
+                    fontWeight: selectedOrganization === org ? 600 : 400,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                />
+              </MenuItem>
+            ))}
+          </Menu>
         </Box>
       </Box>
 
       {/* NGO Partners */}
-      <Container maxWidth="xl" sx={{ py: 3, bgcolor: '#f9f9f9', mt: 4 }}>
+      <Container maxWidth="xl" sx={{ py: 3, bgcolor: '#f9f9f9' }}>
         <Box
           sx={{
             mb: 3,
@@ -218,14 +356,33 @@ const Ngopartner = () => {
         >
           <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#333' }}>
             NGO Partners
+            {selectedOrganization && (
+              <Chip
+                label={`Filtered: ${selectedOrganization}`}
+                size="small"
+                variant="outlined"
+                sx={{ ml: 2 }}
+              />
+            )}
           </Typography>
-          <Typography variant="body2" sx={{ color: '#666', fontSize: '14px' }}>
-            {ngoPartner.length} organizations receiving laptops
-          </Typography>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography variant="body2" sx={{ color: '#666', fontSize: '14px' }}>
+              {filteredNgoPartner.length} of {ngoPartner.length} organizations
+            </Typography>
+            {/* <Button
+              variant="contained"
+              color="primary"
+              startIcon={<DownloadIcon />}
+              sx={{ borderRadius: "10px", textTransform: "none" }}
+              onClick={handleExport}
+            >
+              Export Report
+            </Button> */}
+          </Box>
         </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {ngoPartner.slice(0, visibleCount).map((partner) => (
+          {filteredNgoPartner.slice(0, visibleCount).map((partner) => (
             <Card key={partner.id} sx={{ border: '1px solid #e0e0e0', borderRadius: 2 }}>
               <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
@@ -245,7 +402,11 @@ const Ngopartner = () => {
                       </Box>
                     </Box>
                   </Box>
-                  <Chip label={partner.status} color={partner.status === "Active" ? "success" : "warning"} />
+                  <Chip
+                    label={partner.status}
+                    color={partner.status === "Approved" ? "success" : "warning"}
+                    variant="outlined"
+                  />
                 </Box>
 
                 <Grid container spacing={4}>
@@ -284,7 +445,6 @@ const Ngopartner = () => {
                 </Grid>
                 {expandedCard === partner.id && (
                   <Box mt={3}>
-                    {/* Dynamic Title */}
                     <Typography variant="h6" gutterBottom>
                       {activeType === "laptops"
                         ? `${partner.name} - Laptop Data`
@@ -326,24 +486,30 @@ const Ngopartner = () => {
                               <TableCell>{item["Laptop Assigned"]}</TableCell>
                             </TableRow>
                           ))}
-
                       </TableBody>
                     </Table>
                   </Box>
                 )}
-
-
               </CardContent>
             </Card>
           ))}
         </Box>
 
         {/* Show More Button */}
-        {visibleCount < ngoPartner.length && (
+        {visibleCount < filteredNgoPartner.length && (
           <Box textAlign="center" mt={3}>
             <Button variant="outlined" onClick={handleShowMore}>
               Show More
             </Button>
+          </Box>
+        )}
+
+        {/* No results message */}
+        {filteredNgoPartner.length === 0 && (
+          <Box textAlign="center" mt={3}>
+            <Typography variant="body1" color="text.secondary">
+              No NGO partners found for the selected organization.
+            </Typography>
           </Box>
         )}
       </Container>
