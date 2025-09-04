@@ -585,7 +585,7 @@ const Overview = () => {
               value={totalLaptops}
               // subtitle="Lifetime donations from corporates"
               subtitle={selectedOrganization ? `From ${selectedOrganization}` : "Lifetime donations from corporates"}
-              growth="+15.2% from last month"
+              // growth="+15.2% from last month"
               icon={Package}
             />
           </Grid>
@@ -594,7 +594,7 @@ const Overview = () => {
               title="Successfully Refurbished"
               value={refurbishedCount}
               subtitle={`${successRate}% success rate`}
-              growth="+8.1% from last month"
+              // growth="+8.1% from last month"
               icon={CheckCircle}
             />
           </Grid>
@@ -604,7 +604,7 @@ const Overview = () => {
               title="Active Beneficiaries"
               value={totalBeneficiaries}
               subtitle="Currently using laptops"
-              growth="+23.6% from last month"
+              // growth="+23.6% from last month"
               icon={Users}
             />
 
@@ -614,7 +614,7 @@ const Overview = () => {
               title="NGO Partners"
               value={selectedOrganization ? filteredNgoPartners.length : approvedCount}
               subtitle={selectedOrganization ? "Matching organizations" : "Organizations served"}
-              growth="+12% from last month"
+              // growth="+12% from last month"
               icon={Building}
             />
           </Grid>
