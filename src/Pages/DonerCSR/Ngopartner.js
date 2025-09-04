@@ -78,6 +78,7 @@ const Ngopartner = () => {
               String(user.Ngo).trim() === String(ngo.Id).trim() ||
               String(user.ngoId).trim() === String(ngo.Id).trim()
           );
+          
           const deliveries = laptopsAllocated
             .filter(
               (laptop) =>
@@ -93,7 +94,7 @@ const Ngopartner = () => {
           return {
             id: ngo.Id,
             name: ngo.organizationName,
-            donor: ngo.Doner || "Unknown Donor",   // 👈 add donor field
+            donor: ngo.Doner || "Unknown Donor",   
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
@@ -108,7 +109,6 @@ const Ngopartner = () => {
                 second: "2-digit",
               })
               : "N/A",
-            lastDelivery: ngo.lastDelivery || "N/A",
           };
         });
 
