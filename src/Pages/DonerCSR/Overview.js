@@ -105,7 +105,6 @@ const Overview = () => {
 
           const lastDelivery =
             deliveries.length > 0 ? new Date(Math.max(...deliveries)) : null;
-
           return {
             name: ngo.organizationName,
             status: ngo.Status,

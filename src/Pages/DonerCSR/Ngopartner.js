@@ -111,9 +111,6 @@ const Ngopartner = () => {
               : "N/A",
           };
         });
-
-
-
         setNgoPartner(partners);
         setFilteredNgoPartner(partners);
 
