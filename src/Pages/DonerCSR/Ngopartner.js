@@ -14,6 +14,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  TablePagination,
   Menu,
   MenuItem,
   Divider,
@@ -78,7 +79,7 @@ const Ngopartner = () => {
               String(user.Ngo).trim() === String(ngo.Id).trim() ||
               String(user.ngoId).trim() === String(ngo.Id).trim()
           );
-          
+
           const deliveries = laptopsAllocated
             .filter(
               (laptop) =>
@@ -94,7 +95,7 @@ const Ngopartner = () => {
           return {
             id: ngo.Id,
             name: ngo.organizationName,
-            donor: ngo.Doner || "Unknown Donor",   
+            donor: ngo.Doner || "Unknown Donor",
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
@@ -127,20 +128,20 @@ const Ngopartner = () => {
   }, []);
 
   //Filter NGO partners by selected organization
- useEffect(() => {
-  if (selectedOrganization) {
-    const filtered = ngoPartner.filter(partner => 
-      String(partner.donor).trim().toLowerCase() === 
-      selectedOrganization.toLowerCase()
-    );
-    setFilteredNgoPartner(filtered);
-  } else {
-    setFilteredNgoPartner(ngoPartner);
-  }
+  useEffect(() => {
+    if (selectedOrganization) {
+      const filtered = ngoPartner.filter(partner =>
+        String(partner.donor).trim().toLowerCase() ===
+        selectedOrganization.toLowerCase()
+      );
+      setFilteredNgoPartner(filtered);
+    } else {
+      setFilteredNgoPartner(ngoPartner);
+    }
 
-  setVisibleCount(4);
-  setExpandedCard(null);
-}, [selectedOrganization, ngoPartner]);
+    setVisibleCount(4);
+    setExpandedCard(null);
+  }, [selectedOrganization, ngoPartner]);
 
   const handleShowMore = () => {
     setVisibleCount((prev) => prev + 4);
@@ -153,6 +154,7 @@ const Ngopartner = () => {
     } else {
       setExpandedCard(id);
       setActiveType(type);
+      setPage(0);
     }
   };
 
@@ -204,6 +206,15 @@ const Ngopartner = () => {
     link.click();
     document.body.removeChild(link);
   };
+
+
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 10;
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
 
   return (
     <>
@@ -459,7 +470,8 @@ const Ngopartner = () => {
                           </TableRow>
                         ) : (
                           <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>NGO</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>Occupation</TableCell>
                             <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
                             <TableCell sx={{ fontWeight: "bold" }}>Laptop Assigned</TableCell>
                           </TableRow>
@@ -468,23 +480,41 @@ const Ngopartner = () => {
 
                       <TableBody>
                         {activeType === "laptops"
-                          ? partner.laptops.map((item, index) => (
-                            <TableRow key={index}>
-                              <TableCell>{item.ID}</TableCell>
-                              <TableCell>{item["Manufacturer Model"]}</TableCell>
-                              <TableCell>{item.Status}</TableCell>
-                              <TableCell>{item.Working ? "Yes" : "No"}</TableCell>
-                            </TableRow>
-                          ))
-                          : partner.beneficiaries.map((item, index) => (
-                            <TableRow key={index}>
-                              <TableCell>{item.Ngo}</TableCell>
-                              <TableCell>{item.status}</TableCell>
-                              <TableCell>{item["Laptop Assigned"]}</TableCell>
-                            </TableRow>
-                          ))}
+                          ? partner.laptops
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((item, index) => (
+                              <TableRow key={index}>
+                                <TableCell>{item.ID}</TableCell>
+                                <TableCell>{item["Manufacturer Model"]}</TableCell>
+                                <TableCell>{item.Status}</TableCell>
+                                <TableCell>{item.Working ? "Yes" : "No"}</TableCell>
+                              </TableRow>
+                            ))
+                          : partner.beneficiaries
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((item, index) => (
+                              <TableRow key={index}>
+                                <TableCell>{item.name}</TableCell>
+                                <TableCell>{item.Occupation}</TableCell>
+                                <TableCell>{item.status}</TableCell>
+                                <TableCell>{item["Laptop Assigned"]}</TableCell>
+                              </TableRow>
+                            ))}
                       </TableBody>
                     </Table>
+                    <TablePagination
+                      component="div"
+                      count={
+                        activeType === "laptops"
+                          ? partner.laptops.length
+                          : partner.beneficiaries.length
+                      }
+                      page={page}
+                      onPageChange={handleChangePage}
+                      rowsPerPage={rowsPerPage}
+                      rowsPerPageOptions={[10]}
+                    />
+
                   </Box>
                 )}
               </CardContent>

@@ -10,6 +10,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
   Paper,
   Chip,
   Menu,
@@ -153,6 +154,14 @@ export default function LaptopTracking() {
     link.click();
     document.body.removeChild(link);
   };
+
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 10;
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
 
   return (
     <>
@@ -345,29 +354,31 @@ export default function LaptopTracking() {
                 </TableHead>
                 <TableBody>
                   {filteredLaptopData.length > 0 ? (
-                    filteredLaptopData.map((row, index) => (
-                      <TableRow key={index} hover>
-                        <TableCell sx={{ color: "primary.main", cursor: "pointer" }}>
-                          {row.ID}
-                        </TableCell>
-                        <TableCell>{row["Manufacturer Model"]}</TableCell>
-                        <TableCell>
-                          <Chip
-                            label={row.Status || "In Transit"}
-                            color={getStatusColor(row.Status)}
-                            variant="outlined"
-                          />
-                        </TableCell>
-                        <TableCell>{row["Inventory Location"] || "N/A"}</TableCell>
-                        <TableCell>{row["Allocated To"] || row["Assigned To"] || "Pending"}</TableCell>
-                        <TableCell>
-                          {row["Usage Hours"] && row["Usage Hours"] !== ""
-                            ? row["Usage Hours"]
-                            : "Not Available"}
-                        </TableCell>
-                        <TableCell>{formatDate(row["Last Updated On"])}</TableCell>
-                      </TableRow>
-                    ))
+                    filteredLaptopData
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row, index) => (
+                        <TableRow key={index} hover>
+                          <TableCell sx={{ color: "primary.main", cursor: "pointer" }}>
+                            {row.ID}
+                          </TableCell>
+                          <TableCell>{row["Manufacturer Model"]}</TableCell>
+                          <TableCell>
+                            <Chip
+                              label={row.Status || "In Transit"}
+                              color={getStatusColor(row.Status)}
+                              variant="outlined"
+                            />
+                          </TableCell>
+                          <TableCell>{row["Inventory Location"] || "N/A"}</TableCell>
+                          <TableCell>{row["Allocated To"] || row["Assigned To"] || "Pending"}</TableCell>
+                          <TableCell>
+                            {row["Usage Hours"] && row["Usage Hours"] !== ""
+                              ? row["Usage Hours"]
+                              : "Not Available"}
+                          </TableCell>
+                          <TableCell>{formatDate(row["Last Updated On"])}</TableCell>
+                        </TableRow>
+                      ))
                   ) : (
                     <TableRow>
                       <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
@@ -379,6 +390,14 @@ export default function LaptopTracking() {
                   )}
                 </TableBody>
               </Table>
+              <TablePagination
+                component="div"
+                count={filteredLaptopData.length}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                rowsPerPageOptions={[10]}
+              />
             </TableContainer>
           </Box>
         </Paper>
