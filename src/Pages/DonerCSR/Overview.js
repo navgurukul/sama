@@ -69,26 +69,58 @@ const Overview = () => {
         const userJson = await userRes.json();
 
         const approved = ngoJson.data.filter((ngo) => ngo.Status === "Approved");
+        function parseDate(dateStr) {
+          if (!dateStr) return null;
+          const iso = Date.parse(dateStr);
+          if (!isNaN(iso)) return new Date(iso);
+          const parts = dateStr.split(/[-/ :]/);
+          if (parts.length >= 3) {
+            const [d, m, y, hh = 0, mm = 0, ss = 0] = parts.map((p) => parseInt(p, 10));
+            return new Date(y, m - 1, d, hh, mm, ss);
+          }
+        }
 
         const partners = approved.map((ngo) => {
-          const laptopsAllocated = laptopJson.filter(
+          const filteredLaptops = laptopJson.filter(
             (laptop) =>
               String(laptop["Allocated To"]).trim().toLowerCase() ===
               String(ngo.organizationName).trim().toLowerCase()
-          ).length;
+          );
+
+          const laptopsAllocated = filteredLaptops.length;
+
 
           const beneficiariesCount = userJson.filter(
             (user) => String(user.Ngo).trim() === String(ngo.Id).trim()
           ).length;
 
+          const deliveries = filteredLaptops
+            .filter(
+              (laptop) =>
+                laptop["Status"]?.trim().toLowerCase() === "distributed" &&
+                laptop["Last Delivery Date"]
+            )
+            .map((laptop) => parseDate(laptop["Last Delivery Date"]))
+            .filter((d) => d !== null);
+
+          const lastDelivery =
+            deliveries.length > 0 ? new Date(Math.max(...deliveries)) : null;
           return {
             name: ngo.organizationName,
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
             beneficiaries: beneficiariesCount,
-            lastDelivery: ngo.lastDelivery || "N/A",
-            Doner: ngo.Doner || ngo.Donor || null,
+            lastDelivery: lastDelivery
+              ? lastDelivery.toLocaleString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })
+              : "N/A", Doner: ngo.Doner || ngo.Donor || null,
           };
         });
 
