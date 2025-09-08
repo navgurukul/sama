@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from "react-router-dom";
+
 import {
   Box,
   Typography,
@@ -138,6 +140,7 @@ const insights = [
 ];
 
 const LaptopPipeline = () => {
+  const { donorName } = useParams();
   const [laptopData, setLaptopData] = useState([]);
   const [totalLaptops, setTotalLaptops] = useState(0);
   const [refurbishedCount, setRefurbishedCount] = useState(0);
@@ -146,8 +149,13 @@ const LaptopPipeline = () => {
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
   const [pickups, setPickups] = useState([]);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
 
+  useEffect(() => {
+    if (donorName) {
+      setSelectedOrganization(donorName);
+    }
+  }, [donorName]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -386,7 +394,7 @@ const LaptopPipeline = () => {
               color: "#666",
             }}
           >
-            Filter by Organization
+            Filter by Doner
           </Button>
 
           <Typography variant="body2" color="text.secondary">

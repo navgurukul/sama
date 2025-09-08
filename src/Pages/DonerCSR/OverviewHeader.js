@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+
 import {
   Box,
   Typography,
@@ -14,8 +16,15 @@ import {
 import { Filter, ChevronDown, X, Building } from "lucide-react";
 
 const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
+  const { donorName } = useParams();
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
+
+useEffect(() => {
+    if (donorName) {
+      setSelectedOrganization(donorName);
+    }
+  }, [donorName]);
 
   const handleFilterClick = (event) => {
     setFilterAnchorEl(event.currentTarget);
@@ -107,7 +116,7 @@ const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
               color: "#666",
             }}
           >
-            Filter by Organization
+            Filter by Doner
           </Button>
 
           <Box sx={{ textAlign: "right" }}>

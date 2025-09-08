@@ -68,6 +68,7 @@ import LaptopTracking from './Pages/DonerCSR/LaptopTracking';
 import ImpactAnalysis from './Pages/DonerCSR/ImpactAnalysis';
 import Ngopartner from './Pages/DonerCSR/Ngopartner';
 import Pickup from './Pages/Pickup/Pickup';
+import DonorCSRRoute from './Pages/DonerCSR/DonorCSRRoute';
 
 function App() {
   return (
@@ -91,17 +92,34 @@ function App() {
               <Route path="/corporate" element={<CorporateteDb />} />
               <Route path="/corpretedb/DataViewDetail" element={<DetailView />} />
               <Route path="/corpretedb/NGOTrainedTable" element={<NGOTrainedTable />} />
-              <Route path="/donorcsr" element={<Sidebar />}>
-                {/* Default route for /donorcsr */}
-                <Route index element={<Overview />} />
 
-                {/* Child routes */}
+
+              <Route
+                path="/donorcsr"
+                element={
+                  <DonorCSRRoute>
+                    <Sidebar />
+                  </DonorCSRRoute>
+                }
+              >
+                <Route index element={<Overview />} />
                 <Route path="overview" element={<Overview />} />
                 <Route path="laptop-pipeline" element={<LaptopPipeline />} />
                 <Route path="laptop-tracking" element={<LaptopTracking />} />
                 <Route path="partners" element={<Ngopartner />} />
                 <Route path="impact-analytics" element={<ImpactAnalysis />} />
               </Route>
+
+              <Route path="/donorcsr/:donorName" element={<Sidebar />}>
+                <Route path="/donorcsr/:donorName/overview" element={<Overview />} />
+                <Route path="/donorcsr/:donorName/laptop-pipeline" element={<LaptopPipeline />} />
+                <Route path="/donorcsr/:donorName/partners" element={<Ngopartner />} />
+                <Route path="/donorcsr/:donorName/laptop-tracking" element={<LaptopTracking />} />
+                <Route path="/donorcsr/:donorName/impact-analytics" element={<LaptopTracking />} />
+              </Route>
+              <Route path="/donorcsr/*" element={<h2>Page Not Found</h2>} />
+              <Route path="*" element={<h2>Page Not Found</h2>} />
+
 
               <Route path="/question-selection" element={
                 <PrivateRoute reqired={'ops'}>
@@ -269,7 +287,7 @@ function App() {
           <Footer />
         </div>
       </Router>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 }
 export default App;

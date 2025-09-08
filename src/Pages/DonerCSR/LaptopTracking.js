@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
 import {
   Box,
   Typography,
@@ -26,12 +28,19 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { Filter, Building, X, ChevronDown } from "lucide-react";
 
 export default function LaptopTracking() {
+  const { donorName } = useParams();
   const [laptopData, setLaptopData] = useState([]);
   const [search, setSearch] = useState("");
   const [searchId, setSearchId] = useState("");
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
+
+useEffect(() => {
+    if (donorName) {
+      setSelectedOrganization(donorName);
+    }
+  }, [donorName]);
 
   useEffect(() => {
     const fetchData = async () => {

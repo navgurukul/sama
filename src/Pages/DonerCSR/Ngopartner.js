@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -28,14 +29,21 @@ import DownloadIcon from "@mui/icons-material/Download";
 
 
 const Ngopartner = () => {
+  const { donorName } = useParams();
   const [ngoPartner, setNgoPartner] = useState([]);
   const [filteredNgoPartner, setFilteredNgoPartner] = useState([]);
   const [visibleCount, setVisibleCount] = useState(4);
   const [expandedCard, setExpandedCard] = useState(null);
   const [activeType, setActiveType] = useState(null);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
+
+  useEffect(() => {
+    if (donorName) {
+      setSelectedOrganization(donorName);
+    }
+  }, [donorName]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -285,7 +293,7 @@ const Ngopartner = () => {
               color: "#666",
             }}
           >
-            Filter by Organization
+            Filter by Doner
           </Button>
 
           <Typography variant="body2" color="text.secondary">
