@@ -137,32 +137,29 @@ const Overview = () => {
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(
-          // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
-          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
-          // method: "GET",
-          // headers: {
-          //   "Content-Type": "application/json",
-          // },
-          // mode: "no-cors"
-        });
-        const data = await res.json();
-
-        if (data.status === "success") {
-          console.log("Fetched pickup data:", data.data);
-
-          // setPickups(data.data);
-          setTotalLaptopss(data.totalLaptops);
+      const fetchData = async () => {
+        try {
+          const res = await fetch(
+            // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
+            `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
+            // method: "GET",
+            // headers: {
+            //   "Content-Type": "application/json",
+            // },
+          });
+          const data = await res.json();
+  
+          if (data.status === "success") {  
+            // setPickups(data.data);
+            setTotalLaptopss(data.totalLaptops);
+          }
+        } catch (error) {
+          console.error("Error fetching pickup data:", error);
         }
-      } catch (error) {
-        console.error("Error fetching pickup data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+      };
+  
+      fetchData();
+    }, []);
 
   const getUniqueOrganizations = () => {
     const orgSet = new Set();
@@ -257,20 +254,20 @@ const Overview = () => {
       const match = allocatedTo === ngoName;
 
       if (match) {
-        console.log("✅ Match found:", allocatedTo, "<->", ngoName);
+        // console.log("✅ Match found:", allocatedTo, "<->", ngoName);
       }
 
       return match;
     }).length;
 
-    console.log(`Laptops for ${ngo.organizationName}:`, laptops);
+    // console.log(`Laptops for ${ngo.organizationName}:`, laptops);
 
     const beneficiariesCount = userData.filter(
       (user) => String(user.Ngo || user.ngoId) === String(ngo.ID)
     ).length;
 
 
-    console.log(`Beneficiaries for ${ngo.organizationName}:`, beneficiariesCount);
+    // console.log(`Beneficiaries for ${ngo.organizationName}:`, beneficiariesCount);
 
     return {
       ...ngo,
@@ -426,7 +423,7 @@ const Overview = () => {
       const [hours, minutes, seconds] = timePart.split(":");
       return new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes), parseInt(seconds));
     } catch (e) {
-      console.error("Invalid date format:", dateString);
+      // console.error("Invalid date format:", dateString);
       return null;
     }
   }
@@ -439,7 +436,7 @@ const Overview = () => {
     const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
     return hoursAgo <= 24;
   });
-  console.log("Last 24 hours data:", last24HoursData);
+  // console.log("Last 24 hours data:", last24HoursData);
   const last24HoursPickups = filteredPickups.filter(p => {
     const dateStr = p["Current Date & Time"];
     if (!dateStr) return false;
