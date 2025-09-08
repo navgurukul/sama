@@ -141,19 +141,19 @@ const Overview = () => {
       try {
         const res = await fetch(
           // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
-          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}type=pickupget`, {
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
           // method: "GET",
           // headers: {
           //   "Content-Type": "application/json",
           // },
-          mode: "no-cors"
+          // mode: "no-cors"
         });
         const data = await res.json();
 
         if (data.status === "success") {
           console.log("Fetched pickup data:", data.data);
 
-          setPickups(data.data);
+          // setPickups(data.data);
           setTotalLaptopss(data.totalLaptops);
         }
       } catch (error) {
