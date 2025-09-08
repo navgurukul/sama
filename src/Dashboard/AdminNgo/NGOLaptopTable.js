@@ -205,7 +205,7 @@ function NGOLaptopTable({ ngoData }) {
         batteryCapacity: currentLaptop["Battery Capacity"] || "",
         lastUpdatedOn: currentLaptop["Last Updated On"] || new Date().toISOString().split('T')[0],
         lastUpdatedBy: currentLaptop["Last Updated By"] || "System",
-        comment: combinedComment  // Updated combined comment value
+        comment: combinedComment  
       };
       
       const response = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`, {

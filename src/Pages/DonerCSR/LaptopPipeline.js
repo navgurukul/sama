@@ -142,7 +142,7 @@ const [laptopData, setLaptopData] = useState([]);
         try {
           const res = await fetch(
             // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
-            `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}type=pickupget`, {
+            `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
             // method: "GET",
             // headers: {
             //   "Content-Type": "application/json",
