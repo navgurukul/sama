@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -13,7 +13,11 @@ import {
   LinearProgress,
   Alert,
   Stack,
-  Button
+  Button,
+  Menu,
+  Divider,
+  ListItemIcon,
+  ListItemText
 } from "@mui/material";
 import {
   Truck,
@@ -21,6 +25,11 @@ import {
   RefreshCw,
   Package,
   Users,
+  Filter,
+  ChevronDown,
+  X,
+  Building,
+  Download
 } from "lucide-react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
@@ -30,7 +39,6 @@ import {
 } from '@mui/icons-material';
 import ComputerIcon from "@mui/icons-material/Computer";
 import DownloadIcon from "@mui/icons-material/Download";
-
 
 const theme = createTheme({
   typography: {
@@ -130,41 +138,45 @@ const insights = [
 ];
 
 const LaptopPipeline = () => {
-const [laptopData, setLaptopData] = useState([]);
+  const [laptopData, setLaptopData] = useState([]);
   const [totalLaptops, setTotalLaptops] = useState(0);
   const [refurbishedCount, setRefurbishedCount] = useState(0);
   const [distributedCount, setDistributedCount] = useState(0);
   const [totalLaptopss, setTotalLaptopss] = useState(0);
-  
+  const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
+  const [pickups, setPickups] = useState([]);
+  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
 
-   useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const res = await fetch(
-            // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
-            `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}type=pickupget`, {
-            // method: "GET",
-            // headers: {
-            //   "Content-Type": "application/json",
-            // },
-          });
-          const data = await res.json();
-  
-          if (data.status === "success") {
-            console.log("Fetched pickup data:", data.data);
-            
-            // setPickups(data.data);
-            setTotalLaptopss(data.totalLaptops);
-          }
-        } catch (error) {
-          console.error("Error fetching pickup data:", error);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(
+          // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
+          // method: "GET",
+          // headers: {
+          //   "Content-Type": "application/json",
+          // },
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+          console.log("Fetched pickup data:", data.data);
+
+          // setPickups(data.data);
+          setTotalLaptopss(data.totalLaptops);
         }
-      };
-  
-      fetchData();
-    }, []);
+      } catch (error) {
+        console.error("Error fetching pickup data:", error);
+      }
+    };
 
- useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -188,44 +200,121 @@ const [laptopData, setLaptopData] = useState([]);
 
     fetchData();
   }, []);
-  
+
+  // Get unique organizations from laptop data and pickups
+  useEffect(() => {
+    const orgSet = new Set();
+
+    // Add organizations from laptop data
+    laptopData.forEach(laptop => {
+      const donorCompany = laptop["Donor Company Name"];
+      if (donorCompany && donorCompany.trim()) {
+        orgSet.add(donorCompany.trim());
+      }
+    });
+
+    // Add organizations from pickup data
+    pickups.forEach(pickup => {
+      const donor = pickup["Donor Company"];
+      if (donor && donor.trim()) {
+        orgSet.add(donor.trim());
+      }
+    });
+
+
+    setUniqueOrganizations(Array.from(orgSet).sort());
+  }, [laptopData, pickups]);
+
+  // Filter functions
+  const getFilteredLaptopData = () => {
+    if (!selectedOrganization) return laptopData;
+    return laptopData.filter(laptop =>
+      String(laptop["Donor Company Name"]).trim().toLowerCase() ===
+      selectedOrganization.toLowerCase()
+    );
+  };
+
+
+  const getFilteredPickups = () => {
+    if (!selectedOrganization) return pickups;
+    return pickups.filter(pickup =>
+      String(pickup["Donor Company"]).trim().toLowerCase() ===
+      selectedOrganization.toLowerCase()
+    );
+  };
+
+  // Apply filters to get filtered data
+  const filteredLaptopData = getFilteredLaptopData();
+  const filteredPickups = getFilteredPickups();
+
+  // Calculate counts based on filtered data
+  const refurbishedCountt = filteredLaptopData.filter(
+    item => item.Status === "Laptop Refurbished"
+  ).length;
+
+  const distributedCountt = filteredLaptopData.filter(
+    item => item.Status === "Distributed"
+  ).length;
+
+  const filteredTotalLaptops = selectedOrganization ?
+    filteredPickups.length :
+    totalLaptopss;
+
+  const handleFilterClick = (event) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterClose = () => {
+    setFilterAnchorEl(null);
+  };
+
+  const handleOrganizationSelect = (org) => {
+    setSelectedOrganization(org);
+    handleFilterClose();
+  };
+
+  const handleClearFilter = () => {
+    setSelectedOrganization(null);
+    handleFilterClose();
+  };
+
   const stages = [
-  {
-    title: "Pickup Requested",
-    subtitle: "Corporate requests submitted",
-    avg: "1-2 days",
-    count: totalLaptopss,
-    icon: <Package size={30} color="#1976d2" />,
-  },
-  // {
-  //   title: "Assessment",
-  //   subtitle: "Quality evaluation in progress",
-  //   avg: "2-3 days",
-  //   count: 8,
+    {
+      title: "Pickup Requested",
+      subtitle: "Corporate requests submitted",
+      avg: "1-2 days",
+      count: filteredTotalLaptops,
+      icon: <Package size={30} color="#1976d2" />,
+    },
+    // {
+    //   title: "Assessment",
+    //   subtitle: "Quality evaluation in progress",
+    //   avg: "2-3 days",
+    //   count: 8,
     // icon: <Tools size={30} color="#1976d2" />,
-  // },
-  {
-    title: "Refurbishment",
-    subtitle: "Hardware restoration & software setup",
-    avg: "5-7 days",
-    count: refurbishedCount,
-    icon: <Tools size={30} color="#1976d2" />,
-  },
-  {
-    title: "Distribution",
-    subtitle: "Ready for NGO delivery",
-    avg: "1-2 days",
-    count: distributedCount,
-    icon: <Truck size={30} color="#1976d2" />,
-  },
-  {
-    title: "Active Usage",
-    subtitle: "In use by beneficiaries",
-    avg: "Ongoing",
-    count: distributedCount,
-    icon: <Users size={30} color="#1976d2" />,
-  },
-];
+    // },
+    {
+      title: "Refurbishment",
+      subtitle: "Hardware restoration & software setup",
+      avg: "5-7 days",
+      count: refurbishedCountt,
+      icon: <Tools size={30} color="#1976d2" />,
+    },
+    {
+      title: "Distribution",
+      subtitle: "Ready for NGO delivery",
+      avg: "1-2 days",
+      count: distributedCountt,
+      icon: <Truck size={30} color="#1976d2" />,
+    },
+    {
+      title: "Active Usage",
+      subtitle: "In use by beneficiaries",
+      avg: "Ongoing",
+      count: distributedCountt,
+      icon: <Users size={30} color="#1976d2" />,
+    },
+  ];
 
 
   return (
@@ -265,6 +354,41 @@ const [laptopData, setLaptopData] = useState([]);
 
         {/* Right Section */}
         <Box display="flex" alignItems="center" gap={2}>
+          {selectedOrganization && (
+            <Chip
+              label={selectedOrganization}
+              variant="outlined"
+              size="small"
+              onDelete={handleClearFilter}
+              deleteIcon={<X size={14} />}
+              sx={{
+                maxWidth: 200,
+                "& .MuiChip-label": {
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                },
+              }}
+            />
+          )}
+
+          <Button
+            variant="outlined"
+            startIcon={<Filter size={16} />}
+            endIcon={<ChevronDown size={16} />}
+            onClick={handleFilterClick}
+            sx={{
+              textTransform: "none",
+              fontSize: 14,
+              px: 2,
+              py: 1,
+              borderColor: "#e0e0e0",
+              color: "#666",
+            }}
+          >
+            Filter by Organization
+          </Button>
+
           <Typography variant="body2" color="text.secondary">
             Corporate Partner
           </Typography>
@@ -273,11 +397,62 @@ const [laptopData, setLaptopData] = useState([]);
             color="primary"
             startIcon={<DownloadIcon />}
             sx={{ borderRadius: "10px", textTransform: "none" }}
+          // onClick={handleExport}
           >
             Export Report
           </Button>
+
+          {/* Filter Dropdown Menu */}
+          <Menu
+            anchorEl={filterAnchorEl}
+            open={Boolean(filterAnchorEl)}
+            onClose={handleFilterClose}
+            PaperProps={{
+              sx: {
+                maxHeight: 300,
+                width: 280,
+                mt: 1,
+                boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                border: "1px solid #e0e0e0",
+              },
+            }}
+          >
+            <MenuItem onClick={handleClearFilter} sx={{ py: 1.5 }}>
+              <ListItemIcon>
+                <X size={18} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Clear Filter"
+                primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+              />
+            </MenuItem>
+            <Divider />
+            {uniqueOrganizations.map((org) => (
+              <MenuItem
+                key={org}
+                onClick={() => handleOrganizationSelect(org)}
+                selected={selectedOrganization === org}
+                sx={{ py: 1.5 }}
+              >
+                <ListItemIcon>
+                  <Building size={18} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={org}
+                  primaryTypographyProps={{
+                    fontSize: 14,
+                    fontWeight: selectedOrganization === org ? 600 : 400,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                />
+              </MenuItem>
+            ))}
+          </Menu>
         </Box>
       </Box>
+
       <Box sx={{ p: 4, bgcolor: "#f9fafb", minHeight: "100vh", mt: 4 }}>
         {/* Header */}
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
@@ -301,7 +476,16 @@ const [laptopData, setLaptopData] = useState([]);
         <Box sx={{ mb: 6 }}>
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Current Pipeline Status
+            {selectedOrganization && (
+              <Chip
+                label={`Filtered: ${selectedOrganization}`}
+                size="small"
+                variant="outlined"
+                sx={{ ml: 2 }}
+              />
+            )}
           </Typography>
+
           <Grid container spacing={2}>
             {stages.map((stage) => (
               <Grid item xs={12} key={stage.title} >

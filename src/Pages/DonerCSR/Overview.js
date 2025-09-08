@@ -14,6 +14,11 @@ import {
   Divider,
   Chip,
   Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  IconButton,
 } from '@mui/material';
 import {
   Package,
@@ -29,11 +34,17 @@ import {
   Clock,
   Laptop,
   Calendar,
+  Filter,
+  X,
+  ChevronDown,
 } from 'lucide-react';
+import OverviewHeader from "./OverviewHeader";
 
 const Overview = () => {
   const [pickups, setPickups] = useState([]);
   const [totalLaptopss, setTotalLaptopss] = useState(0);
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
 
   const theme = useTheme();
   const [laptopData, setLaptopData] = useState([]);
@@ -43,6 +54,7 @@ const Overview = () => {
   const [ngoPartner, setNgoPartner] = useState([]);
   const [userData, setUserData] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,25 +69,58 @@ const Overview = () => {
         const userJson = await userRes.json();
 
         const approved = ngoJson.data.filter((ngo) => ngo.Status === "Approved");
+        function parseDate(dateStr) {
+          if (!dateStr) return null;
+          const iso = Date.parse(dateStr);
+          if (!isNaN(iso)) return new Date(iso);
+          const parts = dateStr.split(/[-/ :]/);
+          if (parts.length >= 3) {
+            const [d, m, y, hh = 0, mm = 0, ss = 0] = parts.map((p) => parseInt(p, 10));
+            return new Date(y, m - 1, d, hh, mm, ss);
+          }
+        }
 
         const partners = approved.map((ngo) => {
-          const laptopsAllocated = laptopJson.filter(
+          const filteredLaptops = laptopJson.filter(
             (laptop) =>
               String(laptop["Allocated To"]).trim().toLowerCase() ===
               String(ngo.organizationName).trim().toLowerCase()
-          ).length;
+          );
+
+          const laptopsAllocated = filteredLaptops.length;
+
 
           const beneficiariesCount = userJson.filter(
             (user) => String(user.Ngo).trim() === String(ngo.Id).trim()
           ).length;
 
+          const deliveries = filteredLaptops
+            .filter(
+              (laptop) =>
+                laptop["Status"]?.trim().toLowerCase() === "distributed" &&
+                laptop["Last Delivery Date"]
+            )
+            .map((laptop) => parseDate(laptop["Last Delivery Date"]))
+            .filter((d) => d !== null);
+
+          const lastDelivery =
+            deliveries.length > 0 ? new Date(Math.max(...deliveries)) : null;
           return {
             name: ngo.organizationName,
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
             beneficiaries: beneficiariesCount,
-            lastDelivery: ngo.lastDelivery || "N/A",
+            lastDelivery: lastDelivery
+              ? lastDelivery.toLocaleString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })
+              : "N/A", Doner: ngo.Doner || ngo.Donor || null,
           };
         });
 
@@ -91,11 +136,116 @@ const Overview = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const res = await fetch(
+            // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
+            `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
+            // method: "GET",
+            // headers: {
+            //   "Content-Type": "application/json",
+            // },
+          });
+          const data = await res.json();
+  
+          if (data.status === "success") {  
+            // setPickups(data.data);
+            setTotalLaptopss(data.totalLaptops);
+          }
+        } catch (error) {
+          console.error("Error fetching pickup data:", error);
+        }
+      };
+  
+      fetchData();
+    }, []);
+
+  const getUniqueOrganizations = () => {
+    const orgSet = new Set();
+
+    // From laptops → Donor Company Name
+    laptopData.forEach(laptop => {
+      const donorCompany = laptop["Donor Company Name"];
+      if (donorCompany && donorCompany.trim()) {
+        orgSet.add(donorCompany.trim());
+      }
+    });
+
+    // From NGOs → Donor
+    ngoPartner.forEach(partner => {
+      if (partner.Doner && partner.Doner.trim()) {
+        orgSet.add(partner.Doner.trim());
+      }
+    });
+
+    // From pickups → Donor Company
+    pickups.forEach(pickup => {
+      const donor = pickup["Donor Company"];
+      if (donor && donor.trim()) {
+        orgSet.add(donor.trim());
+      }
+    });
+
+    return Array.from(orgSet).sort();
+  };
+
+
+  // Filter functions
+  const getFilteredLaptopData = () => {
+    if (!selectedOrganization) return laptopData;
+    return laptopData.filter(laptop =>
+      String(laptop["Donor Company Name"]).trim().toLowerCase() ===
+      selectedOrganization.toLowerCase()
+    );
+  };
+
+
+  const getFilteredNgoPartners = () => {
+    if (!selectedOrganization) return ngoPartner;
+    return ngoPartner.filter(partner =>
+      String(partner.Doner).trim().toLowerCase() ===
+      selectedOrganization.toLowerCase()
+
+    );
+
+  };
+
+
+  const getFilteredPickups = () => {
+    if (!selectedOrganization) return pickups;
+    return pickups.filter(pickup =>
+      String(pickup["Donor Company"]).trim().toLowerCase() ===
+      selectedOrganization.toLowerCase()
+    );
+  };
+
+
+  const getFilteredUserData = () => {
+    if (!selectedOrganization) return userData;
+    // Filter users based on NGO that matches the selected organization
+    const matchingNgos = ngoPartner.filter(partner =>
+      String(partner.name).trim().toLowerCase() ===
+      selectedOrganization.toLowerCase()
+    );
+
+    if (matchingNgos.length === 0) return [];
+
+    return userData.filter(user =>
+      matchingNgos.some(ngo => String(user.Ngo).trim() === String(ngo.Id || ngo.name).trim())
+    );
+  };
+
+  // Apply filters to get filtered data
+  const filteredLaptopData = getFilteredLaptopData();
+  const filteredNgoPartners = getFilteredNgoPartners();
+  const filteredPickups = getFilteredPickups();
+  const filteredUserData = getFilteredUserData();
 
   // Mapping through Sheets
 
   ngoData.map((ngo) => {
-   
+
 
     const laptops = laptopData.filter((row) => {
       const allocatedTo = String(row["Allocated To"]).trim().toLowerCase();
@@ -104,78 +254,51 @@ const Overview = () => {
       const match = allocatedTo === ngoName;
 
       if (match) {
-        console.log("✅ Match found:", allocatedTo, "<->", ngoName);
+        // console.log("✅ Match found:", allocatedTo, "<->", ngoName);
       }
 
       return match;
     }).length;
 
-    console.log(`Laptops for ${ngo.organizationName}:`, laptops);
+    // console.log(`Laptops for ${ngo.organizationName}:`, laptops);
 
     const beneficiariesCount = userData.filter(
       (user) => String(user.Ngo || user.ngoId) === String(ngo.ID)
     ).length;
 
 
-    console.log(`Beneficiaries for ${ngo.organizationName}:`, beneficiariesCount);
+    // console.log(`Beneficiaries for ${ngo.organizationName}:`, beneficiariesCount);
 
     return {
       ...ngo,
       laptopCount: laptops,
-      beneficiaryCount: beneficiariesCount, 
+      beneficiaryCount: beneficiariesCount,
     };
   });
 
+
   // Total Counting
-  const totalLaptops = laptopData.length;
-  const refurbishedCount = laptopData.filter(
+  const totalLaptops = filteredLaptopData.length;
+  const refurbishedCount = filteredLaptopData.filter(
     (laptop) => laptop.Status === "Laptop Refurbished"
   ).length;
-  const distributedCount = laptopData.filter(
+  const distributedCount = filteredLaptopData.filter(
     (laptop) => laptop.Status === "Distributed"
   ).length;
-  const ngolaptopCount = laptopData.filter(
+  const ngolaptopCount = filteredLaptopData.filter(
     (laptop) => laptop.ID === "Distributed"
   ).length;
-  const totalBeneficiaries = ngoPartner.reduce(
+  const totalBeneficiaries = filteredNgoPartners.reduce(
     (sum, partner) => sum + (partner.beneficiaries || 0),
     0
   );
   const totalProcessed = refurbishedCount + distributedCount;
   const successRate =
     totalLaptops > 0 ? ((refurbishedCount / totalLaptops) * 100).toFixed(2) : 0;
-  const ngosServedCount = ngoPartner.filter(
+  const ngosServedCount = filteredNgoPartners.filter(
     (partner) => partner.laptops > 0
   ).length;
 
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(
-          // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
-          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}type=pickupget`, {
-          // method: "GET",
-          // headers: {
-          //   "Content-Type": "application/json",
-          // },
-        });
-        const data = await res.json();
-
-        if (data.status === "success") {
-          console.log("Fetched pickup data:", data.data);
-
-          setPickups(data.data);
-          setTotalLaptopss(data.totalLaptops);
-        }
-      } catch (error) {
-        console.error("Error fetching pickup data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const MetricCard = ({ title, value, subtitle, growth, icon: Icon }) => (
     <Card sx={{
@@ -300,13 +423,12 @@ const Overview = () => {
       const [hours, minutes, seconds] = timePart.split(":");
       return new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes), parseInt(seconds));
     } catch (e) {
-      console.error("Invalid date format:", dateString);
+      // console.error("Invalid date format:", dateString);
       return null;
     }
   }
 
-  // Filter data from last 24 hours
-  const last24HoursData = laptopData.filter(laptop => {
+  const last24HoursData = filteredLaptopData.filter(laptop => {
     const lastUpdatedStr = laptop["Last Updated On"];
     if (!lastUpdatedStr) return false;
     const lastUpdated = parseDate(lastUpdatedStr);
@@ -314,76 +436,85 @@ const Overview = () => {
     const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
     return hoursAgo <= 24;
   });
+  // console.log("Last 24 hours data:", last24HoursData);
+  const last24HoursPickups = filteredPickups.filter(p => {
+    const dateStr = p["Current Date & Time"];
+    if (!dateStr) return false;
+    const lastUpdated = parseDate(dateStr);
+    if (!lastUpdated) return false;
+    const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
+    return hoursAgo <= 24;
+  });
 
-  // for pickup
-  const last24HoursPickups = pickups.filter(p => {
-  const dateStr = p["Current Date & Time"];
-  if (!dateStr) return false;
-  const lastUpdated = parseDate(dateStr);
-  if (!lastUpdated) return false;
-  const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
-  return hoursAgo <= 24;
-});
 
- 
+
 
   const getRecentActivities = () => {
-  const activities = [];
+    const activities = [];
 
-  // 1. Laptop-related activities
-  if (last24HoursData.length > 0) {
-    const activityMap = {};
-    last24HoursData.forEach(laptop => {
-      const status = laptop.Status || "Unknown";
-      const allocatedTo = laptop["Allocated To"] || "Unassigned";
-      const lastUpdated = parseDate(laptop["Last Updated On"]);
+    // 1. Laptop-related activities
+    if (last24HoursData.length > 0) {
+      const activityMap = {};
+      last24HoursData.forEach(laptop => {
+        const status = laptop.Status || "Unknown";
+        const allocatedTo = laptop["Allocated To"] || "Unassigned";
 
-      let key;
-      if (status === "Allocated" || status === "Distributed") {
-        key = `${status}-${allocatedTo}`;
-      } else {
-        key = status;
-      }
+        // ✅ Special case: if status is "In Transit", use "Date Committed"
+        let lastUpdated;
+        if (status === "In Transit") {
+          lastUpdated = parseDate(laptop["Date Committed"]);
+        } else {
+          lastUpdated = parseDate(laptop["Last Updated On"]);
+        }
+        if (!lastUpdated) return;
 
-      if (!activityMap[key]) {
-        activityMap[key] = {
-          status,
-          allocatedTo: (status === "Allocated" || status === "Distributed") ? allocatedTo : null,
-          count: 0,
-          lastUpdated,
-          id: allocatedTo?.charAt(0).toUpperCase() || "?", // Avatar 
-        };
-      }
-      activityMap[key].count++;
-      if (activityMap[key].lastUpdated < lastUpdated) {
-        activityMap[key].lastUpdated = lastUpdated;
-      }
-    });
+        let key;
+        if (status === "Allocated" || status === "Distributed") {
+          key = `${status}-${allocatedTo}`;
+        } else {
+          key = status;
+        }
 
-    activities.push(...Object.values(activityMap));
-  }
-
-  // 2. Pickup-related activities
-  if (last24HoursPickups.length > 0) {
-    last24HoursPickups.forEach(p => {
-      const donor = p["Donor Company"]?.trim?.() || "Unknown Donor";
-      const pickupId = p["Pickup ID"];
-      const lastUpdated = parseDate(p["Current Date & Time"]);
-
-      activities.push({
-        status: "Pickup Request",
-        allocatedTo: donor,
-        count: 1,
-        lastUpdated,
-        id: pickupId,
-        message: `New pickup request by ${donor}`,
+        if (!activityMap[key]) {
+          activityMap[key] = {
+            status,
+            allocatedTo: (status === "Allocated" || status === "Distributed") ? allocatedTo : null,
+            count: 0,
+            lastUpdated,
+            id: allocatedTo?.charAt(0).toUpperCase() || "?", // Avatar 
+          };
+        }
+        activityMap[key].count++;
+        if (activityMap[key].lastUpdated < lastUpdated) {
+          activityMap[key].lastUpdated = lastUpdated;
+        }
       });
-    });
-  }
 
-  // Sort all activities by time
-  return activities.sort((a, b) => b.lastUpdated - a.lastUpdated);
-};
+      activities.push(...Object.values(activityMap));
+    }
+
+    // 2. Pickup-related activities
+    if (last24HoursPickups.length > 0) {
+      last24HoursPickups.forEach(p => {
+        const donor = p["Donor Company"]?.trim?.() || "Unknown Donor";
+        const pickupId = p["Pickup ID"];
+        const lastUpdated = parseDate(p["Current Date & Time"]);
+
+        activities.push({
+          status: "Pickup Request",
+          allocatedTo: donor,
+          count: 1,
+          lastUpdated,
+          id: pickupId,
+          message: `New pickup request by ${donor}`,
+        });
+      });
+    }
+
+    // Sort all activities by time
+    return activities.sort((a, b) => b.lastUpdated - a.lastUpdated);
+  };
+
 
   const timeAgo = (timestamp) => {
     if (!timestamp) return "Unknown time";
@@ -403,103 +534,75 @@ const Overview = () => {
 
 
   const formatActivityMessage = (activity) => {
-  if (activity.status === "Pickup Request") {
-    return activity.message || `New pickup request by ${activity.allocatedTo}`;
-  }
+    if (activity.status === "Pickup Request") {
+      return activity.message || `New pickup request by ${activity.allocatedTo}`;
+    }
 
-  const statusMessages = {
-    "Laptop Received": "received",
-    "Laptop Refurbished": "refurbished",
-    "To be dispatch": "prepared for dispatch",
-    "Distributed": "distributed to",
-    "Allocated": "allocated to"
+    if (activity.status === "In Transit") {
+      return `${activity.count} new laptop${activity.count > 1 ? "s" : ""} added with status In Transit`;
+    }
+
+    const statusMessages = {
+      "Laptop Received": "received",
+      "Laptop Refurbished": "refurbished",
+      "To be dispatch": "prepared for dispatch",
+      "Distributed": "distributed to",
+      "Allocated": "allocated to"
+    };
+
+    const action = statusMessages[activity.status] || activity.status.toLowerCase();
+    const count = activity.count;
+    const laptop = count === 1 ? "laptop" : "laptops";
+
+    if (activity.status === "Distributed" || activity.status === "Allocated") {
+      return `${count} ${laptop} ${action} ${activity.allocatedTo}`;
+    } else {
+      return `${count} ${laptop} ${action}`;
+    }
   };
 
-  const action = statusMessages[activity.status] || activity.status.toLowerCase();
-  const count = activity.count;
-  const laptop = count === 1 ? "laptop" : "laptops";
-
-  if (activity.status === "Distributed" || activity.status === "Allocated") {
-    return `${count} ${laptop} ${action} ${activity.allocatedTo}`;
-  } else {
-    return `${count} ${laptop} ${action}`;
-  }
-};
   const getActivityColor = (status) => {
-  switch (status) {
-    case "Distributed":
-      return "success.main";
-    case "Laptop Refurbished":
-      return "info.main";
-    case "To be dispatch":
-      return "warning.main";
-    case "Laptop Received":
-      return "primary.main";
-    case "Allocated":
-      return "secondary.main";
-    case "Pickup Request":
-      return "error.main"; 
-    default:
-      return "grey.500";
-  }
-};
+    switch (status) {
+      case "Distributed":
+        return "success.main";
+      case "Laptop Refurbished":
+        return "info.main";
+      case "To be dispatch":
+        return "warning.main";
+      case "Laptop Received":
+        return "primary.main";
+      case "Allocated":
+        return "secondary.main";
+      case "Pickup Request":
+        return "error.main";
+      default:
+        return "grey.500";
+    }
+  };
 
 
   const recentActivities = getRecentActivities();
-  
+  const uniqueOrganizations = getUniqueOrganizations();
+
   return (
 
     <>
-      <Box sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        mb: 3
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar sx={{
-            width: 32,
-            height: 32,
-            backgroundColor: '#4caf50',
-            mr: 1.5,
-            fontSize: 14,
-            fontWeight: 600
-          }}>
+      <OverviewHeader
+        uniqueOrganizations={uniqueOrganizations}
+        onOrganizationChange={setSelectedOrganization}
+      />
 
-          </Avatar>
-          <Box>
-            <Typography variant="subtitle1" fontWeight="bold" color="black">
-              Sama CSR Dashboard
-            </Typography>
-            <Typography variant="body2" sx={{ fontSize: 12, color: '#666' }}>
-              Laptop Refurbishment & Distribution Tracking
-            </Typography>
-          </Box>
-        </Box>
-        <Box sx={{ textAlign: 'right' }}>
-          <Typography variant="body2" sx={{ fontSize: 12, color: '#666', fontWeight: 'bold' }}>
-            Corporate Partner
-          </Typography>
-          <Typography variant="body2" sx={{ fontSize: 12, color: '#666' }}>
-            Dashboard Access
-          </Typography>
-        </Box>
-      </Box>
-      <Divider sx={{ mb: 3, width: '100%' }} />
-      <Box sx={{
-        p: 3,
-        pb: 10,
+      <Divider sx={{ mb: 3, width: "100%" }} />
 
-      }}>
-
+      <Box sx={{ p: 3, pb: 10 }}>
         <Box sx={{ mb: 3 }}>
-          <Typography
-            variant="h5"
-            sx={{ fontWeight: 'bold', color: '#333' }}
-          > CSR Impact Dashboard
+          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
+            CSR Impact Dashboard
           </Typography>
-          <Typography variant="body1" sx={{ color: '#666', fontSize: 16 }}>
-            Comprehensive tracking of laptop refurbishment and distribution impact
+          <Typography variant="body1" sx={{ color: "#666", fontSize: 16 }}>
+            {selectedOrganization
+              ? `Impact tracking for ${selectedOrganization}`
+              : "Comprehensive tracking of laptop refurbishment and distribution impact"}
           </Typography>
         </Box>
 
@@ -509,8 +612,9 @@ const Overview = () => {
             <MetricCard
               title="Total Laptops Collected"
               value={totalLaptops}
-              subtitle="Lifetime donations from corporates"
-              growth="+15.2% from last month"
+              // subtitle="Lifetime donations from corporates"
+              subtitle={selectedOrganization ? `From ${selectedOrganization}` : "Lifetime donations from corporates"}
+              // growth="+15.2% from last month"
               icon={Package}
             />
           </Grid>
@@ -519,7 +623,7 @@ const Overview = () => {
               title="Successfully Refurbished"
               value={refurbishedCount}
               subtitle={`${successRate}% success rate`}
-              growth="+8.1% from last month"
+              // growth="+8.1% from last month"
               icon={CheckCircle}
             />
           </Grid>
@@ -529,7 +633,7 @@ const Overview = () => {
               title="Active Beneficiaries"
               value={totalBeneficiaries}
               subtitle="Currently using laptops"
-              growth="+23.6% from last month"
+              // growth="+23.6% from last month"
               icon={Users}
             />
 
@@ -537,9 +641,9 @@ const Overview = () => {
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="NGO Partners"
-              value={approvedCount}
-              subtitle="Organizations served"
-              growth="+12% from last month"
+              value={selectedOrganization ? filteredNgoPartners.length : approvedCount}
+              subtitle={selectedOrganization ? "Matching organizations" : "Organizations served"}
+              // growth="+12% from last month"
               icon={Building}
             />
           </Grid>
@@ -586,6 +690,14 @@ const Overview = () => {
             <Box sx={{ mb: 4 }}>
               <Typography variant="h5" sx={{ fontSize: 20, fontWeight: 600, color: '#1a1a1a', mb: 1 }}>
                 Laptop Journey Pipeline
+                {selectedOrganization && (
+                  <Chip
+                    label={selectedOrganization}
+                    size="small"
+                    variant="outlined"
+                    sx={{ ml: 2 }}
+                  />
+                )}
               </Typography>
               <Typography variant="body1" sx={{ fontSize: 14, color: '#666' }}>
                 Real-time tracking of laptops through the refurbishment process
@@ -595,11 +707,11 @@ const Overview = () => {
             {/* Pipeline Steps */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {[
-                { icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: `${totalLaptopss} laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2" },
+                { icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: selectedOrganization ? `${filteredPickups.length} requests` : `${totalLaptopss} laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2" },
                 // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
                 { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
                 { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
-                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${distributedCount}`, bgColor: "#ffebee", iconColor: "#d32f2f" }
+                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${distributedCount} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f" }
               ].map((step, index) => (
                 // <Grid item xs={6} sm={4} md={2.4} key={index}>
                 <Grid item xs={6} sm={4} md={3} key={index}>
@@ -638,7 +750,7 @@ const Overview = () => {
           </CardContent>
         </Card>
         <Grid container spacing={3}>
-          
+
           {/* Recent Activity Section */}
           <Grid item xs={12} md={6}>
             <RecentActivity
@@ -660,85 +772,110 @@ const Overview = () => {
                   <Building size={20} style={{ marginRight: 8, color: "#555" }} />
                   <Typography variant="h6" fontWeight={600}>
                     NGO Partners
+                    {selectedOrganization && (
+                      <Chip
+                        label={`Filtered: ${filteredNgoPartners.length}`}
+                        size="small"
+                        variant="outlined"
+                        sx={{ ml: 2 }}
+                      />
+                    )}
                   </Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary" mb={3}>
-                  Organizations receiving laptop distributions
+                  {selectedOrganization
+                    ? `Organizations matching ${selectedOrganization}`
+                    : "Organizations receiving laptop distributions"
+                  }
                 </Typography>
-
-                {(showAll ? ngoPartner : ngoPartner.slice(0, 3)).map(
-                  (partner, index) => (
-                    <Box key={partner.name} mb={3}>
-                      <Box display="flex" justifyContent="space-between" mb={1}>
-                        <Typography variant="body2" fontWeight={600}>
-                          {partner.name}
-                        </Typography>
-                        {getStatusChip(partner.status)}
-                      </Box>
-
-                      <Typography variant="caption" color="text.secondary">
-                        📍 {partner.location}
-                      </Typography>
-
-                      <Box display="flex" justifyContent="space-between" mt={2}>
-                        <Box display="flex" gap={4}>
-                          <Box textAlign="center">
-                            <Box display="flex" alignItems="center" gap={0.5}>
-                              <Laptop size={16} color="#555" />
-                              <Typography
-                                variant="subtitle1"
-                                fontWeight={600}
-                                color="primary"
-                              >
-                                {partner.laptops}
-                              </Typography>
-                            </Box>
-                            <Typography variant="caption" color="text.secondary">
-                              Laptops
+                {filteredNgoPartners.length === 0 ? (
+                  <Box sx={{
+                    textAlign: 'center',
+                    py: 4,
+                    color: '#666'
+                  }}>
+                    <Building size={48} color="#ccc" style={{ marginBottom: 16 }} />
+                    <Typography variant="body2">
+                      No NGO partners found for the selected organization
+                    </Typography>
+                  </Box>
+                ) : (
+                  <>
+                    {(showAll ? filteredNgoPartners : filteredNgoPartners.slice(0, 3)).map(
+                      (partner, index) => (
+                        <Box key={partner.name} mb={3}>
+                          <Box display="flex" justifyContent="space-between" mb={1}>
+                            <Typography variant="body2" fontWeight={600}>
+                              {partner.name}
                             </Typography>
+                            {getStatusChip(partner.status)}
                           </Box>
 
-                          <Box textAlign="center">
-                            <Box display="flex" alignItems="center" gap={0.5}>
-                              <Users size={16} color="#555" />
-                              <Typography
-                                variant="subtitle1"
-                                fontWeight={600}
-                                color="success.main"
-                              >
-                                {partner.beneficiaries}
-                              </Typography>
-                            </Box>
-                            <Typography variant="caption" color="text.secondary">
-                              Beneficiaries
-                            </Typography>
-                          </Box>
-                        </Box>
-
-                        <Box textAlign="right">
-                          <Typography variant="body2" fontWeight={500}>
-                            {partner.lastDelivery}
-                          </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            Last delivery
+                            📍 {partner.location}
                           </Typography>
+
+                          <Box display="flex" justifyContent="space-between" mt={2}>
+                            <Box display="flex" gap={4}>
+                              <Box textAlign="center">
+                                <Box display="flex" alignItems="center" gap={0.5}>
+                                  <Laptop size={16} color="#555" />
+                                  <Typography
+                                    variant="subtitle1"
+                                    fontWeight={600}
+                                    color="primary"
+                                  >
+                                    {partner.laptops}
+                                  </Typography>
+                                </Box>
+                                <Typography variant="caption" color="text.secondary">
+                                  Laptops
+                                </Typography>
+                              </Box>
+
+                              <Box textAlign="center">
+                                <Box display="flex" alignItems="center" gap={0.5}>
+                                  <Users size={16} color="#555" />
+                                  <Typography
+                                    variant="subtitle1"
+                                    fontWeight={600}
+                                    color="success.main"
+                                  >
+                                    {partner.beneficiaries}
+                                  </Typography>
+                                </Box>
+                                <Typography variant="caption" color="text.secondary">
+                                  Beneficiaries
+                                </Typography>
+                              </Box>
+                            </Box>
+
+                            <Box textAlign="right">
+                              <Typography variant="body2" fontWeight={500}>
+                                {partner.lastDelivery}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                Last delivery
+                              </Typography>
+                            </Box>
+                          </Box>
+
+                          {index < filteredNgoPartners.length - 1 && <Divider sx={{ mt: 2 }} />}
                         </Box>
-                      </Box>
+                      )
+                    )}
 
-                      {index < ngoPartner.length - 1 && <Divider sx={{ mt: 2 }} />}
-                    </Box>
-                  )
-                )}
-
-                {ngoPartner.length > 3 && (
-                  <Button
-                    size="small"
-                    sx={{ mt: 2 }}
-                    color="primary"
-                    onClick={() => setShowAll(!showAll)}
-                  >
-                    {showAll ? "Hide NGO partners ↑" : "View all NGO partners →"}
-                  </Button>
+                    {filteredNgoPartners.length > 3 && (
+                      <Button
+                        size="small"
+                        sx={{ mt: 2 }}
+                        color="primary"
+                        onClick={() => setShowAll(!showAll)}
+                      >
+                        {showAll ? "Hide NGO partners ↑" : "View all NGO partners →"}
+                      </Button>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
