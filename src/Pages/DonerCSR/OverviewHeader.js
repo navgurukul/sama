@@ -20,8 +20,11 @@ const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
   const navigate = useNavigate();
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
+  const role = JSON.parse(localStorage.getItem("role") || "[]");
+  const isAdmin = role.includes("admin");
 
-useEffect(() => {
+
+  useEffect(() => {
     if (donorName) {
       setSelectedOrganization(donorName);
     }
@@ -89,7 +92,7 @@ useEffect(() => {
 
         {/* Right side - Filters */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {selectedOrganization && (
+          {isAdmin && selectedOrganization &&(
             <Chip
               label={selectedOrganization}
               variant="outlined"
@@ -106,23 +109,24 @@ useEffect(() => {
               }}
             />
           )}
-
-          <Button
-            variant="outlined"
-            startIcon={<Filter size={16} />}
-            endIcon={<ChevronDown size={16} />}
-            onClick={handleFilterClick}
-            sx={{
-              textTransform: "none",
-              fontSize: 14,
-              px: 2,
-              py: 1,
-              borderColor: "#e0e0e0",
-              color: "#666",
-            }}
-          >
-            Filter by Doner
-          </Button>
+          {isAdmin && !donorName && (
+            <Button
+              variant="outlined"
+              startIcon={<Filter size={16} />}
+              endIcon={<ChevronDown size={16} />}
+              onClick={handleFilterClick}
+              sx={{
+                textTransform: "none",
+                fontSize: 14,
+                px: 2,
+                py: 1,
+                borderColor: "#e0e0e0",
+                color: "#666",
+              }}
+            >
+              Filter by Doner
+            </Button>
+          )}
 
           <Box sx={{ textAlign: "right" }}>
             <Typography
@@ -137,59 +141,62 @@ useEffect(() => {
           </Box>
 
           {/* Filter Dropdown Menu */}
-          <Menu
-            anchorEl={filterAnchorEl}
-            open={Boolean(filterAnchorEl)}
-            onClose={handleFilterClose}
-            PaperProps={{
-              sx: {
-                maxHeight: 300,
-                width: 280,
-                mt: 1,
-                boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-                border: "1px solid #e0e0e0",
-              },
-            }}
-          >
-            <MenuItem onClick={handleClearFilter} sx={{ py: 1.5 }}>
-              <ListItemIcon>
-                <X size={18} />
-              </ListItemIcon>
-              <ListItemText
-                primary="Clear Filter"
-                primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
-              />
-            </MenuItem>
-            <Divider />
-            {uniqueOrganizations.map((org) => (
-              <MenuItem
-                key={org}
-                onClick={() => handleOrganizationSelect(org)}
-                selected={selectedOrganization === org}
-                sx={{ py: 1.5 }}
-              >
+          {isAdmin && !donorName && (
+            <Menu
+              anchorEl={filterAnchorEl}
+              open={Boolean(filterAnchorEl)}
+              onClose={handleFilterClose}
+              PaperProps={{
+                sx: {
+                  maxHeight: 300,
+                  width: 280,
+                  mt: 1,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                  border: "1px solid #e0e0e0",
+                },
+              }}
+            >
+              <MenuItem onClick={handleClearFilter} sx={{ py: 1.5 }}>
                 <ListItemIcon>
-                  <Building size={18} />
+                  <X size={18} />
                 </ListItemIcon>
                 <ListItemText
-                  primary={org}
-                  primaryTypographyProps={{
-                    fontSize: 14,
-                    fontWeight:
-                      selectedOrganization === org ? 600 : 400,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
+                  primary="Clear Filter"
+                  primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
                 />
               </MenuItem>
-            ))}
-          </Menu>
+              <Divider />
+              {uniqueOrganizations.map((org) => (
+                <MenuItem
+                  key={org}
+                  onClick={() => handleOrganizationSelect(org)}
+                  selected={selectedOrganization === org}
+                  sx={{ py: 1.5 }}
+                >
+                  <ListItemIcon>
+                    <Building size={18} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={org}
+                    primaryTypographyProps={{
+                      fontSize: 14,
+                      fontWeight:
+                        selectedOrganization === org ? 600 : 400,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  />
+                </MenuItem>
+              ))}
+            </Menu>
+          )}
+          {/* </Menu> */}
         </Box>
       </Box>
 
       {/* Filter Status Bar */}
-      {selectedOrganization && (
+      {isAdmin && selectedOrganization && (
         <Box
           sx={{
             mb: 3,

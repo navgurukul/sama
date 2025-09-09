@@ -36,6 +36,8 @@ export default function LaptopTracking() {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
+const role = JSON.parse(localStorage.getItem("role") || "[]");
+  const isAdmin = role.includes("admin");
 
 useEffect(() => {
     if (donorName) {
@@ -215,7 +217,7 @@ useEffect(() => {
 
         {/* Right Section */}
         <Box display="flex" alignItems="center" gap={2}>
-          {selectedOrganization && (
+          {isAdmin &&  selectedOrganization && (
             <Chip
               label={selectedOrganization}
               variant="outlined"
@@ -298,7 +300,7 @@ useEffect(() => {
       </Box>
 
       {/* Filter Status Bar */}
-      {selectedOrganization && (
+      { isAdmin &&  selectedOrganization && (
         <Box
           sx={{
             p: 2,
@@ -315,7 +317,6 @@ useEffect(() => {
           </Typography>
         </Box>
       )}
-
       {/* ======= MAIN CONTENT ======= */}
       <Box p={3}>
         <Paper elevation={2} sx={{ bgcolor: "#f9f9f9", minHeight: "100vh" }}>
@@ -324,7 +325,7 @@ useEffect(() => {
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
                 Laptop Tracking
-                {selectedOrganization && (
+                {isAdmin && selectedOrganization && (
                   <Chip
                     label={selectedOrganization}
                     size="small"
@@ -333,6 +334,7 @@ useEffect(() => {
                   />
                 )}
               </Typography>
+              
               <Box display="flex" alignItems="center" gap={2}>
                 <TextField
                   label="Search by ID"
@@ -342,14 +344,17 @@ useEffect(() => {
                   onChange={(e) => setSearchId(e.target.value)}
                   sx={{ width: "250px" }}
                 />
+                  {isAdmin && (
                 <Button
                   variant="outlined"
                   startIcon={<FilterAltIcon />}
                   onClick={handleFilterClick}
                 >
-                  Organization Filter
+                   Filter by Doner
                 </Button>
+                  )}
               </Box>
+                  
             </Box>
 
             {/* ====== TABLE ====== */}
