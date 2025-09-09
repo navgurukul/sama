@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import {
   Box,
@@ -29,6 +29,7 @@ import { Filter, Building, X, ChevronDown } from "lucide-react";
 
 export default function LaptopTracking() {
   const { donorName } = useParams();
+  const navigate = useNavigate();
   const [laptopData, setLaptopData] = useState([]);
   const [search, setSearch] = useState("");
   const [searchId, setSearchId] = useState("");
@@ -107,11 +108,15 @@ useEffect(() => {
   const handleOrganizationSelect = (org) => {
     setSelectedOrganization(org);
     handleFilterClose();
+
+    navigate(`/donorcsr/${org}/laptop-tracking`);
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
+
+    navigate(`/donorcsr/overview`);
   };
 
   // Function to get color based on status

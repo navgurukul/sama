@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -30,6 +30,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 
 const Ngopartner = () => {
   const { donorName } = useParams();
+  const navigate = useNavigate();
   const [ngoPartner, setNgoPartner] = useState([]);
   const [filteredNgoPartner, setFilteredNgoPartner] = useState([]);
   const [visibleCount, setVisibleCount] = useState(4);
@@ -179,11 +180,15 @@ const Ngopartner = () => {
   const handleOrganizationSelect = (org) => {
     setSelectedOrganization(org);
     handleFilterClose();
+
+    navigate(`/donorcsr/${org}/partners`);
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
+
+    navigate(`/donorcsr/partners`);
   };
   const handleExport = () => {
     // Use filtered data for export if a filter is applied

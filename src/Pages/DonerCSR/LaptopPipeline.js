@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import {
   Box,
@@ -141,6 +141,7 @@ const insights = [
 
 const LaptopPipeline = () => {
   const { donorName } = useParams();
+  const navigate = useNavigate();
   const [laptopData, setLaptopData] = useState([]);
   const [totalLaptops, setTotalLaptops] = useState(0);
   const [refurbishedCount, setRefurbishedCount] = useState(0);
@@ -150,9 +151,12 @@ const LaptopPipeline = () => {
   const [pickups, setPickups] = useState([]);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
+
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const isAdmin = user.role === "admin"; // adjust according to how role is stored
 
+
+  
   useEffect(() => {
     if (donorName) {
       setSelectedOrganization(donorName);
@@ -256,7 +260,6 @@ const LaptopPipeline = () => {
   // Apply filters to get filtered data
   const filteredLaptopData = getFilteredLaptopData();
   const filteredPickups = getFilteredPickups();
-
   // Calculate counts based on filtered data
   const refurbishedCountt = filteredLaptopData.filter(
     item => item.Status === "Laptop Refurbished"
@@ -281,11 +284,15 @@ const LaptopPipeline = () => {
   const handleOrganizationSelect = (org) => {
     setSelectedOrganization(org);
     handleFilterClose();
+
+    navigate(`/donorcsr/${org}/laptop-pipeline`);
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
+
+    navigate(`/donorcsr/laptop-pipeline`);
   };
 
   const stages = [
@@ -325,6 +332,10 @@ const LaptopPipeline = () => {
       icon: <Users size={30} color="#1976d2" />,
     },
   ];
+
+  const handleDaysChange = (event) => {
+  setSelectedDays(event.target.value);
+};
 
 
   return (
@@ -472,14 +483,14 @@ const LaptopPipeline = () => {
           >
             Laptop Journey Pipeline
           </Typography>
-          <FormControl size="small">
+          {/* <FormControl size="small">
             <InputLabel>Filter</InputLabel>
-            <Select defaultValue={30} label="Filter">
+            <Select value={selectedDays} label="Filter" onChange={handleDaysChange}>
               <MenuItem value={30}>Last 30 days</MenuItem>
-              <MenuItem value={60}>Last 60 days</MenuItem>
-              <MenuItem value={90}>Last 90 days</MenuItem>
+              <MenuItem value={60}>Last 15 days</MenuItem>
+              <MenuItem value={90}>Last 1 week</MenuItem>
             </Select>
-          </FormControl>
+          </FormControl> */}
         </Box>
 
         {/* Pipeline Section */}
