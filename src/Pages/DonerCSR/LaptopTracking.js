@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+
 import {
   Box,
   Typography,
@@ -26,12 +28,22 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { Filter, Building, X, ChevronDown } from "lucide-react";
 
 export default function LaptopTracking() {
+  const { donorName } = useParams();
+  const navigate = useNavigate();
   const [laptopData, setLaptopData] = useState([]);
   const [search, setSearch] = useState("");
   const [searchId, setSearchId] = useState("");
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
+const role = JSON.parse(localStorage.getItem("role") || "[]");
+  const isAdmin = role.includes("admin");
+
+useEffect(() => {
+    if (donorName) {
+      setSelectedOrganization(donorName);
+    }
+  }, [donorName]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,11 +108,15 @@ export default function LaptopTracking() {
   const handleOrganizationSelect = (org) => {
     setSelectedOrganization(org);
     handleFilterClose();
+
+    navigate(`/donorcsr/${org}/laptop-tracking`);
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
+
+    navigate(`/donorcsr/overview`);
   };
 
   // Function to get color based on status
@@ -201,7 +217,7 @@ export default function LaptopTracking() {
 
         {/* Right Section */}
         <Box display="flex" alignItems="center" gap={2}>
-          {selectedOrganization && (
+          {isAdmin &&  selectedOrganization && (
             <Chip
               label={selectedOrganization}
               variant="outlined"
@@ -284,7 +300,7 @@ export default function LaptopTracking() {
       </Box>
 
       {/* Filter Status Bar */}
-      {selectedOrganization && (
+      { isAdmin &&  selectedOrganization && (
         <Box
           sx={{
             p: 2,
@@ -301,7 +317,6 @@ export default function LaptopTracking() {
           </Typography>
         </Box>
       )}
-
       {/* ======= MAIN CONTENT ======= */}
       <Box p={3}>
         <Paper elevation={2} sx={{ bgcolor: "#f9f9f9", minHeight: "100vh" }}>
@@ -310,7 +325,7 @@ export default function LaptopTracking() {
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
                 Laptop Tracking
-                {selectedOrganization && (
+                {isAdmin && selectedOrganization && (
                   <Chip
                     label={selectedOrganization}
                     size="small"
@@ -319,6 +334,7 @@ export default function LaptopTracking() {
                   />
                 )}
               </Typography>
+              
               <Box display="flex" alignItems="center" gap={2}>
                 <TextField
                   label="Search by ID"
@@ -328,14 +344,17 @@ export default function LaptopTracking() {
                   onChange={(e) => setSearchId(e.target.value)}
                   sx={{ width: "250px" }}
                 />
+                  {isAdmin && (
                 <Button
                   variant="outlined"
                   startIcon={<FilterAltIcon />}
                   onClick={handleFilterClick}
                 >
-                  Organization Filter
+                   Filter by Doner
                 </Button>
+                  )}
               </Box>
+                  
             </Box>
 
             {/* ====== TABLE ====== */}

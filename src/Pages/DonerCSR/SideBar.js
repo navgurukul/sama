@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useParams } from "react-router-dom";
 import {
   Box,
   List,
@@ -23,10 +23,10 @@ const navItems = [
   {
     section: "Main Navigation",
     items: [
-      { label: "Overview", icon: <BarChart2 size={20} />, path: "/donorcsr/overview" },
-      { label: "Laptop Pipeline", icon: <Package size={20} />, path: "/donorcsr/laptop-pipeline" },
-      { label: "NGO Partners", icon: <Building size={20} />, path: "/donorcsr/partners" },
-      { label: "Laptop Tracking", icon: <Search size={20} />, path: "/donorcsr/laptop-tracking" },
+      { label: "Overview", icon: <BarChart2 size={20} />, path: "overview" },
+      { label: "Laptop Pipeline", icon: <Package size={20} />, path: "laptop-pipeline" },
+      { label: "NGO Partners", icon: <Building size={20} />, path: "partners" },
+      { label: "Laptop Tracking", icon: <Search size={20} />, path: "laptop-tracking" },
       // { label: "Impact Analytics", icon: <TrendingUp size={20} />, path: "/donorcsr/impact-analytics" },
       // { label: "Pickup Requests", icon: <ClipboardList size={20} />, path: "/donorcsr/requests" },
     ],
@@ -40,6 +40,7 @@ const navItems = [
 ];
 
 const Sidebar = () => {
+  const { donorName } = useParams();
   return (
     <Box sx={{ display: "flex" }}>
       {/* Sidebar */}
@@ -62,31 +63,39 @@ const Sidebar = () => {
               {group.section}
             </Typography>
             <List disablePadding>
-              {group.items.map((item) => (
-                <ListItemButton
-                  key={item.label}
-                  component={NavLink}
-                  to={item.path}
-                  style={({ isActive }) => ({
-                    borderRadius: 8,
-                    marginBottom: 4,
-                    color: isActive ? "#2e7d32" : "inherit",
-                    backgroundColor: isActive ? "rgba(46, 125, 50, 0.08)" : "transparent",
-                    fontWeight: isActive ? 600 : 400,
-                  })}
-                >
-                  <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontSize: 14,
-                      fontWeight: 500,
-                    }}
-                  />
-                </ListItemButton>
-              ))}
+              {group.items.map((item) => {
+                // 👇 If donorName exists, keep it in path, otherwise default
+                const toPath = donorName
+                  ? `/donorcsr/${donorName}/${item.path}`
+                  : `/donorcsr/${item.path}`;
+
+                return (
+
+                  <ListItemButton
+                    key={item.label}
+                    component={NavLink}
+                    to={toPath}
+                    style={({ isActive }) => ({
+                      borderRadius: 8,
+                      marginBottom: 4,
+                      color: isActive ? "#2e7d32" : "inherit",
+                      backgroundColor: isActive ? "rgba(46, 125, 50, 0.08)" : "transparent",
+                      fontWeight: isActive ? 600 : 400,
+                    })}
+                  >
+                    <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.label}
+                      primaryTypographyProps={{
+                        fontSize: 14,
+                        fontWeight: 500,
+                      }}
+                    />
+                  </ListItemButton>
+                );
+              })}
             </List>
             {idx < navItems.length - 1 && <Divider sx={{ mt: 2 }} />}
           </Box>
