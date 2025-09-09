@@ -38,6 +38,8 @@ const Ngopartner = () => {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
+  const role = JSON.parse(localStorage.getItem("role") || "[]");
+  const isAdmin = role.includes("admin");
 
   useEffect(() => {
     if (donorName) {
@@ -261,7 +263,7 @@ const Ngopartner = () => {
 
         {/* Right Section */}
         <Box display="flex" alignItems="center" gap={2}>
-          {selectedOrganization && (
+          {isAdmin && selectedOrganization && (
             <Chip
               label={selectedOrganization}
               variant="outlined"
@@ -279,23 +281,24 @@ const Ngopartner = () => {
             />
           )}
 
-          <Button
-            variant="outlined"
-            startIcon={<Filter size={16} />}
-            endIcon={<ChevronDown size={16} />}
-            onClick={handleFilterClick}
-            sx={{
-              textTransform: "none",
-              fontSize: 14,
-              px: 2,
-              py: 1,
-              borderColor: "#e0e0e0",
-              color: "#666",
-            }}
-          >
-            Filter by Doner
-          </Button>
-
+          {isAdmin && !donorName && (
+            <Button
+              variant="outlined"
+              startIcon={<Filter size={16} />}
+              endIcon={<ChevronDown size={16} />}
+              onClick={handleFilterClick}
+              sx={{
+                textTransform: "none",
+                fontSize: 14,
+                px: 2,
+                py: 1,
+                borderColor: "#e0e0e0",
+                color: "#666",
+              }}
+            >
+              Filter by Doner
+            </Button>
+          )}
           <Typography variant="body2" color="text.secondary">
             Corporate Partner
           </Typography>
@@ -372,7 +375,7 @@ const Ngopartner = () => {
         >
           <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#333' }}>
             NGO Partners
-            {selectedOrganization && (
+            {isAdmin && selectedOrganization && (
               <Chip
                 label={`Filtered: ${selectedOrganization}`}
                 size="small"
