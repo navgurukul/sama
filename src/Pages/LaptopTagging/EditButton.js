@@ -69,7 +69,7 @@ const EditButton = ({
             majorIssues: laptopData["Major Issues"] ? laptopData["Major Issues"].split(",") : [],
             minorIssues: laptopData["Minor Issues"] ? laptopData["Minor Issues"].split(",") : [],
             assignedTo: laptopData["Assigned To"] || "",
-            donatedTo: laptopData["Donated To"] || "",
+            donatedTo: laptopData["Allocated To"],
             lastUpdatedOn: currentDate,
             lastUpdatedBy: lastUpdatedBy,
             
@@ -96,6 +96,7 @@ const EditButton = ({
     const handleSaveEdit = async () => {
         const dataToSend = {
             ...editData,
+            allocatedTo: editData.allocatedTo || laptopData["Allocated To"],
             type: "laptopLabeling",
         };
 
@@ -142,6 +143,7 @@ const EditButton = ({
                     donatedTo: "",
                     lastUpdatedOn: "",
                     lastUpdatedBy: "",
+                    comment: "",
                 }
             );
 
