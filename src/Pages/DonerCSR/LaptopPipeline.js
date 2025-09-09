@@ -333,11 +333,6 @@ const LaptopPipeline = () => {
     },
   ];
 
-  const handleDaysChange = (event) => {
-  setSelectedDays(event.target.value);
-};
-
-
   return (
     <>
       <Box
