@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import {
   Box,
@@ -17,6 +17,7 @@ import { Filter, ChevronDown, X, Building } from "lucide-react";
 
 const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
   const { donorName } = useParams();
+  const navigate = useNavigate();
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
 
@@ -36,14 +37,18 @@ useEffect(() => {
 
   const handleOrganizationSelect = (org) => {
     setSelectedOrganization(org);
-    onOrganizationChange(org); // 🔑 Pass selected org back to Overview
+    onOrganizationChange(org); 
     handleFilterClose();
+
+    navigate(`/donorcsr/${org}/overview`);
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
-    onOrganizationChange(null); // 🔑 Reset in Overview
+    onOrganizationChange(null); 
     handleFilterClose();
+
+    navigate(`/donorcsr/overview`);
   };
 
   return (
