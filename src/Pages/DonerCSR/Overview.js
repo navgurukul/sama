@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
 import RecentActivity from './RecentActivity';
 import {
   Box,
@@ -41,10 +42,10 @@ import {
 import OverviewHeader from "./OverviewHeader";
 
 const Overview = () => {
+  const { donorName } = useParams();
   const [pickups, setPickups] = useState([]);
   const [totalLaptopss, setTotalLaptopss] = useState(0);
-  const [selectedOrganization, setSelectedOrganization] = useState(null);
-  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
+  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
 
   const theme = useTheme();
   const [laptopData, setLaptopData] = useState([]);
@@ -55,7 +56,12 @@ const Overview = () => {
   const [userData, setUserData] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
 
-
+useEffect(() => {
+    if (donorName) {
+      setSelectedOrganization(donorName);
+    }
+  }, [donorName]);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
