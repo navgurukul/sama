@@ -332,10 +332,7 @@ const LaptopPipeline = () => {
       icon: <Users size={30} color="#1976d2" />,
     },
   ];
-
   
-
-
   return (
     <>
       <Box

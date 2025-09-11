@@ -72,7 +72,7 @@ const EditButton = ({
             donatedTo: laptopData["Allocated To"],
             lastUpdatedOn: currentDate,
             lastUpdatedBy: lastUpdatedBy,
-            
+            comment: laptopData["Comment for the Issues"],
         });
         setOpen(true);
     };
