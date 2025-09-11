@@ -55,9 +55,7 @@ const Overview = () => {
   const [ngoPartner, setNgoPartner] = useState([]);
   const [userData, setUserData] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
-  const [totalBeneficiaries, setTotalBeneficiaries] = useState(0);
-  const [totalPreStudents, setTotalPreStudents] = useState(0);
-
+  const [preData, setPreData] = useState([]);
 
   useEffect(() => {
     if (donorName) {
@@ -79,6 +77,7 @@ const Overview = () => {
 
         const userPre = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre`);
         const preJson = await userPre.json();
+        setPreData(preJson || []);
 
         const approved = ngoJson.data.filter((ngo) => ngo.Status === "Approved");
         function parseDate(dateStr) {
@@ -141,19 +140,6 @@ const Overview = () => {
         setUserData(userJson || []);
         setApprovedCount(approved.length);
 
-        const totalExistingBeneficiaries = partners.reduce(
-          (sum, partner) => sum + (partner.beneficiaries || 0),
-          0
-        );
-
-        const totalPreStudents = (preJson || []).reduce(
-          (sum, item) => sum + (parseInt(item["Number of student"], 10) || 0),
-          0
-        );
-
-        const totalBeneficiaries = totalExistingBeneficiaries + totalPreStudents;
-        setTotalBeneficiaries(totalBeneficiaries);
-        setTotalPreStudents(totalPreStudents);
       } catch (err) {
         console.error("Error fetching overview data:", err);
       }
@@ -241,19 +227,13 @@ const Overview = () => {
     );
   };
 
+  const getFilteredPreData = () => {
+    if (!selectedOrganization) return preData;
 
-  const getFilteredUserData = () => {
-    if (!selectedOrganization) return userData;
-    // Filter users based on NGO that matches the selected organization
-    const matchingNgos = ngoPartner.filter(partner =>
-      String(partner.name).trim().toLowerCase() ===
-      selectedOrganization.toLowerCase()
-    );
-
-    if (matchingNgos.length === 0) return [];
-
-    return userData.filter(user =>
-      matchingNgos.some(ngo => String(user.Ngo).trim() === String(ngo.Id || ngo.name).trim())
+    return preData.filter(
+      item =>
+        String(item.Doner || "").trim().toLowerCase() ===
+        selectedOrganization.trim().toLowerCase()
     );
   };
 
@@ -261,7 +241,6 @@ const Overview = () => {
   const filteredLaptopData = getFilteredLaptopData();
   const filteredNgoPartners = getFilteredNgoPartners();
   const filteredPickups = getFilteredPickups();
-  const filteredUserData = getFilteredUserData();
 
   // Mapping through Sheets
 
@@ -271,24 +250,14 @@ const Overview = () => {
     const laptops = laptopData.filter((row) => {
       const allocatedTo = String(row["Allocated To"]).trim().toLowerCase();
       const ngoName = String(ngo.organizationName).trim().toLowerCase();
-
       const match = allocatedTo === ngoName;
-
       if (match) {
-        // console.log("✅ Match found:", allocatedTo, "<->", ngoName);
       }
-
       return match;
     }).length;
-
-    // console.log(`Laptops for ${ngo.organizationName}:`, laptops);
-
     const beneficiariesCount = userData.filter(
       (user) => String(user.Ngo || user.ngoId) === String(ngo.ID)
     ).length;
-
-
-    // console.log(`Beneficiaries for ${ngo.organizationName}:`, beneficiariesCount);
 
     return {
       ...ngo,
@@ -613,7 +582,7 @@ const Overview = () => {
 
   const recentActivities = getRecentActivities();
   const uniqueOrganizations = getUniqueOrganizations();
-  
+
   function parseDateUniversal(dateStr) {
     if (!dateStr) return null;
     dateStr = String(dateStr).trim();
@@ -698,7 +667,10 @@ const Overview = () => {
 
             <MetricCard
               title="Active Beneficiaries"
-              value={totalBeneficiaries}
+              value={getFilteredPreData().reduce(
+                (sum, item) => sum + (parseInt(item["Number of student"], 10) || 0),
+                0
+              )}
               subtitle="Currently using laptops"
               // growth="+23.6% from last month"
               icon={Users}
