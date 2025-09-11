@@ -589,6 +589,42 @@ useEffect(() => {
 
   const recentActivities = getRecentActivities();
   const uniqueOrganizations = getUniqueOrganizations();
+function parseDateUniversal(dateStr) {
+  if (!dateStr) return null;
+  dateStr = String(dateStr).trim();
+
+  // 1. Built-in parse
+  const builtIn = new Date(dateStr);
+  if (!isNaN(builtIn)) return builtIn;
+
+  // 2. DD-MM-YYYY (with optional time)
+  let m = dateStr.match(/^(\d{2})-(\d{2})-(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
+  if (m) {
+    return new Date(+m[3], +m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+  }
+
+  // 3. YYYY-MM-DD or YYYY/MM/DD (with optional time)
+  m = dateStr.match(/^(\d{4})[-/](\d{2})[-/](\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
+  if (m) {
+    return new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+  }
+
+  return null;
+}
+
+const allProcessingTimes = filteredLaptopData
+  .map(l => {
+    const c = parseDateUniversal(l["Date Committed"]);
+    const d = parseDateUniversal(l["Last Delivery Date"]);
+    return (c && d && d >= c) ? (d - c) / 86400000 : null;
+  })
+  .filter(Boolean);
+
+const avgProcessingTime = allProcessingTimes.length
+  ? allProcessingTimes.reduce((a, b) => a + b, 0) / allProcessingTimes.length
+  : 0;
+
+const avgProcessingTimeRounded = Math.round(avgProcessingTime); // 104 days
 
   return (
 
@@ -746,7 +782,7 @@ useEffect(() => {
                   <SummaryMetric label="Success Rate" value={`${successRate}%`} color="#4caf50" />
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="Avg. Processing Time" value="12 days" />
+                  <SummaryMetric label="Avg. Processing Time" value={`${avgProcessingTimeRounded} days`} />
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <SummaryMetric label="NGOs Served" value={ngosServedCount} />
