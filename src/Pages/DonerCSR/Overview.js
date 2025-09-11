@@ -613,6 +613,7 @@ const Overview = () => {
 
   const recentActivities = getRecentActivities();
   const uniqueOrganizations = getUniqueOrganizations();
+  
   function parseDateUniversal(dateStr) {
     if (!dateStr) return null;
     dateStr = String(dateStr).trim();
