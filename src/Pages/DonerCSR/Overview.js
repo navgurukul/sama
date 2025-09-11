@@ -55,13 +55,16 @@ const Overview = () => {
   const [ngoPartner, setNgoPartner] = useState([]);
   const [userData, setUserData] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
+  const [totalBeneficiaries, setTotalBeneficiaries] = useState(0);
+  const [totalPreStudents, setTotalPreStudents] = useState(0);
 
-useEffect(() => {
+
+  useEffect(() => {
     if (donorName) {
       setSelectedOrganization(donorName);
     }
   }, [donorName]);
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -73,6 +76,9 @@ useEffect(() => {
 
         const userRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData`);
         const userJson = await userRes.json();
+
+        const userPre = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre`);
+        const preJson = await userPre.json();
 
         const approved = ngoJson.data.filter((ngo) => ngo.Status === "Approved");
         function parseDate(dateStr) {
@@ -134,6 +140,20 @@ useEffect(() => {
         setLaptopData(laptopJson || []);
         setUserData(userJson || []);
         setApprovedCount(approved.length);
+
+        const totalExistingBeneficiaries = partners.reduce(
+          (sum, partner) => sum + (partner.beneficiaries || 0),
+          0
+        );
+
+        const totalPreStudents = (preJson || []).reduce(
+          (sum, item) => sum + (parseInt(item["Number of student"], 10) || 0),
+          0
+        );
+
+        const totalBeneficiaries = totalExistingBeneficiaries + totalPreStudents;
+        setTotalBeneficiaries(totalBeneficiaries);
+        setTotalPreStudents(totalPreStudents);
       } catch (err) {
         console.error("Error fetching overview data:", err);
       }
@@ -143,29 +163,24 @@ useEffect(() => {
   }, []);
 
   useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const res = await fetch(
-            // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
-            `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
-            // method: "GET",
-            // headers: {
-            //   "Content-Type": "application/json",
-            // },
-          });
-          const data = await res.json();
-  
-          if (data.status === "success") {  
-            // setPickups(data.data);
-            setTotalLaptopss(data.totalLaptops);
-          }
-        } catch (error) {
-          console.error("Error fetching pickup data:", error);
+    const fetchData = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+          // setPickups(data.data);
+          setTotalLaptopss(data.totalLaptops);
         }
-      };
-  
-      fetchData();
-    }, []);
+      } catch (error) {
+        console.error("Error fetching pickup data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const getUniqueOrganizations = () => {
     const orgSet = new Set();
@@ -285,19 +300,28 @@ useEffect(() => {
 
   // Total Counting
   const totalLaptops = filteredLaptopData.length;
-  const refurbishedCount = filteredLaptopData.filter(
-    (laptop) => laptop.Status === "Laptop Refurbished"
-  ).length;
+
+  const refurbishedCount = filteredLaptopData.reduce((acc, item) => {
+    const status = (item.Status || "").toLowerCase();
+
+    if (status.includes("to be dispatch")) {
+      return acc + 1;
+    }
+
+    if (status.includes("allocated")) {
+      return acc + 1;
+    }
+
+    if (status.includes("distributed")) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
+
   const distributedCount = filteredLaptopData.filter(
     (laptop) => laptop.Status === "Distributed"
   ).length;
-  const ngolaptopCount = filteredLaptopData.filter(
-    (laptop) => laptop.ID === "Distributed"
-  ).length;
-  const totalBeneficiaries = filteredNgoPartners.reduce(
-    (sum, partner) => sum + (partner.beneficiaries || 0),
-    0
-  );
+
   const totalProcessed = refurbishedCount + distributedCount;
   const successRate =
     totalLaptops > 0 ? ((refurbishedCount / totalLaptops) * 100).toFixed(2) : 0;
@@ -589,42 +613,42 @@ useEffect(() => {
 
   const recentActivities = getRecentActivities();
   const uniqueOrganizations = getUniqueOrganizations();
-function parseDateUniversal(dateStr) {
-  if (!dateStr) return null;
-  dateStr = String(dateStr).trim();
+  function parseDateUniversal(dateStr) {
+    if (!dateStr) return null;
+    dateStr = String(dateStr).trim();
 
-  // 1. Built-in parse
-  const builtIn = new Date(dateStr);
-  if (!isNaN(builtIn)) return builtIn;
+    // 1. Built-in parse
+    const builtIn = new Date(dateStr);
+    if (!isNaN(builtIn)) return builtIn;
 
-  // 2. DD-MM-YYYY (with optional time)
-  let m = dateStr.match(/^(\d{2})-(\d{2})-(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
-  if (m) {
-    return new Date(+m[3], +m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+    // 2. DD-MM-YYYY (with optional time)
+    let m = dateStr.match(/^(\d{2})-(\d{2})-(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (m) {
+      return new Date(+m[3], +m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+    }
+
+    // 3. YYYY-MM-DD or YYYY/MM/DD (with optional time)
+    m = dateStr.match(/^(\d{4})[-/](\d{2})[-/](\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (m) {
+      return new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+    }
+
+    return null;
   }
 
-  // 3. YYYY-MM-DD or YYYY/MM/DD (with optional time)
-  m = dateStr.match(/^(\d{4})[-/](\d{2})[-/](\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
-  if (m) {
-    return new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
-  }
+  const allProcessingTimes = filteredLaptopData
+    .map(l => {
+      const c = parseDateUniversal(l["Date Committed"]);
+      const d = parseDateUniversal(l["Last Delivery Date"]);
+      return (c && d && d >= c) ? (d - c) / 86400000 : null;
+    })
+    .filter(Boolean);
 
-  return null;
-}
+  const avgProcessingTime = allProcessingTimes.length
+    ? allProcessingTimes.reduce((a, b) => a + b, 0) / allProcessingTimes.length
+    : 0;
 
-const allProcessingTimes = filteredLaptopData
-  .map(l => {
-    const c = parseDateUniversal(l["Date Committed"]);
-    const d = parseDateUniversal(l["Last Delivery Date"]);
-    return (c && d && d >= c) ? (d - c) / 86400000 : null;
-  })
-  .filter(Boolean);
-
-const avgProcessingTime = allProcessingTimes.length
-  ? allProcessingTimes.reduce((a, b) => a + b, 0) / allProcessingTimes.length
-  : 0;
-
-const avgProcessingTimeRounded = Math.round(avgProcessingTime); // 104 days
+  const avgProcessingTimeRounded = Math.round(avgProcessingTime); // 104 days
 
   return (
 
