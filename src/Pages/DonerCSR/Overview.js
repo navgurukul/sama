@@ -56,12 +56,12 @@ const Overview = () => {
   const [userData, setUserData] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
 
-useEffect(() => {
+  useEffect(() => {
     if (donorName) {
       setSelectedOrganization(donorName);
     }
   }, [donorName]);
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -143,29 +143,29 @@ useEffect(() => {
   }, []);
 
   useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const res = await fetch(
-            // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
-            `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
-            // method: "GET",
-            // headers: {
-            //   "Content-Type": "application/json",
-            // },
-          });
-          const data = await res.json();
-  
-          if (data.status === "success") {  
-            // setPickups(data.data);
-            setTotalLaptopss(data.totalLaptops);
-          }
-        } catch (error) {
-          console.error("Error fetching pickup data:", error);
+    const fetchData = async () => {
+      try {
+        const res = await fetch(
+          // ${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickupget`, {
+          // method: "GET",
+          // headers: {
+          //   "Content-Type": "application/json",
+          // },
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+          setPickups(data.data);
+          setTotalLaptopss(data.totalLaptops);
         }
-      };
-  
-      fetchData();
-    }, []);
+      } catch (error) {
+        console.error("Error fetching pickup data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const getUniqueOrganizations = () => {
     const orgSet = new Set();
@@ -713,7 +713,13 @@ useEffect(() => {
             {/* Pipeline Steps */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {[
-                { icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: selectedOrganization ? `${filteredPickups.length} requests` : `${totalLaptopss} laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2" },
+                {
+                  icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: selectedOrganization ? `${filteredPickups.filter(p => p.Status === "Pendding")
+                    .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`
+                    : `${pickups
+                      .filter(p => p.Status === "Pendding")
+                      .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)}  laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2"
+                },
                 // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
                 { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
                 { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
