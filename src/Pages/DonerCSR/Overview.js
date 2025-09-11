@@ -779,7 +779,7 @@ const Overview = () => {
                   <SummaryMetric label="Success Rate" value={`${successRate}%`} color="#4caf50" />
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="Avg. Processing Time" value={`${avgProcessingTimeRounded} days`} />
+                  <SummaryMetric label="Avg. Processing Time" value={"0 days"} />
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <SummaryMetric label="NGOs Served" value={ngosServedCount} />
