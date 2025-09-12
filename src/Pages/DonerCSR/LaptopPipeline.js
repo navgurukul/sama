@@ -156,7 +156,7 @@ const LaptopPipeline = () => {
   const isAdmin = user.role === "admin"; // adjust according to how role is stored
 
 
-  
+
   useEffect(() => {
     if (donorName) {
       setSelectedOrganization(donorName);
@@ -179,7 +179,7 @@ const LaptopPipeline = () => {
         if (data.status === "success") {
           console.log("Fetched pickup data:", data.data);
 
-          // setPickups(data.data);
+          setPickups(data.data);
           setTotalLaptopss(data.totalLaptops);
         }
       } catch (error) {
@@ -313,7 +313,11 @@ const LaptopPipeline = () => {
       title: "Pickup Requested",
       subtitle: "Corporate requests submitted",
       avg: "1-2 days",
-      count: filteredTotalLaptops,
+      count: selectedOrganization
+        ? filteredPickups.filter(p => p.Status === "Pendding")
+          .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)
+        : pickups.filter(p => p.Status === "Pendding")
+          .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0),
       icon: <Package size={30} color="#1976d2" />,
     },
     // {
@@ -432,53 +436,53 @@ const LaptopPipeline = () => {
           </Button>
 
           {/* Filter Dropdown Menu */}
-            <Menu
-              anchorEl={filterAnchorEl}
-              open={Boolean(filterAnchorEl)}
-              onClose={handleFilterClose}
-              PaperProps={{
-                sx: {
-                  maxHeight: 300,
-                  width: 280,
-                  mt: 1,
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-                  border: "1px solid #e0e0e0",
-                },
-              }}
-            >
-              <MenuItem onClick={handleClearFilter} sx={{ py: 1.5 }}>
+          <Menu
+            anchorEl={filterAnchorEl}
+            open={Boolean(filterAnchorEl)}
+            onClose={handleFilterClose}
+            PaperProps={{
+              sx: {
+                maxHeight: 300,
+                width: 280,
+                mt: 1,
+                boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                border: "1px solid #e0e0e0",
+              },
+            }}
+          >
+            <MenuItem onClick={handleClearFilter} sx={{ py: 1.5 }}>
+              <ListItemIcon>
+                <X size={18} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Clear Filter"
+                primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+              />
+            </MenuItem>
+            <Divider />
+            {uniqueOrganizations.map((org) => (
+              <MenuItem
+                key={org}
+                onClick={() => handleOrganizationSelect(org)}
+                selected={selectedOrganization === org}
+                sx={{ py: 1.5 }}
+              >
                 <ListItemIcon>
-                  <X size={18} />
+                  <Building size={18} />
                 </ListItemIcon>
                 <ListItemText
-                  primary="Clear Filter"
-                  primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+                  primary={org}
+                  primaryTypographyProps={{
+                    fontSize: 14,
+                    fontWeight: selectedOrganization === org ? 600 : 400,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
                 />
               </MenuItem>
-              <Divider />
-              {uniqueOrganizations.map((org) => (
-                <MenuItem
-                  key={org}
-                  onClick={() => handleOrganizationSelect(org)}
-                  selected={selectedOrganization === org}
-                  sx={{ py: 1.5 }}
-                >
-                  <ListItemIcon>
-                    <Building size={18} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={org}
-                    primaryTypographyProps={{
-                      fontSize: 14,
-                      fontWeight: selectedOrganization === org ? 600 : 400,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  />
-                </MenuItem>
-              ))}
-            </Menu>
+            ))}
+          </Menu>
         </Box>
       </Box>
 
@@ -505,7 +509,7 @@ const LaptopPipeline = () => {
         <Box sx={{ mb: 6 }}>
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Current Pipeline Status
-            { isAdmin && selectedOrganization && (
+            {isAdmin && selectedOrganization && (
               <Chip
                 label={`Filtered: ${selectedOrganization}`}
                 size="small"
