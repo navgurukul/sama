@@ -261,9 +261,22 @@ const LaptopPipeline = () => {
   const filteredLaptopData = getFilteredLaptopData();
   const filteredPickups = getFilteredPickups();
   // Calculate counts based on filtered data
-  const refurbishedCountt = filteredLaptopData.filter(
-    item => item.Status === "Laptop Refurbished"
-  ).length;
+  const refurbishedCountt = filteredLaptopData.reduce((acc, item) => {
+    const status = (item.Status || "").toLowerCase();
+
+    if (status.includes("to be dispatch")) {
+      return acc + 1;
+    }
+
+    if (status.includes("allocated")) {
+      return acc + 1;
+    }
+
+    if (status.includes("distributed")) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
 
   const distributedCountt = filteredLaptopData.filter(
     item => item.Status === "Distributed"
