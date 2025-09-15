@@ -625,6 +625,21 @@ const Overview = () => {
 
   const avgProcessingTimeRounded = Math.round(avgProcessingTime); // 104 days
 
+const getActiveUsageCount = () => {
+  const now = new Date();
+  const fifteenDaysAgo = new Date();
+  fifteenDaysAgo.setDate(now.getDate() - 15);
+
+  return filteredLaptopData.filter(laptop => {
+    if (!laptop.Date) return false;
+
+    const laptopDate = new Date(laptop.Date);
+    if (isNaN(laptopDate)) return false;
+
+    return laptopDate >= fifteenDaysAgo && laptopDate <= now;
+  }).length;
+};
+
   return (
 
     <>
@@ -762,7 +777,7 @@ const Overview = () => {
                 // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
                 { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
                 { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
-                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${distributedCount} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f" }
+                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${getActiveUsageCount()} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f" }
               ].map((step, index) => (
                 // <Grid item xs={6} sm={4} md={2.4} key={index}>
                 <Grid item xs={6} sm={4} md={3} key={index}>
