@@ -366,33 +366,69 @@ const Navbar = () => {
         )}
 
         {isLoggedIn && role.includes("admin") && (
-          <Button
-            variant="body1"
-            onClick={() => navigate("/registration")}
-            sx={{
-              textTransform: "none",
-              minWidth: "unset",
-              minHeight: "unset",
-              px: 2,
-              py: 1,
-              ml: 2,
-              color: registrationActive ? "common.white" : "text.primary",
-              // fontWeight: 'medium',
-              backgroundColor: registrationActive
-                ? "primary.main"
-                : "transparent",
-              borderRadius: "100px",
-              fontWeight: "normal",
-              "&:hover": {
+          <>
+            <Button
+              variant="body1"
+              onClick={() => navigate("/pickup-request-by-doner")}
+              sx={{
+                textTransform: "none",
+                minWidth: "unset",
+                minHeight: "unset",
+                px: 2,
+                py: 1,
+                ml: 2,
+                color:
+                  location.pathname === "/pickup-request-by-doner"
+                    ? "common.white"
+                    : "text.primary",
+                backgroundColor:
+                  location.pathname === "/pickup-request-by-doner"
+                    ? "primary.main"
+                    : "transparent",
+                borderRadius: "100px",
+                fontWeight: "normal",
+                "&:hover": {
+                  backgroundColor:
+                    location.pathname === "/pickup-request-by-doner"
+                      ? "primary.main"
+                      : "action.hover",
+                  color:
+                    location.pathname === "/pickup-request-by-doner"
+                      ? "common.white"
+                      : "text.primary",
+                },
+              }}
+            >
+              Pickup Requests
+            </Button>
+            <Button
+              variant="body1"
+              onClick={() => navigate("/registration")}
+              sx={{
+                textTransform: "none",
+                minWidth: "unset",
+                minHeight: "unset",
+                px: 2,
+                py: 1,
+                ml: 2,
+                color: registrationActive ? "common.white" : "text.primary",
+                // fontWeight: 'medium',
                 backgroundColor: registrationActive
                   ? "primary.main"
-                  : "action.hover",
-                color: registrationActive ? "common.white" : "text.primary",
-              },
-            }}
-          >
-            Registration
-          </Button>
+                  : "transparent",
+                borderRadius: "100px",
+                fontWeight: "normal",
+                "&:hover": {
+                  backgroundColor: registrationActive
+                    ? "primary.main"
+                    : "action.hover",
+                  color: registrationActive ? "common.white" : "text.primary",
+                },
+              }}
+            >
+              Registration
+            </Button>
+          </>
         )}
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto", ml: 0 }}>
           <Tabs
@@ -500,14 +536,14 @@ const Navbar = () => {
               ) : isLoggedIn && role.includes("ops") ? (
                 renderOpsHeader()
               ) : isLoggedIn && role.includes("ngo") ? (
-                  <Box
-                    component="img"
-                    src={logo}
-                    alt="Logo"
-                    className="header-logo"
-                    sx={{ cursor: "pointer", height: 40 }}
-                    onClick={() => navigate("/")}
-                  />
+                <Box
+                  component="img"
+                  src={logo}
+                  alt="Logo"
+                  className="header-logo"
+                  sx={{ cursor: "pointer", height: 40 }}
+                  onClick={() => navigate("/")}
+                />
               ) : (
                 <>
                   {!isLoggedIn && (
@@ -671,9 +707,8 @@ const Navbar = () => {
         {/* Mobile Menu for Non-logged-in Users */}
         {!isLoggedIn && (
           <Box
-            className={`mobile-menu ${
-              isActive && menuVisible ? "visible" : ""
-            }`}
+            className={`mobile-menu ${isActive && menuVisible ? "visible" : ""
+              }`}
           >
             <DropdownMenu
               title="Discover Us"

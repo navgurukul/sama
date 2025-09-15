@@ -26,30 +26,30 @@ const OpsWelcome = () => {
     useEffect(() => {
         fetchData();
     }, []);
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "N/A";
-    if (dateStr.includes("T")) {
-        const date = new Date(dateStr);
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const year = date.getFullYear();
-        const hour = date.getHours().toString().padStart(2, "0");
-        const minute = date.getMinutes().toString().padStart(2, "0");
-        const second = date.getSeconds().toString().padStart(2, "0");
-        return `${day}-${month}-${year} ${hour}:${minute}:${second}`;
-    }
-    const [datePart, timePart] = dateStr.split(" ");
-    if (!datePart || !timePart) return "N/A";
+    const formatDate = (dateStr) => {
+        if (!dateStr) return "N/A";
+        if (dateStr.includes("T")) {
+            const date = new Date(dateStr);
+            const day = date.getDate().toString().padStart(2, "0");
+            const month = (date.getMonth() + 1).toString().padStart(2, "0");
+            const year = date.getFullYear();
+            const hour = date.getHours().toString().padStart(2, "0");
+            const minute = date.getMinutes().toString().padStart(2, "0");
+            const second = date.getSeconds().toString().padStart(2, "0");
+            return `${day}-${month}-${year} ${hour}:${minute}:${second}`;
+        }
+        const [datePart, timePart] = dateStr.split(" ");
+        if (!datePart || !timePart) return "N/A";
 
-    const [day, month, year] = datePart.split("-").map(Number);
-    const [hour, minute, second] = timePart.split(":").map(Number);
+        const [day, month, year] = datePart.split("-").map(Number);
+        const [hour, minute, second] = timePart.split(":").map(Number);
 
-    return `${day.toString().padStart(2, "0")}-${month
-      .toString()
-      .padStart(2, "0")}-${year} ${hour.toString().padStart(2, "0")}:${minute
-      .toString()
-      .padStart(2, "0")}:${second.toString().padStart(2, "0")}`;
-};
+        return `${day.toString().padStart(2, "0")}-${month
+            .toString()
+            .padStart(2, "0")}-${year} ${hour.toString().padStart(2, "0")}:${minute
+                .toString()
+                .padStart(2, "0")}:${second.toString().padStart(2, "0")}`;
+    };
 
     const fetchData = async () => {
         try {
@@ -146,8 +146,13 @@ const OpsWelcome = () => {
                                     <TableCell>{laptop.ID}</TableCell>
                                     <TableCell>{laptop.Processor || 'N/A'}</TableCell>
                                     <TableCell>
-                                        {laptop['Battery Capacity'] ?
-                                            `${Math.round(laptop['Battery Capacity'] * 100)}%` : 'N/A'}
+                                        {laptop['Battery Capacity'] !== undefined && laptop['Battery Capacity'] !== null
+                                            ? `${Math.round(
+                                                laptop['Battery Capacity'] > 1
+                                                    ? laptop['Battery Capacity']
+                                                    : laptop['Battery Capacity'] * 100
+                                            )}%`
+                                            : 'N/A'}
                                     </TableCell>
                                     <TableCell>{laptop['Assigned To'] || 'N/A'}</TableCell>
                                     <TableCell>{laptop['Donated To'] || 'N/A'}</TableCell>
@@ -155,8 +160,8 @@ const OpsWelcome = () => {
                                         {laptop['Comment for the Issues']}
                                     </TableCell>
                                     <TableCell>
-                                        {laptop['Last Updated On'] ? 
-                                           formatDate(laptop['Last Updated On']): 'N/A'}
+                                        {laptop['Last Updated On'] ?
+                                            formatDate(laptop['Last Updated On']) : 'N/A'}
                                     </TableCell>
 
                                 </TableRow>

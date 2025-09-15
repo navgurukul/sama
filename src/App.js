@@ -69,6 +69,8 @@ import ImpactAnalysis from './Pages/DonerCSR/ImpactAnalysis';
 import Ngopartner from './Pages/DonerCSR/Ngopartner';
 import Pickup from './Pages/Pickup/Pickup';
 import DonorCSRRoute from './Pages/DonerCSR/DonorCSRRoute';
+import PickupRequestByDoner from './Pages/Pickup/PickupRequestByDoner';
+
 
 function App() {
   return (
@@ -92,6 +94,16 @@ function App() {
               <Route path="/corporate" element={<CorporateteDb />} />
               <Route path="/corpretedb/DataViewDetail" element={<DetailView />} />
               <Route path="/corpretedb/NGOTrainedTable" element={<NGOTrainedTable />} />
+              <Route
+                path="/pickup-request-by-doner"
+                element={
+                  <PrivateRoute reqired={'admin'}>
+                    <PickupRequestByDoner />
+                  </PrivateRoute>
+                }
+                caseSensitive={false}
+              />
+
 
 
               <Route

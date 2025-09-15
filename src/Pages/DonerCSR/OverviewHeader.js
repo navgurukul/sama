@@ -124,7 +124,7 @@ const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
                 color: "#666",
               }}
             >
-              Filter by Doner
+              Filter by Donor
             </Button>
           )}
 
