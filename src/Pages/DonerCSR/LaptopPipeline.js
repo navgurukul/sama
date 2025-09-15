@@ -402,7 +402,7 @@ const LaptopPipeline = () => {
                 color: "#666",
               }}
             >
-              Filter by Doner
+              Filter by Donor
             </Button>
           )}
           <Typography variant="body2" color="text.secondary">
