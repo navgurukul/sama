@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MUIDataTable from "mui-datatables";
-import { Typography, Chip, Select, MenuItem,TextField} from "@mui/material";
+import { Typography, Chip, Select, MenuItem, TextField } from "@mui/material";
 const PickupRequestByDoner = ({ selectedOrganization }) => {
   const [pickups, setPickups] = useState([]);
   const [totalPickups, setTotalPickups] = useState(0);
@@ -75,46 +75,34 @@ const PickupRequestByDoner = ({ selectedOrganization }) => {
               size="small"
               value={currentValue}
               onChange={async (e) => {
-                const newStatus = e.target.value;
-
-                // Get user name from localStorage
-                const updatedBy = localStorage.getItem("userName") || "Unknown";
-
+                const selectedDate = e.target.value; 
                 const updated = [...pickups];
+                updated[rowIndex]["confirm pickup date"] = selectedDate;
+                setPickups(updated); 
 
-                // Update frontend state immediately
-                updated[rowIndex].Status = newStatus;
-                updated[rowIndex]["Updated By"] = updatedBy;
-
-                // Use current timestamp for display
-                const now = new Date();
-                updated[rowIndex]["Updated On"] = now.toISOString();
-
-                setPickups(updated);
-
-                // Send update to backend (backend will save Updated On to sheet)
                 try {
                   const res = await fetch(
-                    `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=updatepickupstatus`,
+                    process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi,
                     {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
+                        type: "updatepickupdate",   
                         pickupId: updated[rowIndex]["Pickup ID"],
-                        status: newStatus,
-                        updatedBy: updatedBy,
+                        confirmDate: selectedDate,
+                        updatedBy: localStorage.getItem("userName") || "Unknown",
                       }),
                     }
                   );
                   const result = await res.json();
-                  if (result.status === "success") {
-                    // Optional: fetch updated row from backend to get exact date from sheet
-                    // Or just leave it as `now` for UI
+                  if (result.status !== "success") {
+                    console.error("Date update failed:", result.message);
                   }
                 } catch (err) {
-                  console.error("Error updating pickup status:", err);
+                  console.error("Error updating pickup date:", err);
                 }
               }}
+
             >
               <MenuItem value="Pending">Pending</MenuItem>
               <MenuItem value="Completed">Completed</MenuItem>
@@ -125,32 +113,33 @@ const PickupRequestByDoner = ({ selectedOrganization }) => {
     },
 
 
-
-
-{
+   {
   name: "confirm pickup date",
   label: "Confirm Pickup Date",
   options: {
     customBodyRender: (value, tableMeta) => {
       const rowIndex = tableMeta.rowIndex;
+      const safeValue =
+        typeof value === "string" && value.includes("T")
+          ? value.split("T")[0]
+          : (value || "");
 
       return (
         <TextField
           type="date"
           size="small"
-          value={value ? value.split("T")[0] : ""} // show existing date if any
+          value={safeValue}
           onChange={(e) => {
-            const selectedDate = e.target.value; // "YYYY-MM-DD"
+            const selectedDate = e.target.value;
             const updated = [...pickups];
             updated[rowIndex]["confirm pickup date"] = selectedDate;
-            setPickups(updated); // update frontend state only
+            setPickups(updated);
           }}
         />
       );
     },
   },
 },
-
 
     {
       name: "Updated On",
