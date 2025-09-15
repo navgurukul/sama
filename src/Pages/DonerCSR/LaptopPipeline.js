@@ -314,9 +314,9 @@ const LaptopPipeline = () => {
       subtitle: "Corporate requests submitted",
       avg: "1-2 days",
       count: selectedOrganization
-        ? filteredPickups.filter(p => p.Status === "Pendding")
+        ? filteredPickups.filter(p => p.Status === "Pending")
           .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)
-        : pickups.filter(p => p.Status === "Pendding")
+        : pickups.filter(p => p.Status === "Pending")
           .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0),
       icon: <Package size={30} color="#1976d2" />,
     },

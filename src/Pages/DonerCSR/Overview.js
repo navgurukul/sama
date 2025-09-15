@@ -749,10 +749,10 @@ const Overview = () => {
               {[
                 
                 {
-                  icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: selectedOrganization ? `${filteredPickups.filter(p => p.Status === "Pendding")
+                  icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: selectedOrganization ? `${filteredPickups.filter(p => p.Status === "Pending")
                     .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`
                     : `${pickups
-                      .filter(p => p.Status === "Pendding")
+                      .filter(p => p.Status === "Pending")
                       .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)}  laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2"
                 },
                 // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
