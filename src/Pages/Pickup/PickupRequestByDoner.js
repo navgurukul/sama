@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MUIDataTable from "mui-datatables";
-import { Typography, Select, MenuItem, TextField } from "@mui/material";
+import { Typography, Chip, Select, MenuItem,TextField} from "@mui/material";
 
 const PickupRequestByDoner = ({ selectedOrganization }) => {
   const [pickups, setPickups] = useState([]);
@@ -198,6 +198,30 @@ const PickupRequestByDoner = ({ selectedOrganization }) => {
               <MenuItem value="Pending">Pending</MenuItem>
               <MenuItem value="Completed">Completed</MenuItem>
             </Select>
+          );
+        },
+      },
+    },
+
+    {
+      name: "confirm pickup date",
+      label: "Confirm Pickup Date",
+      options: {
+        customBodyRender: (value, tableMeta) => {
+          const rowIndex = tableMeta.rowIndex;
+
+          return (
+            <TextField
+              type="date"
+              size="small"
+              value={value ? value.split("T")[0] : ""} // show existing date if any
+              onChange={(e) => {
+                const selectedDate = e.target.value; // "YYYY-MM-DD"
+                const updated = [...pickups];
+                updated[rowIndex]["confirm pickup date"] = selectedDate;
+                setPickups(updated); // update frontend state only
+              }}
+            />
           );
         },
       },
