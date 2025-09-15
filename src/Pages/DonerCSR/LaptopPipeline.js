@@ -261,9 +261,22 @@ const LaptopPipeline = () => {
   const filteredLaptopData = getFilteredLaptopData();
   const filteredPickups = getFilteredPickups();
   // Calculate counts based on filtered data
-  const refurbishedCountt = filteredLaptopData.filter(
-    item => item.Status === "Laptop Refurbished"
-  ).length;
+  const refurbishedCountt = filteredLaptopData.reduce((acc, item) => {
+    const status = (item.Status || "").toLowerCase();
+
+    if (status.includes("to be dispatch")) {
+      return acc + 1;
+    }
+
+    if (status.includes("allocated")) {
+      return acc + 1;
+    }
+
+    if (status.includes("distributed")) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
 
   const distributedCountt = filteredLaptopData.filter(
     item => item.Status === "Distributed"
@@ -301,9 +314,9 @@ const LaptopPipeline = () => {
       subtitle: "Corporate requests submitted",
       avg: "1-2 days",
       count: selectedOrganization
-        ? filteredPickups.filter(p => p.Status === "Pendding")
+        ? filteredPickups.filter(p => p.Status === "Pending")
           .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)
-        : pickups.filter(p => p.Status === "Pendding")
+        : pickups.filter(p => p.Status === "Pending")
           .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0),
       icon: <Package size={30} color="#1976d2" />,
     },
@@ -406,7 +419,7 @@ const LaptopPipeline = () => {
                 color: "#666",
               }}
             >
-              Filter by Doner
+              Filter by Donor
             </Button>
           )}
           <Typography variant="body2" color="text.secondary">
