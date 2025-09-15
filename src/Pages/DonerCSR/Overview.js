@@ -274,6 +274,10 @@ const Overview = () => {
   const refurbishedCount = filteredLaptopData.reduce((acc, item) => {
     const status = (item.Status || "").toLowerCase();
 
+    if (status.includes("refurbished")) {
+      return acc + 1;
+    }
+
     if (status.includes("to be dispatch")) {
       return acc + 1;
     }
@@ -747,7 +751,7 @@ const Overview = () => {
             {/* Pipeline Steps */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {[
-                
+
                 {
                   icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: selectedOrganization ? `${filteredPickups.filter(p => p.Status === "Pending")
                     .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`
