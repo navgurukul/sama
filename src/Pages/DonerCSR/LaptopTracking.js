@@ -350,7 +350,7 @@ useEffect(() => {
                   startIcon={<FilterAltIcon />}
                   onClick={handleFilterClick}
                 >
-                   Filter by Doner
+                   Filter by Donor
                 </Button>
                   )}
               </Box>
