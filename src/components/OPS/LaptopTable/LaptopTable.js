@@ -558,7 +558,7 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         }
       }
       if (!driveLink) {
-        return <Typography variant="body2">Not Available</Typography>;
+        return null;
       }
       const handleOpenDrive = () => {
         window.open(driveLink, "_blank", "noopener,noreferrer");
