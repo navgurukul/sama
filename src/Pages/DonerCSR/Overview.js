@@ -762,7 +762,14 @@ const Overview = () => {
                 // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
                 { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
                 { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
-                { icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${distributedCount} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f" }
+                {
+                  icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${filteredLaptopData.filter(l => {
+                    const d = parseDateUniversal(l["Date"]);   
+                    if (!d) return false;
+                    const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
+                    return diffDays <= 15;   
+                  }).length} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f"
+                }
               ].map((step, index) => (
                 // <Grid item xs={6} sm={4} md={2.4} key={index}>
                 <Grid item xs={6} sm={4} md={3} key={index}>
