@@ -307,6 +307,29 @@ const LaptopPipeline = () => {
 
     navigate(`/donorcsr/laptop-pipeline`);
   };
+  
+  function parseDateUniversal(dateStr) {
+    if (!dateStr) return null;
+    dateStr = String(dateStr).trim();
+
+    // 1. Built-in parse
+    const builtIn = new Date(dateStr);
+    if (!isNaN(builtIn)) return builtIn;
+
+    // 2. DD-MM-YYYY (with optional time)
+    let m = dateStr.match(/^(\d{2})-(\d{2})-(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (m) {
+      return new Date(+m[3], +m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+    }
+
+    // 3. YYYY-MM-DD or YYYY/MM/DD (with optional time)
+    m = dateStr.match(/^(\d{4})[-/](\d{2})[-/](\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (m) {
+      return new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+    }
+
+    return null;
+  }
 
   const stages = [
     {
@@ -345,7 +368,12 @@ const LaptopPipeline = () => {
       title: "Active Usage",
       subtitle: "In use by beneficiaries",
       avg: "Ongoing",
-      count: distributedCountt,
+      count: `${filteredLaptopData.filter(l => {
+        const d = parseDateUniversal(l["Date"]);
+        if (!d) return false;
+        const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
+        return diffDays <= 15;
+      }).length} laptops`,
       icon: <Users size={30} color="#1976d2" />,
     },
   ];
