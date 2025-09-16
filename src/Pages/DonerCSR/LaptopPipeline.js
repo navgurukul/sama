@@ -331,11 +331,37 @@ const LaptopPipeline = () => {
     return null;
   }
 
+  const calculateAvgCommittedTime = (data) => {
+  const diffs = data
+    .map((row, idx) => {
+      const raw = row["Date Committed"];
+
+      const date = parseDateUniversal(raw);
+      if (!date) {
+        return null;
+      }
+      const diffDays = (Date.now() - date.getTime()) / 86400000;
+      return diffDays >= 0 ? diffDays : null;
+    })
+    .filter(Boolean);
+
+  if (!diffs.length) {
+    return 0;
+  }
+
+  const avg = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+  console.log("📊 Average days since committed:", avg);
+  return Math.round(avg);
+};
+
+
   const stages = [
     {
       title: "Pickup Requested",
       subtitle: "Corporate requests submitted",
-      avg: "1-2 days",
+      avg: calculateAvgCommittedTime(
+    selectedOrganization ? filteredLaptopData : laptopData
+  ),
       count: selectedOrganization
         ? filteredPickups.filter(p => p.Status === "Pending")
           .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)
