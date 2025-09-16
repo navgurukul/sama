@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Box, Chip, Button,Tooltip } from '@mui/material';
+import { Typography, Box, Chip, Button, Tooltip } from '@mui/material';
 import { LaptopStatusDropdown, AssignedTo, DonatedTo, LaptopWorkingCheckbox } from './LaptopStatus';
 
 export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton, refresh, setRefresh, sortConfig, handleSort) => {
@@ -244,24 +244,24 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
             </Typography>
           );
         },
-        
+
         customHeadLabelRender: ({ label, index }) => (
-          <Box 
-            
-            sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+          <Box
+
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
               cursor: 'pointer',
-              
+
             }}
             onClick={() => handleSort("Last Updated On")}
           >
-            <Typography variant="body2" sx={{ fontWeight: 'bold', color: "rgba(0, 0, 0, 0.87)", fontFamily: "Montserrat !important", fontSize: "16px !important" ,whiteSpace: 'nowrap' }}>
+            <Typography variant="body2" sx={{ fontWeight: 'bold', color: "rgba(0, 0, 0, 0.87)", fontFamily: "Montserrat !important", fontSize: "16px !important", whiteSpace: 'nowrap' }}>
               {label}
             </Typography>
-            <Box sx={{ml:1,}}>
-              {sortConfig.field === "Last Updated On" ? 
-                (sortConfig.direction === "asc" ? "↑" : "↓") : 
+            <Box sx={{ ml: 1, }}>
+              {sortConfig.field === "Last Updated On" ?
+                (sortConfig.direction === "asc" ? "↑" : "↓") :
                 "↕"
               }
             </Box>
@@ -519,158 +519,147 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         })
       }
     },
-    
-{
-  name: "Activity Watch PDF",
-  label: "Activity PDF",
-  options: {
-    sort: false,
-    filter: false,
-    customBodyRender: (value, tableMeta) => {
-      const rowIndex = tableMeta.rowIndex;
-      const laptopData = data[rowIndex];
-      const possibleLinkProperties = [
-        "ActivityWatch PDF",
-        "activityWatchDriveLink",
-        "ActivityWatchPDF",
-        "activityWatchPdf",
-        "AWPDF",
-        "DriveLink",
-        "pdfLink",
-        "activity_pdf",
-      ];
-      let driveLink = "";
-      for (const prop of possibleLinkProperties) {
-        if (laptopData[prop] && typeof laptopData[prop] === "string") {
-          driveLink = laptopData[prop].trim();
-          break;
-        }
-      }
-      if (!driveLink) {
-        for (const value of Object.values(laptopData)) {
-          if (
-            typeof value === "string" &&
-            (value.includes("http") || value.includes("drive.google"))
-          ) {
-            driveLink = value.trim();
-            break;
+
+    {
+      name: "ActvityWatch PDF",
+      label: "Activity PDF",
+      options: {
+        sort: false,
+        filter: false,
+        setCellHeaderProps: () => ({
+          className: "custom-header-cell",
+        }),
+        customBodyRender: (value) => {
+          if (!value) {
+            return (
+              <Typography variant="body2" color="textSecondary">
+                Not Available
+              </Typography>
+            );
           }
-        }
-      }
-      if (!driveLink) {
-        return null;
-      }
-      const handleOpenDrive = () => {
-        window.open(driveLink, "_blank", "noopener,noreferrer");
-      };
-      return (
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={handleOpenDrive}
-          sx={{
-            textTransform: "none",
-            fontSize: "0.75rem",
-            padding: "4px 8px",
-          }}
-        >
-          Open Drive
-        </Button>
-      );
+          if (value.includes("barcode.tec-it.com")) {
+            return (
+              <img
+                src={value}
+                alt="Barcode"
+                style={{ width: "100px", height: "40px", objectFit: "contain" }}
+              />
+            );
+
+          }
+          if (value.includes("barcode.tec-it.com")) {
+            return (
+              <img
+                src={value}
+                alt="Barcode"
+                style={{ width: "100px", height: "40px", objectFit: "contain" }}
+              />
+            );
+          }
+          return (
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => window.open(value, "_blank")}
+              sx={{
+                textTransform: "none",
+                fontSize: "0.75rem",
+                padding: "4px 8px",
+              }}
+            >
+              Open Drive
+            </Button>
+          );
+
+        },
+      },
     },
-    setCellProps: () => ({
-      className: "custom-body-cell",
-    }),
-    setCellHeaderProps: () => ({
-      className: "custom-header-cell",
-    }),
-  },
-},
-{
-  name: "Date",
-  label: "Date",
-  options: {
-    sort: false,
-    filter: false,
-    customBodyRender: (value) => (
-      <Typography variant="body2">{formatDate(value)}</Typography>
-    ),
-    setCellProps: () => ({
-      className: "custom-body-cell",
-    }),
-    setCellHeaderProps: () => ({
-      className: "custom-header-cell",
-    }),
-  },
-},
-{
-  name: "AFK Time",
-  label: "AFK Time",
-  options: {
-    sort: false,
-    filter: false,
-    customBodyRender: (value) => (
-      <Typography variant="body2">{value || "Not Available"}</Typography>
-    ),
-    setCellProps: () => ({
-      className: "custom-body-cell",
-    }),
-    setCellHeaderProps: () => ({
-      className: "custom-header-cell",
-    }),
-  },
-},
-{
-  name: "Usage Hours",
-  label: "Usage Hours",
-  options: {
-    sort: false,
-    filter: false,
-    customBodyRender: (value) => (
-      <Typography variant="body2">{value || "Not Available"}</Typography>
-    ),
-    setCellProps: () => ({
-      className: "custom-body-cell",
-    }),
-    setCellHeaderProps: () => ({
-      className: "custom-header-cell",
-    }),
-  },
-},
-{
-  name: "Off Times",
-  label: "Off Times",
-  options: {
-    sort: false,
-    filter: false,
-    customBodyRender: (value) => (
-      <Typography variant="body2">{value || "Not Available"}</Typography>
-    ),
-    setCellProps: () => ({
-      className: "custom-body-cell",
-    }),
-    setCellHeaderProps: () => ({
-      className: "custom-header-cell",
-    }),
-  },
-},
-{
-  name: "Last Delivery Date",
-  label: "Last Delivery Date",
-  options: {
-    sort: true,
-    filter: false,
-    customBodyRender: (value) => (
-      <Typography variant="body2">{formatDate(value)}</Typography>
-    ),
-    setCellProps: () => ({
-      className: "custom-body-cell",
-    }),
-    setCellHeaderProps: () => ({
-      className: "custom-header-cell",
-    }),
-  },
-},
+
+    {
+      name: "Date",
+      label: "Date",
+      options: {
+        sort: false,
+        filter: false,
+        customBodyRender: (value) => (
+          <Typography variant="body2">{formatDate(value)}</Typography>
+        ),
+        setCellProps: () => ({
+          className: "custom-body-cell",
+        }),
+        setCellHeaderProps: () => ({
+          className: "custom-header-cell",
+        }),
+      },
+    },
+    {
+      name: "AFK Time",
+      label: "AFK Time",
+      options: {
+        sort: false,
+        filter: false,
+        customBodyRender: (value) => (
+          <Typography variant="body2">{value || "Not Available"}</Typography>
+        ),
+        setCellProps: () => ({
+          className: "custom-body-cell",
+        }),
+        setCellHeaderProps: () => ({
+          className: "custom-header-cell",
+        }),
+      },
+    },
+    {
+      name: "Usage Hours",
+      label: "Usage Hours",
+      options: {
+        sort: false,
+        filter: false,
+        customBodyRender: (value) => (
+          <Typography variant="body2">{value || "Not Available"}</Typography>
+        ),
+        setCellProps: () => ({
+          className: "custom-body-cell",
+        }),
+        setCellHeaderProps: () => ({
+          className: "custom-header-cell",
+        }),
+      },
+    },
+    {
+      name: "Off Times",
+      label: "Off Times",
+      options: {
+        sort: false,
+        filter: false,
+        customBodyRender: (value) => (
+          <Typography variant="body2">{value || "Not Available"}</Typography>
+        ),
+        setCellProps: () => ({
+          className: "custom-body-cell",
+        }),
+        setCellHeaderProps: () => ({
+          className: "custom-header-cell",
+        }),
+      },
+    },
+    {
+      name: "Last Delivery Date",
+      label: "Last Delivery Date",
+      options: {
+        sort: true,
+        filter: false,
+        customBodyRender: (value) => (
+          <Typography variant="body2">{formatDate(value)}</Typography>
+        ),
+        setCellProps: () => ({
+          className: "custom-body-cell",
+        }),
+        setCellHeaderProps: () => ({
+          className: "custom-header-cell",
+        }),
+      },
+    },
 
   ];
 };
