@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Box, Chip, Button } from '@mui/material';
+import { Typography, Box, Chip, Button,Tooltip } from '@mui/material';
 import { LaptopStatusDropdown, AssignedTo, DonatedTo, LaptopWorkingCheckbox } from './LaptopStatus';
 
 export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton, refresh, setRefresh, sortConfig, handleSort) => {
@@ -518,6 +518,159 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           className: 'custom-header-cell'
         })
       }
-    }
+    },
+    
+{
+  name: "Activity Watch PDF",
+  label: "Activity PDF",
+  options: {
+    sort: false,
+    filter: false,
+    customBodyRender: (value, tableMeta) => {
+      const rowIndex = tableMeta.rowIndex;
+      const laptopData = data[rowIndex];
+      const possibleLinkProperties = [
+        "ActivityWatch PDF",
+        "activityWatchDriveLink",
+        "ActivityWatchPDF",
+        "activityWatchPdf",
+        "AWPDF",
+        "DriveLink",
+        "pdfLink",
+        "activity_pdf",
+      ];
+      let driveLink = "";
+      for (const prop of possibleLinkProperties) {
+        if (laptopData[prop] && typeof laptopData[prop] === "string") {
+          driveLink = laptopData[prop].trim();
+          break;
+        }
+      }
+      if (!driveLink) {
+        for (const value of Object.values(laptopData)) {
+          if (
+            typeof value === "string" &&
+            (value.includes("http") || value.includes("drive.google"))
+          ) {
+            driveLink = value.trim();
+            break;
+          }
+        }
+      }
+      if (!driveLink) {
+        return <Typography variant="body2">Not Available</Typography>;
+      }
+      const handleOpenDrive = () => {
+        window.open(driveLink, "_blank", "noopener,noreferrer");
+      };
+      return (
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={handleOpenDrive}
+          sx={{
+            textTransform: "none",
+            fontSize: "0.75rem",
+            padding: "4px 8px",
+          }}
+        >
+          Open Drive
+        </Button>
+      );
+    },
+    setCellProps: () => ({
+      className: "custom-body-cell",
+    }),
+    setCellHeaderProps: () => ({
+      className: "custom-header-cell",
+    }),
+  },
+},
+{
+  name: "Date",
+  label: "Date",
+  options: {
+    sort: false,
+    filter: false,
+    customBodyRender: (value) => (
+      <Typography variant="body2">{formatDate(value)}</Typography>
+    ),
+    setCellProps: () => ({
+      className: "custom-body-cell",
+    }),
+    setCellHeaderProps: () => ({
+      className: "custom-header-cell",
+    }),
+  },
+},
+{
+  name: "AFK Time",
+  label: "AFK Time",
+  options: {
+    sort: false,
+    filter: false,
+    customBodyRender: (value) => (
+      <Typography variant="body2">{value || "Not Available"}</Typography>
+    ),
+    setCellProps: () => ({
+      className: "custom-body-cell",
+    }),
+    setCellHeaderProps: () => ({
+      className: "custom-header-cell",
+    }),
+  },
+},
+{
+  name: "Usage Hours",
+  label: "Usage Hours",
+  options: {
+    sort: false,
+    filter: false,
+    customBodyRender: (value) => (
+      <Typography variant="body2">{value || "Not Available"}</Typography>
+    ),
+    setCellProps: () => ({
+      className: "custom-body-cell",
+    }),
+    setCellHeaderProps: () => ({
+      className: "custom-header-cell",
+    }),
+  },
+},
+{
+  name: "Off Times",
+  label: "Off Times",
+  options: {
+    sort: false,
+    filter: false,
+    customBodyRender: (value) => (
+      <Typography variant="body2">{value || "Not Available"}</Typography>
+    ),
+    setCellProps: () => ({
+      className: "custom-body-cell",
+    }),
+    setCellHeaderProps: () => ({
+      className: "custom-header-cell",
+    }),
+  },
+},
+{
+  name: "Last Delivery Date",
+  label: "Last Delivery Date",
+  options: {
+    sort: true,
+    filter: false,
+    customBodyRender: (value) => (
+      <Typography variant="body2">{formatDate(value)}</Typography>
+    ),
+    setCellProps: () => ({
+      className: "custom-body-cell",
+    }),
+    setCellHeaderProps: () => ({
+      className: "custom-header-cell",
+    }),
+  },
+},
+
   ];
 };
