@@ -152,9 +152,8 @@ const LaptopPipeline = () => {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
 
-  const user = JSON.parse(localStorage.getItem("user")) || {};
-  const isAdmin = user.role === "admin"; // adjust according to how role is stored
-
+  const role = JSON.parse(localStorage.getItem("role")) || [];
+  const isAdmin = role.includes("admin"); 
 
 
   useEffect(() => {
@@ -307,7 +306,7 @@ const LaptopPipeline = () => {
 
     navigate(`/donorcsr/laptop-pipeline`);
   };
-  
+
   function parseDateUniversal(dateStr) {
     if (!dateStr) return null;
     dateStr = String(dateStr).trim();
@@ -331,11 +330,79 @@ const LaptopPipeline = () => {
     return null;
   }
 
+  const calculateAvgCommittedTime = (data) => {
+    const diffs = data
+      .map((row, idx) => {
+        const raw = row["Date Committed"];
+
+        const date = parseDateUniversal(raw);
+        if (!date) {
+          return null;
+        }
+        const diffDays = (Date.now() - date.getTime()) / 86400000;
+        return diffDays >= 0 ? diffDays : null;
+      })
+      .filter(Boolean);
+
+    if (!diffs.length) {
+      return 0;
+    }
+
+    return diffs.length
+  ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
+  : "0 days";
+
+  };
+
+  const calculateAvgRefurbishedTime = (data) => {
+  const diffs = data
+    .map(l => {
+      const c = parseDateUniversal(l["Date Committed"]);
+      const d = parseDateUniversal(l["Refurbishment Date"]);
+      return (c && d && d >= c) ? (d - c) / 86400000 : null;
+    })
+    .filter(Boolean);
+
+  return diffs.length
+  ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
+  : "0 days";
+
+};
+
+const calculateAvgDistributionTime = (data) => {
+  const diffs = data
+    .map(l => {
+      const c = parseDateUniversal(l["Refurbishment Date"]);
+      const d = parseDateUniversal(l["Last Delivery Date"]);
+      return (c && d && d >= c) ? (d - c) / 86400000 : null;
+    })
+    .filter(Boolean);
+
+  return diffs.length
+  ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
+  : "0 days";
+
+};
+
+const avgActiveUsageDays = Math.round(
+  filteredLaptopData
+    .map(l => {
+      const d = parseDateUniversal(l["Date"]);
+      return d ? (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24) : null;
+    })
+    .filter(Boolean)
+    .reduce((a, b) => a + b, 0) / filteredLaptopData.length
+);
+
+
+
   const stages = [
     {
       title: "Pickup Requested",
       subtitle: "Corporate requests submitted",
-      avg: "1-2 days",
+      avg: calculateAvgCommittedTime(
+        selectedOrganization ? filteredLaptopData : laptopData
+      ),
       count: selectedOrganization
         ? filteredPickups.filter(p => p.Status === "Pending")
           .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)
@@ -353,21 +420,25 @@ const LaptopPipeline = () => {
     {
       title: "Refurbishment",
       subtitle: "Hardware restoration & software setup",
-      avg: "5-7 days",
+      avg: calculateAvgRefurbishedTime(
+        selectedOrganization ? filteredLaptopData : laptopData
+      ),
       count: refurbishedCountt,
       icon: <Tools size={30} color="#1976d2" />,
     },
     {
       title: "Distribution",
       subtitle: "Ready for NGO delivery",
-      avg: "1-2 days",
+      avg: calculateAvgDistributionTime(
+        selectedOrganization ? filteredLaptopData : laptopData
+      ),
       count: distributedCountt,
       icon: <Truck size={30} color="#1976d2" />,
     },
     {
       title: "Active Usage",
       subtitle: "In use by beneficiaries",
-      avg: "Ongoing",
+      avg: `${avgActiveUsageDays} days`,
       count: `${filteredLaptopData.filter(l => {
         const d = parseDateUniversal(l["Date"]);
         if (!d) return false;
