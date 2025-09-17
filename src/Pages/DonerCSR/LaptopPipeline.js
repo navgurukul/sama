@@ -152,9 +152,8 @@ const LaptopPipeline = () => {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
 
-  const user = JSON.parse(localStorage.getItem("user")) || {};
-  const isAdmin = user.role === "admin"; // adjust according to how role is stored
-
+  const role = JSON.parse(localStorage.getItem("role")) || [];
+  const isAdmin = role.includes("admin"); 
 
 
   useEffect(() => {
