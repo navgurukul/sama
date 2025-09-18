@@ -622,8 +622,9 @@ const Overview = () => {
     ? allProcessingTimes.reduce((a, b) => a + b, 0) / allProcessingTimes.length
     : 0;
 
-  const avgProcessingTimeRounded = Math.round(avgProcessingTime); 
-  
+  const avgProcessingTimeRounded = Math.round(avgProcessingTime);
+
+
   return (
 
     <>
@@ -671,12 +672,32 @@ const Overview = () => {
 
             <MetricCard
               title="Active Beneficiaries"
-              value={getFilteredPreData().reduce(
-                (sum, item) => sum + (parseInt(item["Number of student"], 10) || 0),
-                0
-              )}
+              value={(() => {
+                // 1) Count from preData
+                const preCount = getFilteredPreData().reduce(
+                  (sum, item) => sum + (parseInt(item["Number of student"], 10) || 0),
+                  0
+                );
+
+                // 2) Count from userData (skip ngoData since it's empty)
+                const userCount = userData.reduce((count, user) => {
+                  if (!selectedOrganization) {
+                    return count + 1;
+                  }
+                  // apply donor filter if ngoData is available
+                  const ngo = ngoData.find((n) => String(n.NgoId).trim() === String(user.Ngo).trim());
+                  if (ngo && ngo.Doner === selectedOrganization) {
+                    return count + 1;
+                  }
+                  return count;
+                }, 0);
+
+
+                const total = preCount + userCount;
+
+                return total;
+              })()}
               subtitle="Currently using laptops"
-              // growth="+23.6% from last month"
               icon={Users}
             />
 
@@ -763,10 +784,10 @@ const Overview = () => {
                 { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
                 {
                   icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${filteredLaptopData.filter(l => {
-                    const d = parseDateUniversal(l["Date"]);   
+                    const d = parseDateUniversal(l["Date"]);
                     if (!d) return false;
                     const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
-                    return diffDays <= 15;   
+                    return diffDays <= 15;
                   }).length} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f"
                 }
               ].map((step, index) => (
