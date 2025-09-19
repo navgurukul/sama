@@ -131,7 +131,9 @@ const Overview = () => {
                 minute: "2-digit",
                 second: "2-digit",
               })
-              : "N/A", Doner: ngo.Doner || ngo.Donor || null,
+              : "N/A", 
+            Doner: ngo.Doner || ngo.Donor || null,
+            Id: ngo.Id,
           };
         });
 
@@ -238,10 +240,26 @@ const Overview = () => {
     );
   };
 
+  const getFilteredUserData = () => {
+    if (!selectedOrganization) return userData;
+    
+    const matchingNgos = ngoPartner.filter(partner =>
+      String(partner.Doner).trim().toLowerCase() ===
+      selectedOrganization.toLowerCase()
+    );
+
+    if (matchingNgos.length === 0) return [];
+
+    return userData.filter(user =>
+      matchingNgos.some(ngo => String(user.Ngo).trim() === String(ngo.Id).trim())
+    );
+  };
+
   // Apply filters to get filtered data
   const filteredLaptopData = getFilteredLaptopData();
   const filteredNgoPartners = getFilteredNgoPartners();
   const filteredPickups = getFilteredPickups();
+  const filteredUserData = getFilteredUserData();
 
   // Mapping through Sheets
 
@@ -256,6 +274,7 @@ const Overview = () => {
       }
       return match;
     }).length;
+
     const beneficiariesCount = userData.filter(
       (user) => String(user.Ngo || user.ngoId) === String(ngo.ID)
     ).length;
@@ -673,28 +692,16 @@ const Overview = () => {
             <MetricCard
               title="Active Beneficiaries"
               value={(() => {
-                // 1) Count from preData
+                // 1) Count from preData (filtered)
                 const preCount = getFilteredPreData().reduce(
                   (sum, item) => sum + (parseInt(item["Number of student"], 10) || 0),
                   0
                 );
 
-                // 2) Count from userData (skip ngoData since it's empty)
-                const userCount = userData.reduce((count, user) => {
-                  if (!selectedOrganization) {
-                    return count + 1;
-                  }
-                  // apply donor filter if ngoData is available
-                  const ngo = ngoData.find((n) => String(n.NgoId).trim() === String(user.Ngo).trim());
-                  if (ngo && ngo.Doner === selectedOrganization) {
-                    return count + 1;
-                  }
-                  return count;
-                }, 0);
-
+                // 2) Count from userData (filtered using ngoPartner data like the old code)
+                const userCount = filteredUserData.length;
 
                 const total = preCount + userCount;
-
                 return total;
               })()}
               subtitle="Currently using laptops"
