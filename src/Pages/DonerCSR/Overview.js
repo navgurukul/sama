@@ -101,9 +101,19 @@ const Overview = () => {
           const laptopsAllocated = filteredLaptops.length;
 
 
-          const beneficiariesCount = userJson.filter(
+          // Count from userData (existing logic)
+          const beneficiariesFromUserData = userJson.filter(
             (user) => String(user.Ngo).trim() === String(ngo.Id).trim()
           ).length;
+
+          // Count from preData - sum up "Number of student" for matching NgoId
+          const beneficiariesFromPreData = preJson
+            .filter((preItem) => String(preItem.NgoId).trim() === String(ngo.Id).trim())
+            .reduce((total, preItem) => total + (parseInt(preItem["Number of student"], 10) || 0), 0);
+
+          // Total beneficiaries = userData count + preData count
+          const totalBeneficiaries = beneficiariesFromUserData + beneficiariesFromPreData;
+
 
           const deliveries = filteredLaptops
             .filter(
@@ -121,7 +131,9 @@ const Overview = () => {
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
-            beneficiaries: beneficiariesCount,
+            beneficiaries: totalBeneficiaries,
+            beneficiariesFromUserData,
+            beneficiariesFromPreData,
             lastDelivery: lastDelivery
               ? lastDelivery.toLocaleString("en-GB", {
                 day: "2-digit",
@@ -131,7 +143,7 @@ const Overview = () => {
                 minute: "2-digit",
                 second: "2-digit",
               })
-              : "N/A", 
+              : "N/A",
             Doner: ngo.Doner || ngo.Donor || null,
             Id: ngo.Id,
           };
@@ -242,7 +254,7 @@ const Overview = () => {
 
   const getFilteredUserData = () => {
     if (!selectedOrganization) return userData;
-    
+
     const matchingNgos = ngoPartner.filter(partner =>
       String(partner.Doner).trim().toLowerCase() ===
       selectedOrganization.toLowerCase()
