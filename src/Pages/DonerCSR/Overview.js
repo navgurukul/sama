@@ -101,19 +101,17 @@ const Overview = () => {
           const laptopsAllocated = filteredLaptops.length;
 
 
-          // Count from userData (existing logic)
           const beneficiariesFromUserData = userJson.filter(
             (user) => String(user.Ngo).trim() === String(ngo.Id).trim()
           ).length;
+          console.log("Ngo:", ngo.organizationName, "Beneficiaries from userData:", beneficiariesFromUserData);
 
-          // Count from preData - sum up "Number of student" for matching NgoId
           const beneficiariesFromPreData = preJson
             .filter((preItem) => String(preItem.NgoId).trim() === String(ngo.Id).trim())
             .reduce((total, preItem) => total + (parseInt(preItem["Number of student"], 10) || 0), 0);
+          console.log("Ngo:", ngo.organizationName, "Beneficiaries from userData:", beneficiariesFromUserData, "Beneficiaries from preData:", beneficiariesFromPreData);
 
-          // Total beneficiaries = userData count + preData count
           const totalBeneficiaries = beneficiariesFromUserData + beneficiariesFromPreData;
-
 
           const deliveries = filteredLaptops
             .filter(
