@@ -57,14 +57,18 @@ const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
   return (
     <>
       {/* Header Row */}
-      <Box
+       <Box
         sx={{
           display: "flex",
+           flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: { xs: "flex-start", sm: "center" },
           mb: 3,
+           gap: 2,
         }}
-      >
+      > 
+    
+
         {/* Left side - Logo + Title */}
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Avatar
@@ -91,8 +95,9 @@ const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
         </Box>
 
         {/* Right side - Filters */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {isAdmin && selectedOrganization &&(
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems:{ xs: "flex-start", sm: "center" }, gap: 1,mt: { xs: 1, sm: 0 } }}>
+    
+         {isAdmin && selectedOrganization &&(
             <Chip
               label={selectedOrganization}
               variant="outlined"
