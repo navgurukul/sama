@@ -51,16 +51,18 @@ const Ngopartner = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [laptopRes, ngoRes, userRes] = await Promise.all([
+        const [laptopRes, ngoRes, userRes, preRes] = await Promise.all([
           fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`),
           fetch(`${process.env.REACT_APP_NgoInformationApi}?type=registration`),
-          fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData`)
+          fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData`),
+          fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre`)
         ]);
 
-        const [laptopJson, ngoJson, userJson] = await Promise.all([
+        const [laptopJson, ngoJson, userJson, preJson] = await Promise.all([
           laptopRes.json(),
           ngoRes.json(),
-          userRes.json()
+          userRes.json(),
+          preRes.json()
         ]);
 
         const approved = ngoJson.data?.filter((ngo) => ngo.Status === "Approved") || [];
@@ -85,11 +87,19 @@ const Ngopartner = () => {
               String(ngo.organizationName).trim().toLowerCase()
           );
 
-          const beneficiariesList = userJson.filter(
+          const beneficiariesFromUserData = userJson.filter(
             (user) =>
               String(user.Ngo).trim() === String(ngo.Id).trim() ||
               String(user.ngoId).trim() === String(ngo.Id).trim()
           );
+
+          // beneficiaries from preData
+          const beneficiariesFromPreData = preJson
+            .filter((preItem) => String(preItem.NgoId).trim() === String(ngo.Id).trim())
+            .reduce((total, preItem) => total + (parseInt(preItem["Number of student"], 10) || 0), 0);
+
+          // merge userData + preData count
+          const totalBeneficiariesCount = beneficiariesFromUserData.length + beneficiariesFromPreData;
 
           const deliveries = laptopsAllocated
             .filter(
@@ -110,7 +120,8 @@ const Ngopartner = () => {
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
-            beneficiaries: beneficiariesList,
+            beneficiaries: beneficiariesFromUserData,
+            beneficiariesCount: totalBeneficiariesCount,
             lastDelivery: lastDelivery
               ? lastDelivery.toLocaleString("en-GB", {
                 day: "2-digit",
@@ -458,7 +469,7 @@ const Ngopartner = () => {
                       }}
                       onClick={() => handleToggle(partner.id, "beneficiaries")}
                     >
-                      {partner.beneficiaries.length}
+                      {partner.beneficiariesCount}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">Beneficiaries</Typography>
                   </Grid>
