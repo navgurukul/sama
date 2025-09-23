@@ -183,12 +183,16 @@ useEffect(() => {
     <>
       {/* ======= HEADER ======= */}
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        px={2}
-        py={2}
-        borderBottom="1px solid #eee"
+      sx={{
+        display:"flex",
+        flexDirection: { xs: "column", sm: "row" },
+        justifyContent:"space-between",
+        alignItems: { xs: "flex-start", sm: "center" },
+        px:2,
+        py:2,
+        borderBottom:"1px solid #eee",
+        gap: 2,
+      }}
       >
         {/* Left Section */}
         <Box display="flex" alignItems="center" gap={1.5}>
@@ -216,7 +220,8 @@ useEffect(() => {
         </Box>
 
         {/* Right Section */}
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box  sx={{ display:"flex", flexDirection: { xs: "column", sm: "row" }, alignItems:{ xs: "flex-start", sm: "center" }, gap:1.5,
+      mt: { xs: 2, sm: 0 }, }}>
           {isAdmin &&  selectedOrganization && (
             <Chip
               label={selectedOrganization}

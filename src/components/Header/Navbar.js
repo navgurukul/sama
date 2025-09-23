@@ -344,6 +344,99 @@ const Navbar = () => {
   };
 
   const renderAdminHeader = () => {
+    if (isMobileOrTablet) {
+      return (
+        <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+          {!isRouteMatch(location.pathname, routePatterns) && (
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              className="header-logo"
+              sx={{ cursor: "pointer" }}
+              onClick={() => navigate("/ngo")}
+            />
+          )}
+
+          <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 1 }}
+            >
+              <MenuIcon />
+            </IconButton>
+
+            <Avatar
+              alt="Profile"
+              src={ProfileImg}
+              sx={{
+                width: 40,
+                height: 40,
+                cursor: "pointer",
+                "&:hover": { opacity: 0.8 },
+              }}
+              onClick={handleProfileClick}
+            />
+          </Box>
+
+          {/* Drawer for Admin */}
+          <Drawer
+            anchor="right"
+            open={mobileDrawerOpen}
+            onClose={handleDrawerToggle}
+            sx={{ "& .MuiDrawer-paper": { width: 280 } }}
+          >
+            <Box
+              sx={{ width: 280 }}
+              role="presentation"
+              onClick={handleDrawerToggle}
+              onKeyDown={handleDrawerToggle}
+            >
+              <List>
+                <ListItem
+                  button
+                  component={Link}
+                  to="/pickup-request-by-doner"
+                  selected={location.pathname === "/pickup-request-by-doner"}
+                  onClick={() => navigate("/pickup-request-by-doner")}
+                >
+                  <ListItemText primary="Pickup Requests" />
+                </ListItem>
+
+                <ListItem
+                  button
+                  component={Link}
+                  to="/registration"
+                  selected={registrationActive}
+                  onClick={() => navigate("/registration")}
+                >
+                  <ListItemText primary="Registration" />
+                </ListItem>
+
+                {opsTabs.map((tab) => (
+                  <ListItem
+                    button
+                    key={tab.path}
+                    component={Link}
+                    to={tab.path}
+                    selected={activeTab === tab.path}
+                    onClick={() => {
+                      setActiveTab(tab.path);
+                      navigate(tab.path);
+                    }}
+                  >
+                    <ListItemText primary={tab.label} />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          </Drawer>
+        </Box>
+      );
+    }
     return (
       <Box
         sx={{

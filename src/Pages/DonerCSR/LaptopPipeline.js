@@ -151,9 +151,8 @@ const LaptopPipeline = () => {
   const [pickups, setPickups] = useState([]);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
-
   const role = JSON.parse(localStorage.getItem("role")) || [];
-  const isAdmin = role.includes("admin"); 
+  const isAdmin = role.includes("admin");
 
 
   useEffect(() => {
@@ -349,50 +348,50 @@ const LaptopPipeline = () => {
     }
 
     return diffs.length
-  ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
-  : "0 days";
+      ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
+      : "0 days";
 
   };
 
   const calculateAvgRefurbishedTime = (data) => {
-  const diffs = data
-    .map(l => {
-      const c = parseDateUniversal(l["Date Committed"]);
-      const d = parseDateUniversal(l["Refurbishment Date"]);
-      return (c && d && d >= c) ? (d - c) / 86400000 : null;
-    })
-    .filter(Boolean);
+    const diffs = data
+      .map(l => {
+        const c = parseDateUniversal(l["Date Committed"]);
+        const d = parseDateUniversal(l["Refurbishment Date"]);
+        return (c && d && d >= c) ? (d - c) / 86400000 : null;
+      })
+      .filter(Boolean);
 
-  return diffs.length
-  ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
-  : "0 days";
+    return diffs.length
+      ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
+      : "0 days";
 
-};
+  };
 
-const calculateAvgDistributionTime = (data) => {
-  const diffs = data
-    .map(l => {
-      const c = parseDateUniversal(l["Refurbishment Date"]);
-      const d = parseDateUniversal(l["Last Delivery Date"]);
-      return (c && d && d >= c) ? (d - c) / 86400000 : null;
-    })
-    .filter(Boolean);
+  const calculateAvgDistributionTime = (data) => {
+    const diffs = data
+      .map(l => {
+        const c = parseDateUniversal(l["Refurbishment Date"]);
+        const d = parseDateUniversal(l["Last Delivery Date"]);
+        return (c && d && d >= c) ? (d - c) / 86400000 : null;
+      })
+      .filter(Boolean);
 
-  return diffs.length
-  ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
-  : "0 days";
+    return diffs.length
+      ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
+      : "0 days";
 
-};
+  };
 
-const avgActiveUsageDays = Math.round(
-  filteredLaptopData
-    .map(l => {
-      const d = parseDateUniversal(l["Date"]);
-      return d ? (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24) : null;
-    })
-    .filter(Boolean)
-    .reduce((a, b) => a + b, 0) / filteredLaptopData.length
-);
+  const avgActiveUsageDays = Math.round(
+    filteredLaptopData
+      .map(l => {
+        const d = parseDateUniversal(l["Date"]);
+        return d ? (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24) : null;
+      })
+      .filter(Boolean)
+      .reduce((a, b) => a + b, 0) / filteredLaptopData.length
+  );
 
 
 
@@ -452,12 +451,16 @@ const avgActiveUsageDays = Math.round(
   return (
     <>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        px={2}
-        py={2}
-        borderBottom="1px solid #eee"
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", sm: "center" },
+          px: 2,
+          py: 2,
+          borderBottom: "1px solid #eee",
+          gap: 2,
+        }}
       >
         {/* Left Section */}
         <Box display="flex" alignItems="center" gap={1.5}>
@@ -485,7 +488,13 @@ const avgActiveUsageDays = Math.round(
         </Box>
 
         {/* Right Section */}
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" }, 
+          alignItems: { xs: "flex-start", sm: "center" },
+          gap: 1.5,
+          mt: { xs: 2, sm: 0 }, 
+        }}>
           {isAdmin && selectedOrganization && (
             <Chip
               label={selectedOrganization}
