@@ -467,7 +467,7 @@ const Ngopartner = () => {
                         cursor: "pointer",
                         color: expandedCard === partner.id && activeType === "beneficiaries" ? "green" : "inherit"
                       }}
-                      onClick={() => handleToggle(partner.id, "beneficiaries")}
+                      // onClick={() => handleToggle(partner.id, "beneficiaries")}
                     >
                       {partner.beneficiariesCount}
                     </Typography>
@@ -496,12 +496,13 @@ const Ngopartner = () => {
                             <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
                           </TableRow>
                         ) : (
-                          <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
-                            <TableCell sx={{ fontWeight: "bold" }}>Occupation</TableCell>
-                            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-                            <TableCell sx={{ fontWeight: "bold" }}>Laptop Assigned</TableCell>
-                          </TableRow>
+                          // <TableRow>
+                          //   <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
+                          //   <TableCell sx={{ fontWeight: "bold" }}>Occupation</TableCell>
+                          //   <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                          //   <TableCell sx={{ fontWeight: "bold" }}>Laptop Assigned</TableCell>
+                          // </TableRow>
+                          null
                         )}
                       </TableHead>
 
@@ -517,16 +518,19 @@ const Ngopartner = () => {
                                 <TableCell>{item.Working ? "Yes" : "No"}</TableCell>
                               </TableRow>
                             ))
-                          : partner.beneficiaries
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((item, index) => (
-                              <TableRow key={index}>
-                                <TableCell>{item.name}</TableCell>
-                                <TableCell>{item.Occupation}</TableCell>
-                                <TableCell>{item.status}</TableCell>
-                                <TableCell>{item["Laptop Assigned"]}</TableCell>
-                              </TableRow>
-                            ))}
+                          : null
+                          // partner.beneficiaries
+                          //   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                          //   .map((item, index) => (
+                              // <TableRow key={index}>
+                              //   <TableCell>{item.name}</TableCell>
+                              //   <TableCell>{item.Occupation}</TableCell>
+                              //   <TableCell>{item.status}</TableCell>
+                              //   <TableCell>{item["Laptop Assigned"]}</TableCell>
+                              // </TableRow>
+            
+                            // ))
+                            }
                       </TableBody>
                     </Table>
                     <TablePagination
