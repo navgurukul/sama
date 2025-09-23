@@ -101,9 +101,17 @@ const Overview = () => {
           const laptopsAllocated = filteredLaptops.length;
 
 
-          const beneficiariesCount = userJson.filter(
+          const beneficiariesFromUserData = userJson.filter(
             (user) => String(user.Ngo).trim() === String(ngo.Id).trim()
           ).length;
+          console.log("Ngo:", ngo.organizationName, "Beneficiaries from userData:", beneficiariesFromUserData);
+
+          const beneficiariesFromPreData = preJson
+            .filter((preItem) => String(preItem.NgoId).trim() === String(ngo.Id).trim())
+            .reduce((total, preItem) => total + (parseInt(preItem["Number of student"], 10) || 0), 0);
+          console.log("Ngo:", ngo.organizationName, "Beneficiaries from userData:", beneficiariesFromUserData, "Beneficiaries from preData:", beneficiariesFromPreData);
+
+          const totalBeneficiaries = beneficiariesFromUserData + beneficiariesFromPreData;
 
           const deliveries = filteredLaptops
             .filter(
@@ -121,7 +129,9 @@ const Overview = () => {
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
-            beneficiaries: beneficiariesCount,
+            beneficiaries: totalBeneficiaries,
+            beneficiariesFromUserData,
+            beneficiariesFromPreData,
             lastDelivery: lastDelivery
               ? lastDelivery.toLocaleString("en-GB", {
                 day: "2-digit",
@@ -131,7 +141,9 @@ const Overview = () => {
                 minute: "2-digit",
                 second: "2-digit",
               })
-              : "N/A", Doner: ngo.Doner || ngo.Donor || null,
+              : "N/A",
+            Doner: ngo.Doner || ngo.Donor || null,
+            Id: ngo.Id,
           };
         });
 
@@ -238,10 +250,26 @@ const Overview = () => {
     );
   };
 
+  const getFilteredUserData = () => {
+    if (!selectedOrganization) return userData;
+
+    const matchingNgos = ngoPartner.filter(partner =>
+      String(partner.Doner).trim().toLowerCase() ===
+      selectedOrganization.toLowerCase()
+    );
+
+    if (matchingNgos.length === 0) return [];
+
+    return userData.filter(user =>
+      matchingNgos.some(ngo => String(user.Ngo).trim() === String(ngo.Id).trim())
+    );
+  };
+
   // Apply filters to get filtered data
   const filteredLaptopData = getFilteredLaptopData();
   const filteredNgoPartners = getFilteredNgoPartners();
   const filteredPickups = getFilteredPickups();
+  const filteredUserData = getFilteredUserData();
 
   // Mapping through Sheets
 
@@ -256,6 +284,7 @@ const Overview = () => {
       }
       return match;
     }).length;
+
     const beneficiariesCount = userData.filter(
       (user) => String(user.Ngo || user.ngoId) === String(ngo.ID)
     ).length;
@@ -622,8 +651,9 @@ const Overview = () => {
     ? allProcessingTimes.reduce((a, b) => a + b, 0) / allProcessingTimes.length
     : 0;
 
-  const avgProcessingTimeRounded = Math.round(avgProcessingTime); 
-  
+  const avgProcessingTimeRounded = Math.round(avgProcessingTime);
+
+
   return (
 
     <>
@@ -671,12 +701,20 @@ const Overview = () => {
 
             <MetricCard
               title="Active Beneficiaries"
-              value={getFilteredPreData().reduce(
-                (sum, item) => sum + (parseInt(item["Number of student"], 10) || 0),
-                0
-              )}
+              value={(() => {
+                // 1) Count from preData (filtered)
+                const preCount = getFilteredPreData().reduce(
+                  (sum, item) => sum + (parseInt(item["Number of student"], 10) || 0),
+                  0
+                );
+
+                // 2) Count from userData (filtered using ngoPartner data like the old code)
+                const userCount = filteredUserData.length;
+
+                const total = preCount + userCount;
+                return total;
+              })()}
               subtitle="Currently using laptops"
-              // growth="+23.6% from last month"
               icon={Users}
             />
 
@@ -763,10 +801,10 @@ const Overview = () => {
                 { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
                 {
                   icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${filteredLaptopData.filter(l => {
-                    const d = parseDateUniversal(l["Date"]);   
+                    const d = parseDateUniversal(l["Date"]);
                     if (!d) return false;
                     const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
-                    return diffDays <= 15;   
+                    return diffDays <= 15;
                   }).length} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f"
                 }
               ].map((step, index) => (
