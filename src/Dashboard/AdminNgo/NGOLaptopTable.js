@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Typography, 
-  Paper, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
+import {
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
   TableRow,
   Box,
   Snackbar,
@@ -49,14 +49,14 @@ function NGOLaptopTable({ ngoData }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const majorIssueOptions = [
-    "Fan","Speaker","Microphone","Damaged Screen","Faulty Battery","Overheating","Malfunctioning Keyboard",
-    "Broken Ports","Hard Drive Issues","Defective Motherboard","Audio Problems","Graphics Card Issues",
-    "Water Damage","USB Ports","Camera issue","Charging point issue","Fan Error","Wifi issue"
+    "Fan", "Speaker", "Microphone", "Damaged Screen", "Faulty Battery", "Overheating", "Malfunctioning Keyboard",
+    "Broken Ports", "Hard Drive Issues", "Defective Motherboard", "Audio Problems", "Graphics Card Issues",
+    "Water Damage", "USB Ports", "Camera issue", "Charging point issue", "Fan Error", "Wifi issue"
   ];
-  
+
   const minorIssuesOptions = [
-    "Cosmetic Wear","Loose Hinges","Dead Pixels","Fading Keyboard","Small Battery Capacity Loss",
-    "Minor Software Issues","Port Wear","Touchpad Sensitivity","CMOS Battery","RAM Issue"
+    "Cosmetic Wear", "Loose Hinges", "Dead Pixels", "Fading Keyboard", "Small Battery Capacity Loss",
+    "Minor Software Issues", "Port Wear", "Touchpad Sensitivity", "CMOS Battery", "RAM Issue"
   ];
 
   // Set initial NGO ID
@@ -153,25 +153,25 @@ function NGOLaptopTable({ ngoData }) {
   const handleCommentChange = (event) => {
     setCommentText(event.target.value);
   };
-  
+
   const handleMajorIssueChange = (event) => {
     setSelectedMajorIssue(event.target.value);
   };
-  
+
   const handleMinorIssueChange = (event) => {
     setSelectedMinorIssue(event.target.value);
   };
-  
+
 
   // Save comment and issues
-    const handleSaveComment = async () => {
+  const handleSaveComment = async () => {
     if (!currentLaptop) return;
-    
+
     setSavingComment(true);
-    
+
     // Format the combined comment with selected issues
     let combinedComment = commentText.trim() || "";
-    
+
     if (selectedMajorIssue.length > 0) {
       combinedComment += `\nMajor Issues: ${selectedMajorIssue.join(", ")}`;
     }
@@ -179,7 +179,7 @@ function NGOLaptopTable({ ngoData }) {
     if (selectedMinorIssue.length > 0) {
       combinedComment += `\nMinor Issues: ${selectedMinorIssue.join(", ")}`;
     }
-    
+
     try {
       // Create a complete payload with all laptop fields, but update the comment and issues
       const payload = {
@@ -207,7 +207,7 @@ function NGOLaptopTable({ ngoData }) {
         lastUpdatedBy: currentLaptop["Last Updated By"] || "System",
         comment: combinedComment  // Updated combined comment value
       };
-      
+
       const response = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`, {
         method: 'POST',
         headers: {
@@ -216,10 +216,10 @@ function NGOLaptopTable({ ngoData }) {
         mode: "no-cors",
         body: JSON.stringify(payload)
       });
-      
+
       // For no-cors mode, we won't be able to check response.ok
       // So we'll assume it succeeded and update the UI accordingly
-      
+
       // Update the local state with the new comment and issues
       const updatedLaptopData = registrationLaptop.map(laptop => {
         if (laptop.ID === currentLaptop.ID) {
@@ -232,10 +232,10 @@ function NGOLaptopTable({ ngoData }) {
         }
         return laptop;
       });
-      
+
       setRegistrationLaptop(updatedLaptopData);
       handleCloseCommentDialog();
-      
+
       setSnackbarMessage('Data saved successfully');
       setSnackbarSeverity('success');
     } catch (err) {
@@ -312,7 +312,15 @@ function NGOLaptopTable({ ngoData }) {
                   </Typography>
                 </TableCell>
                 <TableCell>{laptop["Condition Status"]}</TableCell>
-                <TableCell>{laptop["Battery Capacity"] ? `${(laptop["Battery Capacity"]*100).toFixed(0)}%` : "Unknown"}</TableCell>
+                <TableCell>
+                  {laptop['Battery Capacity'] !== undefined && laptop['Battery Capacity'] !== null
+                    ? `${Math.round(
+                      laptop['Battery Capacity'] > 1
+                        ? laptop['Battery Capacity']
+                        : laptop['Battery Capacity'] * 100
+                    )}%`
+                    : 'N/A'}
+                </TableCell>
                 <TableCell>{laptop["Inventory Location"]}</TableCell>
                 <TableCell>{laptop.Status}</TableCell>
                 <TableCell>{laptop["Date of laptop Assignment"] || "-"}</TableCell>
@@ -339,7 +347,7 @@ function NGOLaptopTable({ ngoData }) {
 
       {filteredData.length > 0 && (
         <TablePagination
-          rowsPerPageOptions={[5,10,25]}
+          rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={filteredData.length}
           rowsPerPage={rowsPerPage}
