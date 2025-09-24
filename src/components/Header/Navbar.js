@@ -61,7 +61,7 @@ const opsTabs = [
   { label: "Laptop Detail Form", path: "/laptopinventory" },
   { label: "NGO Form", path: "/ngoregistration" },
   { label: "Edit Questions", path: "/donormanager" },
-  { label: "Laptop with Issues", path: "/laptop-with-issues" },
+  { label: "sues", path: "/laptop-with-issues" },
   { label: "Laptop Audit", path: "/audit" },
 ];
 
