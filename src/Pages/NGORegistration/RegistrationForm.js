@@ -146,7 +146,6 @@ function RegistrationForm() {
       if (data.status === "success" && Array.isArray(data.data)) {
         // Get unique organization names
         setExistingNgos(data.data);
-        console.log("Fetched Existing NGOs:", data.data);
       }
     } catch (error) {
       console.error("Error fetching NGOs:", error);
@@ -302,7 +301,13 @@ function RegistrationForm() {
   };
 
   const validateOrganizationName = (orgName) => {
-    if (orgName && requestType === "first-time" && existingNgos.includes(orgName)) {
+    if (
+      orgName &&
+      requestType === "first-time" &&
+      existingNgos.some(
+        (org) => org.organizationName.trim().toLowerCase() === orgName.trim().toLowerCase()
+      )
+    ) {
       setErrors(prev => ({
         ...prev,
         organizationName: "This organization already exists. Please select 'Additional Request' if this is your organization."
@@ -424,10 +429,15 @@ function RegistrationForm() {
         // }
 
         // Check if organization already exists
-        if (existingNgos.includes(value)) {
+        if (
+          existingNgos.some(
+            (org) => org.organizationName.trim().toLowerCase() === value.trim().toLowerCase()
+          )
+        ) {
           newErrors.organizationName =
             "This organization already exists. Please select 'Additional Request' if this is your organization.";
         }
+
       }
 
       // Registration number validation - only numbers and letters
@@ -476,16 +486,9 @@ function RegistrationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-
-
     setLoading(true);
-
-    // Prepare formData copy
     const updatedFormData = { ...formData };
-    console.log("FormData before payload:", updatedFormData);
-    console.log("Request Type:", requestType);
-    console.log("Selected Existing NGO:", selectedExistingNgo);
-    // Handle "Other" selections
+
     if (updatedFormData.beneficiarySelectionOther) {
       updatedFormData.beneficiarySelection = updatedFormData.beneficiarySelection.map(
         item => item === "Other" ? updatedFormData.beneficiarySelectionOther : item
@@ -521,21 +524,18 @@ function RegistrationForm() {
       organizationName: updatedFormData.organizationName.trim(),
     };
 
-    // If existing NGO selected, send orgName separately
-   if (requestType === "subsequent" && selectedExistingNgo) {
-  // Use the exact selected NGO name
-  payload.organizationName = selectedExistingNgo.trim();
+    if (requestType === "subsequent" && selectedExistingNgo) {
+      payload.organizationName = selectedExistingNgo.trim();
 
-  const existingOrg = existingNgos.find(
-    org => org.organizationName.trim() === selectedExistingNgo.trim()
-  );
-  if (existingOrg) {
-    payload.organizationId = existingOrg.id;
-  }
-}
+      const existingOrg = existingNgos.find(
+        org => org.organizationName.trim() === selectedExistingNgo.trim()
+      );
+      if (existingOrg) {
+        payload.organizationId = existingOrg.id;
+      }
+    }
 
 
-  console.log("Final Payload to Backend:", payload);
 
     try {
       const response = await fetch(
@@ -660,15 +660,12 @@ function RegistrationForm() {
         <Button
           onClick={() => {
             if (requestType === "first-time") {
-              setRequestType("first-time");
               setShowRequestTypeModal(false);
             } else if (requestType === "subsequent" && selectedExistingNgo) {
-              setRequestType("subsequent");
               setFormData(prev => ({
                 ...prev,
                 organizationName: selectedExistingNgo
               }));
-              console.log("Selected Existing NGO:", selectedExistingNgo);
               setShowRequestTypeModal(false);
             }
           }}
