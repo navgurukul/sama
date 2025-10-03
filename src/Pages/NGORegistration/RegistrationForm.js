@@ -560,13 +560,37 @@ function RegistrationForm() {
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
 
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(async () => {
+        try {
+          const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
+          const storedUserId = NgoId[0].NgoId;
 
+          const res = await fetch(
+            `${process.env.REACT_APP_NgoInformationApi}?type=registration`
+          );
+          const result = await res.json();
+
+          const finduser = result.data.find(
+            (item) => item.Id === storedUserId
+          );
+
+          if (finduser["Ngo Type"] === "1 to one") {
+            navigate("/beneficiarydata");
+          } else {
+            navigate("/preliminary");
+          }
+        } catch (err) {
+          console.error("Error fetching NGO type:", err);
+          navigate("/"); // fallback
+        }
+      }, 2000);
     } catch (err) {
       console.error(err);
       setSnackbarMessage("Error submitting form");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
+
+
     } finally {
       setLoading(false);
     }

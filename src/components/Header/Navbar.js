@@ -629,14 +629,44 @@ const Navbar = () => {
               ) : isLoggedIn && role.includes("ops") ? (
                 renderOpsHeader()
               ) : isLoggedIn && role.includes("ngo") ? (
-                <Box
-                  component="img"
-                  src={logo}
-                  alt="Logo"
-                  className="header-logo"
-                  sx={{ cursor: "pointer", height: 40 }}
-                  onClick={() => navigate("/")}
-                />
+                <Box sx={{ display: "flex", alignContent: "right", width: "50%" }}>
+                  <Box
+                    component="img"
+                    src={logo}
+                    alt="Logo"
+                    className="header-logo"
+                    sx={{ cursor: "pointer", height: 40 }}
+                    onClick={() => navigate("/")}
+                  />
+
+                  <MuiLink
+                    sx={{
+                      marginLeft: "auto",
+                      textDecoration: "none",
+                    }}
+                    component={Link}
+                    to="/ngoregistration"
+                  >
+                    <Button
+                      type="submit"
+                      sx={{
+                        fontWeight: "normal",
+                        borderRadius: "100px",
+                        backgroundColor: "#FFFFFF",
+                        border: "1px solid",
+                        position: "relative",
+                        left: "10",
+                        borderColor: "primary.main",                        "&:hover": {
+                          backgroundColor: "#FFFFFF",
+                        },
+                      }}
+                    >
+                      <Typography variant="subtitle1" sx={{ color: "primary.main" }}>
+                        Submit Requirements
+                      </Typography>
+                    </Button>
+                  </MuiLink>
+                </Box>
               ) : (
                 <>
                   {!isLoggedIn && (
