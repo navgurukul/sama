@@ -34,6 +34,7 @@ const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
     onChange({ target: { name, value } });
   };
 
+
   return (
     <FormControl fullWidth margin="normal" required error={!!error}>
       <FormLabel>
@@ -395,8 +396,14 @@ function RegistrationForm() {
     const newErrors = {};
 
 
-    formfields.forEach((field) => {
-      const value = formData[field.name];
+    const activeFields =
+      requestType === "subsequent"
+        ? ["numberOfBeneficiaries", "orgLaptopRequire"]
+        : formfields.map((f) => f.name);
+
+    activeFields.forEach((field) => {
+      const value = formData[field];
+
 
       // File validation
       if (field.name === "impactReport") {
@@ -572,6 +579,14 @@ function RegistrationForm() {
     setSnackbarOpen(false);
   };
 
+  const filteredFormFields = requestType === "subsequent"
+    ? formFields.filter(
+      (field) =>
+        field.name === "numberOfBeneficiaries" ||
+        field.name === "orgLaptopRequire"
+    )
+    : formFields;
+
   const RequestTypeModal = () => (
     <Dialog open={showRequestTypeModal} maxWidth="sm" fullWidth>
       <DialogTitle>
@@ -707,7 +722,7 @@ function RegistrationForm() {
             </Box>
           ) : (
             <form onSubmit={handleSubmit}>
-              {formFields?.map((field) => {
+              {filteredFormFields?.map((field) => {
                 if (field?.type === "text") {
                   // Make organization name read-only for existing NGOs
                   if (field.name === "organizationName" && requestType === "subsequent") {
