@@ -20,6 +20,8 @@ const BulkEditPanel = ({
     const [bulkStatus, setBulkStatus] = useState(statusFilter);
     const [bulkAssignedTo, setBulkAssignedTo] = useState('all');
     const [bulkAllocatedTo, setBulkAllocatedTo] = useState('all');
+    const [bulkDistributed, setBulkDistributed] = useState('all');
+
     // const [confirmOpen, setConfirmOpen] = useState(false);
     // const [pendingUpdates, setPendingUpdates] = useState([]);
 
@@ -58,6 +60,10 @@ const BulkEditPanel = ({
         if (bulkAllocatedTo !== 'all') {
             updates.push({ field: 'Allocated To', value: bulkAllocatedTo });
         }
+        if (bulkDistributed !== 'all') {
+            updates.push({ field: 'Distributed', value: bulkDistributed });
+        }
+
 
         if (updates.length > 0) {
             onBulkUpdate(updates);
@@ -104,6 +110,7 @@ const BulkEditPanel = ({
                                 <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
                                 <MenuItem value="Allocated">Allocated</MenuItem>
                                 <MenuItem value="To be dispatch">To be dispatch</MenuItem>
+                                <MenuItem value="Distributed" >Distributed</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>
@@ -144,6 +151,24 @@ const BulkEditPanel = ({
                             </Select>
                         </FormControl>
                     </Grid>
+                    <Grid item xs={12} md={3}>
+                        <FormControl fullWidth>
+                            <Typography variant="subtitle2" gutterBottom>
+                                Distributed
+                            </Typography>
+                            <Select
+                                value={bulkDistributed}
+                                onChange={(e) => setBulkDistributed(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                            >
+                                <MenuItem value="all">No Change</MenuItem>
+                                <MenuItem value="Yes">Yes</MenuItem>
+                                <MenuItem value="No">No</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+
                     <Grid item xs={12}>
                         <Button
                             variant="contained"
@@ -153,7 +178,9 @@ const BulkEditPanel = ({
                                 (bulkWorking === 'all' || bulkWorking === workingFilter) &&
                                 (bulkStatus === 'all' || bulkStatus === statusFilter) &&
                                 bulkAssignedTo === 'all' &&
-                                bulkAllocatedTo === 'all'
+                                bulkAllocatedTo === 'all' &&
+                                bulkDistributed === 'all'
+                                
                             }
                         >
                             Apply All Changes
