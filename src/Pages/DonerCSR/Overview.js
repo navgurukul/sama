@@ -20,6 +20,12 @@ import {
   ListItemIcon,
   ListItemText,
   IconButton,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TablePagination,
 } from '@mui/material';
 import {
   Package,
@@ -56,6 +62,24 @@ const Overview = () => {
   const [userData, setUserData] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
   const [preData, setPreData] = useState([]);
+  const [expandedCard, setExpandedCard] = useState(null);
+  const [activeType, setActiveType] = useState(null);
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 5;
+  const handleToggle = (id, type) => {
+  if (expandedCard === id && activeType === type) {
+    setExpandedCard(null);
+    setActiveType(null);
+  } else {
+    setExpandedCard(id);
+    setActiveType(type);
+    setPage(0);
+  }
+};
+
+const handleChangePage = (event, newPage) => {
+  setPage(newPage);
+};
 
   useEffect(() => {
     if (donorName) {
@@ -99,6 +123,7 @@ const Overview = () => {
           );
 
           const laptopsAllocated = filteredLaptops.length;
+         const laptopDetails = filteredLaptops;
 
 
           const beneficiariesFromUserData = userJson.filter(
@@ -125,10 +150,12 @@ const Overview = () => {
           const lastDelivery =
             deliveries.length > 0 ? new Date(Math.max(...deliveries)) : null;
           return {
+             id: ngo.Id,
             name: ngo.organizationName,
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
+             laptopDetails: laptopDetails,
             beneficiaries: totalBeneficiaries,
             beneficiariesFromUserData,
             beneficiariesFromPreData,
@@ -913,12 +940,18 @@ const Overview = () => {
                           <Box display="flex" justifyContent="space-between" mt={2}>
                             <Box display="flex" gap={4}>
                               <Box textAlign="center">
-                                <Box display="flex" alignItems="center" gap={0.5}>
+                                <Box display="flex" alignItems="center" gap={0.5}
+                                  sx={{
+                                    cursor: "pointer",
+                                    color: expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "inherit"
+                                  }}
+                                  onClick={() => handleToggle(partner.id, "laptops")}
+                                >
                                   <Laptop size={16} color="#555" />
                                   <Typography
                                     variant="subtitle1"
                                     fontWeight={600}
-                                    color="primary"
+                                    color={expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "primary"}
                                   >
                                     {partner.laptops}
                                   </Typography>
@@ -954,6 +987,59 @@ const Overview = () => {
                               </Typography>
                             </Box>
                           </Box>
+                         {/* Expanded Laptop Data Table */}
+{expandedCard === partner.id && activeType === "laptops" && (
+  <Box mt={3}>
+    <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem', fontWeight: 600 }}>
+      {partner.name} - Laptop Data
+    </Typography>
+
+    <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
+      <TableHead>
+        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+          <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
+          <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
+          <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+          <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {partner.laptopDetails && partner.laptopDetails.length > 0 ? (
+          partner.laptopDetails
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((laptop, laptopIndex) => (
+              <TableRow key={laptopIndex} hover>
+                <TableCell>{laptop.ID || 'N/A'}</TableCell>
+                <TableCell>{laptop["Manufacturer Model"] || 'N/A'}</TableCell>
+                <TableCell>{laptop.Status || 'Unknown'}</TableCell>
+                <TableCell>{laptop.Working ? "Yes" : "No"}</TableCell>
+              </TableRow>
+            ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={4} align="center" sx={{ py: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                No laptop data available
+              </Typography>
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+
+    {partner.laptopDetails && partner.laptopDetails.length > rowsPerPage && (
+      <TablePagination
+        component="div"
+        count={partner.laptopDetails.length}
+        page={page}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        rowsPerPageOptions={[10]}
+        sx={{ border: 'none' }}
+      />
+    )}
+  </Box>
+)}
 
                           {index < filteredNgoPartners.length - 1 && <Divider sx={{ mt: 2 }} />}
                         </Box>
