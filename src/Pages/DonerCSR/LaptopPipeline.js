@@ -19,7 +19,13 @@ import {
   Menu,
   Divider,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+   TablePagination,
 } from "@mui/material";
 import {
   Truck,
@@ -151,9 +157,202 @@ const LaptopPipeline = () => {
   const [pickups, setPickups] = useState([]);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
+  const [expandedStage, setExpandedStage] = useState(null);
+  const [tableData, setTableData] = useState([]);
+  const [tableTitle, setTableTitle] = useState('');
+   const [page, setPage] = useState(0); 
+  const rowsPerPage = 5; 
   const role = JSON.parse(localStorage.getItem("role")) || [];
   const isAdmin = role.includes("admin");
+  const handleStageClick = (stage) => {
+    if (expandedStage === stage.title) {
+      setExpandedStage(null);
+      setTableData([]);
+      setTableTitle('');
+      setPage(0);
+      return;
+    }
 
+    setExpandedStage(stage.title);
+  setPage(0); 
+    let data = [];
+    let title = '';
+
+    switch (stage.title) {
+      case "Pickup Requested":
+        data = selectedOrganization ? filteredPickups.filter(p => p.Status === "Pending") :
+          pickups.filter(p => p.Status === "Pending");
+        title = "Pending Pickup Requests";
+        break;
+
+      case "Refurbishment":
+        data = filteredLaptopData.filter(laptop => {
+          const status = (laptop.Status || "").toLowerCase();
+          return status.includes("refurbished") ||
+            status.includes("to be dispatch") ||
+            status.includes("allocated") ||
+            status.includes("distributed");
+        });
+        title = "Laptops in Refurbishment Process";
+        break;
+
+      case "Distribution":
+        data = filteredLaptopData.filter(item => item.Status === "Distributed");
+        title = "Distributed Laptops";
+        break;
+
+      case "Active Usage":
+        data = filteredLaptopData.filter(l => {
+          const d = parseDateUniversal(l["Date"]);
+          if (!d) return false;
+          const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
+          return diffDays <= 15;
+        });
+        title = "Active Usage Laptops (Last 15 days)";
+        break;
+
+      default:
+        data = [];
+        title = "Stage Data";
+    }
+
+    setTableData(data);
+    setTableTitle(title);
+  };
+  const renderTable = () => {
+    if (!expandedStage || tableData.length === 0) return null;
+  
+    const handleChangePage = (event, newPage) => {
+      setPage(newPage);
+    };
+    const getTableHeaders = () => {
+      switch (expandedStage) {
+        case "Pickup Requested":
+          return (
+            <>
+              <TableCell sx={{ fontWeight: "bold" }}>Pickup ID</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Number of Laptops</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Date & Time</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Contact Person</TableCell>
+            </>
+          );
+        case "Refurbishment":
+        case "Distribution":
+        case "Active Usage":
+          return (
+            <>
+              <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Allocated To</TableCell>
+            </>
+          );
+        default:
+          return null;
+      }
+    };
+
+    const renderTableRows = () => {
+      const currentData = tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+      switch (expandedStage) {
+        case "Pickup Requested":
+          return currentData.map((pickup, index)  => (
+            <TableRow key={index} hover>
+              <TableCell>{pickup["Pickup ID"] || 'N/A'}</TableCell>
+              <TableCell>{pickup["Donor Company"] || 'N/A'}</TableCell>
+              <TableCell>{pickup["Number of Laptops"] || 'N/A'}</TableCell>
+              <TableCell>
+                <Chip
+                  label={pickup.Status || 'Unknown'}
+                  size="small"
+                  color="warning"
+                  variant="outlined"
+                />
+              </TableCell>
+              <TableCell>{pickup["Current Date & Time"] || 'N/A'}</TableCell>
+              <TableCell>{pickup["Contact Person"] || 'N/A'}</TableCell>
+            </TableRow>
+          ));
+
+        case "Refurbishment":
+        case "Distribution":
+        case "Active Usage":
+          return currentData.map((laptop, index) =>  (
+            <TableRow key={index} hover>
+              <TableCell>{laptop.ID || laptop.LaptopID || 'N/A'}</TableCell>
+              <TableCell>{laptop["Manufacturer Model"] || 'N/A'}</TableCell>
+              <TableCell>
+                <Chip
+                  label={laptop.Status || 'Unknown'}
+                  size="small"
+                  color={laptop.Status === "Distributed" ? "success" : "primary"}
+                  variant="outlined"
+                />
+              </TableCell>
+              <TableCell>{laptop.Working ? "Yes" : "No"}</TableCell>
+              <TableCell>{laptop["Donor Company Name"] || 'N/A'}</TableCell>
+              <TableCell>{laptop["Allocated To"] || 'N/A'}</TableCell>
+            </TableRow>
+          ));
+
+        default:
+          return null;
+      }
+    };
+
+    return (
+      <Card sx={{ mb: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e0e0e0' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
+              {tableTitle}
+            </Typography>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setExpandedStage(null);
+                setTableData([]);
+                setTableTitle('');
+              }}
+              sx={{ textTransform: 'none' }}
+            >
+              Close Table
+            </Button>
+          </Box>
+
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Total Records: {tableData.length}
+          </Typography>
+
+          <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                {getTableHeaders()}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {renderTableRows()}
+            </TableBody>
+          </Table>
+          {tableData.length > rowsPerPage && (
+            <TablePagination
+              component="div"
+              count={tableData.length}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={[5]}
+              sx={{ border: 'none', mt: 2 }}
+            />
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   useEffect(() => {
     if (donorName) {
@@ -490,10 +689,10 @@ const LaptopPipeline = () => {
         {/* Right Section */}
         <Box sx={{
           display: "flex",
-          flexDirection: { xs: "column", sm: "row" }, 
+          flexDirection: { xs: "column", sm: "row" },
           alignItems: { xs: "flex-start", sm: "center" },
           gap: 1.5,
-          mt: { xs: 2, sm: 0 }, 
+          mt: { xs: 2, sm: 0 },
         }}>
           {isAdmin && selectedOrganization && (
             <Chip
@@ -629,57 +828,70 @@ const LaptopPipeline = () => {
 
           <Grid container spacing={2}>
             {stages.map((stage) => (
-              <Grid item xs={12} key={stage.title} >
-                <Card
-                  sx={{
-                    bgcolor: "#e3f2fd",
-                    borderRadius: 2,
-                    boxShadow: "none",
+              <React.Fragment key={stage.title}>
 
-                  }}
-                >
-                  <CardContent
+                <Grid item xs={12} >
+                  <Card
                     sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
+                      bgcolor: "#e3f2fd",
+                      borderRadius: 2,
+                      boxShadow: "none",
+                      cursor: 'pointer',
+                      '&:hover': {
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+                        transform: 'translateY(-2px)',
+                        transition: 'all 0.2s ease-in-out'
+                      }
+                    }} onClick={() => handleStageClick(stage)}
                   >
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <Box>
-                        <Box
-                          sx={{
-                            // bgcolor: "#1976d2",
-                            borderRadius: "8px",
-                            width: 40,
-                            height: 40,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          {stage.icon}
+                    <CardContent
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Box display="flex" alignItems="center" gap={2}>
+                        <Box>
+                          <Box
+                            sx={{
+                              // bgcolor: "#1976d2",
+                              borderRadius: "8px",
+                              width: 40,
+                              height: 40,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            {stage.icon}
+                          </Box>
+                          <Typography variant="subtitle1" fontWeight={600} sx={{ color: "black" }}>
+                            {stage.title}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {stage.subtitle}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Avg. time in stage
+                          </Typography>
+                          <Typography variant="body2" fontWeight={600}>
+                            {stage.avg}
+                          </Typography>
                         </Box>
-                        <Typography variant="subtitle1" fontWeight={600} sx={{ color: "black" }}>
-                          {stage.title}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {stage.subtitle}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Avg. time in stage
-                        </Typography>
-                        <Typography variant="body2" fontWeight={600}>
-                          {stage.avg}
-                        </Typography>
                       </Box>
-                    </Box>
-                    <Typography variant="h6" fontWeight={700}>
-                      {stage.count}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
+                      <Typography variant="h6" fontWeight={700}>
+                        {stage.count}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                {expandedStage === stage.title && (
+                  <Grid item xs={12}>
+                    {renderTable()}
+                  </Grid>
+                )}
+              </React.Fragment>
             ))}
           </Grid>
         </Box>
