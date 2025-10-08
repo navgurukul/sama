@@ -111,6 +111,8 @@ const BulkEditPanel = ({
                                 <MenuItem value="Allocated">Allocated</MenuItem>
                                 <MenuItem value="To be dispatch">To be dispatch</MenuItem>
                                 <MenuItem value="Distributed" >Distributed</MenuItem>
+                                <MenuItem value="Not Working">Not Working</MenuItem>
+
                             </Select>
                         </FormControl>
                     </Grid>
