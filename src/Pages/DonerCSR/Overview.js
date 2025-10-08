@@ -910,7 +910,7 @@ const Overview = () => {
                       cursor: 'pointer',
       
                     }}
-                    onClick={() => handleMetricClick("ngoPartners")}
+                    onClick={() => handleMetricClick("ngosServed")}
                   >
                     <SummaryMetric label="NGOs Served" value={ngosServedCount} />
                     </Box>

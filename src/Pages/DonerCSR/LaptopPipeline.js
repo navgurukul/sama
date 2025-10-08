@@ -642,7 +642,7 @@ const LaptopPipeline = () => {
         if (!d) return false;
         const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
         return diffDays <= 15;
-      }).length} laptops`,
+      }).length} `,
       icon: <Users size={30} color="#1976d2" />,
     },
   ];

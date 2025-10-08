@@ -25,7 +25,7 @@ const TableView = ({
   const { donorName } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-
+  const [standaloneLaptopData, setStandaloneLaptopData] = useState([]);
   const [standaloneData, setStandaloneData] = useState([]);
   const [standaloneMetricType, setStandaloneMetricType] = useState(null);
   const [page, setPage] = useState(0);
@@ -45,11 +45,9 @@ const TableView = ({
   const parseDateUniversal = (dateString) => {
     if (!dateString) return null;
 
-    // Try parsing as ISO date
     const date = new Date(dateString);
     if (!isNaN(date.getTime())) return date;
 
-    // Try parsing as DD/MM/YYYY
     const parts = dateString.split('/');
     if (parts.length === 3) {
       const day = parseInt(parts[0], 10);
@@ -64,7 +62,6 @@ const TableView = ({
 
   const fetchStandaloneData = async (metric) => {
     try {
-      console.log(`Fetching data for metric: ${metric}`);
       let apiUrl = '';
       let filterFunction = null;
 
@@ -93,7 +90,6 @@ const TableView = ({
               data = responseData || [];
             }
             const pendingPickups = data.filter(p => p.Status === "Pending");
-            console.log(`Pickup requests filtered to Pending status: ${data.length} -> ${pendingPickups.length}`);
             return pendingPickups;
 
           };
@@ -127,7 +123,6 @@ const TableView = ({
 
       const res = await fetch(apiUrl);
       let data = await res.json();
-      console.log(`Raw data received for ${metric}:`, data);
 
       if (metric === "ngoPartners" || metric === "ngosServed") {
         data = data.data || data;
@@ -146,7 +141,6 @@ const TableView = ({
               );
               return hasLaptops;
             });
-            console.log(`NGOs with laptops filter: ${beforeFilter} -> ${data.length} items`);
           } catch (error) {
             console.error('Error fetching laptop data for NGOs:', error);
           }
@@ -160,7 +154,6 @@ const TableView = ({
         data = data.filter(item =>
           String(item["Donor Company Name"] || "").trim().toLowerCase() === donorName.toLowerCase()
         );
-        console.log(`Donor filter applied for ${metric}: ${beforeFilter} -> ${data.length} items`);
       }
 
       if (donorName && metric === "pickupRequests") {
@@ -168,21 +161,17 @@ const TableView = ({
         data = data.filter(item =>
           String(item["Donor Company"] || "").trim().toLowerCase() === donorName.toLowerCase()
         );
-        console.log(`Donor filter applied for ${metric}: ${beforeFilter} -> ${data.length} items`);
       }
       if (filterFunction && metric !== "pickupRequests") {
         const beforeFilter = data.length;
         data = filterFunction(data);
-        console.log(`Metric filter applied for ${metric}: ${beforeFilter} -> ${data.length} items`);
       }
       if (donorName && (metric === "ngoPartners" || metric === "ngosServed")) {
         const beforeFilter = data.length;
         data = data.filter(ngo =>
           String(ngo.Doner || ngo.Donor || "").trim().toLowerCase() === donorName.toLowerCase()
         );
-        console.log(`Donor filter applied for ${metric}: ${beforeFilter} -> ${data.length} items`);
       }
-      console.log(`Final data for ${metric}:`, data);
       setStandaloneData(data || []);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -278,6 +267,18 @@ const TableView = ({
             <TableCell sx={{ fontWeight: "bold" }}>Allocated To</TableCell>
           </>
         );
+      case "ngosServed":
+        return (
+          <>
+            <TableCell sx={{ fontWeight: "bold" }}>Organization Name</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Location</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Laptops Allocated</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Beneficiaries</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Last Delivery</TableCell>
+          </>
+        );
+
       default:
         return (
           <>
@@ -398,7 +399,33 @@ const TableView = ({
             <TableCell>{pickup["Contact Person"] || 'N/A'}</TableCell>
           </TableRow>
         ));
+      case "ngosServed":
+        return currentData.map((partner, index) => {
+          // Calculate laptop count for this NGO
+          const laptopCount = standaloneLaptopData ?
+            standaloneLaptopData.filter(laptop =>
+              String(laptop["Allocated To"] || "").trim().toLowerCase() ===
+              String(partner.organizationName || "").trim().toLowerCase()
+            ).length : 0;
 
+          return (
+            <TableRow key={index} hover>
+              <TableCell>{partner.organizationName || partner.name || 'N/A'}</TableCell>
+              <TableCell>{partner.location || partner.Location || 'N/A'}</TableCell>
+              <TableCell>
+                <Chip
+                  label={partner.Status || partner.status || 'Unknown'}
+                  size="small"
+                  color={getStatusColor(partner.Status || partner.status)}
+                  variant="outlined"
+                />
+              </TableCell>
+              <TableCell>{laptopCount}</TableCell>
+              <TableCell>{partner.beneficiaries || 'N/A'}</TableCell>
+              <TableCell>{partner.lastDelivery || 'N/A'}</TableCell>
+            </TableRow>
+          );
+        });
       default:
         return currentData.map((item, index) => (
           <TableRow key={index} hover>
