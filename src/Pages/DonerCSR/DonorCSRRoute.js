@@ -1,13 +1,20 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 
 const DonorCSRRoute = ({ children }) => {
   const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
-  const isAdmin = NgoDetails?.[0]?.role?.includes("admin");
+  const user = NgoDetails?.[0]; // logged-in user
+  const role = user?.role?.[0]; // "admin" or "doner"
 
-  if (isAdmin) {
+  if (!role) {
+    // not logged in
+    return <Navigate to="/login" />;
+  }
+
+  if (role === "admin" || role === "doner") {
     return children || <Outlet />;
   }
+
 
   // Inline 404 UI
   return (

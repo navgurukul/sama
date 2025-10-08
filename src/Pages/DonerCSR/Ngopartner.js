@@ -29,7 +29,6 @@ import DownloadIcon from "@mui/icons-material/Download";
 
 
 const Ngopartner = () => {
-  const { donorName } = useParams();
   const navigate = useNavigate();
   const [ngoPartner, setNgoPartner] = useState([]);
   const [filteredNgoPartner, setFilteredNgoPartner] = useState([]);
@@ -37,10 +36,13 @@ const Ngopartner = () => {
   const [expandedCard, setExpandedCard] = useState(null);
   const [activeType, setActiveType] = useState(null);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
-  const role = JSON.parse(localStorage.getItem("role") || "[]");
-  const isAdmin = role.includes("admin");
+  const user = JSON.parse(localStorage.getItem("_AuthSama_"))?.[0] || {};
+  const isAdmin = user?.role?.includes("admin");
+  const isDoner = user?.role?.includes("doner");
+  const donorName = isDoner ? user.Doner : null;
+  const [selectedOrganization, setSelectedOrganization] = useState(isDoner ? donorName : null);
+
 
   useEffect(() => {
     if (donorName) {
@@ -151,19 +153,25 @@ const Ngopartner = () => {
 
   //Filter NGO partners by selected organization
   useEffect(() => {
-    if (selectedOrganization) {
-      const filtered = ngoPartner.filter(partner =>
-        String(partner.donor).trim().toLowerCase() ===
-        selectedOrganization.toLowerCase()
-      );
-      setFilteredNgoPartner(filtered);
-    } else {
-      setFilteredNgoPartner(ngoPartner);
-    }
+  let filtered = ngoPartner;
 
-    setVisibleCount(4);
-    setExpandedCard(null);
-  }, [selectedOrganization, ngoPartner]);
+  // Doner: always filter by their donor name
+  if (isDoner) {
+    filtered = filtered.filter(partner =>
+      String(partner.donor).trim().toLowerCase() === donorName.toLowerCase()
+    );
+  }
+  // Admin: optional filter
+  else if (selectedOrganization) {
+    filtered = filtered.filter(partner =>
+      String(partner.donor).trim().toLowerCase() === selectedOrganization.toLowerCase()
+    );
+  }
+
+  setFilteredNgoPartner(filtered);
+  setVisibleCount(4);
+  setExpandedCard(null);
+}, [selectedOrganization, ngoPartner, isDoner, donorName]);
 
   const handleShowMore = () => {
     setVisibleCount((prev) => prev + 4);
@@ -192,7 +200,7 @@ const Ngopartner = () => {
     setSelectedOrganization(org);
     handleFilterClose();
 
-    navigate(`/donorcsr/${org}/partners`);
+    navigate(`/donorcsr/partners`);
   };
 
   const handleClearFilter = () => {

@@ -140,7 +140,6 @@ const insights = [
 ];
 
 const LaptopPipeline = () => {
-  const { donorName } = useParams();
   const navigate = useNavigate();
   const [laptopData, setLaptopData] = useState([]);
   const [totalLaptops, setTotalLaptops] = useState(0);
@@ -150,9 +149,11 @@ const LaptopPipeline = () => {
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
   const [pickups, setPickups] = useState([]);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
-  const role = JSON.parse(localStorage.getItem("role")) || [];
-  const isAdmin = role.includes("admin");
+  const user = JSON.parse(localStorage.getItem("_AuthSama_"))?.[0] || {};
+  const isAdmin = user?.role?.includes("admin");
+  const isDoner = user?.role?.includes("doner");
+  const donorName = isDoner ? user.Doner : null;
+  const [selectedOrganization, setSelectedOrganization] = useState(isDoner ? donorName : null);
 
 
   useEffect(() => {
@@ -296,7 +297,7 @@ const LaptopPipeline = () => {
     setSelectedOrganization(org);
     handleFilterClose();
 
-    navigate(`/donorcsr/${org}/laptop-pipeline`);
+    navigate(`/donorcsr/laptop-pipeline`);
   };
 
   const handleClearFilter = () => {
@@ -490,10 +491,10 @@ const LaptopPipeline = () => {
         {/* Right Section */}
         <Box sx={{
           display: "flex",
-          flexDirection: { xs: "column", sm: "row" }, 
+          flexDirection: { xs: "column", sm: "row" },
           alignItems: { xs: "flex-start", sm: "center" },
           gap: 1.5,
-          mt: { xs: 2, sm: 0 }, 
+          mt: { xs: 2, sm: 0 },
         }}>
           {isAdmin && selectedOrganization && (
             <Chip

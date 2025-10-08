@@ -16,12 +16,14 @@ import {
 import { Filter, ChevronDown, X, Building } from "lucide-react";
 
 const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
-  const { donorName } = useParams();
   const navigate = useNavigate();
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
-  const role = JSON.parse(localStorage.getItem("role") || "[]");
-  const isAdmin = role.includes("admin");
+  const [selectedOrganization, setSelectedOrganization] = useState(isDoner ? donorName : null);
+  const user = JSON.parse(localStorage.getItem("_AuthSama_"))?.[0] || {};
+  const isAdmin = user?.role?.includes("admin");
+  const isDoner = user?.role?.includes("doner");
+  const donorName = isDoner ? user.Doner : null;
+
 
 
   useEffect(() => {
@@ -43,7 +45,7 @@ const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
     onOrganizationChange(org); 
     handleFilterClose();
 
-    navigate(`/donorcsr/${org}/overview`);
+    navigate(`/donorcsr/overview`);
   };
 
   const handleClearFilter = () => {
