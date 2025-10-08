@@ -141,6 +141,7 @@ const insights = [
 
 const LaptopPipeline = () => {
   const navigate = useNavigate();
+
   const [laptopData, setLaptopData] = useState([]);
   const [totalLaptops, setTotalLaptops] = useState(0);
   const [refurbishedCount, setRefurbishedCount] = useState(0);
@@ -149,19 +150,27 @@ const LaptopPipeline = () => {
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
   const [pickups, setPickups] = useState([]);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const user = JSON.parse(localStorage.getItem("_AuthSama_"))?.[0] || {};
-  const isAdmin = user?.role?.includes("admin");
-  const isDoner = user?.role?.includes("doner");
-  const donorName = isDoner ? user.Doner : null;
-  const [selectedOrganization, setSelectedOrganization] = useState(isDoner ? donorName : null);
+  const [selectedOrganization, setSelectedOrganization] = useState( null);
 
+  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const userRole = NgoDetails?.[0]?.role?.[0];
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  const isAdmin = userRole === "admin";
+  const isDoner = userRole === "doner";
 
   useEffect(() => {
-    if (donorName) {
-      setSelectedOrganization(donorName);
-    }
-  }, [donorName]);
-
+      if (isDoner) {
+        navigate("/donorcsr/laptop-pipeline", { replace: true });
+      }
+    }, [isDoner, navigate]);
+  
+    // Set selected org
+    useEffect(() => {
+      if (isDoner && donorOrgName) {
+        setSelectedOrganization(donorOrgName);
+      }
+    }, [donorOrgName, isDoner]);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -297,14 +306,14 @@ const LaptopPipeline = () => {
     setSelectedOrganization(org);
     handleFilterClose();
 
-    navigate(`/donorcsr/laptop-pipeline`);
+    navigate(`/donorcsr/laptop-pipeline`, { replace: true });
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
 
-    navigate(`/donorcsr/laptop-pipeline`);
+    navigate(`/donorcsr/laptop-pipeline`, { replace: true });
   };
 
   function parseDateUniversal(dateStr) {
@@ -491,10 +500,10 @@ const LaptopPipeline = () => {
         {/* Right Section */}
         <Box sx={{
           display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
+          flexDirection: { xs: "column", sm: "row" }, 
           alignItems: { xs: "flex-start", sm: "center" },
           gap: 1.5,
-          mt: { xs: 2, sm: 0 },
+          mt: { xs: 2, sm: 0 }, 
         }}>
           {isAdmin && selectedOrganization && (
             <Chip
@@ -513,7 +522,7 @@ const LaptopPipeline = () => {
               }}
             />
           )}
-          {isAdmin && !donorName && (
+          {isAdmin &&(
             <Button
               variant="outlined"
               startIcon={<Filter size={16} />}

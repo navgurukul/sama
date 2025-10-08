@@ -29,23 +29,33 @@ import { Filter, Building, X, ChevronDown } from "lucide-react";
 
 export default function LaptopTracking() {
   const navigate = useNavigate();
+
   const [laptopData, setLaptopData] = useState([]);
   const [search, setSearch] = useState("");
   const [searchId, setSearchId] = useState("");
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(isDoner ? donorName : null);
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
-  const user = JSON.parse(localStorage.getItem("_AuthSama_"))?.[0] || {};
-  const isAdmin = user?.role?.includes("admin");
-  const isDoner = user?.role?.includes("doner");
-  const donorName = isDoner ? user.Doner : null;
 
+  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const userRole = NgoDetails?.[0]?.role?.[0];
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  const isAdmin = userRole === "admin";
+  const isDoner = userRole === "doner";
 
+  // On mount: if user is doner, fix route (no /Amazon/)
   useEffect(() => {
-    if (donorName) {
-      setSelectedOrganization(donorName);
+    if (isDoner) {
+      navigate("/donorcsr/laptop-tracking", { replace: true });
     }
-  }, [donorName]);
+  }, [isDoner, navigate]);
+
+  // Set selected org
+  useEffect(() => {
+    if (isDoner && donorOrgName) {
+      setSelectedOrganization(donorOrgName);
+    }
+  }, [donorOrgName, isDoner]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,21 +88,24 @@ export default function LaptopTracking() {
   const getFilteredLaptopData = () => {
     let filteredData = laptopData;
 
+    // Doner: always filter by their own org
+    if (isDoner && donorOrgName) {
+      filteredData = filteredData.filter(
+        laptop =>
+          String(laptop["Donor Company Name"]).trim().toLowerCase() ===
+          donorOrgName.toLowerCase()
+      );
+      return filteredData;
+    }
+
     // Filter by organization if selected
-    if (isDoner) {
-      filteredData = filteredData.filter(laptop =>
-        String(laptop["Donor Company Name"]).trim().toLowerCase() === donorName.toLowerCase()
-      );
-    }
-
-    // Admin: optional filter by selected organization
     if (isAdmin && selectedOrganization) {
-      filteredData = filteredData.filter(laptop =>
-        String(laptop["Donor Company Name"]).trim().toLowerCase() ===
-        selectedOrganization.toLowerCase()
+      filteredData = filteredData.filter(
+        laptop =>
+          String(laptop["Donor Company Name"]).trim().toLowerCase() ===
+          selectedOrganization.toLowerCase()
       );
     }
-
     // Filter by ID search
     if (searchId) {
       filteredData = filteredData.filter(laptop =>
@@ -117,14 +130,14 @@ export default function LaptopTracking() {
     setSelectedOrganization(org);
     handleFilterClose();
 
-    navigate(`/donorcsr/laptop-tracking`);
+    navigate(`/donorcsr/laptop-tracking`, { replace: true });
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
 
-    navigate(`/donorcsr/laptop-tracking`);
+    navigate(`/donorcsr/laptop-tracking`, { replace: true });
   };
 
   // Function to get color based on status

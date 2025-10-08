@@ -30,25 +30,35 @@ import DownloadIcon from "@mui/icons-material/Download";
 
 const Ngopartner = () => {
   const navigate = useNavigate();
+
   const [ngoPartner, setNgoPartner] = useState([]);
   const [filteredNgoPartner, setFilteredNgoPartner] = useState([]);
   const [visibleCount, setVisibleCount] = useState(4);
   const [expandedCard, setExpandedCard] = useState(null);
   const [activeType, setActiveType] = useState(null);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
+  const [selectedOrganization, setSelectedOrganization] = useState( null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
-  const user = JSON.parse(localStorage.getItem("_AuthSama_"))?.[0] || {};
-  const isAdmin = user?.role?.includes("admin");
-  const isDoner = user?.role?.includes("doner");
-  const donorName = isDoner ? user.Doner : null;
-  const [selectedOrganization, setSelectedOrganization] = useState(isDoner ? donorName : null);
+
+  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const userRole = NgoDetails?.[0]?.role?.[0];
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  const isAdmin = userRole === "admin";
+  const isDoner = userRole === "doner";
 
 
   useEffect(() => {
-    if (donorName) {
-      setSelectedOrganization(donorName);
-    }
-  }, [donorName]);
+        if (isDoner) {
+          navigate("/donorcsr/partners", { replace: true });
+        }
+      }, [isDoner, navigate]);
+    
+      // Set selected org
+      useEffect(() => {
+        if (isDoner && donorOrgName) {
+          setSelectedOrganization(donorOrgName);
+        }
+      }, [donorOrgName, isDoner]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -153,25 +163,19 @@ const Ngopartner = () => {
 
   //Filter NGO partners by selected organization
   useEffect(() => {
-  let filtered = ngoPartner;
+    if (selectedOrganization) {
+      const filtered = ngoPartner.filter(partner =>
+        String(partner.donor).trim().toLowerCase() ===
+        selectedOrganization.toLowerCase()
+      );
+      setFilteredNgoPartner(filtered);
+    } else {
+      setFilteredNgoPartner(ngoPartner);
+    }
 
-  // Doner: always filter by their donor name
-  if (isDoner) {
-    filtered = filtered.filter(partner =>
-      String(partner.donor).trim().toLowerCase() === donorName.toLowerCase()
-    );
-  }
-  // Admin: optional filter
-  else if (selectedOrganization) {
-    filtered = filtered.filter(partner =>
-      String(partner.donor).trim().toLowerCase() === selectedOrganization.toLowerCase()
-    );
-  }
-
-  setFilteredNgoPartner(filtered);
-  setVisibleCount(4);
-  setExpandedCard(null);
-}, [selectedOrganization, ngoPartner, isDoner, donorName]);
+    setVisibleCount(4);
+    setExpandedCard(null);
+  }, [selectedOrganization, ngoPartner]);
 
   const handleShowMore = () => {
     setVisibleCount((prev) => prev + 4);
@@ -200,14 +204,14 @@ const Ngopartner = () => {
     setSelectedOrganization(org);
     handleFilterClose();
 
-    navigate(`/donorcsr/partners`);
+    navigate(`/donorcsr/partners`, { replace: true });
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
 
-    navigate(`/donorcsr/partners`);
+    navigate(`/donorcsr/partners`, { replace: true });
   };
   const handleExport = () => {
     // Use filtered data for export if a filter is applied
@@ -312,7 +316,7 @@ const Ngopartner = () => {
             />
           )}
 
-          {isAdmin && !donorName && (
+          {isAdmin && (
             <Button
               variant="outlined"
               startIcon={<Filter size={16} />}

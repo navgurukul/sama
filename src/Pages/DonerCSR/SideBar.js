@@ -63,7 +63,10 @@ const Sidebar = () => {
           <List disablePadding>
             {group.items.map((item) => {
               // 👇 If donorName exists, keep it in path, otherwise default
-              const toPath = `/donorcsr/${item.path}`; 
+              const toPath = donorName
+                ? `/donorcsr/${donorName}/${item.path}`
+                : `/donorcsr/${item.path}`;
+
 
               return (
 
@@ -121,7 +124,7 @@ const Sidebar = () => {
       >
         {sidebarContent}
       </Drawer>
-    
+
       <Box
         sx={{
           width: 240,
