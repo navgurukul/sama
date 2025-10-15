@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams , useNavigate} from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import RecentActivity from './RecentActivity';
+import TableView from './TableView';
 import {
   Box,
   Card,
@@ -20,6 +21,12 @@ import {
   ListItemIcon,
   ListItemText,
   IconButton,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TablePagination,
 } from '@mui/material';
 import {
   Package,
@@ -38,6 +45,7 @@ import {
   Filter,
   X,
   ChevronDown,
+  ArrowLeft
 } from 'lucide-react';
 import OverviewHeader from "./OverviewHeader";
 
@@ -57,6 +65,38 @@ const Overview = () => {
   const [userData, setUserData] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
   const [preData, setPreData] = useState([]);
+  const [expandedCard, setExpandedCard] = useState(null);
+  const [activeType, setActiveType] = useState(null);
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 5;
+  const handleToggle = (id, type) => {
+    if (expandedCard === id && activeType === type) {
+      setExpandedCard(null);
+      setActiveType(null);
+    } else {
+      setExpandedCard(id);
+      setActiveType(type);
+      setPage(0);
+    }
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+  const handleMetricClick = (metricType) => {
+    if (selectedOrganization) {
+      navigate(`/donorcsr/${selectedOrganization}/table-view?metric=${metricType}`);
+    } else {
+      navigate(`/donorcsr/table-view?metric=${metricType}`);
+    }
+  };
+  const handlePipelineStepClick = (stepType) => {
+    if (selectedOrganization) {
+      navigate(`/donorcsr/${selectedOrganization}/table-view?metric=${stepType}`);
+    } else {
+      navigate(`/donorcsr/table-view?metric=${stepType}`);
+    }
+  };
 
   const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
   const userRole = NgoDetails?.[0]?.role?.[0];
@@ -116,6 +156,7 @@ const Overview = () => {
           );
 
           const laptopsAllocated = filteredLaptops.length;
+          const laptopDetails = filteredLaptops;
 
 
           const beneficiariesFromUserData = userJson.filter(
@@ -140,10 +181,12 @@ const Overview = () => {
           const lastDelivery =
             deliveries.length > 0 ? new Date(Math.max(...deliveries)) : null;
           return {
+            id: ngo.Id,
             name: ngo.organizationName,
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
+            laptopDetails: laptopDetails,
             beneficiaries: totalBeneficiaries,
             beneficiariesFromUserData,
             beneficiariesFromPreData,
@@ -349,13 +392,17 @@ const Overview = () => {
   ).length;
 
 
-  const MetricCard = ({ title, value, subtitle, growth, icon: Icon }) => (
+  const MetricCard = ({ title, value, subtitle, growth, icon: Icon, onClick }) => (
     <Card sx={{
       height: '100%',
       minHeight: 140,
       boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-      border: '1px solid #e0e0e0'
-    }}>
+      border: '1px solid #e0e0e0',
+      cursor: 'pointer',
+      '&:hover': {
+        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+      }
+    }} onClick={onClick}>
       <CardContent sx={{ p: 2.5 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Typography variant="body2" sx={{ fontSize: 14, fontWeight: 500, color: '#666' }}>
@@ -402,13 +449,18 @@ const Overview = () => {
     </Card>
   );
 
-  const PipelineStep = ({ icon: Icon, title, subtitle, count, backgroundColor, iconColor }) => (
+  const PipelineStep = ({ icon: Icon, title, subtitle, count, backgroundColor, iconColor, onClick }) => (
     <Box sx={{
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      textAlign: 'center'
-    }}>
+      textAlign: 'center',
+      cursor: 'pointer',
+      '&:hover': {
+        transform: 'translateY(-2px)',
+        transition: 'transform 0.2s ease-in-out'
+      }
+    }} onClick={onClick}>
       <Box sx={{
         width: 64,
         height: 64,
@@ -706,6 +758,7 @@ const Overview = () => {
               subtitle={selectedOrganization ? `From ${selectedOrganization}` : "Lifetime donations from corporates"}
               // growth="+15.2% from last month"
               icon={Package}
+              onClick={() => handleMetricClick("totalLaptops")}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -715,6 +768,7 @@ const Overview = () => {
               subtitle={`${successRate}% success rate`}
               // growth="+8.1% from last month"
               icon={CheckCircle}
+              onClick={() => handleMetricClick("refurbished")}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -746,13 +800,14 @@ const Overview = () => {
               subtitle={selectedOrganization ? "Matching organizations" : "Organizations served"}
               // growth="+12% from last month"
               icon={Building}
+              onClick={() => handleMetricClick("ngoPartners")}
             />
           </Grid>
         </Grid>
 
         {/* Secondary Metrics Row */}
         {/* <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4}>
             <SecondaryCard
               title="Environmental Impact"
               value="8.2 tons"
@@ -760,8 +815,8 @@ const Overview = () => {
               icon={Leaf}
               iconColor="#4caf50"
             />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
             <SecondaryCard
               title="Digital Skills Trained"
               value="1,450"
@@ -769,8 +824,8 @@ const Overview = () => {
               icon={BookOpen}
               iconColor="#9c27b0"
             />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
+             </Grid>
+            <Grid item xs={12} sm={6} md={4}>
             <SecondaryCard
               title="Monthly Active Users"
               value="756"
@@ -778,8 +833,8 @@ const Overview = () => {
               icon={TrendingUp}
               iconColor="#ff9800"
             />
-          </Grid>
-        </Grid> */}
+             </Grid>
+            </Grid> */}
 
         {/* Laptop Journey Pipeline */}
         <Card sx={{
@@ -814,18 +869,18 @@ const Overview = () => {
                     .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`
                     : `${pickups
                       .filter(p => p.Status === "Pending")
-                      .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)}  laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2"
+                      .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)}  laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2", stepType: "pickupRequests"
                 },
                 // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
-                { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c" },
-                { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2" },
+                { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c", stepType: "refurbished" },
+                { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2", stepType: "distributed" },
                 {
                   icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${filteredLaptopData.filter(l => {
                     const d = parseDateUniversal(l["Date"]);
                     if (!d) return false;
                     const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
                     return diffDays <= 15;
-                  }).length} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f"
+                  }).length} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f", stepType: "activeUsage"
                 }
               ].map((step, index) => (
                 // <Grid item xs={6} sm={4} md={2.4} key={index}>
@@ -837,6 +892,7 @@ const Overview = () => {
                     count={step.count}
                     backgroundColor={step.bgColor}
                     iconColor={step.iconColor}
+                    onClick={() => handlePipelineStepClick(step.stepType)}
                   />
                 </Grid>
               ))}
@@ -849,7 +905,16 @@ const Overview = () => {
             }}>
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="Total Processed" value={refurbishedCount} />
+                  <Box
+                    sx={{
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                    
+                    }}
+                    onClick={() => handlePipelineStepClick("refurbished")}
+                  >
+                    <SummaryMetric label="Total Processed" value={refurbishedCount} />
+                  </Box>
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <SummaryMetric label="Success Rate" value={`${successRate}%`} color="#4caf50" />
@@ -858,7 +923,16 @@ const Overview = () => {
                   <SummaryMetric label="Avg. Processing Time" value={`${avgProcessingTimeRounded} days`} />
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="NGOs Served" value={ngosServedCount} />
+                  <Box
+                    sx={{
+                      textAlign: 'center',
+                      cursor: 'pointer',
+      
+                    }}
+                    onClick={() => handleMetricClick("ngosServed")}
+                  >
+                    <SummaryMetric label="NGOs Served" value={ngosServedCount} />
+                    </Box>
                 </Grid>
               </Grid>
             </Box>
@@ -933,12 +1007,18 @@ const Overview = () => {
                           <Box display="flex" justifyContent="space-between" mt={2}>
                             <Box display="flex" gap={4}>
                               <Box textAlign="center">
-                                <Box display="flex" alignItems="center" gap={0.5}>
+                                <Box display="flex" alignItems="center" gap={0.5}
+                                  sx={{
+                                    cursor: "pointer",
+                                    color: expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "inherit"
+                                  }}
+                                  onClick={() => handleToggle(partner.id, "laptops")}
+                                >
                                   <Laptop size={16} color="#555" />
                                   <Typography
                                     variant="subtitle1"
                                     fontWeight={600}
-                                    color="primary"
+                                    color={expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "primary"}
                                   >
                                     {partner.laptops}
                                   </Typography>
@@ -974,6 +1054,59 @@ const Overview = () => {
                               </Typography>
                             </Box>
                           </Box>
+                          {/* Expanded Laptop Data Table */}
+                          {expandedCard === partner.id && activeType === "laptops" && (
+                            <Box mt={3}>
+                              <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem', fontWeight: 600 }}>
+                                {partner.name} - Laptop Data
+                              </Typography>
+
+                              <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                                <TableHead>
+                                  <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                    <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
+                                    <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
+                                    <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                                    <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {partner.laptopDetails && partner.laptopDetails.length > 0 ? (
+                                    partner.laptopDetails
+                                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                      .map((laptop, laptopIndex) => (
+                                        <TableRow key={laptopIndex} hover>
+                                          <TableCell>{laptop.ID || 'N/A'}</TableCell>
+                                          <TableCell>{laptop["Manufacturer Model"] || 'N/A'}</TableCell>
+                                          <TableCell>{laptop.Status || 'Unknown'}</TableCell>
+                                          <TableCell>{laptop.Working ? "Yes" : "No"}</TableCell>
+                                        </TableRow>
+                                      ))
+                                  ) : (
+                                    <TableRow>
+                                      <TableCell colSpan={4} align="center" sx={{ py: 2 }}>
+                                        <Typography variant="body2" color="text.secondary">
+                                          No laptop data available
+                                        </Typography>
+                                      </TableCell>
+                                    </TableRow>
+                                  )}
+                                </TableBody>
+                              </Table>
+
+                              {partner.laptopDetails && partner.laptopDetails.length > rowsPerPage && (
+                                <TablePagination
+                                  component="div"
+                                  count={partner.laptopDetails.length}
+                                  page={page}
+                                  onPageChange={handleChangePage}
+                                  rowsPerPage={rowsPerPage}
+                                  rowsPerPageOptions={[10]}
+                                  sx={{ border: 'none' }}
+                                />
+                              )}
+                            </Box>
+                          )}
 
                           {index < filteredNgoPartners.length - 1 && <Divider sx={{ mt: 2 }} />}
                         </Box>
@@ -997,6 +1130,7 @@ const Overview = () => {
           </Grid>
         </Grid>
       </Box>
+
     </>
   );
 };
