@@ -535,7 +535,6 @@ function LaptopDetails() {
       })
     : [];
 
-
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
 

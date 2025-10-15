@@ -121,6 +121,8 @@ const FilterPanel = ({
               <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
               <MenuItem value="Laptop Tagged">Allocated</MenuItem>
               <MenuItem value="Laptop Shipped">To be dispatch</MenuItem>
+              <MenuItem value="Distributed">Distributed</MenuItem>
+              <MenuItem value="Not Working">Not Working</MenuItem>
             </Select>
           </FormControl>
         </Grid>
