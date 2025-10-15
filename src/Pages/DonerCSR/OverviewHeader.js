@@ -15,20 +15,31 @@ import {
 } from "@mui/material";
 import { Filter, ChevronDown, X, Building } from "lucide-react";
 
-const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
-  const { donorName } = useParams();
+const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange, }) => {
   const navigate = useNavigate();
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
-  const role = JSON.parse(localStorage.getItem("role") || "[]");
-  const isAdmin = role.includes("admin");
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
+
+  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const userRole = NgoDetails?.[0]?.role?.[0];
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  const isAdmin = userRole === "admin";
+  const isDoner = userRole === "doner";
 
 
   useEffect(() => {
-    if (donorName) {
-      setSelectedOrganization(donorName);
+    if (isDoner) {
+      navigate("/donorcsr/overview", { replace: true });
     }
-  }, [donorName]);
+  }, [isDoner, navigate]);
+
+  // Set selected org
+  useEffect(() => {
+    if (isDoner && donorOrgName) {
+      setSelectedOrganization(donorOrgName);
+    }
+  }, [donorOrgName, isDoner]);
+
 
   const handleFilterClick = (event) => {
     setFilterAnchorEl(event.currentTarget);
@@ -40,34 +51,34 @@ const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
 
   const handleOrganizationSelect = (org) => {
     setSelectedOrganization(org);
-    onOrganizationChange(org); 
+    onOrganizationChange(org);
     handleFilterClose();
 
-    navigate(`/donorcsr/${org}/overview`);
+    navigate(`/donorcsr/overview`, { replace: true });
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
-    onOrganizationChange(null); 
+    onOrganizationChange(null);
     handleFilterClose();
 
-    navigate(`/donorcsr/overview`);
+    navigate(`/donorcsr/overview`, { replace: true });
   };
 
   return (
     <>
       {/* Header Row */}
-       <Box
+      <Box
         sx={{
           display: "flex",
-           flexDirection: { xs: "column", sm: "row" },
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
           alignItems: { xs: "flex-start", sm: "center" },
           mb: 3,
-           gap: 2,
+          gap: 2,
         }}
-      > 
-    
+      >
+
 
         {/* Left side - Logo + Title */}
         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -95,9 +106,9 @@ const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
         </Box>
 
         {/* Right side - Filters */}
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems:{ xs: "flex-start", sm: "center" }, gap: 1,mt: { xs: 1, sm: 0 } }}>
-    
-         {isAdmin && selectedOrganization &&(
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "flex-start", sm: "center" }, gap: 1, mt: { xs: 1, sm: 0 } }}>
+
+          {isAdmin && selectedOrganization && (
             <Chip
               label={selectedOrganization}
               variant="outlined"
@@ -114,7 +125,7 @@ const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
               }}
             />
           )}
-          {isAdmin && !donorName && (
+          {isAdmin && (
             <Button
               variant="outlined"
               startIcon={<Filter size={16} />}
@@ -146,7 +157,7 @@ const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange }) => {
           </Box>
 
           {/* Filter Dropdown Menu */}
-          {isAdmin && !donorName && (
+          {isAdmin && (
             <Menu
               anchorEl={filterAnchorEl}
               open={Boolean(filterAnchorEl)}

@@ -71,12 +71,15 @@ function Opslogin() {
     if (user) {
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('role', JSON.stringify(user.Role));
-      localStorage.setItem('_AuthSama_', JSON.stringify([{ name: user.Name, email: user.Email, role: user.Role, NgoId: user["Ngo Id"], Type: user.Type }]));
+      localStorage.setItem('_AuthSama_', JSON.stringify([{ name: user.Name, email: user.Email, role: user.Role, NgoId: user["Ngo Id"], Type: user.Type, Doner: user.Doner }]));
       setError('');
 
       // Redirect based on role
       if (user?.Role?.includes('admin')) {
         navigate('/ngo');
+      }
+      else if (user?.Role?.includes('doner')) {
+        navigate('/donorcsr');
       }
       else
         if (user?.Role?.includes('ngo')) {
@@ -203,8 +206,6 @@ function Opslogin() {
       setForgotMessage('An error occurred. Please try again later.');
     }
   };
-
-
 
 
 

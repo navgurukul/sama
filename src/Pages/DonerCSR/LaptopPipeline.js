@@ -140,8 +140,8 @@ const insights = [
 ];
 
 const LaptopPipeline = () => {
-  const { donorName } = useParams();
   const navigate = useNavigate();
+
   const [laptopData, setLaptopData] = useState([]);
   const [totalLaptops, setTotalLaptops] = useState(0);
   const [refurbishedCount, setRefurbishedCount] = useState(0);
@@ -150,17 +150,27 @@ const LaptopPipeline = () => {
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
   const [pickups, setPickups] = useState([]);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
-  const role = JSON.parse(localStorage.getItem("role")) || [];
-  const isAdmin = role.includes("admin");
+  const [selectedOrganization, setSelectedOrganization] = useState( null);
 
+  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const userRole = NgoDetails?.[0]?.role?.[0];
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  const isAdmin = userRole === "admin";
+  const isDoner = userRole === "doner";
 
   useEffect(() => {
-    if (donorName) {
-      setSelectedOrganization(donorName);
-    }
-  }, [donorName]);
-
+      if (isDoner) {
+        navigate("/donorcsr/laptop-pipeline", { replace: true });
+      }
+    }, [isDoner, navigate]);
+  
+    // Set selected org
+    useEffect(() => {
+      if (isDoner && donorOrgName) {
+        setSelectedOrganization(donorOrgName);
+      }
+    }, [donorOrgName, isDoner]);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -296,14 +306,14 @@ const LaptopPipeline = () => {
     setSelectedOrganization(org);
     handleFilterClose();
 
-    navigate(`/donorcsr/${org}/laptop-pipeline`);
+    navigate(`/donorcsr/laptop-pipeline`, { replace: true });
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
 
-    navigate(`/donorcsr/laptop-pipeline`);
+    navigate(`/donorcsr/laptop-pipeline`, { replace: true });
   };
 
   function parseDateUniversal(dateStr) {
@@ -512,7 +522,7 @@ const LaptopPipeline = () => {
               }}
             />
           )}
-          {isAdmin && !donorName && (
+          {isAdmin &&(
             <Button
               variant="outlined"
               startIcon={<Filter size={16} />}
