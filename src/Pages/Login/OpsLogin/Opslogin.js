@@ -78,6 +78,9 @@ function Opslogin() {
       if (user?.Role?.includes('admin')) {
         navigate('/ngo');
       }
+      else if (user?.Role?.includes('doner')) {
+        navigate('/donorcsr');
+      }
       else
         if (user?.Role?.includes('ngo')) {
           // navigate('/beneficiarydata');
@@ -203,8 +206,6 @@ function Opslogin() {
       setForgotMessage('An error occurred. Please try again later.');
     }
   };
-
-
 
 
 
