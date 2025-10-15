@@ -1,10 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import { Select, MenuItem, Checkbox } from '@mui/material';
 
-export const LaptopStatusDropdown = ({ value = 'In Transit', onChange }) => {
+export const LaptopStatusDropdown = ({ value = '', onChange }) => {
   let options = [];
 
+  // Get regular flow options based on current status
   switch (value) {
+    case '':
+      options = ['In Transit', 'Laptop Received'];
+      break;
     case 'In Transit':
       options = ['Laptop Received'];
       break;
@@ -20,10 +24,20 @@ export const LaptopStatusDropdown = ({ value = 'In Transit', onChange }) => {
     case 'Allocated':
       options = ['Distributed'];
       break;
+    case 'Not Working':
+      options = ['In Transit']; // Allow returning to flow from Not Working
+      break;
     case 'Distributed':
-    default:
       options = []; // Final status
       break;
+    default:
+      options = ['In Transit', 'Laptop Received']; // Show initial options if status not recognized
+      break;
+  }
+
+  // Add 'Not Working' option if it's not already the current status
+  if (value !== 'Not Working') {
+    options.push('Not Working');
   }
 
   return (
@@ -34,8 +48,11 @@ export const LaptopStatusDropdown = ({ value = 'In Transit', onChange }) => {
       style={{ borderRadius: '20px' }}
       fullWidth
     >
-      {/* Always show the current value */}
-      <MenuItem value={value}>{value}</MenuItem>
+      {/* Show placeholder for empty value */}
+      {!value && <MenuItem value="">Select Status</MenuItem>}
+
+      {/* Always show the current value if not empty */}
+      {value && <MenuItem value={value}>{value}</MenuItem>}
 
       {/* Show valid next statuses if any */}
       {options.map((status) =>

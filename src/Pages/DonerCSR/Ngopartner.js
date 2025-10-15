@@ -29,24 +29,36 @@ import DownloadIcon from "@mui/icons-material/Download";
 
 
 const Ngopartner = () => {
-  const { donorName } = useParams();
   const navigate = useNavigate();
+
   const [ngoPartner, setNgoPartner] = useState([]);
   const [filteredNgoPartner, setFilteredNgoPartner] = useState([]);
   const [visibleCount, setVisibleCount] = useState(4);
   const [expandedCard, setExpandedCard] = useState(null);
   const [activeType, setActiveType] = useState(null);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
+  const [selectedOrganization, setSelectedOrganization] = useState( null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
-  const role = JSON.parse(localStorage.getItem("role") || "[]");
-  const isAdmin = role.includes("admin");
+
+  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const userRole = NgoDetails?.[0]?.role?.[0];
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  const isAdmin = userRole === "admin";
+  const isDoner = userRole === "doner";
+
 
   useEffect(() => {
-    if (donorName) {
-      setSelectedOrganization(donorName);
-    }
-  }, [donorName]);
+        if (isDoner) {
+          navigate("/donorcsr/partners", { replace: true });
+        }
+      }, [isDoner, navigate]);
+    
+      // Set selected org
+      useEffect(() => {
+        if (isDoner && donorOrgName) {
+          setSelectedOrganization(donorOrgName);
+        }
+      }, [donorOrgName, isDoner]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -192,14 +204,14 @@ const Ngopartner = () => {
     setSelectedOrganization(org);
     handleFilterClose();
 
-    navigate(`/donorcsr/${org}/partners`);
+    navigate(`/donorcsr/partners`, { replace: true });
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
 
-    navigate(`/donorcsr/partners`);
+    navigate(`/donorcsr/partners`, { replace: true });
   };
   const handleExport = () => {
     // Use filtered data for export if a filter is applied
@@ -304,7 +316,7 @@ const Ngopartner = () => {
             />
           )}
 
-          {isAdmin && !donorName && (
+          {isAdmin && (
             <Button
               variant="outlined"
               startIcon={<Filter size={16} />}

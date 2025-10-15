@@ -98,11 +98,27 @@ const Overview = () => {
     }
   };
 
+  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const userRole = NgoDetails?.[0]?.role?.[0];
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  const isAdmin = userRole === "admin";
+  const isDoner = userRole === "doner";
+
+
   useEffect(() => {
-    if (donorName) {
+    if (isDoner) {
+      navigate("/donorcsr/overview", { replace: true });
+    }
+  }, [isDoner, navigate]);
+
+  // Set selected organization for donor from localStorage
+  useEffect(() => {
+    if (isDoner && donorOrgName) {
+      setSelectedOrganization(donorOrgName);
+    } else if (donorName) {
       setSelectedOrganization(donorName);
     }
-  }, [donorName]);
+  }, [donorName, donorOrgName, isDoner]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -146,12 +162,10 @@ const Overview = () => {
           const beneficiariesFromUserData = userJson.filter(
             (user) => String(user.Ngo).trim() === String(ngo.Id).trim()
           ).length;
-          console.log("Ngo:", ngo.organizationName, "Beneficiaries from userData:", beneficiariesFromUserData);
 
           const beneficiariesFromPreData = preJson
             .filter((preItem) => String(preItem.NgoId).trim() === String(ngo.Id).trim())
             .reduce((total, preItem) => total + (parseInt(preItem["Number of student"], 10) || 0), 0);
-          console.log("Ngo:", ngo.organizationName, "Beneficiaries from userData:", beneficiariesFromUserData, "Beneficiaries from preData:", beneficiariesFromPreData);
 
           const totalBeneficiaries = beneficiariesFromUserData + beneficiariesFromPreData;
 
@@ -258,31 +272,33 @@ const Overview = () => {
   // Filter functions
   const getFilteredLaptopData = () => {
     if (!selectedOrganization) return laptopData;
+    const selOrg = selectedOrganization.trim().toLowerCase();
     return laptopData.filter(laptop =>
-      String(laptop["Donor Company Name"]).trim().toLowerCase() ===
-      selectedOrganization.toLowerCase()
+      (laptop["Donor Company Name"] || "").trim().toLowerCase() === selOrg
     );
   };
+
+  const getFilteredPickups = () => {
+    if (!selectedOrganization) return pickups;
+    const selOrg = selectedOrganization.trim().toLowerCase();
+    return pickups.filter(pickup =>
+      (pickup["Donor Company"] || "").trim().toLowerCase() === selOrg
+    );
+  };
+
 
 
   const getFilteredNgoPartners = () => {
     if (!selectedOrganization) return ngoPartner;
-    return ngoPartner.filter(partner =>
-      String(partner.Doner).trim().toLowerCase() ===
-      selectedOrganization.toLowerCase()
 
-    );
+    const selOrg = selectedOrganization.trim().toLowerCase();
 
+    return ngoPartner.filter(partner => {
+      const donorName = (partner.Doner || partner.Donor || "").trim().toLowerCase();
+      return donorName === selOrg;
+    });
   };
 
-
-  const getFilteredPickups = () => {
-    if (!selectedOrganization) return pickups;
-    return pickups.filter(pickup =>
-      String(pickup["Donor Company"]).trim().toLowerCase() ===
-      selectedOrganization.toLowerCase()
-    );
-  };
 
   const getFilteredPreData = () => {
     if (!selectedOrganization) return preData;
@@ -713,6 +729,9 @@ const Overview = () => {
       <OverviewHeader
         uniqueOrganizations={uniqueOrganizations}
         onOrganizationChange={setSelectedOrganization}
+        selectedOrganization={selectedOrganization} // Add this
+        isAdmin={isAdmin} // Add this
+        isDoner={isDoner} // Add this
       />
 
       <Divider sx={{ mb: 3, width: "100%" }} />
