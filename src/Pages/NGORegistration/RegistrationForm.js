@@ -155,7 +155,6 @@ function RegistrationForm() {
     }
   };
 
-  console.log("Existing NGOs:", existingNgos);
 
   useEffect(() => {
     fetchExistingNgos();

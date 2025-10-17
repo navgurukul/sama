@@ -16,7 +16,6 @@ const DetailField = ({ label, value, color = "#4A4A4A" }) => (
 );
 
 const NGODetails = ({ ngo }) => {
-  console.log(ngo);
   
   // Organization details structure
   const getOrgDetails = (item) => [
