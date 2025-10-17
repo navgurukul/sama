@@ -794,14 +794,26 @@ const Overview = () => {
 
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <MetricCard
+            
+            {/* <MetricCard
+            // this is to show the associated ngos with the doner which is not needed now
               title="NGO Partners"
               value={selectedOrganization ? filteredNgoPartners.length : approvedCount}
               subtitle={selectedOrganization ? "Matching organizations" : "Organizations served"}
               // growth="+12% from last month"
               icon={Building}
               onClick={() => handleMetricClick("ngoPartners")}
+            /> */}
+             <MetricCard
+            // this is to show the associated ngos with the doner which is not needed now
+              title="NGO Partners"
+              value={ngosServedCount}
+              subtitle={"Matching organizations"}
+              // growth="+12% from last month"
+              icon={Building}
+              onClick={() => handleMetricClick("ngosServed")}
             />
+           
           </Grid>
         </Grid>
 

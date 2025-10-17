@@ -185,11 +185,12 @@ const TableView = ({
 
   const handleBack = () => {
     if (isStandalone) {
-      if (donorName) {
-        navigate(`/donorcsr/${donorName}/overview`);
-      } else {
-        navigate('/donorcsr/overview');
-      }
+      navigate(`/donorcsr/overview`);
+      // if (donorName) {
+      //   navigate(`/donorcsr/overview`);
+      // } else {
+      //   navigate('/donorcsr/overview');
+      // }
     } else {
       onBack();
     }
