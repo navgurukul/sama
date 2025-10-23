@@ -19,7 +19,13 @@ import {
   Menu,
   Divider,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+   TablePagination,
 } from "@mui/material";
 import {
   Truck,
@@ -140,8 +146,13 @@ const insights = [
 ];
 
 const LaptopPipeline = () => {
-  const { donorName } = useParams();
   const navigate = useNavigate();
+   const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const userRole = NgoDetails?.[0]?.role?.[0];
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  const isAdmin = userRole === "admin";
+  const isDoner = userRole === "doner";
+
   const [laptopData, setLaptopData] = useState([]);
   const [totalLaptops, setTotalLaptops] = useState(0);
   const [refurbishedCount, setRefurbishedCount] = useState(0);
@@ -150,18 +161,218 @@ const LaptopPipeline = () => {
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
   const [pickups, setPickups] = useState([]);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [expandedStage, setExpandedStage] = useState(null);
+  const [tableData, setTableData] = useState([]);
+  const [tableTitle, setTableTitle] = useState('');
+   const [page, setPage] = useState(0); 
+  const rowsPerPage = 5; 
+  
 
-  const role = JSON.parse(localStorage.getItem("role")) || [];
-  const isAdmin = role.includes("admin"); 
 
+  const handleStageClick = (stage) => {
+    if (expandedStage === stage.title) {
+      setExpandedStage(null);
+      setTableData([]);
+      setTableTitle('');
+      setPage(0);
+      return;
+    }
+
+    setExpandedStage(stage.title);
+  setPage(0); 
+    let data = [];
+    let title = '';
+
+    switch (stage.title) {
+      case "Pickup Requested":
+        data = selectedOrganization ? filteredPickups.filter(p => p.Status === "Pending") :
+          pickups.filter(p => p.Status === "Pending");
+        title = "Pending Pickup Requests";
+        break;
+
+      case "Refurbishment":
+        data = filteredLaptopData.filter(laptop => {
+          const status = (laptop.Status || "").toLowerCase();
+          return status.includes("refurbished") ||
+            status.includes("to be dispatch") ||
+            status.includes("allocated") ||
+            status.includes("distributed");
+        });
+        title = "Laptops in Refurbishment Process";
+        break;
+
+      case "Distribution":
+        data = filteredLaptopData.filter(item => item.Status === "Distributed");
+        title = "Distributed Laptops";
+        break;
+
+      case "Active Usage":
+        data = filteredLaptopData.filter(l => {
+          const d = parseDateUniversal(l["Date"]);
+          if (!d) return false;
+          const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
+          return diffDays <= 15;
+        });
+        title = "Active Usage Laptops (Last 15 days)";
+        break;
+
+      default:
+        data = [];
+        title = "Stage Data";
+    }
+
+    setTableData(data);
+    setTableTitle(title);
+  };
+  const renderTable = () => {
+    if (!expandedStage || tableData.length === 0) return null;
+  
+    const handleChangePage = (event, newPage) => {
+      setPage(newPage);
+    };
+    const getTableHeaders = () => {
+      switch (expandedStage) {
+        case "Pickup Requested":
+          return (
+            <>
+              <TableCell sx={{ fontWeight: "bold" }}>Pickup ID</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Number of Laptops</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Date & Time</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Contact Person</TableCell>
+            </>
+          );
+        case "Refurbishment":
+        case "Distribution":
+        case "Active Usage":
+          return (
+            <>
+              <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Allocated To</TableCell>
+            </>
+          );
+        default:
+          return null;
+      }
+    };
+
+    const renderTableRows = () => {
+      const currentData = tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+      switch (expandedStage) {
+        case "Pickup Requested":
+          return currentData.map((pickup, index)  => (
+            <TableRow key={index} hover>
+              <TableCell>{pickup["Pickup ID"] || 'N/A'}</TableCell>
+              <TableCell>{pickup["Donor Company"] || 'N/A'}</TableCell>
+              <TableCell>{pickup["Number of Laptops"] || 'N/A'}</TableCell>
+              <TableCell>
+                <Chip
+                  label={pickup.Status || 'Unknown'}
+                  size="small"
+                  color="warning"
+                  variant="outlined"
+                />
+              </TableCell>
+              <TableCell>{pickup["Current Date & Time"] || 'N/A'}</TableCell>
+              <TableCell>{pickup["Contact Person"] || 'N/A'}</TableCell>
+            </TableRow>
+          ));
+
+        case "Refurbishment":
+        case "Distribution":
+        case "Active Usage":
+          return currentData.map((laptop, index) =>  (
+            <TableRow key={index} hover>
+              <TableCell>{laptop.ID || laptop.LaptopID || 'N/A'}</TableCell>
+              <TableCell>{laptop["Manufacturer Model"] || 'N/A'}</TableCell>
+              <TableCell>
+                <Chip
+                  label={laptop.Status || 'Unknown'}
+                  size="small"
+                  color={laptop.Status === "Distributed" ? "success" : "primary"}
+                  variant="outlined"
+                />
+              </TableCell>
+              <TableCell>{laptop.Working ? "Yes" : "No"}</TableCell>
+              <TableCell>{laptop["Donor Company Name"] || 'N/A'}</TableCell>
+              <TableCell>{laptop["Allocated To"] || 'N/A'}</TableCell>
+            </TableRow>
+          ));
+
+        default:
+          return null;
+      }
+    };
+
+    return (
+      <Card sx={{ mb: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e0e0e0' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
+              {tableTitle}
+            </Typography>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setExpandedStage(null);
+                setTableData([]);
+                setTableTitle('');
+              }}
+              sx={{ textTransform: 'none' }}
+            >
+              Close Table
+            </Button>
+          </Box>
+
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Total Records: {tableData.length}
+          </Typography>
+
+          <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                {getTableHeaders()}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {renderTableRows()}
+            </TableBody>
+          </Table>
+          {tableData.length > rowsPerPage && (
+            <TablePagination
+              component="div"
+              count={tableData.length}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={[5]}
+              sx={{ border: 'none', mt: 2 }}
+            />
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   useEffect(() => {
-    if (donorName) {
-      setSelectedOrganization(donorName);
-    }
-  }, [donorName]);
-
+      if (isDoner) {
+        navigate("/donorcsr/laptop-pipeline", { replace: true });
+      }
+    }, [isDoner, navigate]);
+  
+    // Set selected org
+    useEffect(() => {
+      if (isDoner && donorOrgName) {
+        setSelectedOrganization(donorOrgName);
+      }
+    }, [donorOrgName, isDoner]);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -297,14 +508,14 @@ const LaptopPipeline = () => {
     setSelectedOrganization(org);
     handleFilterClose();
 
-    navigate(`/donorcsr/${org}/laptop-pipeline`);
+    navigate(`/donorcsr/laptop-pipeline`, { replace: true });
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
 
-    navigate(`/donorcsr/laptop-pipeline`);
+    navigate(`/donorcsr/laptop-pipeline`, { replace: true });
   };
 
   function parseDateUniversal(dateStr) {
@@ -349,50 +560,50 @@ const LaptopPipeline = () => {
     }
 
     return diffs.length
-  ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
-  : "0 days";
+      ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
+      : "0 days";
 
   };
 
   const calculateAvgRefurbishedTime = (data) => {
-  const diffs = data
-    .map(l => {
-      const c = parseDateUniversal(l["Date Committed"]);
-      const d = parseDateUniversal(l["Refurbishment Date"]);
-      return (c && d && d >= c) ? (d - c) / 86400000 : null;
-    })
-    .filter(Boolean);
+    const diffs = data
+      .map(l => {
+        const c = parseDateUniversal(l["Date Committed"]);
+        const d = parseDateUniversal(l["Refurbishment Date"]);
+        return (c && d && d >= c) ? (d - c) / 86400000 : null;
+      })
+      .filter(Boolean);
 
-  return diffs.length
-  ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
-  : "0 days";
+    return diffs.length
+      ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
+      : "0 days";
 
-};
+  };
 
-const calculateAvgDistributionTime = (data) => {
-  const diffs = data
-    .map(l => {
-      const c = parseDateUniversal(l["Refurbishment Date"]);
-      const d = parseDateUniversal(l["Last Delivery Date"]);
-      return (c && d && d >= c) ? (d - c) / 86400000 : null;
-    })
-    .filter(Boolean);
+  const calculateAvgDistributionTime = (data) => {
+    const diffs = data
+      .map(l => {
+        const c = parseDateUniversal(l["Refurbishment Date"]);
+        const d = parseDateUniversal(l["Last Delivery Date"]);
+        return (c && d && d >= c) ? (d - c) / 86400000 : null;
+      })
+      .filter(Boolean);
 
-  return diffs.length
-  ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
-  : "0 days";
+    return diffs.length
+      ? `${Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)} days`
+      : "0 days";
 
-};
+  };
 
-const avgActiveUsageDays = Math.round(
-  filteredLaptopData
-    .map(l => {
-      const d = parseDateUniversal(l["Date"]);
-      return d ? (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24) : null;
-    })
-    .filter(Boolean)
-    .reduce((a, b) => a + b, 0) / filteredLaptopData.length
-);
+  const avgActiveUsageDays = Math.round(
+    filteredLaptopData
+      .map(l => {
+        const d = parseDateUniversal(l["Date"]);
+        return d ? (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24) : null;
+      })
+      .filter(Boolean)
+      .reduce((a, b) => a + b, 0) / filteredLaptopData.length
+  );
 
 
 
@@ -444,7 +655,7 @@ const avgActiveUsageDays = Math.round(
         if (!d) return false;
         const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
         return diffDays <= 15;
-      }).length} laptops`,
+      }).length} `,
       icon: <Users size={30} color="#1976d2" />,
     },
   ];
@@ -452,12 +663,16 @@ const avgActiveUsageDays = Math.round(
   return (
     <>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        px={2}
-        py={2}
-        borderBottom="1px solid #eee"
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", sm: "center" },
+          px: 2,
+          py: 2,
+          borderBottom: "1px solid #eee",
+          gap: 2,
+        }}
       >
         {/* Left Section */}
         <Box display="flex" alignItems="center" gap={1.5}>
@@ -485,7 +700,13 @@ const avgActiveUsageDays = Math.round(
         </Box>
 
         {/* Right Section */}
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: { xs: "flex-start", sm: "center" },
+          gap: 1.5,
+          mt: { xs: 2, sm: 0 },
+        }}>
           {isAdmin && selectedOrganization && (
             <Chip
               label={selectedOrganization}
@@ -503,7 +724,7 @@ const avgActiveUsageDays = Math.round(
               }}
             />
           )}
-          {isAdmin && !donorName && (
+          {isAdmin &&(
             <Button
               variant="outlined"
               startIcon={<Filter size={16} />}
@@ -620,57 +841,70 @@ const avgActiveUsageDays = Math.round(
 
           <Grid container spacing={2}>
             {stages.map((stage) => (
-              <Grid item xs={12} key={stage.title} >
-                <Card
-                  sx={{
-                    bgcolor: "#e3f2fd",
-                    borderRadius: 2,
-                    boxShadow: "none",
+              <React.Fragment key={stage.title}>
 
-                  }}
-                >
-                  <CardContent
+                <Grid item xs={12} >
+                  <Card
                     sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
+                      bgcolor: "#e3f2fd",
+                      borderRadius: 2,
+                      boxShadow: "none",
+                      cursor: 'pointer',
+                      '&:hover': {
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+                        transform: 'translateY(-2px)',
+                        transition: 'all 0.2s ease-in-out'
+                      }
+                    }} onClick={() => handleStageClick(stage)}
                   >
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <Box>
-                        <Box
-                          sx={{
-                            // bgcolor: "#1976d2",
-                            borderRadius: "8px",
-                            width: 40,
-                            height: 40,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          {stage.icon}
+                    <CardContent
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Box display="flex" alignItems="center" gap={2}>
+                        <Box>
+                          <Box
+                            sx={{
+                              // bgcolor: "#1976d2",
+                              borderRadius: "8px",
+                              width: 40,
+                              height: 40,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            {stage.icon}
+                          </Box>
+                          <Typography variant="subtitle1" fontWeight={600} sx={{ color: "black" }}>
+                            {stage.title}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {stage.subtitle}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Avg. time in stage
+                          </Typography>
+                          <Typography variant="body2" fontWeight={600}>
+                            {stage.avg}
+                          </Typography>
                         </Box>
-                        <Typography variant="subtitle1" fontWeight={600} sx={{ color: "black" }}>
-                          {stage.title}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {stage.subtitle}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Avg. time in stage
-                        </Typography>
-                        <Typography variant="body2" fontWeight={600}>
-                          {stage.avg}
-                        </Typography>
                       </Box>
-                    </Box>
-                    <Typography variant="h6" fontWeight={700}>
-                      {stage.count}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
+                      <Typography variant="h6" fontWeight={700}>
+                        {stage.count}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                {expandedStage === stage.title && (
+                  <Grid item xs={12}>
+                    {renderTable()}
+                  </Grid>
+                )}
+              </React.Fragment>
             ))}
           </Grid>
         </Box>

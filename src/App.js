@@ -70,7 +70,7 @@ import Ngopartner from './Pages/DonerCSR/Ngopartner';
 import Pickup from './Pages/Pickup/Pickup';
 import DonorCSRRoute from './Pages/DonerCSR/DonorCSRRoute';
 import PickupRequestByDoner from './Pages/Pickup/PickupRequestByDoner';
-
+import TableView from './Pages/DonerCSR/TableView'; 
 
 function App() {
   return (
@@ -122,13 +122,32 @@ function App() {
                 <Route path="impact-analytics" element={<ImpactAnalysis />} />
               </Route>
 
-              <Route path="/donorcsr/:donorName" element={<Sidebar />}>
+              {/* <Route path="/donorcsr/:donorName" element={<Sidebar />}>
                 <Route path="/donorcsr/:donorName/overview" element={<Overview />} />
                 <Route path="/donorcsr/:donorName/laptop-pipeline" element={<LaptopPipeline />} />
                 <Route path="/donorcsr/:donorName/partners" element={<Ngopartner />} />
                 <Route path="/donorcsr/:donorName/laptop-tracking" element={<LaptopTracking />} />
                 <Route path="/donorcsr/:donorName/impact-analytics" element={<LaptopTracking />} />
               </Route>
+             */}
+             
+              <Route
+                path="/donorcsr/table-view"
+                element={
+                  <DonorCSRRoute>
+                    <TableView />
+                  </DonorCSRRoute>
+                }
+              />
+              <Route
+                path="/donorcsr/:donorName/table-view"
+                element={
+                  <DonorCSRRoute>
+                    <TableView />
+                  </DonorCSRRoute>
+                }
+              />
+
               <Route path="/donorcsr/*" element={<h2>Page Not Found</h2>} />
               <Route path="*" element={<h2>Page Not Found</h2>} />
 

@@ -14,6 +14,12 @@ import {
   CircularProgress,
   Snackbar,
   Alert,
+  MenuItem,
+  Select,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 
@@ -27,6 +33,7 @@ const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
     const { value } = e.target;
     onChange({ target: { name, value } });
   };
+
 
   return (
     <FormControl fullWidth margin="normal" required error={!!error}>
@@ -77,11 +84,18 @@ function RegistrationForm() {
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [checkingContact, setCheckingContact] = useState(false);
 
+  // New states for request type functionality
+  const [showRequestTypeModal, setShowRequestTypeModal] = useState(true);
+  const [requestType, setRequestType] = useState("");
+  const [existingNgos, setExistingNgos] = useState([]);
+  const [selectedExistingNgo, setSelectedExistingNgo] = useState("");
+  const [loadingNgos, setLoadingNgos] = useState(false);
+
   // Define PDF size limit (in bytes)
   const MAX_PDF_SIZE = 5 * 1024 * 1024; // 5MB
   const ALLOWED_FILE_TYPES = [
-    'application/pdf', 
-    'application/msword', 
+    'application/pdf',
+    'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   ];
@@ -122,8 +136,33 @@ function RegistrationForm() {
   const [companies, setCompanies] = useState([]);
   const [isFormValid, setIsFormValid] = useState(false);
 
+  // Fetch existing NGOs for dropdown
+  const fetchExistingNgos = async () => {
+    setLoadingNgos(true);
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_NgoInformationApi}?type=registration`
+      );
+      const data = await response.json();
+      if (data.status === "success" && Array.isArray(data.data)) {
+        // Get unique organization names
+        setExistingNgos(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching NGOs:", error);
+    } finally {
+      setLoadingNgos(false);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchExistingNgos();
+  }, []);
+
   const verifyEmail = async (email) => {
     if (!email) return;
+
 
     setCheckingEmail(true);
     try {
@@ -163,6 +202,7 @@ function RegistrationForm() {
 
   const verifyContactNumber = async (contactNumber) => {
     if (!contactNumber) return;
+
 
     setCheckingContact(true);
     try {
@@ -228,6 +268,7 @@ function RegistrationForm() {
           `${process.env.REACT_APP_NgoInformationApi}?type=donorQuestion`;
         const apiUrl = donorIDs ? `${baseURL}&donorId=${donorIDs}` : baseURL;
 
+
         const response = await fetch(apiUrl);
         const data = await response.json();
         setFormFields(data);
@@ -236,12 +277,15 @@ function RegistrationForm() {
       }
     };
 
-    fetchFormFields();
-  }, [donorIDs]);
+    if (!showRequestTypeModal) {
+      fetchFormFields();
+    }
+  }, [donorIDs, showRequestTypeModal]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
 
     if (name === "email") {
       verifyEmail(value);
@@ -249,6 +293,32 @@ function RegistrationForm() {
 
     if (name === "contactNumber") {
       verifyContactNumber(value);
+    }
+
+    // Validate organization name for new registration
+    if (name === "organizationName" && requestType === "first-time") {
+      validateOrganizationName(value);
+    }
+  };
+
+  const validateOrganizationName = (orgName) => {
+    if (
+      orgName &&
+      requestType === "first-time" &&
+      existingNgos.some(
+        (org) => org.organizationName.trim().toLowerCase() === orgName.trim().toLowerCase()
+      )
+    ) {
+      setErrors(prev => ({
+        ...prev,
+        organizationName: "This organization already exists. Please select 'Additional Request' if this is your organization."
+      }));
+    } else {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.organizationName;
+        return newErrors;
+      });
     }
   };
 
@@ -264,7 +334,8 @@ function RegistrationForm() {
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
-    
+
+
     // Validate file size and type
     if (file) {
       if (file.size > MAX_PDF_SIZE) {
@@ -289,7 +360,7 @@ function RegistrationForm() {
 
       // Clear any previous file-related errors
       setErrors(prev => {
-        const newErrors = {...prev};
+        const newErrors = { ...prev };
         delete newErrors.impactReport;
         return newErrors;
       });
@@ -324,15 +395,21 @@ function RegistrationForm() {
   const validate = () => {
     const newErrors = {};
 
-    formfields.forEach((field) => {
-      const value = formData[field.name];
+
+    const activeFields =
+      requestType === "subsequent"
+        ? ["numberOfBeneficiaries", "orgLaptopRequire"]
+        : formfields.map((f) => f.name);
+
+    activeFields.forEach((field) => {
+      const value = formData[field];
+
 
       // File validation
       if (field.name === "impactReport") {
         if (!value) {
           newErrors[field.name] = `Allowed file types: PDF, DOC, DOCX, XLSX (Max size: 5MB)`;
-
-        } 
+        }
       }
 
       // Contact number validation
@@ -351,12 +428,23 @@ function RegistrationForm() {
         }
       }
 
-      // Organization name validation
-      if (field.name === "organizationName" && value) {
-        const textPattern = /^[A-Za-z\s]+$/;
-        if (!textPattern.test(value)) {
-          newErrors[field.name] = "Organization name should contain only letters and spaces";
+      // Organization name validation - only for new registrations
+      if (field.name === "organizationName" && value && requestType === "first-time") {
+        // const textPattern = /^[A-Za-z\s]+$/;
+        // if (!textPattern.test(value)) {
+        //   newErrors[field.name] = "Organization name should contain only letters and spaces";
+        // }
+
+        // Check if organization already exists
+        if (
+          existingNgos.some(
+            (org) => org.organizationName.trim().toLowerCase() === value.trim().toLowerCase()
+          )
+        ) {
+          newErrors.organizationName =
+            "This organization already exists. Please select 'Additional Request' if this is your organization.";
         }
+
       }
 
       // Registration number validation - only numbers and letters
@@ -365,11 +453,11 @@ function RegistrationForm() {
         if (!alphanumericPattern.test(value)) {
           newErrors[field.name] = "Registration number must contain only letters and numbers";
         }
-      }      
+      }
 
       // Primary contact name validation - allow letters
       if (field.name === "primaryContactName" && value) {
-        const textPattern = /^[A-Za-z\s]+$/;  
+        const textPattern = /^[A-Za-z\s]+$/;
         if (!textPattern.test(value)) {
           newErrors[field.name] = "Name should contain only letters";
         }
@@ -397,78 +485,114 @@ function RegistrationForm() {
   };
 
   useEffect(() => {
-    setIsFormValid(validate());
-  }, [formData, formfields]);
+    if (!showRequestTypeModal) {
+      setIsFormValid(validate());
+    }
+  }, [formData, formfields, showRequestTypeModal]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validate()) {
-      setLoading(true);
-      const updatedFormData = { ...formData };
-      if (updatedFormData.beneficiarySelectionOther) {
-        updatedFormData.beneficiarySelection =
-          updatedFormData.beneficiarySelection.map((item) =>
-            item === "Other" ? updatedFormData.beneficiarySelectionOther : item
+    if (!validate()) return;
+    setLoading(true);
+    const updatedFormData = { ...formData };
+
+    if (updatedFormData.beneficiarySelectionOther) {
+      updatedFormData.beneficiarySelection = updatedFormData.beneficiarySelection.map(
+        item => item === "Other" ? updatedFormData.beneficiarySelectionOther : item
+      );
+    }
+    if (updatedFormData.primaryUseOther) {
+      updatedFormData.primaryUse = updatedFormData.primaryUse.map(
+        item => item === "Other" ? updatedFormData.primaryUseOther : item
+      );
+    }
+    delete updatedFormData.beneficiarySelectionOther;
+    delete updatedFormData.primaryUseOther;
+
+    // Convert file to base64
+    let base64File = "";
+    if (updatedFormData.impactReport) {
+      const reader = new FileReader();
+      reader.readAsDataURL(updatedFormData.impactReport);
+      base64File = await new Promise(resolve => {
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+      });
+    }
+
+    // Prepare payload for backend
+    let payload = {
+      ...updatedFormData,
+      file: base64File || "",
+      fileName: updatedFormData.impactReport?.name || "",
+      mimeType: updatedFormData.impactReport?.type || "",
+      type: "NGO",
+      orgLaptopRequire: updatedFormData.orgLaptopRequire,
+      requestType: requestType,
+      organizationName: updatedFormData.organizationName.trim(),
+    };
+
+    if (requestType === "subsequent" && selectedExistingNgo) {
+      payload.organizationName = selectedExistingNgo.trim();
+
+      const existingOrg = existingNgos.find(
+        org => org.organizationName.trim() === selectedExistingNgo.trim()
+      );
+      if (existingOrg) {
+        payload.organizationId = existingOrg.id;
+      }
+    }
+
+
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_NgoInformationApi}?type=NGO`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          mode: "no-cors",
+          body: JSON.stringify(payload),
+        }
+      );
+
+
+      setSnackbarMessage("Form submitted successfully!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+
+      setTimeout(async () => {
+        try {
+          const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
+          const storedUserId = NgoId[0].NgoId;
+
+          const res = await fetch(
+            `${process.env.REACT_APP_NgoInformationApi}?type=registration`
           );
-      }
-      if (updatedFormData.primaryUseOther) {
-        updatedFormData.primaryUse = updatedFormData.primaryUse.map((item) =>
-          item === "Other" ? updatedFormData.primaryUseOther : item
-        );
-      }
+          const result = await res.json();
 
-      delete updatedFormData.beneficiarySelectionOther;
-      delete updatedFormData.primaryUseOther;
+          const finduser = result.data.find(
+            (item) => item.Id === storedUserId
+          );
 
-      let base64File = "";
-      if (updatedFormData.impactReport) {
-        const reader = new FileReader();
-        reader.readAsDataURL(updatedFormData.impactReport);
-        base64File = await new Promise((resolve) => {
-          reader.onload = () => {
-            resolve(reader.result.split(",")[1]);
-          };
-        });
-      }
-
-      var formDataWithType = {
-        ...updatedFormData,
-        file: base64File || "",
-        fileName: updatedFormData.impactReport.name || "",
-        mimeType: updatedFormData.impactReport.type || "",
-        type: "NGO",
-        orgLaptopRequire: updatedFormData.orgLaptopRequire,
-      };
-
-      try {
-        const response = await fetch(
-          `${process.env.REACT_APP_NgoInformationApi}?type=NGO`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            mode: "no-cors",
-            body: JSON.stringify(formDataWithType),
+          if (finduser["Ngo Type"] === "1 to one") {
+            navigate("/beneficiarydata");
+          } else {
+            navigate("/preliminary");
           }
-        );
+        } catch (err) {
+          console.error("Error fetching NGO type:", err);
+          navigate("/"); // fallback
+        }
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      setSnackbarMessage("Error submitting form");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
 
-        setLoading(false);
-        setSnackbarMessage("Thank you for submitting! We will contact you soon.");
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true);
 
-        // Delay navigation to show the success message
-        setTimeout(() => {
-          navigate('/'); // Navigate to home page after 2 seconds
-        }, 2000);
-
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        setSnackbarMessage("Error submitting form. Please try again.");
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true);
-      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -479,191 +603,350 @@ function RegistrationForm() {
     setSnackbarOpen(false);
   };
 
+  const filteredFormFields = requestType === "subsequent"
+    ? formFields.filter(
+      (field) =>
+        field.name === "numberOfBeneficiaries" ||
+        field.name === "orgLaptopRequire"
+    )
+    : formFields;
+
+  const RequestTypeModal = () => (
+    <Dialog open={showRequestTypeModal} maxWidth="sm" fullWidth>
+      <DialogTitle>
+        <Typography variant="h6" component="h2">
+          Select Registration Type
+        </Typography>
+      </DialogTitle>
+      <DialogContent>
+        <Typography variant="body1" paragraph>
+          Please select whether this is your first time registering or an additional request:
+        </Typography>
+
+
+        <FormControl component="fieldset" sx={{ width: '100%' }}>
+          <RadioGroup
+            value={requestType}
+            onChange={(e) => setRequestType(e.target.value)}
+          >
+            <FormControlLabel
+              value="first-time"
+              control={<Radio />}
+              label={
+                <Box>
+                  <Typography variant="body1" fontWeight="bold">
+                    First Time Registration
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Select this if your organization has never registered before
+                  </Typography>
+                </Box>
+              }
+            />
+            <FormControlLabel
+              value="subsequent"
+              control={<Radio />}
+              label={
+                <Box>
+                  <Typography variant="body1" fontWeight="bold">
+                    Additional Request
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Select this if your organization is already registered
+                  </Typography>
+                </Box>
+              }
+            />
+          </RadioGroup>
+        </FormControl>
+
+        {requestType === "subsequent" && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" gutterBottom fontWeight="bold">
+              Select your existing organization:
+            </Typography>
+            {loadingNgos ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+                <CircularProgress size={24} />
+              </Box>
+            ) : (
+              <FormControl fullWidth sx={{ mt: 1 }}>
+                <Select
+                  value={selectedExistingNgo}
+                  onChange={(e) => setSelectedExistingNgo(e.target.value)}
+                  displayEmpty
+                  required
+                >
+                  <MenuItem value="" disabled>Select your organization</MenuItem>
+                  {existingNgos.map((org) => (
+                    <MenuItem key={org.id} value={org.organizationName}>
+                      {org.organizationName}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {existingNgos.length === 0 && (
+                  <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                    No existing organizations found. Please choose "First Time Registration".
+                  </Typography>
+                )}
+              </FormControl>
+            )}
+          </Box>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => navigate('/')}>Cancel</Button>
+        <Button
+          onClick={() => {
+            if (requestType === "first-time") {
+              setShowRequestTypeModal(false);
+            } else if (requestType === "subsequent" && selectedExistingNgo) {
+              setFormData(prev => ({
+                ...prev,
+                organizationName: selectedExistingNgo
+              }));
+              setShowRequestTypeModal(false);
+            }
+          }}
+
+          disabled={!requestType || (requestType === "subsequent" && !selectedExistingNgo)}
+          variant="contained"
+        >
+          Continue
+        </Button>
+
+      </DialogActions>
+    </Dialog>
+  );
+
   return (
     <Box sx={{ maxWidth: 600, margin: "auto", padding: 5 }}>
-      <Typography variant="h5" gutterBottom>
-        NGO Information Form
-      </Typography>
-      {formFields?.length == 0 ? (
-        <CircularProgress />
-      ) : (
-        <form onSubmit={handleSubmit}>
-          {formFields?.map((field) => {
-            if (field?.type === "text") {
-              return (
-                <TextField
-                  key={field.name}
-                  fullWidth
-                  label={
-                    <Typography component="span" fontWeight="bold">
-                      {field.question}
-                    </Typography>
-                  }
-                  name={field.name}
-                  value={formData[field.name]}
-                  onChange={handleInputChange}
-                  margin="normal"
-                  required
-                  error={!!errors[field.name]}
-                  helperText={errors[field.name]}
-                  InputProps={
-                    field.name === "email" && checkingEmail
-                      ? {
-                          endAdornment: <CircularProgress size={20} />,
+      <RequestTypeModal />
+
+
+      {!showRequestTypeModal && (
+        <>
+          <Typography variant="h5" gutterBottom>
+            NGO Information Form
+          </Typography>
+
+          {/* Show request type info */}
+          <Box sx={{ mb: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+            <Typography variant="body2">
+              Request Type: <strong>{requestType === "first-time" ? "New Registration" : "Additional Request"}</strong>
+              {requestType === "subsequent" && (
+                <> - Organization: <strong>{formData.organizationName}</strong></>
+              )}
+            </Typography>
+          </Box>
+
+          {formFields?.length === 0 ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              {filteredFormFields?.map((field) => {
+                if (field?.type === "text") {
+                  // Make organization name read-only for existing NGOs
+                  if (field.name === "organizationName" && requestType === "subsequent") {
+                    return (
+                      <TextField
+                        key={field.name}
+                        fullWidth
+                        label={
+                          <Typography component="span" fontWeight="bold">
+                            {field.question}
+                          </Typography>
                         }
-                      : field.name === "contactNumber" && checkingContact
-                      ? {
-                          endAdornment: <CircularProgress size={20} />,
-                        }
-                      : undefined
-                  }
-                />
-              );
-            } else if (field?.type === "radio") {
-              return (
-                <FormControl
-                  key={field.name}
-                  fullWidth
-                  margin="normal"
-                  required
-                  error={!!errors[field.name]}
-                >
-                  <FormLabel>
-                    <Typography component="span" fontWeight="bold">
-                      {field.question}
-                    </Typography>
-                  </FormLabel>
-                  <RadioGroup
-                    name={field.name}
-                    value={formData[field.name]}
-                    onChange={handleInputChange}
-                  >
-                    {field?.options?.map((option) => (
-                      <FormControlLabel
-                        key={option}
-                        value={option}
-                        control={<Radio />}
-                        label={option}
+                        name={field.name}
+                        value={formData[field.name]}
+                        margin="normal"
+                        required
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        helperText="Organization name is pre-filled for additional requests"
                       />
-                    ))}
-                  </RadioGroup>
-                  {errors[field.name] && (
-                    <Typography color="error">{errors[field.name]}</Typography>
-                  )}
-                </FormControl>
-              );
-            } else if (field.type === "radioWithOther") {
-              return (
-                <RadioWithOther
-                  key={field.name}
-                  label={
-                    <Typography component="span" fontWeight="bold">
-                      {field.question}
-                    </Typography>
+                    );
                   }
-                  name={field.name}
-                  value={formData[field.name]}
-                  onChange={handleInputChange}
-                  options={field.options}
-                  error={errors[field.name]}
-                />
-              );
-            } else if (field.type === "fileUpload") {
-              return (
-                <>
-                  <Typography variant="body1" gutterBottom fontWeight="bold">
-                    Please share any impact reports or documentation related to
-                    your previous projects.
-                  </Typography>
-                  {errors.impactReport && (
-                    <Typography color="error" variant="body2">
-                      {errors.impactReport}
-                    </Typography>
-                  )}
-                  <Button 
-                    variant="contained" 
-                    component="label" 
-                    color={errors.impactReport ? "error" : "primary"}
-                  >
-                    Upload File
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx,.xlsx"
-                      hidden
-                      onChange={handleFileUpload}
-                      required
-                    />
-                  </Button>
-                  {fileName && (
-                    <Typography variant="subtitle1" gutterBottom>
-                      Selected file: {fileName}
-                    </Typography>
-                  )}
-                  
-                  <br />
-                </>
-              );
-            } else if (field?.type === "checkbox") {
-              return (
-                <FormControl key={field.name} fullWidth margin="normal">
-                  <FormLabel>
-                    <Typography component="span" fontWeight="bold">
-                      {field.question}
-                    </Typography>
-                  </FormLabel>
-                  {field?.options?.map((option) => (
-                    <FormControlLabel
-                      key={option}
-                      control={
-                        <Checkbox
-                          checked={formData[field.name].includes(option)}
-                          onChange={(e) => handleCheckboxChange(e, field.name)}
-                          value={option}
-                        />
-                      }
-                      label={option}
-                    />
-                  ))}
-                  {formData[field.name].includes("Other") && (
+
+                  return (
                     <TextField
-                      name={`${field.name}Other`}
-                      label="Please specify"
-                      value={formData[`${field.name}Other`]}
+                      key={field.name}
+                      fullWidth
+                      label={
+                        <Typography component="span" fontWeight="bold">
+                          {field.question}
+                        </Typography>
+                      }
+                      name={field.name}
+                      value={formData[field.name]}
                       onChange={handleInputChange}
+                      margin="normal"
+                      required
+                      error={!!errors[field.name]}
+                      helperText={errors[field.name]}
+                      InputProps={
+                        field.name === "email" && checkingEmail
+                          ? {
+                            endAdornment: <CircularProgress size={20} />,
+                          }
+                          : field.name === "contactNumber" && checkingContact
+                            ? {
+                              endAdornment: <CircularProgress size={20} />,
+                            }
+                            : undefined
+                      }
+                    />
+                  );
+                } else if (field?.type === "radio") {
+                  return (
+                    <FormControl
+                      key={field.name}
                       fullWidth
                       margin="normal"
-                      error={!!errors[`${field.name}Other`]}
+                      required
+                      error={!!errors[field.name]}
+                    >
+                      <FormLabel>
+                        <Typography component="span" fontWeight="bold">
+                          {field.question}
+                        </Typography>
+                      </FormLabel>
+                      <RadioGroup
+                        name={field.name}
+                        value={formData[field.name]}
+                        onChange={handleInputChange}
+                      >
+                        {field?.options?.map((option) => (
+                          <FormControlLabel
+                            key={option}
+                            value={option}
+                            control={<Radio />}
+                            label={option}
+                          />
+                        ))}
+                      </RadioGroup>
+                      {errors[field.name] && (
+                        <Typography color="error">{errors[field.name]}</Typography>
+                      )}
+                    </FormControl>
+                  );
+                } else if (field.type === "radioWithOther") {
+                  return (
+                    <RadioWithOther
+                      key={field.name}
+                      label={
+                        <Typography component="span" fontWeight="bold">
+                          {field.question}
+                        </Typography>
+                      }
+                      name={field.name}
+                      value={formData[field.name]}
+                      onChange={handleInputChange}
+                      options={field.options}
+                      error={errors[field.name]}
                     />
-                  )}
-                </FormControl>
-              );
-            }
-            return null;
-          })}
+                  );
+                } else if (field.type === "fileUpload") {
+                  return (
+                    <>
+                      <Typography variant="body1" gutterBottom fontWeight="bold">
+                        Please share any impact reports or documentation related to
+                        your previous projects.
+                      </Typography>
+                      {errors.impactReport && (
+                        <Typography color="error" variant="body2">
+                          {errors.impactReport}
+                        </Typography>
+                      )}
+                      <Button
+                        variant="contained"
+                        component="label"
+                        color={errors.impactReport ? "error" : "primary"}
+                      >
+                        Upload File
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx,.xlsx"
+                          hidden
+                          onChange={handleFileUpload}
+                          required
+                        />
+                      </Button>
+                      {fileName && (
+                        <Typography variant="subtitle1" gutterBottom>
+                          Selected file: {fileName}
+                        </Typography>
+                      )}
 
-          {formFields.length > 0 && (
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={!isFormValid || loading || emailExists || contactExists}
-              sx={{ marginTop: 2 }}
-            >
-              {loading ? <CircularProgress size={24} /> : "Submit"}
-            </Button>
+                      <br />
+                    </>
+                  );
+                } else if (field?.type === "checkbox") {
+                  return (
+                    <FormControl key={field.name} fullWidth margin="normal">
+                      <FormLabel>
+                        <Typography component="span" fontWeight="bold">
+                          {field.question}
+                        </Typography>
+                      </FormLabel>
+                      {field?.options?.map((option) => (
+                        <FormControlLabel
+                          key={option}
+                          control={
+                            <Checkbox
+                              checked={formData[field.name].includes(option)}
+                              onChange={(e) => handleCheckboxChange(e, field.name)}
+                              value={option}
+                            />
+                          }
+                          label={option}
+                        />
+                      ))}
+                      {formData[field.name].includes("Other") && (
+                        <TextField
+                          name={`${field.name}Other`}
+                          label="Please specify"
+                          value={formData[`${field.name}Other`]}
+                          onChange={handleInputChange}
+                          fullWidth
+                          margin="normal"
+                          error={!!errors[`${field.name}Other`]}
+                        />
+                      )}
+                    </FormControl>
+                  );
+                }
+                return null;
+              })}
+
+              {formFields.length > 0 && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={!isFormValid || loading || emailExists || contactExists}
+                  sx={{ marginTop: 2 }}
+                >
+                  {loading ? <CircularProgress size={24} /> : "Submit"}
+                </Button>
+              )}
+            </form>
           )}
-        </form>
-      )}
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleCloseSnackbar}
+          >
+            <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
+        </>
+      )}
     </Box>
   );
 }

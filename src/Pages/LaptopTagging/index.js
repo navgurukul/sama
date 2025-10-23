@@ -656,9 +656,6 @@ function LaptopTagging() {
 
   const hiddenSelectionsCount = selectedRows.length - visibleSelections.length;
 
-
-
-
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
       {/* Search Bar */}

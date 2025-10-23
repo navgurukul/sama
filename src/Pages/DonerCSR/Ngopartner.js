@@ -29,38 +29,52 @@ import DownloadIcon from "@mui/icons-material/Download";
 
 
 const Ngopartner = () => {
-  const { donorName } = useParams();
   const navigate = useNavigate();
+
   const [ngoPartner, setNgoPartner] = useState([]);
   const [filteredNgoPartner, setFilteredNgoPartner] = useState([]);
   const [visibleCount, setVisibleCount] = useState(4);
   const [expandedCard, setExpandedCard] = useState(null);
   const [activeType, setActiveType] = useState(null);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
+  const [selectedOrganization, setSelectedOrganization] = useState( null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
-  const role = JSON.parse(localStorage.getItem("role") || "[]");
-  const isAdmin = role.includes("admin");
+
+  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const userRole = NgoDetails?.[0]?.role?.[0];
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  const isAdmin = userRole === "admin";
+  const isDoner = userRole === "doner";
+
 
   useEffect(() => {
-    if (donorName) {
-      setSelectedOrganization(donorName);
-    }
-  }, [donorName]);
+        if (isDoner) {
+          navigate("/donorcsr/partners", { replace: true });
+        }
+      }, [isDoner, navigate]);
+    
+      // Set selected org
+      useEffect(() => {
+        if (isDoner && donorOrgName) {
+          setSelectedOrganization(donorOrgName);
+        }
+      }, [donorOrgName, isDoner]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [laptopRes, ngoRes, userRes] = await Promise.all([
+        const [laptopRes, ngoRes, userRes, preRes] = await Promise.all([
           fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`),
           fetch(`${process.env.REACT_APP_NgoInformationApi}?type=registration`),
-          fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData`)
+          fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData`),
+          fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre`)
         ]);
 
-        const [laptopJson, ngoJson, userJson] = await Promise.all([
+        const [laptopJson, ngoJson, userJson, preJson] = await Promise.all([
           laptopRes.json(),
           ngoRes.json(),
-          userRes.json()
+          userRes.json(),
+          preRes.json()
         ]);
 
         const approved = ngoJson.data?.filter((ngo) => ngo.Status === "Approved") || [];
@@ -85,11 +99,19 @@ const Ngopartner = () => {
               String(ngo.organizationName).trim().toLowerCase()
           );
 
-          const beneficiariesList = userJson.filter(
+          const beneficiariesFromUserData = userJson.filter(
             (user) =>
               String(user.Ngo).trim() === String(ngo.Id).trim() ||
               String(user.ngoId).trim() === String(ngo.Id).trim()
           );
+
+          // beneficiaries from preData
+          const beneficiariesFromPreData = preJson
+            .filter((preItem) => String(preItem.NgoId).trim() === String(ngo.Id).trim())
+            .reduce((total, preItem) => total + (parseInt(preItem["Number of student"], 10) || 0), 0);
+
+          // merge userData + preData count
+          const totalBeneficiariesCount = beneficiariesFromUserData.length + beneficiariesFromPreData;
 
           const deliveries = laptopsAllocated
             .filter(
@@ -110,7 +132,8 @@ const Ngopartner = () => {
             status: ngo.Status,
             location: ngo.location || "Unknown",
             laptops: laptopsAllocated,
-            beneficiaries: beneficiariesList,
+            beneficiaries: beneficiariesFromUserData,
+            beneficiariesCount: totalBeneficiariesCount,
             lastDelivery: lastDelivery
               ? lastDelivery.toLocaleString("en-GB", {
                 day: "2-digit",
@@ -181,14 +204,14 @@ const Ngopartner = () => {
     setSelectedOrganization(org);
     handleFilterClose();
 
-    navigate(`/donorcsr/${org}/partners`);
+    navigate(`/donorcsr/partners`, { replace: true });
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
 
-    navigate(`/donorcsr/partners`);
+    navigate(`/donorcsr/partners`, { replace: true });
   };
   const handleExport = () => {
     // Use filtered data for export if a filter is applied
@@ -234,12 +257,16 @@ const Ngopartner = () => {
   return (
     <>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        px={2}
-        py={2}
-        borderBottom="1px solid #eee"
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", sm: "center" },
+          px: 2,
+          py:2,
+          borderBottom: "1px solid #eee",
+          gap: 2,
+        }}
       >
         {/* Left Section */}
         <Box display="flex" alignItems="center" gap={1.5}>
@@ -267,7 +294,10 @@ const Ngopartner = () => {
         </Box>
 
         {/* Right Section */}
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box sx={{
+          display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "flex-start", sm: "center" }, gap: 1.5,
+          mt: { xs: 2, sm: 0 },
+        }}>
           {isAdmin && selectedOrganization && (
             <Chip
               label={selectedOrganization}
@@ -286,7 +316,7 @@ const Ngopartner = () => {
             />
           )}
 
-          {isAdmin && !donorName && (
+          {isAdmin && (
             <Button
               variant="outlined"
               startIcon={<Filter size={16} />}
@@ -456,9 +486,9 @@ const Ngopartner = () => {
                         cursor: "pointer",
                         color: expandedCard === partner.id && activeType === "beneficiaries" ? "green" : "inherit"
                       }}
-                      onClick={() => handleToggle(partner.id, "beneficiaries")}
+                      // onClick={() => handleToggle(partner.id, "beneficiaries")}
                     >
-                      {partner.beneficiaries.length}
+                      {partner.beneficiariesCount}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">Beneficiaries</Typography>
                   </Grid>
@@ -485,12 +515,13 @@ const Ngopartner = () => {
                             <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
                           </TableRow>
                         ) : (
-                          <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
-                            <TableCell sx={{ fontWeight: "bold" }}>Occupation</TableCell>
-                            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-                            <TableCell sx={{ fontWeight: "bold" }}>Laptop Assigned</TableCell>
-                          </TableRow>
+                          // <TableRow>
+                          //   <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
+                          //   <TableCell sx={{ fontWeight: "bold" }}>Occupation</TableCell>
+                          //   <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                          //   <TableCell sx={{ fontWeight: "bold" }}>Laptop Assigned</TableCell>
+                          // </TableRow>
+                          null
                         )}
                       </TableHead>
 
@@ -506,16 +537,19 @@ const Ngopartner = () => {
                                 <TableCell>{item.Working ? "Yes" : "No"}</TableCell>
                               </TableRow>
                             ))
-                          : partner.beneficiaries
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((item, index) => (
-                              <TableRow key={index}>
-                                <TableCell>{item.name}</TableCell>
-                                <TableCell>{item.Occupation}</TableCell>
-                                <TableCell>{item.status}</TableCell>
-                                <TableCell>{item["Laptop Assigned"]}</TableCell>
-                              </TableRow>
-                            ))}
+                          : null
+                          // partner.beneficiaries
+                          //   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                          //   .map((item, index) => (
+                              // <TableRow key={index}>
+                              //   <TableCell>{item.name}</TableCell>
+                              //   <TableCell>{item.Occupation}</TableCell>
+                              //   <TableCell>{item.status}</TableCell>
+                              //   <TableCell>{item["Laptop Assigned"]}</TableCell>
+                              // </TableRow>
+            
+                            // ))
+                            }
                       </TableBody>
                     </Table>
                     <TablePagination

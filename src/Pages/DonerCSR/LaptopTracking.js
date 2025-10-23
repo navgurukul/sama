@@ -28,22 +28,34 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { Filter, Building, X, ChevronDown } from "lucide-react";
 
 export default function LaptopTracking() {
-  const { donorName } = useParams();
   const navigate = useNavigate();
+
   const [laptopData, setLaptopData] = useState([]);
   const [search, setSearch] = useState("");
   const [searchId, setSearchId] = useState("");
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
-const role = JSON.parse(localStorage.getItem("role") || "[]");
-  const isAdmin = role.includes("admin");
 
-useEffect(() => {
-    if (donorName) {
-      setSelectedOrganization(donorName);
+  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const userRole = NgoDetails?.[0]?.role?.[0];
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  const isAdmin = userRole === "admin";
+  const isDoner = userRole === "doner";
+
+  // On mount: if user is doner, fix route (no /Amazon/)
+  useEffect(() => {
+    if (isDoner) {
+      navigate("/donorcsr/laptop-tracking", { replace: true });
     }
-  }, [donorName]);
+  }, [isDoner, navigate]);
+
+  // Set selected org
+  useEffect(() => {
+    if (isDoner && donorOrgName) {
+      setSelectedOrganization(donorOrgName);
+    }
+  }, [donorOrgName, isDoner]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,15 +88,24 @@ useEffect(() => {
   const getFilteredLaptopData = () => {
     let filteredData = laptopData;
 
-    // Filter by organization if selected
-    if (selectedOrganization) {
-      if (!selectedOrganization) return laptopData;
-      return laptopData.filter(laptop =>
-        String(laptop["Donor Company Name"]).trim().toLowerCase() ===
-        selectedOrganization.toLowerCase()
+    // Doner: always filter by their own org
+    if (isDoner && donorOrgName) {
+      filteredData = filteredData.filter(
+        laptop =>
+          String(laptop["Donor Company Name"]).trim().toLowerCase() ===
+          donorOrgName.toLowerCase()
       );
+      return filteredData;
     }
 
+    // Filter by organization if selected
+    if (isAdmin && selectedOrganization) {
+      filteredData = filteredData.filter(
+        laptop =>
+          String(laptop["Donor Company Name"]).trim().toLowerCase() ===
+          selectedOrganization.toLowerCase()
+      );
+    }
     // Filter by ID search
     if (searchId) {
       filteredData = filteredData.filter(laptop =>
@@ -109,14 +130,14 @@ useEffect(() => {
     setSelectedOrganization(org);
     handleFilterClose();
 
-    navigate(`/donorcsr/${org}/laptop-tracking`);
+    navigate(`/donorcsr/laptop-tracking`, { replace: true });
   };
 
   const handleClearFilter = () => {
     setSelectedOrganization(null);
     handleFilterClose();
 
-    navigate(`/donorcsr/overview`);
+    navigate(`/donorcsr/laptop-tracking`, { replace: true });
   };
 
   // Function to get color based on status
@@ -183,12 +204,16 @@ useEffect(() => {
     <>
       {/* ======= HEADER ======= */}
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        px={2}
-        py={2}
-        borderBottom="1px solid #eee"
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", sm: "center" },
+          px: 2,
+          py: 2,
+          borderBottom: "1px solid #eee",
+          gap: 2,
+        }}
       >
         {/* Left Section */}
         <Box display="flex" alignItems="center" gap={1.5}>
@@ -216,8 +241,11 @@ useEffect(() => {
         </Box>
 
         {/* Right Section */}
-        <Box display="flex" alignItems="center" gap={2}>
-          {isAdmin &&  selectedOrganization && (
+        <Box sx={{
+          display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "flex-start", sm: "center" }, gap: 1.5,
+          mt: { xs: 2, sm: 0 },
+        }}>
+          {isAdmin && selectedOrganization && (
             <Chip
               label={selectedOrganization}
               variant="outlined"
@@ -300,7 +328,7 @@ useEffect(() => {
       </Box>
 
       {/* Filter Status Bar */}
-      { isAdmin &&  selectedOrganization && (
+      {isAdmin && selectedOrganization && (
         <Box
           sx={{
             p: 2,
@@ -334,7 +362,7 @@ useEffect(() => {
                   />
                 )}
               </Typography>
-              
+
               <Box display="flex" alignItems="center" gap={2}>
                 <TextField
                   label="Search by ID"
@@ -344,17 +372,17 @@ useEffect(() => {
                   onChange={(e) => setSearchId(e.target.value)}
                   sx={{ width: "250px" }}
                 />
-                  {isAdmin && (
-                <Button
-                  variant="outlined"
-                  startIcon={<FilterAltIcon />}
-                  onClick={handleFilterClick}
-                >
-                   Filter by Donor
-                </Button>
-                  )}
+                {isAdmin && (
+                  <Button
+                    variant="outlined"
+                    startIcon={<FilterAltIcon />}
+                    onClick={handleFilterClick}
+                  >
+                    Filter by Donor
+                  </Button>
+                )}
               </Box>
-                  
+
             </Box>
 
             {/* ====== TABLE ====== */}
