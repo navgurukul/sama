@@ -8,7 +8,8 @@ const RecentActivity = ({
     getActivityColor,
     formatActivityMessage,
     getStatusIcon,
-    timeAgo
+    timeAgo,
+    onActivityClick,
 }) => {
     return (
         <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -35,7 +36,7 @@ const RecentActivity = ({
                     <>
                         {(showAllActivities ? recentActivities : recentActivities.slice(0, 5)).map(
                             (activity, index) => (
-                                <Box key={index} mb={2}>
+                                <Box key={index} mb={2} onClick={() => onActivityClick(activity)}>
                                     <Box display="flex" alignItems="center" mb={1}>
                                         <Avatar
                                             sx={{
