@@ -117,10 +117,13 @@ const FilterPanel = ({
               size="small"
             >
               <MenuItem value="all">All</MenuItem>
+              <MenuItem value="Pickup Requested">Pickup Requested</MenuItem>
+              <MenuItem value="In Transit">In Transit</MenuItem>
               <MenuItem value="Laptop Received">Laptop Received</MenuItem>
+              <MenuItem value="Refurbishment Started">Refurbishment Started</MenuItem>
               <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
-              <MenuItem value="Laptop Tagged">Allocated</MenuItem>
-              <MenuItem value="Laptop Shipped">To be dispatch</MenuItem>
+              <MenuItem value="To be dispatch">To be dispatch</MenuItem>
+              <MenuItem value="Allocated">Allocated</MenuItem>
               <MenuItem value="Distributed">Distributed</MenuItem>
               <MenuItem value="Not Working">Not Working</MenuItem>
             </Select>

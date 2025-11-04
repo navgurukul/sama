@@ -22,6 +22,7 @@ import {
   ListItemText,
   IconButton,
   Table,
+  TextField,
   TableHead,
   TableBody,
   TableRow,
@@ -55,12 +56,54 @@ const Overview = () => {
   const [pickups, setPickups] = useState([]);
   const [totalLaptopss, setTotalLaptopss] = useState(0);
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   const theme = useTheme();
   const [laptopData, setLaptopData] = useState([]);
   const [ngoData, setNgoData] = useState([]);
+
+  // Date handling functions
+  const parseDateUniversal = (dateString) => {
+    if (!dateString) return null;
+    dateString = String(dateString).trim();
+
+    // Try built-in parse
+    const builtIn = new Date(dateString);
+    if (!isNaN(builtIn)) return builtIn;
+
+    // Try DD-MM-YYYY format
+    const [day, month, year] = dateString.split(/[-/]/).map(num => parseInt(num, 10));
+    if (day && month && year) {
+      const date = new Date(year, month - 1, day);
+      if (!isNaN(date.getTime())) return date;
+    }
+
+    return null;
+  };
+
+  const isWithinDateRange = (dateStr) => {
+    if (!startDate || !endDate || !dateStr) return true;
+    const date = formatDateForDisplay(dateStr);
+    if (!date) return true;
+    
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    
+    return date >= start && date <= end;
+  };
+  
+  const handleDateFilter = () => {
+    // The filter is automatically applied through the filtered data functions
+  };
+
+  const clearDateFilter = () => {
+    setStartDate('');
+    setEndDate('');
+  };
   const [approvedCount, setApprovedCount] = useState(0);
-  const [showAll, setShowAll] = useState(false);
   const [ngoPartner, setNgoPartner] = useState([]);
   const [userData, setUserData] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
@@ -68,6 +111,7 @@ const Overview = () => {
   const [expandedCard, setExpandedCard] = useState(null);
   const [activeType, setActiveType] = useState(null);
   const [page, setPage] = useState(0);
+  const [showNgoDetails, setShowNgoDetails] = useState(false);
   const rowsPerPage = 5;
   const handleToggle = (id, type) => {
     if (expandedCard === id && activeType === type) {
@@ -271,21 +315,34 @@ const Overview = () => {
 
   // Filter functions
   const getFilteredLaptopData = () => {
-    if (!selectedOrganization) return laptopData;
-    const selOrg = selectedOrganization.trim().toLowerCase();
-    return laptopData.filter(laptop =>
-      (laptop["Donor Company Name"] || "").trim().toLowerCase() === selOrg
-    );
+    if (!laptopData) return [];
+    
+    return laptopData.filter(laptop => {
+      // Organization filter
+      const orgMatch = !selectedOrganization || 
+        (laptop["Donor Company Name"] || "").trim().toLowerCase() === selectedOrganization.trim().toLowerCase();
+      
+      // Date filter based on Date Committed
+      const dateMatch = isWithinDateRange(laptop["Date Committed"]);
+      
+      return orgMatch && dateMatch;
+    });
   };
 
   const getFilteredPickups = () => {
-    if (!selectedOrganization) return pickups;
-    const selOrg = selectedOrganization.trim().toLowerCase();
-    return pickups.filter(pickup =>
-      (pickup["Donor Company"] || "").trim().toLowerCase() === selOrg
-    );
+    if (!pickups) return [];
+    
+    return pickups.filter(pickup => {
+      // Organization filter
+      const orgMatch = !selectedOrganization || 
+        (pickup["Donor Company"] || "").trim().toLowerCase() === selectedOrganization.trim().toLowerCase();
+      
+      // Date filter based on Current Date & Time
+      const dateMatch = isWithinDateRange(pickup["Current Date & Time"]);
+      
+      return orgMatch && dateMatch;
+    });
   };
-
 
 
   const getFilteredNgoPartners = () => {
@@ -331,7 +388,14 @@ const Overview = () => {
   const filteredPickups = getFilteredPickups();
   const filteredUserData = getFilteredUserData();
 
+
+
   // Mapping through Sheets
+
+  // filteredLaptopData.map((laptop, i) => {
+  //   console.log(`Status [${i}]:`, laptop?.Status);
+  //   return laptop;
+  // });
 
   ngoData.map((ngo) => {
 
@@ -362,8 +426,9 @@ const Overview = () => {
 
   const refurbishedCount = filteredLaptopData.reduce((acc, item) => {
     const status = (item.Status || "").toLowerCase();
+    // console.log("Laptop Status:", status);
 
-    if (status.includes("refurbished")) {
+    if (status.includes("laptop refurbished")) {
       return acc + 1;
     }
 
@@ -535,7 +600,7 @@ const Overview = () => {
     const lastUpdated = parseDate(lastUpdatedStr);
     if (!lastUpdated) return false;
     const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
-    return hoursAgo <= 24;
+    return hoursAgo <= 24 ;
   });
   // console.log("Last 24 hours data:", last24HoursData);
   const last24HoursPickups = filteredPickups.filter(p => {
@@ -546,9 +611,6 @@ const Overview = () => {
     const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
     return hoursAgo <= 24;
   });
-
-
-
 
   const getRecentActivities = () => {
     const activities = [];
@@ -685,13 +747,15 @@ const Overview = () => {
   const recentActivities = getRecentActivities();
   const uniqueOrganizations = getUniqueOrganizations();
 
-  function parseDateUniversal(dateStr) {
+  function formatDateForDisplay(dateStr) {
     if (!dateStr) return null;
     dateStr = String(dateStr).trim();
-
+    
     // 1. Built-in parse
     const builtIn = new Date(dateStr);
-    if (!isNaN(builtIn)) return builtIn;
+    if (!isNaN(builtIn)) {
+      return builtIn;
+    }
 
     // 2. DD-MM-YYYY (with optional time)
     let m = dateStr.match(/^(\d{2})-(\d{2})-(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
@@ -710,8 +774,8 @@ const Overview = () => {
 
   const allProcessingTimes = filteredLaptopData
     .map(l => {
-      const c = parseDateUniversal(l["Date Committed"]);
-      const d = parseDateUniversal(l["Last Delivery Date"]);
+      const c = formatDateForDisplay(l["Date Committed"]);
+      const d = formatDateForDisplay(l["Last Delivery Date"]);
       return (c && d && d >= c) ? (d - c) / 86400000 : null;
     })
     .filter(Boolean);
@@ -722,6 +786,16 @@ const Overview = () => {
 
   const avgProcessingTimeRounded = Math.round(avgProcessingTime);
 
+
+  const handleActivityClick = (activity) => {
+    const metricType = activity.status.toLowerCase().replace(/\s+/g, '');
+
+    if (selectedOrganization) {
+      navigate(`/donorcsr/${selectedOrganization}/table-view?metric=${metricType}&activity=${encodeURIComponent(JSON.stringify(activity))}`);
+    } else {
+      navigate(`/donorcsr/table-view?metric=${metricType}&activity=${encodeURIComponent(JSON.stringify(activity))}`);
+    }
+  };
 
   return (
 
@@ -738,21 +812,62 @@ const Overview = () => {
 
       <Box sx={{ p: 3, pb: 10 }}>
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
-            CSR Impact Dashboard
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#666", fontSize: 16 }}>
-            {selectedOrganization
-              ? `Impact tracking for ${selectedOrganization}`
-              : "Comprehensive tracking of laptop refurbishment and distribution impact"}
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+            <Box>
+              <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
+                CSR Impact Dashboard
+              </Typography>
+              <Typography variant="body1" sx={{ color: "#666", fontSize: 16 }}>
+                {selectedOrganization
+                  ? `Impact tracking for ${selectedOrganization}`
+                  : "Comprehensive tracking of laptop refurbishment and distribution impact"}
+              </Typography>
+            </Box>
+            {/* Date Filter Section - Temporarily Commented Out
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <TextField
+                label="Start Date"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                size="small"
+              />
+              <TextField
+                label="End Date"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                size="small"
+              />
+              <Button
+                variant="contained"
+                onClick={handleDateFilter}
+                disabled={!startDate || !endDate}
+                size="small"
+              >
+                Apply Filter
+              </Button>
+              {(startDate || endDate) && (
+                <Button
+                  variant="outlined"
+                  onClick={clearDateFilter}
+                  size="small"
+                >
+                  Clear Filter
+                </Button>
+              )}
+            </Box>
+            */}
+          </Box>
         </Box>
 
         {/* Top Metrics Row */}
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
-              title="Total Laptops Collected"
+              title="Total Laptops Commited"
               value={totalLaptops}
               // subtitle="Lifetime donations from corporates"
               subtitle={selectedOrganization ? `From ${selectedOrganization}` : "Lifetime donations from corporates"}
@@ -764,11 +879,11 @@ const Overview = () => {
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Successfully Refurbished"
-              value={refurbishedCount}
+              value={refurbishedCount} // need to change this.
               subtitle={`${successRate}% success rate`}
               // growth="+8.1% from last month"
               icon={CheckCircle}
-              onClick={() => handleMetricClick("refurbished")}
+              onClick={() => handleMetricClick("successfullyRefurbished")}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -790,30 +905,12 @@ const Overview = () => {
               })()}
               subtitle="Currently using laptops"
               icon={Users}
+              onClick={() => handleMetricClick("activeBeneficiaries")}
             />
 
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            
-            {/* <MetricCard
-            // this is to show the associated ngos with the doner which is not needed now
-              title="NGO Partners"
-              value={selectedOrganization ? filteredNgoPartners.length : approvedCount}
-              subtitle={selectedOrganization ? "Matching organizations" : "Organizations served"}
-              // growth="+12% from last month"
-              icon={Building}
-              onClick={() => handleMetricClick("ngoPartners")}
-            /> */}
-             <MetricCard
-            // this is to show the associated ngos with the doner which is not needed now
-              title="NGO Partners"
-              value={ngosServedCount}
-              subtitle={"Matching organizations"}
-              // growth="+12% from last month"
-              icon={Building}
-              onClick={() => handleMetricClick("ngosServed")}
-            />
-           
+            {/* NGO Partners card commented out */}
           </Grid>
         </Grid>
 
@@ -875,24 +972,96 @@ const Overview = () => {
             {/* Pipeline Steps */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {[
-
                 {
-                  icon: Package, title: "Pickup Requested", subtitle: "Corporate request submitted", count: selectedOrganization ? `${filteredPickups.filter(p => p.Status === "Pending")
-                    .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`
-                    : `${pickups
-                      .filter(p => p.Status === "Pending")
-                      .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)}  laptops`, bgColor: "#e3f2fd", iconColor: "#1976d2", stepType: "pickupRequests"
+                  icon: Package,
+                  title: "Pickup Requested",
+                  subtitle: "Initial request submitted",
+                  count: `${filteredLaptopData.filter(l => l.Status === "Pickup Requested").length} laptops`,
+                  // count: selectedOrganization 
+                  //   ? `${filteredPickups.filter(p => p.Status === "Pending")
+                  //       .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`
+                  //   : `${pickups.filter(p => p.Status === "Pending")
+                  //       .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`,
+                  bgColor: "#e3f2fd",
+                  iconColor: "#1976d2",
+                  stepType: "pickupRequests"
                 },
-                // { icon: CheckCircle, title: "Assessment", subtitle: "Condition evaluation", count: "32 laptops", bgColor: "#fff3e0", iconColor: "#f57c00" },
-                { icon: Settings, title: "Refurbishment", subtitle: "Repair & software setup", count: `${refurbishedCount} laptops`, bgColor: "#e8f5e8", iconColor: "#388e3c", stepType: "refurbished" },
-                { icon: Truck, title: "Distribution", subtitle: "Delivered to NGOs", count: `${distributedCount} laptops`, bgColor: "#f3e5f5", iconColor: "#7b1fa2", stepType: "distributed" },
                 {
-                  icon: UserCheck, title: "Active Usage", subtitle: "In use by beneficiaries", count: `${filteredLaptopData.filter(l => {
-                    const d = parseDateUniversal(l["Date"]);
+                  icon: Truck,
+                  title: "In Transit",
+                  subtitle: "Pickup in progress",
+                  count: `${filteredLaptopData.filter(l => l.Status === "In Transit").length} laptops`,
+                  bgColor: "#fff3e0",
+                  iconColor: "#f57c00",
+                  stepType: "inTransit"
+                },
+                {
+                  icon: Laptop,
+                  title: "Laptop Received", 
+                  subtitle: "Initial check-in",
+                  count: `${filteredLaptopData.filter(l => l.Status === "Laptop Received").length} laptops`,
+                  bgColor: "#e8f5e8",
+                  iconColor: "#388e3c",
+                  stepType: "received"
+                },
+                {
+                  icon: Settings,
+                  title: "Refurbishment Started",
+                  subtitle: "Under processing",
+                  count: `${filteredLaptopData.filter(l => l.Status === "Refurbishment Started").length} laptops`,
+                  bgColor: "#e0f7fa",
+                  iconColor: "#0097a7",
+                  stepType: "refurbishmentStarted"
+                },
+                {
+                  icon: CheckCircle,
+                  title: "Laptop Refurbished",
+                  subtitle: "Repair completed",
+                  count: `${filteredLaptopData.filter(l => l.Status === "Laptop Refurbished").length} laptops`,
+                  bgColor: "#f3e5f5",
+                  iconColor: "#7b1fa2",
+                  stepType: "refurbished"
+                },
+                {
+                  icon: Truck,
+                  title: "To Be Dispatch",
+                  subtitle: "Ready for delivery",
+                  count: `${filteredLaptopData.filter(l => l.Status === "To Be Dispatch").length} laptops`,
+                  bgColor: "#fce4ec",
+                  iconColor: "#c2185b",
+                  stepType: "toBeDispatch"
+                },
+                {
+                  icon: Building,
+                  title: "Allocated",
+                  subtitle: "Assigned to NGO",
+                  count: `${filteredLaptopData.filter(l => l.Status === "Allocated").length} laptops`,
+                  bgColor: "#f1f8e9",
+                  iconColor: "#558b2f",
+                  stepType: "allocated"
+                },
+                {
+                  icon: UserCheck,
+                  title: "Distributed",
+                  subtitle: "Delivered to NGO",
+                  count: `${filteredLaptopData.filter(l => l.Status === "Distributed").length} laptops`,
+                  bgColor: "#e8f5e9",
+                  iconColor: "#2e7d32",
+                  stepType: "distributed"
+                },
+                {
+                  icon: UserCheck,
+                  title: "Active Usage",
+                  subtitle: "In use by beneficiaries",
+                  count: `${filteredLaptopData.filter(l => {
+                    const d = formatDateForDisplay(l["Date"]);
                     if (!d) return false;
                     const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
-                    return diffDays <= 15;
-                  }).length} laptops`, bgColor: "#ffebee", iconColor: "#d32f2f", stepType: "activeUsage"
+                    return diffDays <= 15 && l.Status === "Distributed";
+                  }).length} laptops`,
+                  bgColor: "#ffebee",
+                  iconColor: "#d32f2f",
+                  stepType: "activeUsage"
                 }
               ].map((step, index) => (
                 // <Grid item xs={6} sm={4} md={2.4} key={index}>
@@ -929,7 +1098,40 @@ const Overview = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="Success Rate" value={`${successRate}%`} color="#4caf50" />
+                  <Box
+                    sx={{
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        '& .metric-value': {
+                          color: 'primary.main',
+                        }
+                      }
+                    }}
+                    onClick={() => {
+                      if (selectedOrganization) {
+                        navigate(`/donorcsr/${selectedOrganization}/table-view?metric=successfullyRefurbished&total=${totalLaptops}&processed=${refurbishedCount}`);
+                      } else {
+                        navigate(`/donorcsr/table-view?metric=successfullyRefurbished&total=${totalLaptops}&processed=${refurbishedCount}`);
+                      }
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ fontSize: 12, color: '#666', mb: 0.5 }}>
+                      Success Rate
+                    </Typography>
+                    <Typography 
+                      variant="h6" 
+                      className="metric-value"
+                      sx={{ 
+                        fontSize: 20, 
+                        fontWeight: 600, 
+                        color: '#4caf50',
+                        transition: 'color 0.2s ease'
+                      }}
+                    >
+                      {`${successRate}%`}
+                    </Typography>
+                  </Box>
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <SummaryMetric label="Avg. Processing Time" value={`${avgProcessingTimeRounded} days`} />
@@ -962,25 +1164,34 @@ const Overview = () => {
               formatActivityMessage={formatActivityMessage}
               getStatusIcon={getStatusIcon}
               timeAgo={timeAgo}
+              onActivityClick={handleActivityClick}
             />
           </Grid>
 
           {/* NGO Partners Section */}
           <Grid item xs={12} md={6}>
-            <Card variant="outlined" sx={{ borderRadius: 2 }}>
+            <Card 
+              variant="outlined" 
+              sx={{ 
+                borderRadius: 2,
+                cursor: 'pointer',
+                '&:hover': {
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                }
+              }}
+              onClick={() => setShowNgoDetails(!showNgoDetails)}
+            >
               <CardContent>
                 <Box display="flex" alignItems="center" mb={1}>
                   <Building size={20} style={{ marginRight: 8, color: "#555" }} />
                   <Typography variant="h6" fontWeight={600}>
                     NGO Partners
-                    {selectedOrganization && (
-                      <Chip
-                        label={`Filtered: ${filteredNgoPartners.length}`}
-                        size="small"
-                        variant="outlined"
-                        sx={{ ml: 2 }}
-                      />
-                    )}
+                    <Chip
+                      label={`${ngosServedCount} NGOs`}
+                      size="small"
+                      variant="outlined"
+                      sx={{ ml: 2 }}
+                    />
                   </Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary" mb={3}>
@@ -989,20 +1200,8 @@ const Overview = () => {
                     : "Organizations receiving laptop distributions"
                   }
                 </Typography>
-                {filteredNgoPartners.length === 0 ? (
-                  <Box sx={{
-                    textAlign: 'center',
-                    py: 4,
-                    color: '#666'
-                  }}>
-                    <Building size={48} color="#ccc" style={{ marginBottom: 16 }} />
-                    <Typography variant="body2">
-                      No NGO partners found for the selected organization
-                    </Typography>
-                  </Box>
-                ) : (
-                  <>
-                    {(showAll ? filteredNgoPartners : filteredNgoPartners.slice(0, 3)).map(
+                                  {showNgoDetails ? (
+                    filteredNgoPartners.filter(partner => partner.laptops > 0).map(
                       (partner, index) => (
                         <Box key={partner.name} mb={3}>
                           <Box display="flex" justifyContent="space-between" mb={1}>
@@ -1024,7 +1223,10 @@ const Overview = () => {
                                     cursor: "pointer",
                                     color: expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "inherit"
                                   }}
-                                  onClick={() => handleToggle(partner.id, "laptops")}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggle(partner.id, "laptops");
+                                  }}
                                 >
                                   <Laptop size={16} color="#555" />
                                   <Typography
@@ -1068,7 +1270,7 @@ const Overview = () => {
                           </Box>
                           {/* Expanded Laptop Data Table */}
                           {expandedCard === partner.id && activeType === "laptops" && (
-                            <Box mt={3}>
+                            <Box mt={3} onClick={(e) => e.stopPropagation()}>
                               <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem', fontWeight: 600 }}>
                                 {partner.name} - Laptop Data
                               </Typography>
@@ -1123,19 +1325,20 @@ const Overview = () => {
                           {index < filteredNgoPartners.length - 1 && <Divider sx={{ mt: 2 }} />}
                         </Box>
                       )
-                    )}
-
-                    {filteredNgoPartners.length > 3 && (
-                      <Button
-                        size="small"
-                        sx={{ mt: 2 }}
-                        color="primary"
-                        onClick={() => setShowAll(!showAll)}
-                      >
-                        {showAll ? "Hide NGO partners ↑" : "View all NGO partners →"}
-                      </Button>
-                    )}
-                  </>
+                    )
+                  ) : (
+                  <Box 
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      py: 2
+                    }}
+                  >
+                    <Typography variant="body2" color="primary" sx={{ display: 'flex', alignItems: 'center' }}>
+                      Click to view NGO details
+                    </Typography>
+                  </Box>
                 )}
               </CardContent>
             </Card>
