@@ -186,8 +186,9 @@ const LaptopPipeline = () => {
 
     switch (stage.title) {
       case "Pickup Requested":
-        data = selectedOrganization ? filteredPickups.filter(p => p.Status === "Pending") :
-          pickups.filter(p => p.Status === "Pending");
+        // data = selectedOrganization ? filteredPickups.filter(p => p.Status === "Pending") :
+        //   pickups.filter(p => p.Status === "Pending");
+        data = filteredLaptopData.filter(item => item.Status === "Pickup Requested");
         title = "Pending Pickup Requests";
         break;
 
@@ -234,16 +235,16 @@ const LaptopPipeline = () => {
     const getTableHeaders = () => {
       switch (expandedStage) {
         case "Pickup Requested":
-          return (
-            <>
-              <TableCell sx={{ fontWeight: "bold" }}>Pickup ID</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Number of Laptops</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Date & Time</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Contact Person</TableCell>
-            </>
-          );
+          // return (
+          //   <>
+          //     <TableCell sx={{ fontWeight: "bold" }}>Pickup ID</TableCell>
+          //     <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
+          //     <TableCell sx={{ fontWeight: "bold" }}>Number of Laptops</TableCell>
+          //     <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+          //     <TableCell sx={{ fontWeight: "bold" }}>Date & Time</TableCell>
+          //     <TableCell sx={{ fontWeight: "bold" }}>Contact Person</TableCell>
+          //   </>
+          // );
         case "Refurbishment":
         case "Distribution":
         case "Active Usage":
@@ -266,23 +267,23 @@ const LaptopPipeline = () => {
       const currentData = tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
       switch (expandedStage) {
         case "Pickup Requested":
-          return currentData.map((pickup, index)  => (
-            <TableRow key={index} hover>
-              <TableCell>{pickup["Pickup ID"] || 'N/A'}</TableCell>
-              <TableCell>{pickup["Donor Company"] || 'N/A'}</TableCell>
-              <TableCell>{pickup["Number of Laptops"] || 'N/A'}</TableCell>
-              <TableCell>
-                <Chip
-                  label={pickup.Status || 'Unknown'}
-                  size="small"
-                  color="warning"
-                  variant="outlined"
-                />
-              </TableCell>
-              <TableCell>{pickup["Current Date & Time"] || 'N/A'}</TableCell>
-              <TableCell>{pickup["Contact Person"] || 'N/A'}</TableCell>
-            </TableRow>
-          ));
+          // return currentData.map((pickup, index)  => (
+          //   <TableRow key={index} hover>
+          //     <TableCell>{pickup["Pickup ID"] || 'N/A'}</TableCell>
+          //     <TableCell>{pickup["Donor Company"] || 'N/A'}</TableCell>
+          //     <TableCell>{pickup["Number of Laptops"] || 'N/A'}</TableCell>
+          //     <TableCell>
+          //       <Chip
+          //         label={pickup.Status || 'Unknown'}
+          //         size="small"
+          //         color="warning"
+          //         variant="outlined"
+          //       />
+          //     </TableCell>
+          //     <TableCell>{pickup["Current Date & Time"] || 'N/A'}</TableCell>
+          //     <TableCell>{pickup["Contact Person"] || 'N/A'}</TableCell>
+          //   </TableRow>
+          // ));
 
         case "Refurbishment":
         case "Distribution":
@@ -492,6 +493,10 @@ const LaptopPipeline = () => {
     item => item.Status === "Distributed"
   ).length;
 
+  const PickupCountt = filteredLaptopData.filter(
+    item => item.Status === "Pickup Requested"
+  ).length;
+
   const filteredTotalLaptops = selectedOrganization ?
     filteredPickups.length :
     totalLaptopss;
@@ -614,11 +619,12 @@ const LaptopPipeline = () => {
       avg: calculateAvgCommittedTime(
         selectedOrganization ? filteredLaptopData : laptopData
       ),
-      count: selectedOrganization
-        ? filteredPickups.filter(p => p.Status === "Pending")
-          .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)
-        : pickups.filter(p => p.Status === "Pending")
-          .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0),
+      count: PickupCountt,
+      // count: selectedOrganization
+      //   ? filteredPickups.filter(p => p.Status === "Pending")
+      //     .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)
+      //   : pickups.filter(p => p.Status === "Pending")
+      //     .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0),
       icon: <Package size={30} color="#1976d2" />,
     },
     // {
@@ -885,12 +891,12 @@ const LaptopPipeline = () => {
                           <Typography variant="body2" color="text.secondary">
                             {stage.subtitle}
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
+                          {/* <Typography variant="caption" color="text.secondary">
                             Avg. time in stage
                           </Typography>
                           <Typography variant="body2" fontWeight={600}>
                             {stage.avg}
-                          </Typography>
+                          </Typography> */}
                         </Box>
                       </Box>
                       <Typography variant="h6" fontWeight={700}>

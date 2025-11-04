@@ -7,13 +7,19 @@ export const LaptopStatusDropdown = ({ value = '', onChange }) => {
   // Get regular flow options based on current status
   switch (value) {
     case '':
-      options = ['In Transit', 'Laptop Received'];
+      options = ['Pickup Requested', 'In Transit'];  // Updated default options
+      break;
+    case 'Pickup Requested':  // New status
+      options = ['In Transit'];
       break;
     case 'In Transit':
       options = ['Laptop Received'];
       break;
     case 'Laptop Received':
-      options = ['Laptop Refurbished', 'To Be Dispatch'];
+      options = ['Refurbishment Started', 'To Be Dispatch'];  // Added new option
+      break;
+    case 'Refurbishment Started':  // New status
+      options = ['Laptop Refurbished'];
       break;
     case 'Laptop Refurbished':
       options = ['To Be Dispatch'];
@@ -25,7 +31,7 @@ export const LaptopStatusDropdown = ({ value = '', onChange }) => {
       options = ['Distributed'];
       break;
     case 'Not Working':
-      options = ['In Transit']; // Allow returning to flow from Not Working
+      options = ['Pickup Requested']; // Updated to allow return to start of flow
       break;
     case 'Distributed':
       options = []; // Final status
