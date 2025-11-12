@@ -34,6 +34,7 @@ function LaptopForm() {
     others: "",
     macAddress: "",
     batteryCapacity: "",
+    batch: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -142,6 +143,7 @@ function LaptopForm() {
         others: "",
         macAddress: "",
         batteryCapacity: "",
+        batch: "",
       });
     } catch (error) {
       console.error("Error:", error);
@@ -231,7 +233,18 @@ function LaptopForm() {
                 variant="outlined"
                 error={!!errors.donorCompanyName}
                 helperText={errors.donorCompanyName}
-              // required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="subtitle1">Batch</Typography>
+              <TextField
+                fullWidth
+                name="batch"
+                value={formData.batch}
+                onChange={handleChange}
+                variant="outlined"
+                error={!!errors.batch}
+                helperText={errors.batch}
               />
             </Grid>
 

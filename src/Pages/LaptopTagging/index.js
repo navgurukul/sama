@@ -519,6 +519,7 @@ function LaptopTagging() {
             donatedTo: laptopData["Allocated To"],
             lastUpdatedOn: currentDate,
             lastUpdatedBy: lastUpdatedBy,
+            batch: laptopData.Batch,
           };
 
           // Apply all updates to the payload
@@ -577,6 +578,7 @@ function LaptopTagging() {
         batteryCapacity: laptopData["Battery Capacity"],
         lastUpdatedOn: currentDate,
         lastUpdatedBy: lastUpdatedBy,
+        batch: laptopData.Batch,
       };
 
       try {

@@ -58,7 +58,9 @@ const Overview = () => {
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-
+  const [appliedStartDate, setAppliedStartDate] = useState('');
+  const [appliedEndDate, setAppliedEndDate] = useState('');
+  const [averageDays, setAverageDays] = useState("null");
   const theme = useTheme();
   const [laptopData, setLaptopData] = useState([]);
   const [ngoData, setNgoData] = useState([]);
@@ -83,25 +85,28 @@ const Overview = () => {
   };
 
   const isWithinDateRange = (dateStr) => {
-    if (!startDate || !endDate || !dateStr) return true;
+    if (!appliedStartDate || !appliedEndDate || !dateStr) return true;
     const date = formatDateForDisplay(dateStr);
     if (!date) return true;
     
-    const start = new Date(startDate);
+    const start = new Date(appliedStartDate);
     start.setHours(0, 0, 0, 0);
-    const end = new Date(endDate);
+    const end = new Date(appliedEndDate);
     end.setHours(23, 59, 59, 999);
     
     return date >= start && date <= end;
   };
   
   const handleDateFilter = () => {
-    // The filter is automatically applied through the filtered data functions
+    setAppliedStartDate(startDate);
+    setAppliedEndDate(endDate);
   };
 
   const clearDateFilter = () => {
     setStartDate('');
     setEndDate('');
+    setAppliedStartDate('');
+    setAppliedEndDate('');
   };
   const [approvedCount, setApprovedCount] = useState(0);
   const [ngoPartner, setNgoPartner] = useState([]);
@@ -168,7 +173,7 @@ const Overview = () => {
     const fetchData = async () => {
       try {
         const laptopRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`);
-        const laptopJson = await laptopRes.json();
+        const laptopJson = await laptopRes.json();        
 
         const ngoRes = await fetch(`${process.env.REACT_APP_NgoInformationApi}?type=registration`);
         const ngoJson = await ngoRes.json();
@@ -260,6 +265,21 @@ const Overview = () => {
     };
 
     fetchData();
+  }, []);
+
+
+  // average days count
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getAverageDays`)
+      .then((res) => res.json())
+      .then((data) => {
+        setAverageDays(data.averageDays);
+        // setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching data:", err);
+        // setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -772,19 +792,21 @@ const Overview = () => {
     return null;
   }
 
-  const allProcessingTimes = filteredLaptopData
-    .map(l => {
-      const c = formatDateForDisplay(l["Date Committed"]);
-      const d = formatDateForDisplay(l["Last Delivery Date"]);
-      return (c && d && d >= c) ? (d - c) / 86400000 : null;
-    })
-    .filter(Boolean);
+  // const allProcessingTimes = filteredLaptopData
+  //   .map(l => {
+  //     const c = formatDateForDisplay(l["Date Committed"]);
+  //     const d = formatDateForDisplay(l["Last Delivery Date"]);
+  //     return (c && d && d >= c) ? (d - c) / 86400000 : null;
+  //   })
+  //   .filter(Boolean);
 
-  const avgProcessingTime = allProcessingTimes.length
-    ? allProcessingTimes.reduce((a, b) => a + b, 0) / allProcessingTimes.length
-    : 0;
+  // const avgProcessingTime = allProcessingTimes.length
+  //   ? allProcessingTimes.reduce((a, b) => a + b, 0) / allProcessingTimes.length
+  //   : 0;
 
-  const avgProcessingTimeRounded = Math.round(avgProcessingTime);
+  // const avgProcessingTimeRounded = Math.round(avgProcessingTime);
+  
+  // const [loading, setLoading] = useState(true);
 
 
   const handleActivityClick = (activity) => {
@@ -823,7 +845,6 @@ const Overview = () => {
                   : "Comprehensive tracking of laptop refurbishment and distribution impact"}
               </Typography>
             </Box>
-            {/* Date Filter Section - Temporarily Commented Out
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               <TextField
                 label="Start Date"
@@ -849,7 +870,7 @@ const Overview = () => {
               >
                 Apply Filter
               </Button>
-              {(startDate || endDate) && (
+              {(appliedStartDate || appliedEndDate) && (
                 <Button
                   variant="outlined"
                   onClick={clearDateFilter}
@@ -859,7 +880,6 @@ const Overview = () => {
                 </Button>
               )}
             </Box>
-            */}
           </Box>
         </Box>
 
@@ -1134,7 +1154,7 @@ const Overview = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="Avg. Processing Time" value={`${avgProcessingTimeRounded} days`} />
+                  <SummaryMetric label="Avg. Processing Time" value={`${averageDays} days`} />
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <Box
