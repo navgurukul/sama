@@ -58,7 +58,9 @@ const Overview = () => {
   const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-
+  const [appliedStartDate, setAppliedStartDate] = useState('');
+  const [appliedEndDate, setAppliedEndDate] = useState('');
+  const [averageDays, setAverageDays] = useState("null");
   const theme = useTheme();
   const [laptopData, setLaptopData] = useState([]);
   const [ngoData, setNgoData] = useState([]);
@@ -83,25 +85,28 @@ const Overview = () => {
   };
 
   const isWithinDateRange = (dateStr) => {
-    if (!startDate || !endDate || !dateStr) return true;
+    if (!appliedStartDate || !appliedEndDate || !dateStr) return true;
     const date = formatDateForDisplay(dateStr);
     if (!date) return true;
     
-    const start = new Date(startDate);
+    const start = new Date(appliedStartDate);
     start.setHours(0, 0, 0, 0);
-    const end = new Date(endDate);
+    const end = new Date(appliedEndDate);
     end.setHours(23, 59, 59, 999);
     
     return date >= start && date <= end;
   };
   
   const handleDateFilter = () => {
-    // The filter is automatically applied through the filtered data functions
+    setAppliedStartDate(startDate);
+    setAppliedEndDate(endDate);
   };
 
   const clearDateFilter = () => {
     setStartDate('');
     setEndDate('');
+    setAppliedStartDate('');
+    setAppliedEndDate('');
   };
   const [approvedCount, setApprovedCount] = useState(0);
   const [ngoPartner, setNgoPartner] = useState([]);
@@ -168,7 +173,7 @@ const Overview = () => {
     const fetchData = async () => {
       try {
         const laptopRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`);
-        const laptopJson = await laptopRes.json();
+        const laptopJson = await laptopRes.json();        
 
         const ngoRes = await fetch(`${process.env.REACT_APP_NgoInformationApi}?type=registration`);
         const ngoJson = await ngoRes.json();
@@ -260,6 +265,21 @@ const Overview = () => {
     };
 
     fetchData();
+  }, []);
+
+
+  // average days count
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getAverageDays`)
+      .then((res) => res.json())
+      .then((data) => {
+        setAverageDays(data.averageDays);
+        // setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching data:", err);
+        // setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -424,6 +444,23 @@ const Overview = () => {
   // Total Counting
   const totalLaptops = filteredLaptopData.length;
 
+  const statusesAtOrAfterReceived = new Set([
+    "laptop received",
+    "refurbishment started",
+    "laptop refurbished",
+    "to be dispatch",
+    "allocated",
+    "distributed",
+  ]);
+
+  const receivedCount = filteredLaptopData.reduce((acc, item) => {
+    const status = (item.Status || "").trim().toLowerCase();
+    if (statusesAtOrAfterReceived.has(status)) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
+
   const refurbishedCount = filteredLaptopData.reduce((acc, item) => {
     const status = (item.Status || "").toLowerCase();
     // console.log("Laptop Status:", status);
@@ -576,6 +613,30 @@ const Overview = () => {
     if (status === "To be dispatch" || status === "Tagged" || status === "Laptop Received")
       return <Clock size={16} style={{ color: "orange" }} />;
     return null;
+  };
+
+  // Helper function to format Working status
+  // "Working" → "Yes", "Not Working" → "No", blank/empty/null → "Yes" (default to Working)
+  const formatWorkingStatus = (workingValue) => {
+    // Check if value is blank, null, undefined, or empty string - default to "Yes" (Working)
+    if (!workingValue || (typeof workingValue === 'string' && workingValue.trim() === '')) {
+      return "Yes";
+    }
+    
+    const status = String(workingValue).trim().toLowerCase();
+    
+    // If status is "working" → return "Yes"
+    if (status === "working") {
+      return "Yes";
+    }
+    
+    // If status is "not working" → return "No"
+    if (status === "not working") {
+      return "No";
+    }
+    
+    // For any other value, default to "Yes" (Working)
+    return "Yes";
   };
   // Fixed date parsing function for DD-MM-YYYY HH:MM:SS format
   function parseDate(dateString) {
@@ -772,19 +833,21 @@ const Overview = () => {
     return null;
   }
 
-  const allProcessingTimes = filteredLaptopData
-    .map(l => {
-      const c = formatDateForDisplay(l["Date Committed"]);
-      const d = formatDateForDisplay(l["Last Delivery Date"]);
-      return (c && d && d >= c) ? (d - c) / 86400000 : null;
-    })
-    .filter(Boolean);
+  // const allProcessingTimes = filteredLaptopData
+  //   .map(l => {
+  //     const c = formatDateForDisplay(l["Date Committed"]);
+  //     const d = formatDateForDisplay(l["Last Delivery Date"]);
+  //     return (c && d && d >= c) ? (d - c) / 86400000 : null;
+  //   })
+  //   .filter(Boolean);
 
-  const avgProcessingTime = allProcessingTimes.length
-    ? allProcessingTimes.reduce((a, b) => a + b, 0) / allProcessingTimes.length
-    : 0;
+  // const avgProcessingTime = allProcessingTimes.length
+  //   ? allProcessingTimes.reduce((a, b) => a + b, 0) / allProcessingTimes.length
+  //   : 0;
 
-  const avgProcessingTimeRounded = Math.round(avgProcessingTime);
+  // const avgProcessingTimeRounded = Math.round(avgProcessingTime);
+  
+  // const [loading, setLoading] = useState(true);
 
 
   const handleActivityClick = (activity) => {
@@ -823,7 +886,6 @@ const Overview = () => {
                   : "Comprehensive tracking of laptop refurbishment and distribution impact"}
               </Typography>
             </Box>
-            {/* Date Filter Section - Temporarily Commented Out
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               <TextField
                 label="Start Date"
@@ -849,7 +911,7 @@ const Overview = () => {
               >
                 Apply Filter
               </Button>
-              {(startDate || endDate) && (
+              {(appliedStartDate || appliedEndDate) && (
                 <Button
                   variant="outlined"
                   onClick={clearDateFilter}
@@ -859,7 +921,6 @@ const Overview = () => {
                 </Button>
               )}
             </Box>
-            */}
           </Box>
         </Box>
 
@@ -868,7 +929,7 @@ const Overview = () => {
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Total Laptops Commited"
-              value={totalLaptops}
+              value={totalLaptops.toLocaleString('en-IN')}
               // subtitle="Lifetime donations from corporates"
               subtitle={selectedOrganization ? `From ${selectedOrganization}` : "Lifetime donations from corporates"}
               // growth="+15.2% from last month"
@@ -879,7 +940,7 @@ const Overview = () => {
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Successfully Refurbished"
-              value={refurbishedCount} // need to change this.
+              value={refurbishedCount.toLocaleString('en-IN')} // need to change this.
               subtitle={`${successRate}% success rate`}
               // growth="+8.1% from last month"
               icon={CheckCircle}
@@ -901,7 +962,7 @@ const Overview = () => {
                 const userCount = filteredUserData.length;
 
                 const total = preCount + userCount;
-                return total;
+                return total.toLocaleString('en-IN');
               })()}
               subtitle="Currently using laptops"
               icon={Users}
@@ -999,7 +1060,8 @@ const Overview = () => {
                   icon: Laptop,
                   title: "Laptop Received", 
                   subtitle: "Initial check-in",
-                  count: `${filteredLaptopData.filter(l => l.Status === "Laptop Received").length} laptops`,
+                  count: `${receivedCount} laptops`,
+                  // count: `${receivedCount} laptops`,
                   bgColor: "#e8f5e8",
                   iconColor: "#388e3c",
                   stepType: "received"
@@ -1134,7 +1196,7 @@ const Overview = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="Avg. Processing Time" value={`${avgProcessingTimeRounded} days`} />
+                  <SummaryMetric label="Avg. Processing Time" value={`${averageDays} days`} />
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <Box
@@ -1293,7 +1355,7 @@ const Overview = () => {
                                           <TableCell>{laptop.ID || 'N/A'}</TableCell>
                                           <TableCell>{laptop["Manufacturer Model"] || 'N/A'}</TableCell>
                                           <TableCell>{laptop.Status || 'Unknown'}</TableCell>
-                                          <TableCell>{laptop.Working ? "Yes" : "No"}</TableCell>
+                                          <TableCell>{formatWorkingStatus(laptop.Working)}</TableCell>
                                         </TableRow>
                                       ))
                                   ) : (

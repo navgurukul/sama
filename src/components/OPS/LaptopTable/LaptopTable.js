@@ -660,6 +660,27 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
         }),
       },
     },
+    {
+      name: "Batch",
+      label: "Batch",
+      options: {
+        sort: false,
+        filter: false,
+        customBodyRender: (value, tableMeta) => {
+          const rowIndex = tableMeta.rowIndex;
+          const laptop = data[rowIndex];
+          return (
+            <Typography variant="body2">{laptop.Batch || laptop.batch || "-"}</Typography>
+          );
+        },
+        setCellProps: () => ({
+          className: 'custom-body-cell'
+        }),
+        setCellHeaderProps: () => ({
+          className: 'custom-header-cell'
+        })
+      }
+    },
 
   ];
 };

@@ -295,6 +295,7 @@ function NGOLaptopTable({ ngoData }) {
               <TableCell>Status</TableCell>
               <TableCell>Assignment Date</TableCell>
               <TableCell>Issues & Comments</TableCell>
+              <TableCell>Batch</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -335,10 +336,11 @@ function NGOLaptopTable({ ngoData }) {
                     </Box>
                   </Box>
                 </TableCell>
+                <TableCell>{laptop.Batch || laptop.batch || "-"}</TableCell>
               </TableRow>
             )) : (
               <TableRow>
-                <TableCell colSpan={11} align="center">{loading ? 'Loading data...' : 'No data available.'}</TableCell>
+                <TableCell colSpan={12} align="center">{loading ? 'Loading data...' : 'No data available.'}</TableCell>
               </TableRow>
             )}
           </TableBody>

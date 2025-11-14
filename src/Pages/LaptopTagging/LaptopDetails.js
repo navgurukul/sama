@@ -527,7 +527,8 @@ function LaptopDetails() {
               'Comment for the Issues',
               'Allocated To',
               'RAM',
-              'ROM'
+              'ROM',
+              "Batch"
             ].includes(key),
             sort: false,
           },
