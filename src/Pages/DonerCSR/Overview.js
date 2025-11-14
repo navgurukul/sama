@@ -444,6 +444,23 @@ const Overview = () => {
   // Total Counting
   const totalLaptops = filteredLaptopData.length;
 
+  const statusesAtOrAfterReceived = new Set([
+    "laptop received",
+    "refurbishment started",
+    "laptop refurbished",
+    "to be dispatch",
+    "allocated",
+    "distributed",
+  ]);
+
+  const receivedCount = filteredLaptopData.reduce((acc, item) => {
+    const status = (item.Status || "").trim().toLowerCase();
+    if (statusesAtOrAfterReceived.has(status)) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
+
   const refurbishedCount = filteredLaptopData.reduce((acc, item) => {
     const status = (item.Status || "").toLowerCase();
     // console.log("Laptop Status:", status);
@@ -596,6 +613,30 @@ const Overview = () => {
     if (status === "To be dispatch" || status === "Tagged" || status === "Laptop Received")
       return <Clock size={16} style={{ color: "orange" }} />;
     return null;
+  };
+
+  // Helper function to format Working status
+  // "Working" → "Yes", "Not Working" → "No", blank/empty/null → "Yes" (default to Working)
+  const formatWorkingStatus = (workingValue) => {
+    // Check if value is blank, null, undefined, or empty string - default to "Yes" (Working)
+    if (!workingValue || (typeof workingValue === 'string' && workingValue.trim() === '')) {
+      return "Yes";
+    }
+    
+    const status = String(workingValue).trim().toLowerCase();
+    
+    // If status is "working" → return "Yes"
+    if (status === "working") {
+      return "Yes";
+    }
+    
+    // If status is "not working" → return "No"
+    if (status === "not working") {
+      return "No";
+    }
+    
+    // For any other value, default to "Yes" (Working)
+    return "Yes";
   };
   // Fixed date parsing function for DD-MM-YYYY HH:MM:SS format
   function parseDate(dateString) {
@@ -888,7 +929,7 @@ const Overview = () => {
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Total Laptops Commited"
-              value={totalLaptops}
+              value={totalLaptops.toLocaleString('en-IN')}
               // subtitle="Lifetime donations from corporates"
               subtitle={selectedOrganization ? `From ${selectedOrganization}` : "Lifetime donations from corporates"}
               // growth="+15.2% from last month"
@@ -899,7 +940,7 @@ const Overview = () => {
           <Grid item xs={12} sm={6} md={3}>
             <MetricCard
               title="Successfully Refurbished"
-              value={refurbishedCount} // need to change this.
+              value={refurbishedCount.toLocaleString('en-IN')} // need to change this.
               subtitle={`${successRate}% success rate`}
               // growth="+8.1% from last month"
               icon={CheckCircle}
@@ -921,7 +962,7 @@ const Overview = () => {
                 const userCount = filteredUserData.length;
 
                 const total = preCount + userCount;
-                return total;
+                return total.toLocaleString('en-IN');
               })()}
               subtitle="Currently using laptops"
               icon={Users}
@@ -1019,7 +1060,8 @@ const Overview = () => {
                   icon: Laptop,
                   title: "Laptop Received", 
                   subtitle: "Initial check-in",
-                  count: `${filteredLaptopData.filter(l => l.Status === "Laptop Received").length} laptops`,
+                  count: `${receivedCount} laptops`,
+                  // count: `${receivedCount} laptops`,
                   bgColor: "#e8f5e8",
                   iconColor: "#388e3c",
                   stepType: "received"
@@ -1313,7 +1355,7 @@ const Overview = () => {
                                           <TableCell>{laptop.ID || 'N/A'}</TableCell>
                                           <TableCell>{laptop["Manufacturer Model"] || 'N/A'}</TableCell>
                                           <TableCell>{laptop.Status || 'Unknown'}</TableCell>
-                                          <TableCell>{laptop.Working ? "Yes" : "No"}</TableCell>
+                                          <TableCell>{formatWorkingStatus(laptop.Working)}</TableCell>
                                         </TableRow>
                                       ))
                                   ) : (

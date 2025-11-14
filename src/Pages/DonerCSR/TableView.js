@@ -201,7 +201,7 @@ const TableView = ({
         const activity = JSON.parse(decodeURIComponent(activityParam));
         filterDataByActivity(urlMetricType, activity);
       } else {
-        console.log('📊 No activity param, fetching standalone data for metric:', urlMetricType);
+        // console.log('📊 No activity param, fetching standalone data for metric:', urlMetricType);
         fetchStandaloneData(urlMetricType);
       }
     }
@@ -292,6 +292,30 @@ const TableView = ({
   //   return null;
   // };
 
+  // Helper function to format Working status
+  // "Working" → "Yes", "Not Working" → "No", blank/empty/null → "Yes" (default to Working)
+  const formatWorkingStatus = (workingValue) => {
+    // Check if value is blank, null, undefined, or empty string - default to "Yes" (Working)
+    if (!workingValue || (typeof workingValue === 'string' && workingValue.trim() === '')) {
+      return "Yes";
+    }
+    
+    const status = String(workingValue).trim().toLowerCase();
+    
+    // If status is "working" → return "Yes"
+    if (status === "working") {
+      return "Yes";
+    }
+    
+    // If status is "not working" → return "No"
+    if (status === "not working") {
+      return "No";
+    }
+    
+    // For any other value, default to "Yes" (Working)
+    return "Yes";
+  };
+
   const fetchStandaloneData = async (metric) => {
     try {
       let apiUrl = '';
@@ -339,9 +363,20 @@ const TableView = ({
           break;
         case "received":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "Laptop Received"
-          );
+          filterFunction = (data) => {
+            const statusesAtOrAfterReceived = new Set([
+              "laptop received",
+              "refurbishment started",
+              "laptop refurbished",
+              "to be dispatch",
+              "allocated",
+              "distributed",
+            ]);
+
+            return data.filter(laptop =>
+              statusesAtOrAfterReceived.has((laptop.Status || "").trim().toLowerCase())
+            );
+          };
           break;
         case "refurbishmentStarted":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
@@ -720,7 +755,7 @@ const TableView = ({
                 variant="outlined"
               />
             </TableCell>
-            <TableCell>{laptop.Working ? "Yes" : "No"}</TableCell>
+            <TableCell>{formatWorkingStatus(laptop.Working)}</TableCell>
             <TableCell>{laptop["Donor Company Name"] || laptop["Donor Company"] || 'N/A'}</TableCell>
             <TableCell>{laptop["Allocated To"] || 'N/A'}</TableCell>
           </TableRow>
@@ -789,7 +824,7 @@ const TableView = ({
                 variant="outlined"
               />
             </TableCell>
-            <TableCell>{laptop.Working ? "Yes" : "No"}</TableCell>
+            <TableCell>{formatWorkingStatus(laptop.Working)}</TableCell>
             <TableCell>{laptop["Donor Company Name"] || 'N/A'}</TableCell>
             <TableCell>{laptop["Allocated To"] || 'N/A'}</TableCell>
           </TableRow>

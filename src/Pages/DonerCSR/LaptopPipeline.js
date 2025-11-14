@@ -148,6 +148,17 @@ const insights = [
 const LaptopPipeline = () => {
   const navigate = useNavigate();
    const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+
+  // Helper function to format Working status
+  // If blank/empty/null, default to "Working", otherwise show the value from backend
+  const formatWorkingStatus = (workingValue) => {
+    // Check if value is blank, null, undefined, or empty string
+    if (!workingValue || (typeof workingValue === 'string' && workingValue.trim() === '')) {
+      return "Working";
+    }
+    // Return the value from backend (could be "Working", "Not Working", etc.)
+    return String(workingValue).trim();
+  };
   const userRole = NgoDetails?.[0]?.role?.[0];
   const donorOrgName = NgoDetails?.[0]?.Doner || null;
   const isAdmin = userRole === "admin";
@@ -300,7 +311,7 @@ const LaptopPipeline = () => {
                   variant="outlined"
                 />
               </TableCell>
-              <TableCell>{laptop.Working ? "Yes" : "No"}</TableCell>
+              <TableCell>{formatWorkingStatus(laptop.Working)}</TableCell>
               <TableCell>{laptop["Donor Company Name"] || 'N/A'}</TableCell>
               <TableCell>{laptop["Allocated To"] || 'N/A'}</TableCell>
             </TableRow>
