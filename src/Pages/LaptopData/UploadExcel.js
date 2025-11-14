@@ -36,7 +36,8 @@ const Upload = () => {
     "Mac Address",
     "Status",
     "Working",
-    "Battery Capacity"
+    "Battery Capacity",
+    "Batch"
   ];
 
   const handleFileChange = (e) => {
