@@ -366,6 +366,7 @@ const TableView = ({
           filterFunction = (data) => {
             const statusesAtOrAfterReceived = new Set([
               "laptop received",
+              "not working",
               "refurbishment started",
               "laptop refurbished",
               "to be dispatch",

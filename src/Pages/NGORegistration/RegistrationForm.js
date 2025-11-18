@@ -91,8 +91,8 @@ function RegistrationForm() {
   const [selectedExistingNgo, setSelectedExistingNgo] = useState("");
   const [loadingNgos, setLoadingNgos] = useState(false);
 
-  // Define PDF size limit (in bytes)
-  const MAX_PDF_SIZE = 5 * 1024 * 1024; // 5MB
+  // Define file size limit (in bytes)
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
   const ALLOWED_FILE_TYPES = [
     'application/pdf',
     'application/msword',
@@ -338,11 +338,14 @@ function RegistrationForm() {
 
     // Validate file size and type
     if (file) {
-      if (file.size > MAX_PDF_SIZE) {
+      if (file.size > MAX_FILE_SIZE) {
         setErrors(prev => ({
           ...prev,
-          impactReport: `File size must not exceed ${MAX_PDF_SIZE / 1024 / 1024}MB`
+          impactReport: `File size must not exceed ${MAX_FILE_SIZE / 1024 / 1024}MB`
         }));
+        setSnackbarMessage("File size exceeds 50MB limit. Please choose a smaller file.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
         setFileName("");
         e.target.value = null; // Clear the file input
         return;
@@ -353,6 +356,9 @@ function RegistrationForm() {
           ...prev,
           impactReport: 'Only PDF, DOC, DOCX, and XLSX files are allowed'
         }));
+        setSnackbarMessage("Unsupported file type selected.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
         setFileName("");
         e.target.value = null; // Clear the file input
         return;
@@ -408,7 +414,7 @@ function RegistrationForm() {
       // File validation
       if (field.name === "impactReport") {
         if (!value) {
-          newErrors[field.name] = `Allowed file types: PDF, DOC, DOCX, XLSX (Max size: 5MB)`;
+          newErrors[field.name] = `Allowed file types: PDF, DOC, DOCX, XLSX (Max size: 50MB)`;
         }
       }
 
