@@ -26,6 +26,7 @@ import { Filter, ChevronDown, X, Building, Download } from "lucide-react";
 import { Business, LocationOn } from '@mui/icons-material';
 import ComputerIcon from "@mui/icons-material/Computer";
 import DownloadIcon from "@mui/icons-material/Download";
+import RmsDetailsModal from "../../components/RmsDetailsModal/RmsDetailsModal";
 
 
 const Ngopartner = () => {
@@ -39,6 +40,8 @@ const Ngopartner = () => {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedOrganization, setSelectedOrganization] = useState( null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
+  const [rmsDetailsOpen, setRmsDetailsOpen] = useState(false);
+  const [selectedRmsLaptop, setSelectedRmsLaptop] = useState(null);
 
   const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
   const userRole = NgoDetails?.[0]?.role?.[0];
@@ -253,6 +256,14 @@ const Ngopartner = () => {
     setPage(newPage);
   };
 
+  const handleRmsDetailsClick = (laptop) => {
+    setSelectedRmsLaptop(laptop);
+    setRmsDetailsOpen(true);
+  };
+  const handleRmsDetailsClose = () => {
+    setRmsDetailsOpen(false);
+    setSelectedRmsLaptop(null);
+  };
 
   return (
     <>
@@ -513,6 +524,7 @@ const Ngopartner = () => {
                             <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
                             <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
                             <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>RMS Details</TableCell>
                           </TableRow>
                         ) : (
                           // <TableRow>
@@ -535,6 +547,26 @@ const Ngopartner = () => {
                                 <TableCell>{item["Manufacturer Model"]}</TableCell>
                                 <TableCell>{item.Status}</TableCell>
                                 <TableCell>{item.Working ? "Yes" : "No"}</TableCell>
+                                <TableCell>
+                                  <Button
+                                    variant="contained"
+                                    size="small"
+                                    onClick={() => handleRmsDetailsClick(item)}
+                                    sx={{
+                                      backgroundColor: "#1976d2",
+                                      color: "white",
+                                      textTransform: "none",
+                                      borderRadius: "6px",
+                                      fontSize: "12px",
+                                      padding: "6px 12px",
+                                      "&:hover": {
+                                        backgroundColor: "#1565c0",
+                                      }
+                                    }}
+                                  >
+                                    View Details
+                                  </Button>
+                                </TableCell>
                               </TableRow>
                             ))
                           : null
@@ -590,6 +622,13 @@ const Ngopartner = () => {
           </Box>
         )}
       </Container>
+
+      {/* RMS Details Modal */}
+      <RmsDetailsModal
+        open={rmsDetailsOpen}
+        onClose={handleRmsDetailsClose}
+        laptopData={selectedRmsLaptop}
+      />
     </>
   );
 };

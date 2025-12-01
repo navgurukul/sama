@@ -26,6 +26,7 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import ComputerIcon from "@mui/icons-material/Computer";
 import DownloadIcon from "@mui/icons-material/Download";
 import { Filter, Building, X, ChevronDown } from "lucide-react";
+import RmsDetailsModal from "../../components/RmsDetailsModal/RmsDetailsModal";
 
 export default function LaptopTracking() {
   const navigate = useNavigate();
@@ -36,6 +37,8 @@ export default function LaptopTracking() {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedOrganization, setSelectedOrganization] = useState(null);
   const [uniqueOrganizations, setUniqueOrganizations] = useState([]);
+  const [rmsDetailsOpen, setRmsDetailsOpen] = useState(false);
+  const [selectedRmsLaptop, setSelectedRmsLaptop] = useState(null);
 
   const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
   const userRole = NgoDetails?.[0]?.role?.[0];
@@ -138,6 +141,17 @@ export default function LaptopTracking() {
     handleFilterClose();
 
     navigate(`/donorcsr/laptop-tracking`, { replace: true });
+  };
+
+  // Handler for RMS Details button
+  const handleRmsDetailsClick = (laptop) => {
+    setSelectedRmsLaptop(laptop);
+    setRmsDetailsOpen(true);
+  };
+
+  const handleRmsDetailsClose = () => {
+    setRmsDetailsOpen(false);
+    setSelectedRmsLaptop(null);
   };
 
   // Function to get color based on status
@@ -397,6 +411,7 @@ export default function LaptopTracking() {
                     <TableCell><b>BENEFICIARY</b></TableCell>
                     <TableCell><b>USAGE HOURS</b></TableCell>
                     <TableCell><b>LAST ACTIVITY</b></TableCell>
+                    <TableCell><b>RMS DETAILS</b></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -424,11 +439,31 @@ export default function LaptopTracking() {
                               : "Not Available"}
                           </TableCell>
                           <TableCell>{formatDate(row["Last Updated On"])}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="contained"
+                              size="small"
+                              onClick={() => handleRmsDetailsClick(row)}
+                              sx={{
+                                backgroundColor: "#5C785A",
+                                color: "white",
+                                textTransform: "none",
+                                borderRadius: "6px",
+                                fontSize: "12px",
+                                padding: "3px 6px",
+                                "&:hover": {
+                                  backgroundColor: "#1565c0",
+                                }
+                              }}
+                            >
+                              View Details
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
+                      <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
                         <Typography variant="body2" color="text.secondary">
                           No laptops found matching your criteria
                         </Typography>
@@ -449,6 +484,13 @@ export default function LaptopTracking() {
           </Box>
         </Paper>
       </Box>
+
+      {/* RMS Details Modal */}
+      <RmsDetailsModal
+        open={rmsDetailsOpen}
+        onClose={handleRmsDetailsClose}
+        laptopData={selectedRmsLaptop}
+      />
     </>
   );
 }
