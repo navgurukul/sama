@@ -411,7 +411,7 @@ export default function LaptopTracking() {
                     <TableCell><b>BENEFICIARY</b></TableCell>
                     <TableCell><b>USAGE HOURS</b></TableCell>
                     <TableCell><b>LAST ACTIVITY</b></TableCell>
-                    <TableCell><b>RMS DETAILS</b></TableCell>
+                    {/* <TableCell><b>RMS DETAILS</b></TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -439,7 +439,7 @@ export default function LaptopTracking() {
                               : "Not Available"}
                           </TableCell>
                           <TableCell>{formatDate(row["Last Updated On"])}</TableCell>
-                          <TableCell>
+                          {/* <TableCell>
                             <Button
                               variant="contained"
                               size="small"
@@ -458,7 +458,7 @@ export default function LaptopTracking() {
                             >
                               View Details
                             </Button>
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       ))
                   ) : (
