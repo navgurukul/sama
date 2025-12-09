@@ -1297,7 +1297,16 @@ const Overview = () => {
                                     fontWeight={600}
                                     color={expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "primary"}
                                   >
-                                    {partner.laptops}
+                                   {
+                                        // show only laptops whose Donor Company Name matches selectedOrganization (case-insensitive)
+                                        selectedOrganization
+                                          ? (partner.laptopDetails || []).filter(l =>
+                                              String(l["Donor Company Name"] || "").trim().toLowerCase() ===
+                                              selectedOrganization.trim().toLowerCase()
+                                            ).length
+                                          : partner.laptops
+                                      }
+                                    {/* {partner.laptops} */}
                                   </Typography>
                                 </Box>
                                 <Typography variant="caption" color="text.secondary">
@@ -1333,6 +1342,73 @@ const Overview = () => {
                           </Box>
                           {/* Expanded Laptop Data Table */}
                           {expandedCard === partner.id && activeType === "laptops" && (
+                            <Box mt={3} onClick={(e) => e.stopPropagation()}>
+                              <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem', fontWeight: 600 }}>
+                                {partner.name} - Laptop Data
+                              </Typography>
+
+                              {(() => {
+                                // apply selectedOrganization filter to the partner's laptopDetails when a donor is selected
+                                const displayedLaptopDetails = selectedOrganization
+                                  ? (partner.laptopDetails || []).filter(l =>
+                                      String(l["Donor Company Name"] || "").trim().toLowerCase() ===
+                                      selectedOrganization.trim().toLowerCase()
+                                    )
+                                  : (partner.laptopDetails || []);
+
+                                return (
+                                  <>
+                                    <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                                      <TableHead>
+                                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                          <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
+                                          <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
+                                          <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                                          <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
+                                        </TableRow>
+                                      </TableHead>
+                                      <TableBody>
+                                        {displayedLaptopDetails && displayedLaptopDetails.length > 0 ? (
+                                          displayedLaptopDetails
+                                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                            .map((laptop, laptopIndex) => (
+                                              <TableRow key={laptopIndex} hover>
+                                                <TableCell>{laptop.ID || 'N/A'}</TableCell>
+                                                <TableCell>{laptop["Manufacturer Model"] || 'N/A'}</TableCell>
+                                                <TableCell>{laptop.Status || 'Unknown'}</TableCell>
+                                                <TableCell>{formatWorkingStatus(laptop.Working)}</TableCell>
+                                              </TableRow>
+                                            ))
+                                        ) : (
+                                          <TableRow>
+                                            <TableCell colSpan={4} align="center" sx={{ py: 2 }}>
+                                              <Typography variant="body2" color="text.secondary">
+                                                No laptop data available
+                                              </Typography>
+                                            </TableCell>
+                                          </TableRow>
+                                        )}
+                                      </TableBody>
+                                    </Table>
+
+                                    {displayedLaptopDetails && displayedLaptopDetails.length > rowsPerPage && (
+                                      <TablePagination
+                                        component="div"
+                                        count={displayedLaptopDetails.length}
+                                        page={page}
+                                        onPageChange={handleChangePage}
+                                        rowsPerPage={rowsPerPage}
+                                        rowsPerPageOptions={[10]}
+                                        sx={{ border: 'none' }}
+                                      />
+                                    )}
+                                  </>
+                                );
+                              })()}
+                            </Box>
+                          )}
+                          
+                          {/* {expandedCard === partner.id && activeType === "laptops" && (
                             <Box mt={3} onClick={(e) => e.stopPropagation()}>
                               <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem', fontWeight: 600 }}>
                                 {partner.name} - Laptop Data
@@ -1383,7 +1459,7 @@ const Overview = () => {
                                 />
                               )}
                             </Box>
-                          )}
+                          )} */}
 
                           {index < filteredNgoPartners.length - 1 && <Divider sx={{ mt: 2 }} />}
                         </Box>
