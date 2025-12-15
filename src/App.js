@@ -71,6 +71,8 @@ import Pickup from './Pages/Pickup/Pickup';
 import DonorCSRRoute from './Pages/DonerCSR/DonorCSRRoute';
 import PickupRequestByDoner from './Pages/Pickup/PickupRequestByDoner';
 import TableView from './Pages/DonerCSR/TableView'; 
+import RMSDetails from './Pages/DonerCSR/RMSDetails';
+import RMSControlPanel from './Pages/DonerCSR/RMSControlPanel';
 
 function App() {
   return (
@@ -120,6 +122,8 @@ function App() {
                 <Route path="laptop-tracking" element={<LaptopTracking />} />
                 <Route path="partners" element={<Ngopartner />} />
                 <Route path="impact-analytics" element={<ImpactAnalysis />} />
+                <Route path="rms-details" element={<RMSDetails />} />
+                <Route path="rms-control-panel" element={<RMSControlPanel />} />
               </Route>
 
               {/* <Route path="/donorcsr/:donorName" element={<Sidebar />}>

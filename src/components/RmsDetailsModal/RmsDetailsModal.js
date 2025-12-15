@@ -44,7 +44,7 @@ export default function RmsDetailsModal({ open, onClose, laptopData, loading = f
 
   ] : [null, null, null];
 
-  // Helper: format date as DD/MM/YYYY (handles ISO and other formats)
+  // Helper: format date as DD-MM-YYYY HH:mm:ss (handles ISO and other formats)
   function formatDate(dateStr) {
     if (!dateStr) return '';
     // Try to parse ISO or other date strings
@@ -60,7 +60,10 @@ export default function RmsDetailsModal({ open, onClose, laptopData, loading = f
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    const seconds = String(d.getSeconds()).padStart(2, '0');
+    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
   }
 
   // Fetch data when tab changes or modal opens
@@ -205,11 +208,29 @@ export default function RmsDetailsModal({ open, onClose, laptopData, loading = f
                   <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
                     {tabData[1][0] && Object.keys(tabData[1][0])
                       .filter(col => !col.replace(/\s+/g, '').toLowerCase().includes('last_updated'))
-                      .map((col) => (
-                        <TableCell key={col} sx={{ fontWeight: 600, textTransform: 'capitalize' }}>
-                    {col.toLowerCase() === 'totaltime' || col.toLowerCase() === 'total_time' ? 'Total Time (min)' : col.replace(/_/g, ' ')}
-                        </TableCell>
-                      ))}
+                      .map((col) => {
+                        const colKey = col.replace(/\s+/g, '').toLowerCase();
+                        const isLocation = colKey === 'location';
+                        return (
+                          <TableCell
+                            key={col}
+                            sx={{
+                              fontWeight: 600,
+                              textTransform: 'capitalize',
+                              ...(isLocation && {
+                                maxWidth: 120,
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }),
+                            }}
+                          >
+                            {colKey === 'totaltime' || colKey === 'total_time'
+                              ? 'Total Time (min)'
+                              : col.replace(/_/g, ' ')}
+                          </TableCell>
+                        );
+                      })}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -227,7 +248,22 @@ export default function RmsDetailsModal({ open, onClose, laptopData, loading = f
                             displayValue = `${val} (min)`;
                           }
                           return (
-                            <TableCell key={i} sx={{ textAlign: 'center' }}>{typeof displayValue === 'object' && displayValue !== null ? JSON.stringify(displayValue) : String(displayValue)}</TableCell>
+                            <TableCell
+                              key={i}
+                              sx={{
+                                textAlign: 'center',
+                                ...(kNoSpace === 'location' && {
+                                  maxWidth: 120,
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                }),
+                              }}
+                            >
+                              {typeof displayValue === 'object' && displayValue !== null
+                                ? JSON.stringify(displayValue)
+                                : String(displayValue)}
+                            </TableCell>
                           );
                         })}
                     </TableRow>
