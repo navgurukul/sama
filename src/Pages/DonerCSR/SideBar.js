@@ -30,6 +30,8 @@ const navItems = [
       { label: "Laptop Pipeline", icon: <Package size={20} />, path: "laptop-pipeline" },
       { label: "NGO Partners", icon: <Building size={20} />, path: "partners" },
       { label: "Laptop Tracking", icon: <Search size={20} />, path: "laptop-tracking" },
+      { label: "RMS Details", icon: <ClipboardList size={20} />, path: "rms-details" },
+      // { label: "Control Panel", icon: <Settings size={20} />, path: "rms-control-panel" },
       // { label: "Impact Analytics", icon: <TrendingUp size={20} />, path: "/donorcsr/impact-analytics" },
       // { label: "Pickup Requests", icon: <ClipboardList size={20} />, path: "/donorcsr/requests" },
     ],

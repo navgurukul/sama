@@ -371,8 +371,20 @@ const Overview = () => {
     const selOrg = selectedOrganization.trim().toLowerCase();
 
     return ngoPartner.filter(partner => {
+      // Check if NGO's donor field matches
       const donorName = (partner.Doner || partner.Donor || "").trim().toLowerCase();
-      return donorName === selOrg;
+      if (donorName === selOrg) return true;
+
+      // Also check if any laptops allocated to this NGO have matching donor company name
+      if (partner.laptopDetails && partner.laptopDetails.length > 0) {
+        const hasMatchingLaptop = partner.laptopDetails.some(laptop => {
+          const laptopDonor = String(laptop["Donor Company Name"] || "").trim().toLowerCase();
+          return laptopDonor === selOrg;
+        });
+        return hasMatchingLaptop;
+      }
+
+      return false;
     });
   };
 
@@ -490,9 +502,21 @@ const Overview = () => {
 
   const successRate =
     totalLaptops > 0 ? ((refurbishedCount / totalLaptops) * 100).toFixed(2) : 0;
-  const ngosServedCount = filteredNgoPartners.filter(
-    (partner) => partner.laptops > 0
-  ).length;
+  const ngosServedCount = filteredNgoPartners.filter((partner) => {
+    // If no organization is selected, count NGOs with any laptops
+    if (!selectedOrganization) {
+      return partner.laptops > 0;
+    }
+    // If organization is selected, count only NGOs with laptops from that donor
+    if (partner.laptopDetails && partner.laptopDetails.length > 0) {
+      const selOrg = selectedOrganization.trim().toLowerCase();
+      const matchingLaptops = partner.laptopDetails.filter(l =>
+        String(l["Donor Company Name"] || "").trim().toLowerCase() === selOrg
+      );
+      return matchingLaptops.length > 0;
+    }
+    return false;
+  }).length;
 
 
   const MetricCard = ({ title, value, subtitle, growth, icon: Icon, onClick }) => (
