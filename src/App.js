@@ -73,6 +73,8 @@ import PickupRequestByDoner from './Pages/Pickup/PickupRequestByDoner';
 import TableView from './Pages/DonerCSR/TableView'; 
 import RMSDetails from './Pages/DonerCSR/RMSDetails';
 import RMSControlPanel from './Pages/DonerCSR/RMSControlPanel';
+import RMSDonorDetailsNGOs from './Pages/DonerCSR/RMSDonorDetailsNGOs';
+import RMSDonorDetailsDonors from './Pages/DonerCSR/RMSDonorDetailsDonors';
 
 function App() {
   return (
@@ -97,7 +99,7 @@ function App() {
               <Route path="/corpretedb/DataViewDetail" element={<DetailView />} />
               <Route path="/corpretedb/NGOTrainedTable" element={<NGOTrainedTable />} />
               <Route
-                path="/pickup-request-by-doner"
+                path="/pickup-request-by-donor"
                 element={
                   <PrivateRoute reqired={'admin'}>
                     <PickupRequestByDoner />
@@ -124,6 +126,8 @@ function App() {
                 <Route path="impact-analytics" element={<ImpactAnalysis />} />
                 <Route path="rms-details" element={<RMSDetails />} />
                 <Route path="rms-control-panel" element={<RMSControlPanel />} />
+                <Route path="rms-donor-details-ngos" element={<RMSDonorDetailsNGOs />} />
+                <Route path="rms-donor-details-donors" element={<RMSDonorDetailsDonors />} />
               </Route>
 
               {/* <Route path="/donorcsr/:donorName" element={<Sidebar />}>

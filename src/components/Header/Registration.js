@@ -128,7 +128,7 @@ const Registration = () => {
                 }),
             });
             const text = await response.text();
-            console.log('Response from server:', text);
+            // console.log('Response from server:', text);
         } catch (error) {
             console.error('Error updating:', error);
         }

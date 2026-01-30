@@ -110,7 +110,6 @@ const OpsWelcome = () => {
     };
 
 
-
     if (loading) return <Container maxWidth="lg"><Typography>Loading...</Typography></Container>;
     if (error) return <Container maxWidth="lg"><Typography color="error">Error: {error}</Typography></Container>;
 
@@ -155,7 +154,7 @@ const OpsWelcome = () => {
                                             : 'N/A'}
                                     </TableCell>
                                     <TableCell>{laptop['Assigned To'] || 'N/A'}</TableCell>
-                                    <TableCell>{laptop['Donated To'] || 'N/A'}</TableCell>
+                                    <TableCell>{laptop['Allocated To'] || 'N/A'}</TableCell>
                                     <TableCell sx={{ maxWidth: '250px', whiteSpace: 'pre-wrap' }}>
                                         {laptop['Comment for the Issues']}
                                     </TableCell>

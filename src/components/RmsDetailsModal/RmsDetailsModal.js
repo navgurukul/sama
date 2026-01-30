@@ -34,7 +34,10 @@ export default function RmsDetailsModal({ open, onClose, laptopData, loading = f
   const [tabError, setTabError] = React.useState([null, null, null]);
 
   // Helper: get serial number
-  const serial = laptopData?.ID || laptopData?.serial || laptopData?.SerialNumber;
+  const serial = laptopData?.ID || laptopData?.serial || laptopData?.SerialNumber || 
+                 laptopData?.serialNumber || laptopData?.serial_no || laptopData?.serialnumber ||
+                 laptopData?.serial_number || laptopData?.sn || laptopData?.["Serial Number"] ||
+                 laptopData?.["serial number"] || laptopData?.["serial_number"] || "";
 
   // API endpoints for each tab
   const apiUrls = serial ? [
@@ -43,6 +46,16 @@ export default function RmsDetailsModal({ open, onClose, laptopData, loading = f
     `https://rms-api.thesama.in/api/softwares/history/${serial}`
 
   ] : [null, null, null];
+
+  // Reset tab data when laptopData changes (new laptop selected)
+  React.useEffect(() => {
+    if (laptopData && serial) {
+      setTabData([null, null, null]);
+      setTabLoading([false, false, false]);
+      setTabError([null, null, null]);
+      setTabIndex(0);
+    }
+  }, [laptopData, serial]);
 
   // Helper: format date as DD-MM-YYYY HH:mm:ss (handles ISO and other formats)
   function formatDate(dateStr) {
@@ -68,7 +81,10 @@ export default function RmsDetailsModal({ open, onClose, laptopData, loading = f
 
   // Fetch data when tab changes or modal opens
   React.useEffect(() => {
-    if (!serial || tabData[tabIndex] || tabLoading[tabIndex]) return;
+    if (!serial || !open || tabLoading[tabIndex]) return;
+    // Only fetch if we don't have data for this tab yet
+    if (tabData[tabIndex]) return;
+    
     setTabLoading(prev => prev.map((v, i) => i === tabIndex ? true : v));
     setTabError(prev => prev.map((v, i) => i === tabIndex ? null : v));
     fetch(apiUrls[tabIndex])
@@ -122,11 +138,11 @@ export default function RmsDetailsModal({ open, onClose, laptopData, loading = f
             RMS Details
           </Typography>
           <Typography variant="h6" sx={{ fontWeight: 300, mt: 0.5 }}>
-            SerialNumber - {laptopData?.ID || "N/A"}
+            SerialNumber - {laptopData?.serial_number || "N/A"}
           </Typography>
-          <Typography variant="caption" sx={{ color: "#666", mt: 0.5 }}>
+          {/* <Typography variant="caption" sx={{ color: "#666", mt: 0.5 }}>
             {laptopData?.["Manufacturer Model"] || "N/A"}
-          </Typography>
+          </Typography> */}
         </Box>
         <IconButton
           onClick={onClose}

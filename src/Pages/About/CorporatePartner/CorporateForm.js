@@ -138,7 +138,7 @@ function CorporateForm() {
         });
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
-            console.log("Form has errors:", newErrors);
+            // console.log("Form has errors:", newErrors);
             return;
         }
         const capitalizedData = {
