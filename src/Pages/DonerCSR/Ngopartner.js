@@ -524,7 +524,7 @@ const Ngopartner = () => {
                             <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
                             <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
                             <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
-                            <TableCell sx={{ fontWeight: "bold" }}>RMS Details</TableCell>
+                            {/* <TableCell sx={{ fontWeight: "bold" }}>RMS Details</TableCell> */}
                           </TableRow>
                         ) : (
                           // <TableRow>
@@ -547,7 +547,7 @@ const Ngopartner = () => {
                                 <TableCell>{item["Manufacturer Model"]}</TableCell>
                                 <TableCell>{item.Status}</TableCell>
                                 <TableCell>{item.Working ? "Yes" : "No"}</TableCell>
-                                <TableCell>
+                                {/* <TableCell>
                                   <Button
                                     variant="contained"
                                     size="small"
@@ -566,7 +566,7 @@ const Ngopartner = () => {
                                   >
                                     View Details
                                   </Button>
-                                </TableCell>
+                                </TableCell> */}
                               </TableRow>
                             ))
                           : null

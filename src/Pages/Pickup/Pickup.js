@@ -86,7 +86,6 @@ const Pickup = () => {
     if (!validateForm()) return;
 
     const payload = { ...formData, currentDate: formatDateTime() };
-    console.log("Submitting Pickup Data:", payload);
     setLoading(true);
     try {
         await fetch(

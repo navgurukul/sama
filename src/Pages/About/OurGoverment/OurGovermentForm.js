@@ -114,7 +114,7 @@ function OurGovermentForm() {
         setErrors(newErrors);
     
         if (Object.keys(newErrors).length > 0) {
-            console.log("Form has errors:", newErrors);
+            // console.log("Form has errors:", newErrors);
             return;
         }
     
