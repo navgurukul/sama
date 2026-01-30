@@ -60,7 +60,7 @@ const opsTabs = [
   { label: "Warehouse Operations", path: "/laptop-tagging" },
   { label: "Laptop Detail Form", path: "/laptopinventory" },
   { label: "NGO Form", path: "/ngoregistration" },
-  { label: "Edit Questions", path: "/donormanager" },
+  // { label: "Edit Questions", path: "/donormanager" },
   { label: "Laptop with Issues", path: "/laptop-with-issues" },
   { label: "Laptop Audit", path: "/audit" },
 ];
@@ -399,9 +399,9 @@ const Navbar = () => {
                 <ListItem
                   button
                   component={Link}
-                  to="/pickup-request-by-doner"
-                  selected={location.pathname === "/pickup-request-by-doner"}
-                  onClick={() => navigate("/pickup-request-by-doner")}
+                  to="/pickup-request-by-donor"
+                  selected={location.pathname === "/pickup-request-by-donor"}
+                  onClick={() => navigate("/pickup-request-by-donor")}
                 >
                   <ListItemText primary="Pickup Requests" />
                 </ListItem>
@@ -462,7 +462,7 @@ const Navbar = () => {
           <>
             <Button
               variant="body1"
-              onClick={() => navigate("/pickup-request-by-doner")}
+              onClick={() => navigate("/pickup-request-by-donor")}
               sx={{
                 textTransform: "none",
                 minWidth: "unset",
@@ -471,22 +471,22 @@ const Navbar = () => {
                 py: 1,
                 ml: 2,
                 color:
-                  location.pathname === "/pickup-request-by-doner"
+                  location.pathname === "/pickup-request-by-donor"
                     ? "common.white"
                     : "text.primary",
                 backgroundColor:
-                  location.pathname === "/pickup-request-by-doner"
+                  location.pathname === "/pickup-request-by-donor"
                     ? "primary.main"
                     : "transparent",
                 borderRadius: "100px",
                 fontWeight: "normal",
                 "&:hover": {
                   backgroundColor:
-                    location.pathname === "/pickup-request-by-doner"
+                    location.pathname === "/pickup-request-by-donor"
                       ? "primary.main"
                       : "action.hover",
                   color:
-                    location.pathname === "/pickup-request-by-doner"
+                    location.pathname === "/pickup-request-by-donor"
                       ? "common.white"
                       : "text.primary",
                 },

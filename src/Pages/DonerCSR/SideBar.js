@@ -19,7 +19,9 @@ import {
   ClipboardList,
   Settings,
   Search,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  Users,
+  HandHeart
 } from "lucide-react";
 
 const navItems = [
@@ -37,9 +39,10 @@ const navItems = [
     ],
   },
   // {
-  //   section: "Administration",
+  //   section: "Management",
   //   items: [
-  //     { label: "Settings", icon: <Settings size={20} />, path: "/donorcsr/settings" },
+  //     { label: "NGOs", icon: <Users size={20} />, path: "rms-donor-details-ngos" },
+  //     { label: "Donors", icon: <HandHeart size={20} />, path: "rms-donor-details-donors" },
   //   ],
   // },
 ];

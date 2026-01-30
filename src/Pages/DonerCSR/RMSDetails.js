@@ -20,6 +20,8 @@ import {
   TablePagination,
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
+import RmsDetailsModal from "../../components/RmsDetailsModal/RmsDetailsModal";
+import { Container } from "@mui/material";
 
 const RMSDetails = () => {
   const [data, setData] = useState([]);
@@ -28,6 +30,8 @@ const RMSDetails = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rmsDetailsOpen, setRmsDetailsOpen] = useState(false);
+  const [selectedRmsLaptop, setSelectedRmsLaptop] = useState(null);
 
   // Try to gracefully read serial/mac regardless of key casing used by the API
   const getSerial = (row) =>
@@ -104,6 +108,27 @@ const RMSDetails = () => {
     return Object.keys(filtered[0]);
   }, [filtered]);
 
+  // Helper: format date as DD-MM-YYYY HH:mm:ss (same logic as RmsDetailsModal)
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    let d = null;
+    if (typeof dateStr === "string" && dateStr.match(/\d{4}-\d{2}-\d{2}T/)) {
+      d = new Date(dateStr);
+    } else if (typeof dateStr === "string" && dateStr.match(/\d{4}-\d{2}-\d{2}/)) {
+      d = new Date(dateStr);
+    } else {
+      d = new Date(dateStr);
+    }
+    if (isNaN(d)) return String(dateStr);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    const seconds = String(d.getSeconds()).padStart(2, "0");
+    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+  };
+
   const formatValue = (val) => {
     if (val === null || val === undefined) return "";
     if (typeof val === "object") return JSON.stringify(val);
@@ -137,9 +162,25 @@ const RMSDetails = () => {
     URL.revokeObjectURL(url);
   };
 
+  // Handler for RMS Details button
+  const handleRmsDetailsClick = (row) => {
+    setSelectedRmsLaptop(row);
+    setRmsDetailsOpen(true);
+  };
+
+  const handleRmsDetailsClose = () => {
+    setRmsDetailsOpen(false);
+    setSelectedRmsLaptop(null);
+  };
+
   return (
-    <Box sx={{ width: "100%", overflowX: "hidden" }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
+    <Container 
+    // sx={{ width: "100%", overflowX: "hidden", }}
+    disableGutters maxWidth= "md"
+    >
+      <Stack 
+      direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}
+      >
         <Box>
           <Typography variant="h5" fontWeight={700} color="#2e7d32">
             RMS Details
@@ -215,10 +256,10 @@ const RMSDetails = () => {
           sx={{
             boxShadow: "0 6px 18px rgba(0,0,0,0.06)",
             border: "1px solid #e0e0e0",
-            overflowX: "auto",
+            overflow: "hidden",
           }}
         >
-          <CardContent sx={{ p: 0, overflowX: "auto" }}>
+          <CardContent sx={{ p: 0 }}>
             {filtered.length === 0 ? (
               <Box p={3}>
                 <Typography variant="body2" color="text.secondary">
@@ -227,59 +268,119 @@ const RMSDetails = () => {
               </Box>
             ) : (
               <>
-                <Box
+                <Container
                   sx={{
                     width: "100%",
+                    maxWidth: "100%",
                     overflowX: "auto",
-                    maxWidth: "100vw",
+                    WebkitOverflowScrolling: "touch",
                   }}
                 >
                   <TableContainer
                     component={Paper}
                     sx={{
-                      minWidth: "100%",
-                      overflowX: "auto",
+                      width: "100%",
                       maxWidth: "100%",
+                      overflowX: "auto",
                     }}
                   >
                     <Table
                       size="small"
                       stickyHeader
                       sx={{
-                        minWidth: 700,
-                        tableLayout: "fixed",
+                        minWidth: 900,
                       }}
                     >
-                    <TableHead>
-                      <TableRow>
-                        {columns.map((col) => (
+                      <TableHead>
+                        <TableRow>
+                          {columns.map((col) => (
+                            <TableCell
+                              key={col}
+                              sx={{
+                                fontWeight: 700,
+                                textTransform: "capitalize",
+                                bgcolor: "rgba(46,125,50,0.08)",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {col}
+                            </TableCell>
+                          ))}
                           <TableCell
-                            key={col}
                             sx={{
                               fontWeight: 700,
                               textTransform: "capitalize",
                               bgcolor: "rgba(46,125,50,0.08)",
+                              whiteSpace: "nowrap",
                             }}
                           >
-                            {col}
+                            RMS DETAILS
                           </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {pagedRows.map((row, idx) => (
-                        <TableRow key={idx} hover>
-                          {columns.map((col) => (
-                            <TableCell key={col} sx={{ maxWidth: 260, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                              {typeof row[col] === "object" ? JSON.stringify(row[col]) : String(row[col] ?? "")}
-                            </TableCell>
-                          ))}
                         </TableRow>
-                      ))}
-                    </TableBody>
+                      </TableHead>
+                      <TableBody>
+                        {pagedRows.map((row, idx) => (
+                          <TableRow key={idx} hover>
+                            {columns.map((col) => {
+                              const raw = row[col];
+                              const colKey = col.replace(/\s+/g, "").toLowerCase();
+                              let displayValue = raw;
+
+                              // Format date-like columns (e.g., created_at, created at, date, start, end, expiry)
+                              if (
+                                (/date|expiry|start|end|created/i.test(colKey) ||
+                                  colKey.endsWith("at")) &&
+                                raw
+                              ) {
+                                displayValue = formatDate(raw);
+                              }
+
+                              const finalDisplay =
+                                typeof displayValue === "object" && displayValue !== null
+                                  ? JSON.stringify(displayValue)
+                                  : String(displayValue ?? "");
+
+                              return (
+                                <TableCell
+                                  key={col}
+                                  sx={{
+                                    maxWidth: 260,
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                  }}
+                                  title={finalDisplay}
+                                >
+                                  {finalDisplay}
+                                </TableCell>
+                              );
+                            })}
+                            <TableCell>
+                              <Button
+                                variant="contained"
+                                size="small"
+                                onClick={() => handleRmsDetailsClick(row)}
+                                sx={{
+                                  backgroundColor: "#5C785A",
+                                  color: "white",
+                                  textTransform: "none",
+                                  borderRadius: "6px",
+                                  fontSize: "12px",
+                                  padding: "3px 6px",
+                                  "&:hover": {
+                                    backgroundColor: "#1565c0",
+                                  },
+                                }}
+                              >
+                                View Details
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
                     </Table>
                   </TableContainer>
-                </Box>
+                </Container>
                 <TablePagination
                   component="div"
                   count={filtered.length}
@@ -299,7 +400,14 @@ const RMSDetails = () => {
           </CardContent>
         </Card>
       )}
-    </Box>
+
+      {/* RMS Details Modal */}
+      <RmsDetailsModal
+        open={rmsDetailsOpen}
+        onClose={handleRmsDetailsClose}
+        laptopData={selectedRmsLaptop}
+      />
+    </Container>
   );
 };
 

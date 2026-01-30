@@ -399,7 +399,7 @@ const LaptopPipeline = () => {
         const data = await res.json();
 
         if (data.status === "success") {
-          console.log("Fetched pickup data:", data.data);
+          // console.log("Fetched pickup data:", data.data);
 
           setPickups(data.data);
           setTotalLaptopss(data.totalLaptops);

@@ -500,6 +500,8 @@ const Overview = () => {
     (laptop) => laptop.Status === "Distributed"
   ).length;
 
+
+
   const successRate =
     totalLaptops > 0 ? ((refurbishedCount / totalLaptops) * 100).toFixed(2) : 0;
   const ngosServedCount = filteredNgoPartners.filter((partner) => {
@@ -519,6 +521,8 @@ const Overview = () => {
   }).length;
 
 
+  
+  
   const MetricCard = ({ title, value, subtitle, growth, icon: Icon, onClick }) => (
     <Card sx={{
       height: '100%',
@@ -1090,6 +1094,15 @@ const Overview = () => {
                   bgColor: "#e8f5e8",
                   iconColor: "#388e3c",
                   stepType: "received"
+                },
+                {
+                  icon: X,
+                  title: "Not Working",
+                  subtitle: "Failed initial health check",
+                  count: `${filteredLaptopData.filter(l => l.Status === "Not Working").length} laptops`,
+                  bgColor: "#ffebee",
+                  iconColor: "#d32f2f",
+                  stepType: "notWorking"
                 },
                 {
                   icon: Settings,
