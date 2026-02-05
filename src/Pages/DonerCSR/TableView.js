@@ -379,6 +379,12 @@ const TableView = ({
             );
           };
           break;
+        case "onlyLaptopReceived":
+          apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
+          filterFunction = (data) => data.filter(laptop =>
+            ((laptop.Status || "").trim().toLowerCase() === "laptop received")
+          );
+          break;
         case "refurbishmentStarted":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop =>
@@ -562,6 +568,7 @@ const TableView = ({
       case "allocated":
       case "distributed":
       case "activeUsage":
+      case "onlyLaptopReceived":
         return (
           <>
             <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
@@ -688,6 +695,8 @@ const TableView = ({
         return "In Transit Laptops Data";
       case "received":
         return "Received Laptops Data";
+      case "onlyLaptopReceived":
+        return "Ready To Be Processed";
       case "notWorking":
         return "Not Working Laptops Data";
       case "refurbishmentStarted":
@@ -748,7 +757,8 @@ const TableView = ({
     const laptopMetrics = [
       "totalLaptops", "refurbished", "distributed", "activeUsage",
       "laptopreceived", "laptoprefurbished", "tobedispatch",
-      "refurbishmentstarted", "notWorking", "intransit", "allocated"
+      "refurbishmentstarted", "notWorking", "intransit", "allocated",
+      "onlyLaptopReceived"
     ];
 
     if (laptopMetrics.includes(displayMetricType)) {

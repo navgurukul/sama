@@ -500,7 +500,11 @@ const Overview = () => {
     (laptop) => laptop.Status === "Distributed"
   ).length;
 
-
+  // NEW: count for ONLY "Laptop Received" (exact match, case-insensitive)
+  const onlyLaptopReceivedCount = filteredLaptopData.reduce((acc, item) => {
+    const status = (item.Status || "").trim().toLowerCase();
+    return status === "laptop received" ? acc + 1 : acc;
+  }, 0);
 
   const successRate =
     totalLaptops > 0 ? ((refurbishedCount / totalLaptops) * 100).toFixed(2) : 0;
@@ -1094,6 +1098,16 @@ const Overview = () => {
                   bgColor: "#e8f5e8",
                   iconColor: "#388e3c",
                   stepType: "received"
+                },
+                // NEW: Only Laptop Received - shows only items where Status === "Laptop Received"
+                {
+                  icon: Laptop,
+                  title: "Ready To Be Processed",
+                  subtitle: "Refurbishment will begin shortly.",
+                  count: `${onlyLaptopReceivedCount} laptops`,
+                  bgColor: "#e8f5e8",
+                  iconColor: "#388e3c",
+                  stepType: "onlyLaptopReceived"
                 },
                 {
                   icon: X,
