@@ -28,6 +28,7 @@ import {
   TableRow,
   TableCell,
   TablePagination,
+  CircularProgress,
 } from '@mui/material';
 import {
   Package,
@@ -64,6 +65,7 @@ const Overview = () => {
   const theme = useTheme();
   const [laptopData, setLaptopData] = useState([]);
   const [ngoData, setNgoData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Date handling functions
   const parseDateUniversal = (dateString) => {
@@ -160,6 +162,7 @@ const Overview = () => {
     }
   }, [isDoner, navigate]);
 
+
   // Set selected organization for donor from localStorage
   useEffect(() => {
     if (isDoner && donorOrgName) {
@@ -171,6 +174,7 @@ const Overview = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const laptopRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`);
         const laptopJson = await laptopRes.json();        
@@ -261,6 +265,8 @@ const Overview = () => {
 
       } catch (err) {
         console.error("Error fetching overview data:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -896,6 +902,12 @@ const Overview = () => {
   return (
 
     <>
+      {isLoading ? (
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+      <>
       <OverviewHeader
         uniqueOrganizations={uniqueOrganizations}
         onOrganizationChange={setSelectedOrganization}
@@ -1535,7 +1547,8 @@ const Overview = () => {
           </Grid>
         </Grid>
       </Box>
-
+      </>
+      )}
     </>
   );
 };
