@@ -15,6 +15,7 @@ import {
   Chip,
   Tabs,
   Tab,
+  CircularProgress,
 } from '@mui/material';
 import { ArrowLeft } from 'lucide-react';
 
@@ -37,6 +38,7 @@ const TableView = ({
   const [activeTab, setActiveTab] = useState(0);
   const [preData, setPreData] = useState([]);
   const [userData, setUserData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   
   // Get user role and donor organization from localStorage
   const authData = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
@@ -46,6 +48,7 @@ const TableView = ({
   const isStandalone = !metricType && !onBack;
 
   const filterDataByActivity = async (metricType, activity) => {
+    setIsLoading(true);
     try {
       let apiUrl = '';
       let data = [];
@@ -165,10 +168,11 @@ const TableView = ({
         filteredData = filteredData.slice(0, activity.count);
       }
       setStandaloneData(filteredData);
-
     } catch (error) {
       console.error('❌ Error filtering activity data:', error);
       setStandaloneData([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -208,6 +212,7 @@ const TableView = ({
   }, [isStandalone, donorName, location.search]);
 
   const fetchBeneficiaryData = async () => {
+    setIsLoading(true);
     try {
       // Fetch user data (one-to-one)
       const userRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData`);
@@ -242,11 +247,12 @@ const TableView = ({
 
       setUserData(userJson || []);
       setPreData(preJson || []);
-
     } catch (error) {
       console.error('Error fetching beneficiary data:', error);
       setUserData([]);
       setPreData([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -317,6 +323,7 @@ const TableView = ({
   };
 
   const fetchStandaloneData = async (metric) => {
+    setIsLoading(true);
     try {
       let apiUrl = '';
       let filterFunction = null;
@@ -505,6 +512,8 @@ const TableView = ({
     } catch (error) {
       console.error('Error fetching data:', error);
       setStandaloneData([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -534,6 +543,14 @@ const TableView = ({
   const displayData = isStandalone ? standaloneData : data;
   const displayMetricType = isStandalone ? standaloneMetricType : metricType;
   const displayOrganization = isStandalone ? donorName : selectedOrganization;
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   const getTableHeaders = () => {
     switch (displayMetricType) {
