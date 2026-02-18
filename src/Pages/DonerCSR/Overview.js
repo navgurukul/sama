@@ -1148,24 +1148,24 @@ const Overview = () => {
                   iconColor: "#7b1fa2",
                   stepType: "refurbished"
                 },
-                {
-                  icon: Truck,
-                  title: "To Be Dispatch",
-                  subtitle: "Ready for delivery",
-                  count: `${filteredLaptopData.filter(l => l.Status === "To Be Dispatch").length} laptops`,
-                  bgColor: "#fce4ec",
-                  iconColor: "#c2185b",
-                  stepType: "toBeDispatch"
-                },
-                {
-                  icon: Building,
-                  title: "Allocated",
-                  subtitle: "Assigned to NGO",
-                  count: `${filteredLaptopData.filter(l => l.Status === "Allocated").length} laptops`,
-                  bgColor: "#f1f8e9",
-                  iconColor: "#558b2f",
-                  stepType: "allocated"
-                },
+                // {
+                //   icon: Truck,
+                //   title: "To Be Dispatch",
+                //   subtitle: "Ready for delivery",
+                //   count: `${filteredLaptopData.filter(l => l.Status === "To Be Dispatch").length} laptops`,
+                //   bgColor: "#fce4ec",
+                //   iconColor: "#c2185b",
+                //   stepType: "toBeDispatch"
+                // },
+                // {
+                //   icon: Building,
+                //   title: "Allocated",
+                //   subtitle: "Assigned to NGO",
+                //   count: `${filteredLaptopData.filter(l => l.Status === "Allocated").length} laptops`,
+                //   bgColor: "#f1f8e9",
+                //   iconColor: "#558b2f",
+                //   stepType: "allocated"
+                // },
                 {
                   icon: UserCheck,
                   title: "Distributed",
