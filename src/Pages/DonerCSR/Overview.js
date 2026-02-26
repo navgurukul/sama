@@ -275,18 +275,18 @@ const Overview = () => {
 
 
   // average days count
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getAverageDays`)
-      .then((res) => res.json())
-      .then((data) => {
-        setAverageDays(data.averageDays);
-        // setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching data:", err);
-        // setLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getAverageDays`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setAverageDays(data.averageDays);
+  //       // setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Error fetching data:", err);
+  //       // setLoading(false);
+  //     });
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1259,9 +1259,9 @@ const Overview = () => {
                     </Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={6} sm={3}>
+                {/* <Grid item xs={6} sm={3}>
                   <SummaryMetric label="Avg. Processing Time" value={`${averageDays} days`} />
-                </Grid>
+                </Grid> */}
                 <Grid item xs={6} sm={3}>
                   <Box
                     sx={{
