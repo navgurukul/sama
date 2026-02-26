@@ -11,6 +11,9 @@ import img8 from "./assests/8.png";
 import img9 from "./assests/9.png";
 import img10 from "./assests/10.png";
 import img11 from "./assests/11.png";
+import img12 from "./assests/12.png";
+import img13 from "./assests/13.png";
+import img14 from "./assests/14.png";
 
 const ImageBox = () => {
     return (
@@ -51,6 +54,18 @@ const ImageBox = () => {
                     <Box sx={ourteam.Image}>
                         <img height="100%" src={img11} alt="img8" />
                     </Box>
+                     <Box sx={ourteam.Image}>
+                        <img height="100%" src={img14} alt="img14" />
+                    </Box>
+                </Grid>
+                  <Grid container spacing={2} justifyContent="center" sx={{ marginTop: "16px", }}>
+                    <Box sx={ourteam.Image}>
+                        <img height="100%" src={img12} alt="img12" />
+                    </Box>
+                    <Box sx={ourteam.Image}>
+                        <img height="100%" src={img13} alt="img13" />
+                    </Box>
+                   
                 </Grid>
         </Container>
     );
