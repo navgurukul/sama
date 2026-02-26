@@ -210,7 +210,7 @@ const Upload = () => {
           Please upload an Excel file (.xlsx format). You can download the sample file to understand the required format.
         </Alert>
         <Link
-          href="https://docs.google.com/spreadsheets/d/1Ph-fjbZmDr9J3V_irEZuShMv21rkFpBspaErCqgZqck/edit?gid=0#gid=0"
+          href="https://docs.google.com/spreadsheets/d/13NJWDOFlqC5nuDB7Sf0hJQA3R94O66FjX0oDfSXCgw0/edit?gid=0#gid=0"
           download
           target="_blank"
           style={{ display: "block", marginBottom: "20px" }}

@@ -6,6 +6,8 @@ import Acc from './assets/image 15.png';
 import Apexon from './assets/apexon.png';
 import Tiger from './assets/tiger.png'
 import ourteam from "../OurTeam/style";
+import eton from "./assets/eaton-logo-mobile.png";
+import SGA from "./assets/SGA_logo_horizontal_color.svg"
 
 const CompanyLogo = () => {
     return (
@@ -46,6 +48,31 @@ const CompanyLogo = () => {
                     </Box>
                 </Grid>
             </Grid>
+            <Grid container spacing={2} justifyContent="left" mt={2}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Box sx={ourteam.Logo1}>
+                        <img src={"https://uhf.microsoft.com/images/microsoft/RE1Mu3b.png"} alt="Logo 1" style={{marginLeft: "30px"}} />
+                    </Box>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Box sx={ourteam.Logo1}>
+                        <img src={"https://www.capgemini.com/in-en/wp-content/themes/capgemini2025/assets/images/capgeminiBlue.svg"} alt="Logo 1"  width={"90%"} height={"50%"} display={"flex"} justifyContent={"center"} alignItems={"center"} />
+                    </Box>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Box sx={ourteam.Logo1}>
+                        <img src={eton} alt="Logo 1" height="50%"  />
+                    </Box>
+                </Grid>
+            </Grid>
+             <Grid container spacing={2} justifyContent="left" mt={2}>
+            <Grid item xs={12} sm={6} md={4}>
+                    <Box sx={ourteam.Logo1}>
+                        <img src={SGA} alt="Logo 1" height="50%"  />
+                    </Box>
+                </Grid>
+            </Grid>
+            
             
     </Container>
     );

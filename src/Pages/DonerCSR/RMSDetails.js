@@ -58,6 +58,30 @@ const RMSDetails = () => {
     row?.["mac_address"] ||
     "";
 
+  // Try to read NGO name or organisation from common keys used by APIs
+  const getNgoName = (row) =>
+    row?.ngo_name ||
+    row?.ngoName ||
+    row?.ngo ||
+    row?.organisation ||
+    row?.organization ||
+    row?.orgName ||
+    row?.["NGO Name"] ||
+    row?.["ngo name"] ||
+    row?.["organisation"] ||
+    "";
+
+  // Try to read donor name from common keys used by APIs
+  const getDonorName = (row) =>
+    row?.donor_name ||
+    row?.donorName ||
+    row?.donor ||
+    row?.donor_organization ||
+    row?.donorOrganisation ||
+    row?.["Donor Name"] ||
+    row?.["donor name"] ||
+    "";
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -87,8 +111,16 @@ const RMSDetails = () => {
     return data.filter((row) => {
       const serial = String(getSerial(row)).toLowerCase();
       const mac = String(getMac(row)).toLowerCase();
+      const ngo = String(getNgoName(row)).toLowerCase();
+      const donor = String(getDonorName(row)).toLowerCase();
       const fallback = JSON.stringify(row || {}).toLowerCase();
-      return serial.includes(term) || mac.includes(term) || fallback.includes(term);
+      return (
+        serial.includes(term) ||
+        mac.includes(term) ||
+        ngo.includes(term) ||
+        donor.includes(term) ||
+        fallback.includes(term)
+      );
     });
   }, [data, search]);
 
@@ -186,7 +218,7 @@ const RMSDetails = () => {
             RMS Details
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            View devices from RMS. Filter by Serial Number or MAC Address.
+            View devices from RMS. Filter by Serial Number, MAC Address, NGO name, or Donor name.
           </Typography>
 
           <Chip
@@ -224,8 +256,8 @@ const RMSDetails = () => {
           }}
         >
           <TextField
-            label="Search by Serial Number or MAC Address"
-            placeholder="e.g. 12345ABC or AA:BB:CC:DD:EE:FF"
+            label="Search by Serial, MAC, NGO name or Donor name"
+            placeholder="e.g. 12345ABC, AA:BB:CC:DD:EE:FF, ngo name or donor name"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             fullWidth
