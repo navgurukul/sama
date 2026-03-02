@@ -5,12 +5,15 @@ import {
   Radio,
   Typography,
   Box,
+  Button
 } from "@mui/material";
 
 import FormComponent from "./Userdetails";
 import Userdatabulkupload from "./Userdatabulkupload";
 import { Container } from "@mui/system";
 import { useLocation } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function Userdata() {
   const [selectedName, setSelectedName] = useState("bulk");
@@ -23,7 +26,11 @@ function Userdata() {
   const handleChange = (event) => {
     setSelectedName(event.target.value);
   };
+  const navigate = useNavigate();
 
+  const handleBack = () => {
+    navigate("/beneficiarydata");
+  };
   return (
     <div>
       <Container maxWidth="sm"  sx={{ my: 5 }}>
@@ -55,6 +62,16 @@ function Userdata() {
         {selectedName === "Single" && <FormComponent user={user}/>}
           
         </Box>
+        <Box  sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+        <Button
+          onClick={handleBack}
+          variant="outlined"
+          // startIcon={<ArrowBackIcon />}
+          color="primary"
+        >
+          Return to Dashboard
+        </Button>
+      </Box>
       </Container>
     </div>
   );
