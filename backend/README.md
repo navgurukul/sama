@@ -1,0 +1,75 @@
+# Python backend for API migration
+
+This backend now replaces:
+
+- `REACT_APP_LaptopAndBeneficiaryDetailsApi` -> `http://localhost:8000/exec`
+- `REACT_APP_UserDetailsApis` -> `http://localhost:8000/user-exec`
+
+The other frontend APIs remain unchanged.
+
+## What is migrated now
+
+- `type=getLaptopData` (GET)
+- `type=getUserData` (GET)
+- `type=getpre` (GET)
+- `type=pickupget` (GET)
+- `type=audit` (GET)
+- `type=UpdateLaptopComment` (POST)
+- `type=updatepickupstatus` (POST)
+- `type=assign` (POST)
+- `type=laptopLabeling` (POST)
+- `type=userdetails`, `type=editUser`, `type=deleteUser` (POST)
+
+### User details API (`/user-exec`)
+
+- `GET /user-exec` -> login user list (from `user_profile_userrole` + approved registrations)
+- `GET /user-exec?type=getRegistration` -> registration table list
+- `POST /user-exec` with `type=addRegistration`
+- `POST /user-exec` with `type=updateRegistration`
+- `POST /user-exec` with `type=forgotPassword`
+
+All other `type` values on this endpoint are proxied to legacy Apps Script when `LEGACY_LAPTOP_API_URL` is set.
+
+## Environment variables
+
+Create `backend/.env`:
+
+```env
+DATABASE_URL=postgresql://postgres@localhost:5432/sama
+DB_SCHEMA=sama_ops
+LEGACY_LAPTOP_API_URL=https://script.google.com/macros/s/AKfycbxvffwR4e0bI_N4ra0MT5Ogd5FzGAuW7_lweuyiUN6t_luumX07PfwvNy_ztSFmjlHw/exec
+PORT=8000
+```
+
+## Run locally
+
+```bash
+pip install -r backend/requirements.txt
+uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port 8000 --reload
+```
+
+Or run with one command:
+
+```bash
+python backend/run.py
+```
+
+Health check:
+
+```bash
+curl http://localhost:8000/health
+```
+
+## Frontend change (only one key)
+
+Set these keys in root `.env`:
+
+```env
+REACT_APP_LaptopAndBeneficiaryDetailsApi='http://localhost:8000/exec'
+REACT_APP_UserDetailsApis='http://localhost:8000/user-exec'
+```
+
+Keep these keys as they are:
+
+- `REACT_APP_NgoInformationApi`
+- `REACT_APP_GetInvolvedForm`

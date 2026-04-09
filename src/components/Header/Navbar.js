@@ -78,6 +78,7 @@ const Navbar = () => {
     "(max-width:" + breakpoints.values.md + "px)"
   );
   const registrationActive = location.pathname === "/registration";
+  const activeOpsTabValue = opsTabs.some((tab) => tab.path === activeTab) ? activeTab : false;
 
   const routePatterns = [
     "/user-details",
@@ -275,7 +276,7 @@ const Navbar = () => {
             sx={{ display: "flex", alignItems: "center", ml: "auto", mr: 3 }}
           >
             <Tabs
-              value={activeTab}
+              value={activeOpsTabValue}
               onChange={(e, newValue) => setActiveTab(newValue)}
               sx={{
                 minHeight: "unset",
@@ -525,7 +526,7 @@ const Navbar = () => {
         )}
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto", ml: 0 }}>
           <Tabs
-            value={activeTab}
+            value={activeOpsTabValue}
             onChange={(e, newValue) => {
               setActiveTab(newValue);
               navigate(newValue);
@@ -656,7 +657,7 @@ const Navbar = () => {
                         border: "1px solid",
                         position: "relative",
                         left: "10",
-                        borderColor: "primary.main",                        "&:hover": {
+                        borderColor: "primary.main", "&:hover": {
                           backgroundColor: "#FFFFFF",
                         },
                       }}
@@ -929,7 +930,7 @@ const Navbar = () => {
           },
         }}
       >
-        {role.includes("admin") || role.includes("ops") || role.includes("doner")? (
+        {role.includes("admin") || role.includes("ops") || role.includes("doner") ? (
           <MenuItem onClick={handleLogout} sx={{ color: "red" }}>
             <Typography variant="body1">Logout</Typography>
           </MenuItem>

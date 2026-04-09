@@ -19,46 +19,47 @@ const formatDate = (dateStr) => {
 
 const Audit = () => {
   const [data, setData] = useState([]);
-  const [filtered, setFiltered] = useState([]);
   const [searchId, setSearchId] = useState("");
+  const [appliedSearchId, setAppliedSearchId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({
     field: null,
     direction: 'asc'
   });
 
 
-  
+
   const fetchAuditData = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=audit`
+        `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=audit&includeMeta=1&page=${page + 1}&limit=${rowsPerPage}&idQuery=${encodeURIComponent(appliedSearchId)}`
       );
 
-      const formattedData = response.data.map((row) => ({ ...row }));
-
+      const responseData = response.data || {};
+      const rows = Array.isArray(responseData.data)
+        ? responseData.data
+        : (Array.isArray(responseData) ? responseData : []);
+      const formattedData = rows.map((row) => ({ ...row }));
       setData(formattedData);
-      setFiltered(formattedData);
+      setTotalCount(responseData?.meta?.total ?? formattedData.length);
     } catch (err) {
       console.error("Error fetching audit data:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchAuditData();
-  }, []);
+  }, [page, rowsPerPage, appliedSearchId]);
 
   const handleSearch = () => {
-    if (searchId.trim() === "") {
-      setFiltered(data);
-    } else {
-      const filteredData = data.filter((row) => {
-        const id = row["ID"];
-        return typeof id === "string"
-          ? id.toLowerCase().includes(searchId.toLowerCase())
-          : id?.toString().toLowerCase().includes(searchId.toLowerCase());
-      });
-      setFiltered(filteredData);
-    }
+    setAppliedSearchId(searchId.trim());
+    setPage(0);
   };
 
   // Function to sort data
@@ -67,97 +68,109 @@ const Audit = () => {
       sortConfig.field === field && sortConfig.direction === "desc"
         ? "asc"
         : "desc";
-  
+
     setSortConfig({ field, direction });
-  
-    const sortedData = [...filtered].sort((a, b) => {
+
+    const sortedData = [...data].sort((a, b) => {
       const valA = a[field];
       const valB = b[field];
-  
+
       if (!valA) return 1;
       if (!valB) return -1;
-  
+
       if (field === "Updated On") {
         const dateA = formatDate(valA);
         const dateB = formatDate(valB);
         return direction === "asc" ? dateA - dateB : dateB - dateA;
       }
-  
+
       return direction === "asc"
         ? valA.toString().localeCompare(valB.toString())
         : valB.toString().localeCompare(valA.toString());
     });
-  
-    setFiltered(sortedData);
+
+    setData(sortedData);
   };
-  
-  const columns = filtered.length > 0
-    ? Object.entries(filtered[0]).map(([key], columnIndex) => {
-        const isUpdatedOn = key === "Updated On";
-  
-        return {
-          name: key,
-          label: key,
-          options: {
-            display: "true",
-            filter: true,
-            sort: isUpdatedOn,
-            sortDirection: sortConfig.field === key ? sortConfig.direction : "none",
-            onSort: () => handleSort(key),
-            ...(isUpdatedOn && {
-              filterOptions: {
-                names: [...new Set(filtered.map(row => row["Updated On"]).filter(Boolean))],
-                logic: (value, filters) => !filters.includes(value)
-              }              
-            }),
-            customBodyRenderLite: (index) => {
-              const cellValue = filtered[index][key];
-              return isUpdatedOn ? (
-                <Typography variant="body2">{cellValue}</Typography>
-              ) : (
-                cellValue
-              );
-            },                      
-            customHeadLabelRender: ({ name, label }) =>
-              name === "Updated On" ? (
-                <Typography variant="body2">Updated On</Typography>
-              ) : (
-                label
-              ),
+
+  const columns = data.length > 0
+    ? Object.entries(data[0]).map(([key], columnIndex) => {
+      const isUpdatedOn = key === "Updated On";
+
+      return {
+        name: key,
+        label: key,
+        options: {
+          display: "true",
+          filter: true,
+          sort: isUpdatedOn,
+          sortDirection: sortConfig.field === key ? sortConfig.direction : "none",
+          onSort: () => handleSort(key),
+          ...(isUpdatedOn && {
+            filterOptions: {
+              names: [...new Set(data.map(row => row["Updated On"]).filter(Boolean))],
+              logic: (value, filters) => !filters.includes(value)
+            }
+          }),
+          customBodyRenderLite: (index) => {
+            const cellValue = data[index][key];
+            return isUpdatedOn ? (
+              <Typography variant="body2">{cellValue}</Typography>
+            ) : (
+              cellValue
+            );
           },
-        };
-      })
+          customHeadLabelRender: ({ name, label }) =>
+            name === "Updated On" ? (
+              <Typography variant="body2">Updated On</Typography>
+            ) : (
+              label
+            ),
+        },
+      };
+    })
     : [];
-  
+
 
 
   const options = {
+    serverSide: true,
+    count: totalCount,
+    page,
+    rowsPerPage,
     selectableRows: "none",
     filter: true,
     download: true,
     print: false,
     viewColumns: true,
     search: false, // we are using our own search box
-    rowsPerPage: 10,
     rowsPerPageOptions: [10, 20, 50, 100],
     responsive: "standard",
+    onTableChange: (action, tableState) => {
+      if (action === "changePage") {
+        setPage(tableState.page);
+      }
+      if (action === "changeRowsPerPage") {
+        setRowsPerPage(tableState.rowsPerPage);
+        setPage(0);
+      }
+    },
     sortOrder: {
       name: sortConfig.field || '',
       direction: sortConfig.direction
     },
     customSort: (data, colIndex, order) => {
       const columnName = columns[colIndex]?.name;
-  
+
       return data.sort((a, b) => {
         const valA = a.data[colIndex];
         const valB = b.data[colIndex];
-  
+
         if (columnName === "Updated On") {
           const dateA = formatDate(valA);
           const dateB = formatDate(valB);
           return order === "asc" ? dateA - dateB : dateB - dateA;
         }
-  
+
         // Default string comparison
         return order === "asc"
           ? valA?.toString().localeCompare(valB?.toString())
@@ -165,7 +178,7 @@ const Audit = () => {
       });
     },
   };
-  
+
   return (
     <Box sx={{ padding: 3 }}>
       <Typography variant="h5" gutterBottom align="center">
@@ -188,7 +201,7 @@ const Audit = () => {
 
       <MUIDataTable
         title={"Audit Records"}
-        data={filtered}
+        data={data}
         columns={columns}
         options={options}
       />

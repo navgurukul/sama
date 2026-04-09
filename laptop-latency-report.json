@@ -1,0 +1,176 @@
+{
+  "generatedAt": "2026-03-24T10:37:26.285Z",
+  "runs": 3,
+  "timeoutMs": 15000,
+  "delayMs": 250,
+  "endpoint": "https://script.google.com/macros/s/AKfycbxvffwR4e0bI_N4ra0MT5Ogd5FzGAuW7_lweuyiUN6t_luumX07PfwvNy_ztSFmjlHw/exec",
+  "scenarios": [
+    {
+      "name": "Unfiltered page-1 (cold/warm cache visible)",
+      "url": "https://script.google.com/macros/s/AKfycbxvffwR4e0bI_N4ra0MT5Ogd5FzGAuW7_lweuyiUN6t_luumX07PfwvNy_ztSFmjlHw/exec?type=getLaptopData&page=1&limit=25&includeMeta=1",
+      "results": [
+        {
+          "ok": true,
+          "status": 200,
+          "latencyMs": 5550.1881,
+          "rows": 25
+        },
+        {
+          "ok": true,
+          "status": 200,
+          "latencyMs": 7051.0740000000005,
+          "rows": 25
+        },
+        {
+          "ok": true,
+          "status": 200,
+          "latencyMs": 8671.2478,
+          "rows": 25
+        }
+      ],
+      "summary": {
+        "success": 3,
+        "failure": 0,
+        "min": 5550.1881,
+        "max": 8671.2478,
+        "avg": 7090.836633333332,
+        "p50": 7051.0740000000005,
+        "p95": 8671.2478
+      }
+    },
+    {
+      "name": "Unfiltered page-2 (cold/warm cache visible)",
+      "url": "https://script.google.com/macros/s/AKfycbxvffwR4e0bI_N4ra0MT5Ogd5FzGAuW7_lweuyiUN6t_luumX07PfwvNy_ztSFmjlHw/exec?type=getLaptopData&page=2&limit=25&includeMeta=1",
+      "results": [
+        {
+          "ok": false,
+          "status": "ERROR",
+          "latencyMs": 10112.863000000001,
+          "error": "TypeError",
+          "rows": null
+        },
+        {
+          "ok": false,
+          "status": "ERROR",
+          "latencyMs": 4076.8444999999992,
+          "error": "TypeError",
+          "rows": null
+        },
+        {
+          "ok": false,
+          "status": "ERROR",
+          "latencyMs": 10660.536199999995,
+          "error": "TypeError",
+          "rows": null
+        }
+      ],
+      "summary": {
+        "success": 0,
+        "failure": 3,
+        "min": 4076.8444999999992,
+        "max": 10660.536199999995,
+        "avg": 8283.414566666665,
+        "p50": 10112.863000000001,
+        "p95": 10660.536199999995
+      }
+    },
+    {
+      "name": "Filtered by status+working (server filter path)",
+      "url": "https://script.google.com/macros/s/AKfycbxvffwR4e0bI_N4ra0MT5Ogd5FzGAuW7_lweuyiUN6t_luumX07PfwvNy_ztSFmjlHw/exec?type=getLaptopData&page=1&limit=25&includeMeta=1&statusFilter=Laptop%20Assigned&workingFilter=working",
+      "results": [
+        {
+          "ok": false,
+          "status": "ERROR",
+          "latencyMs": 10636.131400000006,
+          "error": "TypeError",
+          "rows": null
+        },
+        {
+          "ok": false,
+          "status": "ERROR",
+          "latencyMs": 10675.259999999995,
+          "error": "TypeError",
+          "rows": null
+        },
+        {
+          "ok": false,
+          "status": "ERROR",
+          "latencyMs": 10640.054900000003,
+          "error": "TypeError",
+          "rows": null
+        }
+      ],
+      "summary": {
+        "success": 0,
+        "failure": 3,
+        "min": 10636.131400000006,
+        "max": 10675.259999999995,
+        "avg": 10650.482100000001,
+        "p50": 10640.054900000003,
+        "p95": 10675.259999999995
+      }
+    },
+    {
+      "name": "Exact ID search (best-case filtered path)",
+      "url": "https://script.google.com/macros/s/AKfycbxvffwR4e0bI_N4ra0MT5Ogd5FzGAuW7_lweuyiUN6t_luumX07PfwvNy_ztSFmjlHw/exec?type=getLaptopData&page=1&limit=25&includeMeta=1&idQuery=SAMA",
+      "results": [
+        {
+          "ok": false,
+          "status": "ERROR",
+          "latencyMs": 10661.786699999997,
+          "error": "TypeError",
+          "rows": null
+        },
+        {
+          "ok": true,
+          "status": 200,
+          "latencyMs": 9449.886499999993,
+          "rows": 1
+        },
+        {
+          "ok": true,
+          "status": 200,
+          "latencyMs": 7746.222900000008,
+          "rows": 1
+        }
+      ],
+      "summary": {
+        "success": 2,
+        "failure": 1,
+        "min": 7746.222900000008,
+        "max": 10661.786699999997,
+        "avg": 9285.965366666665,
+        "p50": 9449.886499999993,
+        "p95": 10661.786699999997
+      }
+    },
+    {
+      "name": "Unfiltered page-1 immediate repeat (cache hit check)",
+      "url": "https://script.google.com/macros/s/AKfycbxvffwR4e0bI_N4ra0MT5Ogd5FzGAuW7_lweuyiUN6t_luumX07PfwvNy_ztSFmjlHw/exec?type=getLaptopData&page=1&limit=25&includeMeta=1",
+      "results": [
+        {
+          "ok": true,
+          "status": 200,
+          "latencyMs": 7041.259600000005,
+          "rows": 25
+        },
+        {
+          "ok": false,
+          "status": "ERROR",
+          "latencyMs": 15014.088399999993,
+          "error": "AbortError",
+          "rows": null
+        }
+      ],
+      "summary": {
+        "success": 1,
+        "failure": 1,
+        "min": 7041.259600000005,
+        "max": 15014.088399999993,
+        "avg": 11027.673999999999,
+        "p50": 7041.259600000005,
+        "p95": 15014.088399999993
+      }
+    }
+  ]
+}
