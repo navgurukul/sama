@@ -1175,20 +1175,6 @@ const Overview = () => {
                   iconColor: "#2e7d32",
                   stepType: "distributed"
                 },
-                {
-                  icon: UserCheck,
-                  title: "Active Usage",
-                  subtitle: "In use by beneficiaries",
-                  count: `${filteredLaptopData.filter(l => {
-                    const d = formatDateForDisplay(l["Date"]);
-                    if (!d) return false;
-                    const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
-                    return diffDays <= 15 && l.Status === "Distributed";
-                  }).length} laptops`,
-                  bgColor: "#ffebee",
-                  iconColor: "#d32f2f",
-                  stepType: "activeUsage"
-                }
               ].map((step, index) => (
                 // <Grid item xs={6} sm={4} md={2.4} key={index}>
                 <Grid item xs={6} sm={4} md={3} key={index}>
