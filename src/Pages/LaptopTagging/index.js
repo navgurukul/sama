@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Button,
   Container,
@@ -20,6 +21,7 @@ import ExportTools from '../../components/OPS/LaptopTable/ExportTools';
 import EditButton from './EditButton';
 import { getTableColumns } from '../../components/OPS/LaptopTable/LaptopTable';
 import BulkEditPanel from './BulkEditPanel';
+import StageRunModal from './StageRunModal';
 
 const formatDateForSort = (dateStr) => {
   if (!dateStr) return new Date(0); // Return epoch time for null dates
@@ -93,6 +95,7 @@ const applyClientFilters = (rows, {
 
 
 function LaptopTagging() {
+  const navigate = useNavigate();
   // States
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -124,6 +127,7 @@ function LaptopTagging() {
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [isProcessingSelection, setIsProcessingSelection] = useState(false);
+  const [stageModalOpen, setStageModalOpen] = useState(false);
 
   // Sort configuration state
   const [sortConfig, setSortConfig] = useState({
@@ -538,14 +542,19 @@ function LaptopTagging() {
     setOpen(true);
   };
 
+  const handleOpenStageDetails = (laptopId) => {
+    if (!laptopId) return;
+    navigate(`/laptop-stage/${laptopId}`);
+  };
+
   // Define table columns
   const columns = getTableColumns(
     data,
     taggedLaptops,
     handleWorkingToggle,
-    handleStatusChange,
     handleAssignedToChange,
     handleDonatedToChange,
+    handleOpenStageDetails,
     (props) => (
       <EditButton
         {...props}
@@ -558,6 +567,9 @@ function LaptopTagging() {
     sortConfig,  // Pass sortConfig
     handleSort   // Pass handleSort
   );
+
+  const selectedLaptopId = selectedRows.length === 1 ? selectedRows[0] : null;
+  const selectedLaptop = selectedLaptopId ? data.find((row) => row.ID === selectedLaptopId) : null;
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
@@ -591,13 +603,33 @@ function LaptopTagging() {
         <BulkEditPanel
           selectedRows={selectedRows}
           onBulkUpdate={handleBulkUpdate}
-          workingFilter={workingFilter}
-          statusFilter={statusFilter}
         />
       )}
 
       {selectedRows.length > 0 && (
         <Grid container spacing={2} sx={{ mb: 2 }}>
+          {selectedRows.length === 1 && (
+            <Grid item>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => handleOpenStageDetails(selectedRows[0])}
+              >
+                Open Stage Details
+              </Button>
+            </Grid>
+          )}
+          {selectedRows.length === 1 && (
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setStageModalOpen(true)}
+              >
+                Run Stage Checklist
+              </Button>
+            </Grid>
+          )}
           <Grid item>
             <Button
               variant="outlined"
@@ -694,6 +726,14 @@ function LaptopTagging() {
 
       {/* Hidden div for printing */}
       <div ref={printRef} style={{ display: 'none' }}></div>
+
+      <StageRunModal
+        open={stageModalOpen}
+        onClose={() => setStageModalOpen(false)}
+        laptopId={selectedLaptop?.ID || ''}
+        currentStatus={selectedLaptop?.Status || ''}
+        onCompleted={() => setRefresh(!refresh)}
+      />
     </Container>
 
   );

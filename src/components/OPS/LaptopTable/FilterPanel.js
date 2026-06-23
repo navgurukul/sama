@@ -91,23 +91,6 @@ const FilterPanel = ({
         <Grid item xs={12} md={3}>
           <FormControl fullWidth>
             <Typography variant="subtitle2" gutterBottom>
-              Working Status
-            </Typography>
-            <Select
-              value={workingFilter}
-              onChange={(e) => setWorkingFilter(e.target.value)}
-              variant="outlined"
-              size="small"
-            >
-              <MenuItem value="all">All</MenuItem>
-              <MenuItem value="Working">Working</MenuItem>
-              <MenuItem value="Not Working">Not Working</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <FormControl fullWidth>
-            <Typography variant="subtitle2" gutterBottom>
               Processing Status
             </Typography>
             <Select
@@ -117,15 +100,12 @@ const FilterPanel = ({
               size="small"
             >
               <MenuItem value="all">All</MenuItem>
-              <MenuItem value="Pickup Requested">Pickup Requested</MenuItem>
-              <MenuItem value="In Transit">In Transit</MenuItem>
-              <MenuItem value="Laptop Received">Laptop Received</MenuItem>
-              <MenuItem value="Refurbishment Started">Refurbishment Started</MenuItem>
-              <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
-              <MenuItem value="To be dispatch">To be dispatch</MenuItem>
-              <MenuItem value="Allocated">Allocated</MenuItem>
-              <MenuItem value="Distributed">Distributed</MenuItem>
-              <MenuItem value="Not Working">Not Working</MenuItem>
+              <MenuItem value="LAPTOP_RECEIVED">LAPTOP_RECEIVED</MenuItem>
+              <MenuItem value="REFURBISHMENT_TESTING">REFURBISHMENT_TESTING</MenuItem>
+              <MenuItem value="QC_CHECK">QC_CHECK</MenuItem>
+              <MenuItem value="DISTRIBUTION">DISTRIBUTION</MenuItem>
+              <MenuItem value="POST_DEPLOYMENT_15D">POST_DEPLOYMENT_15D</MenuItem>
+              <MenuItem value="MONTHLY_MONITORING">MONTHLY_MONITORING</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -213,16 +193,9 @@ const FilterPanel = ({
       </Grid>
 
       {/* Applied filters chips */}
-      {(workingFilter !== 'all' || statusFilter !== 'all' || majorIssueFilter !== 'all' || minorIssueFilter !== 'all' || allocatedToFilter) && (
+      {(statusFilter !== 'all' || majorIssueFilter !== 'all' || minorIssueFilter !== 'all' || allocatedToFilter) && (
         <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
           <Typography variant="subtitle2">Applied Filters:</Typography>
-          {workingFilter !== 'all' && (
-            <Chip
-              label={workingFilter === 'working' ? 'Working' : 'Not Working'}
-              color="primary"
-              onDelete={() => setWorkingFilter('all')}
-            />
-          )}
           {statusFilter !== 'all' && (
             <Chip
               label={`Status: ${statusFilter}`}

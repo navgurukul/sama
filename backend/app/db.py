@@ -6,15 +6,17 @@ from typing import Iterator
 
 import psycopg
 from psycopg.rows import dict_row
+from dotenv import load_dotenv
 
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"))
 
-DATABASE_URL = os.getenv("DATABASE_URL", "")
 DB_SCHEMA = os.getenv("DB_SCHEMA", "sama_ops")
 
 
 @contextmanager
 def get_conn() -> Iterator[psycopg.Connection]:
-    if not DATABASE_URL:
+    database_url = os.getenv("DATABASE_URL", "")
+    if not database_url:
         raise RuntimeError("DATABASE_URL is not set")
-    with psycopg.connect(DATABASE_URL, row_factory=dict_row) as conn:
+    with psycopg.connect(database_url, row_factory=dict_row) as conn:
         yield conn

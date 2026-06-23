@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  Autocomplete,
   TextField,
   Button,
   Container,
@@ -13,6 +14,7 @@ import {
   InputAdornment,
   Typography,
   Select,
+  CircularProgress,
 } from "@mui/material";
 import "./common.css";
 
@@ -41,6 +43,8 @@ function LaptopForm() {
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [donorOptions, setDonorOptions] = useState([]);
+  const [donorLoading, setDonorLoading] = useState(false);
 
   const requiredFields = [
     "id",
@@ -81,6 +85,29 @@ function LaptopForm() {
       [name]: typeof value === "string" ? value.split(",") : value,
     });
   };
+
+  const loadDonorOptions = useCallback(async () => {
+    setDonorLoading(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getDonorList`);
+      if (!response.ok) {
+        throw new Error(`Failed to load donors: ${response.status}`);
+      }
+      const data = await response.json();
+      const options = (Array.isArray(data) ? data : [])
+        .map((row) => String(row?.["Donor Company Name"] || "").trim())
+        .filter(Boolean);
+      setDonorOptions(Array.from(new Set(options)));
+    } catch (error) {
+      console.error("Error loading donor options:", error);
+    } finally {
+      setDonorLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadDonorOptions();
+  }, [loadDonorOptions]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -123,6 +150,7 @@ function LaptopForm() {
       );
 
       alert("Data uploaded successfully!");
+      await loadDonorOptions();
       setLoading(false);
 
       // Reset form
@@ -225,14 +253,41 @@ function LaptopForm() {
             <Grid item xs={12}>
               <Typography variant="subtitle1">Donor Company Name <span style={{ color: "red" }}>*</span></Typography>
 
-              <TextField
-                fullWidth
-                name="donorCompanyName"
+              <Autocomplete
+                freeSolo
+                options={donorOptions}
                 value={formData.donorCompanyName}
-                onChange={handleChange}
-                variant="outlined"
-                error={!!errors.donorCompanyName}
-                helperText={errors.donorCompanyName}
+                onChange={(event, value) => {
+                  const donorValue = String(value || "");
+                  setFormData((prev) => ({ ...prev, donorCompanyName: donorValue }));
+                  if (errors.donorCompanyName) {
+                    setErrors((prev) => ({ ...prev, donorCompanyName: null }));
+                  }
+                }}
+                onInputChange={(event, value) => {
+                  setFormData((prev) => ({ ...prev, donorCompanyName: String(value || "") }));
+                  if (errors.donorCompanyName) {
+                    setErrors((prev) => ({ ...prev, donorCompanyName: null }));
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    variant="outlined"
+                    error={!!errors.donorCompanyName}
+                    helperText={errors.donorCompanyName || "Select an existing donor or type a new one"}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {donorLoading ? <CircularProgress color="inherit" size={18} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={12}>
@@ -346,14 +401,20 @@ function LaptopForm() {
               </Typography>
               <TextField
                 fullWidth
+                select
                 name="conditionStatus"
                 value={formData.conditionStatus}
                 onChange={handleChange}
                 variant="outlined"
                 error={!!errors.conditionStatus}
                 helperText={errors.conditionStatus}
-              // required
-              />
+              >
+                {["Good", "Bad", "Needs Repair"].map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="subtitle1">Minor Issues

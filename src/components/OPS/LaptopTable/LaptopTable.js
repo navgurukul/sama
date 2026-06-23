@@ -1,8 +1,8 @@
 import React from 'react';
 import { Typography, Box, Chip, Button, Tooltip } from '@mui/material';
-import { LaptopStatusDropdown, AssignedTo, DonatedTo, LaptopWorkingCheckbox } from './LaptopStatus';
+import { AssignedTo, DonatedTo } from './LaptopStatus';
 
-export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleStatusChange, handleAssignedToChange, handleDonatedToChange, EditButton, refresh, setRefresh, sortConfig, handleSort) => {
+export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleAssignedToChange, handleDonatedToChange, handleOpenStageDetails, EditButton, refresh, setRefresh, sortConfig, handleSort) => {
   // Helper function to check if laptop has battery issues
   const hasBatteryIssue = (laptop) => {
     const minorIssues = laptop["Minor Issues"]?.toLowerCase() || "";
@@ -311,10 +311,19 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
           const rowIndex = tableMeta.rowIndex;
           const laptopData = data[rowIndex];
           return (
-            <LaptopStatusDropdown
-              value={laptopData.Status || ''}
-              onChange={(event) => handleStatusChange(event, rowIndex)}
-            />
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => handleOpenStageDetails(laptopData.ID)}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 600,
+                p: 0,
+                minWidth: 'auto'
+              }}
+            >
+              {laptopData.Status || 'RECEIVED'}
+            </Button>
           );
         },
         setCellProps: () => ({
@@ -361,31 +370,6 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
             <DonatedTo
               value={laptopData["Allocated To"] || ''}
               onChange={(event) => handleDonatedToChange(event, rowIndex)}
-            />
-          );
-        },
-        setCellProps: () => ({
-          className: 'custom-body-cell'
-        }),
-        setCellHeaderProps: () => ({
-          className: 'custom-header-cell'
-        })
-      }
-    },
-    {
-      name: "Working",
-      label: "Not Working",
-      options: {
-        sort: false,
-        customBodyRender: (value, tableMeta) => {
-          const rowIndex = tableMeta.rowIndex;
-          const laptopData = data[rowIndex];
-          const isWorking = laptopData.Working === "Working";
-
-          return (
-            <LaptopWorkingCheckbox
-              checked={isWorking}
-              onChange={(event) => handleWorkingToggle(event, rowIndex)}
             />
           );
         },

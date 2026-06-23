@@ -20,6 +20,26 @@ The other frontend APIs remain unchanged.
 - `type=laptopLabeling` (POST)
 - `type=userdetails`, `type=editUser`, `type=deleteUser` (POST)
 
+### Stage and checklist engine (`/exec`)
+
+- `GET /exec?type=getStageTemplate`
+- `GET /exec?type=getStageTemplate&stageId=1`
+- `GET /exec?type=getStageTemplate&stageCode=RECEIVED`
+- `GET /exec?type=getStageMap` (dashboard/admin stage lookup)
+- `GET /exec?type=getStageMap&includeInactive=1`
+- `GET /exec?type=getLaptopStageRuns&laptopId=<SERIAL>`
+- `GET /exec?type=getStageRunResponses&runId=<RUN_ID>`
+- `POST /exec` with `type=startStageRun`
+- `POST /exec` with `type=submitChecklistResponses`
+- `POST /exec` with `type=evaluateStageRun`
+- `POST /exec` with `type=completeStageRun`
+
+`startStageRun` accepts `stageId` (preferred) and `stageCode` (backward compatible).
+
+Migration file for this module:
+
+- `sql_scripts/phase1_006_stage_checklist_engine.sql`
+
 ### User details API (`/user-exec`)
 
 - `GET /user-exec` -> login user list (from `user_profile_userrole` + approved registrations)

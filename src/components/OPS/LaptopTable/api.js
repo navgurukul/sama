@@ -143,3 +143,133 @@ export const updateLaptopData = async (payload) => {
     throw error;
   }
 };
+
+const parseApiError = async (response) => {
+  let detail = `HTTP ${response.status}`;
+  try {
+    const payload = await response.json();
+    if (payload?.detail) {
+      detail = typeof payload.detail === 'string' ? payload.detail : JSON.stringify(payload.detail);
+    } else {
+      detail = JSON.stringify(payload);
+    }
+  } catch (error) {
+    // ignore parse failures and keep fallback detail
+  }
+  throw new Error(detail);
+};
+
+const execGet = async (queryParams) => {
+  const params = new URLSearchParams(queryParams);
+  const response = await fetch(`${API_BASE_URL}?${params.toString()}`);
+  if (!response.ok) {
+    await parseApiError(response);
+  }
+  return response.json();
+};
+
+const execPost = async (payload) => {
+  const response = await fetch(API_BASE_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    await parseApiError(response);
+  }
+  return response.json();
+};
+
+const buildEvidenceUploadUrl = () => {
+  if (!API_BASE_URL) {
+    throw new Error('API base URL is not configured');
+  }
+  if (API_BASE_URL.endsWith('/exec')) {
+    return API_BASE_URL.replace(/\/exec$/, '/evidence-upload');
+  }
+  return `${API_BASE_URL.replace(/\/$/, '')}/evidence-upload`;
+};
+
+export const fetchStageTemplate = async ({ stageId = null, stageCode = null } = {}) => {
+  const params = { type: 'getStageTemplate' };
+  if (stageId !== null && stageId !== undefined) params.stageId = String(stageId);
+  if (stageCode) params.stageCode = stageCode;
+  return execGet(params);
+};
+
+export const fetchStageMap = async ({ includeInactive = false } = {}) => {
+  const params = { type: 'getStageMap' };
+  if (includeInactive) params.includeInactive = '1';
+  return execGet(params);
+};
+
+export const fetchLaptopStageRuns = async (laptopId) => {
+  return execGet({ type: 'getLaptopStageRuns', laptopId });
+};
+
+export const fetchStageRunResponses = async (runId) => {
+  return execGet({ type: 'getStageRunResponses', runId: String(runId) });
+};
+
+export const fetchStageGateLogs = async ({ runId = null, laptopId = null } = {}) => {
+  const params = { type: 'getStageGateLogs' };
+  if (runId !== null && runId !== undefined) params.runId = String(runId);
+  if (laptopId) params.laptopId = String(laptopId);
+  return execGet(params);
+};
+
+export const startStageRun = async ({ laptopId, stageId, stageCode, startedBy, notes }) => {
+  return execPost({
+    type: 'startStageRun',
+    laptopId,
+    stageId,
+    stageCode,
+    startedBy,
+    notes,
+  });
+};
+
+export const submitChecklistResponses = async ({ runId, responses, respondedBy }) => {
+  return execPost({
+    type: 'submitChecklistResponses',
+    runId,
+    responses,
+    respondedBy,
+  });
+};
+
+export const evaluateStageRun = async (runId) => {
+  return execPost({
+    type: 'evaluateStageRun',
+    runId,
+  });
+};
+
+export const completeStageRun = async ({ runId, completedBy, verifierName, notes }) => {
+  return execPost({
+    type: 'completeStageRun',
+    runId,
+    completedBy,
+    verifierName,
+    notes,
+  });
+};
+
+export const uploadEvidenceFile = async (file) => {
+  if (!file) {
+    throw new Error('file is required');
+  }
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(buildEvidenceUploadUrl(), {
+    method: 'POST',
+    body: formData,
+  });
+  if (!response.ok) {
+    await parseApiError(response);
+  }
+  return response.json();
+};
