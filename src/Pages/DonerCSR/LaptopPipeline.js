@@ -857,7 +857,7 @@ const LaptopPipeline = () => {
           </Typography>
 
           <Grid container spacing={2}>
-            {stages.map((stage) => (
+            {stages.filter((stage) => stage.title !== "Active Usage").map((stage) => (
               <React.Fragment key={stage.title}>
 
                 <Grid item xs={12} >
