@@ -257,6 +257,43 @@ export const completeStageRun = async ({ runId, completedBy, verifierName, notes
   });
 };
 
+export const fetchLaptopStageSnapshot = async (laptopId) => {
+  return execGet({ type: 'getLaptopStageSnapshot', laptopId });
+};
+
+export const fetchFailedGateQueue = async () => {
+  return execGet({ type: 'getFailedGateQueue' });
+};
+
+export const fetchIssueLogs = async ({ laptopId = null, runId = null, status = null } = {}) => {
+  const params = { type: 'getIssueLogs' };
+  if (laptopId) params.laptopId = laptopId;
+  if (runId !== null && runId !== undefined) params.runId = String(runId);
+  if (status) params.status = status;
+  return execGet(params);
+};
+
+export const createIssueLog = async ({ laptopId, description, severity = 'P2', reportedBy, runId = null }) => {
+  return execPost({
+    type: 'createIssueLog',
+    laptopId,
+    description,
+    severity,
+    reportedBy,
+    runId,
+  });
+};
+
+export const resolveIssueLog = async ({ issueId, resolutionAction, resolvedBy, status = 'RESOLVED' }) => {
+  return execPost({
+    type: 'resolveIssueLog',
+    issueId,
+    resolutionAction,
+    resolvedBy,
+    status,
+  });
+};
+
 export const uploadEvidenceFile = async (file) => {
   if (!file) {
     throw new Error('file is required');

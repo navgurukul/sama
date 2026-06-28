@@ -49,6 +49,8 @@ MIGRATED_TYPES = {
     "submitChecklistResponses",
     "evaluateStageRun",
     "completeStageRun",
+    "createIssueLog",
+    "resolveIssueLog",
 }
 
 
@@ -308,21 +310,51 @@ def _evaluate_requires_different_actor_gate(
         raise HTTPException(status_code=404, detail="runId not found")
 
     requires_different_actor = bool(row.get("requires_different_actor"))
-    started_by = str(row.get("started_by") or "").strip()
+    laptop_id = str(row.get("laptop_id") or "")
     completed_actor = str(completed_by or row.get("completed_by") or "").strip()
     verifier_actor = str(verifier_name or row.get("verifier_name") or "").strip()
 
+    # Find the most recent PASS run from the previous stage for this laptop.
+    # The SOP rule is: QC actor must differ from the Stage 2 refurbisher,
+    # not that two different people must work within Stage 3 itself.
+    prior_actor = ""
+    if requires_different_actor:
+        cur.execute(
+            f"""
+            SELECT COALESCE(r.completed_by, r.started_by) AS actor
+            FROM {DB_SCHEMA}.laptop_stage_run r
+            JOIN {DB_SCHEMA}.stage_definition sd ON sd.stage_id = r.stage_id
+            WHERE r.laptop_id = %s
+              AND r.outcome = 'PASS'
+              AND sd.display_order < (
+                  SELECT sd2.display_order
+                  FROM {DB_SCHEMA}.stage_definition sd2
+                  WHERE sd2.stage_id = %s
+              )
+            ORDER BY sd.display_order DESC, r.run_id DESC
+            LIMIT 1
+            """,
+            (laptop_id, row["stage_id"]),
+        )
+        prior_row = cur.fetchone()
+        if prior_row:
+            prior_actor = str(prior_row.get("actor") or "").strip()
+
     violations: List[str] = []
-    if requires_different_actor and started_by:
-        if completed_actor and completed_actor.lower() == started_by.lower():
-            violations.append("completedBy must be different from startedBy")
-        if verifier_actor and verifier_actor.lower() == started_by.lower():
-            violations.append("verifierName must be different from startedBy")
+    if requires_different_actor and prior_actor:
+        if completed_actor and completed_actor.lower() == prior_actor.lower():
+            violations.append(
+                f"completedBy ({completed_actor}) must differ from the previous stage actor ({prior_actor})"
+            )
+        if verifier_actor and verifier_actor.lower() == prior_actor.lower():
+            violations.append(
+                f"verifierName ({verifier_actor}) must differ from the previous stage actor ({prior_actor})"
+            )
 
     passed = len(violations) == 0
     details = {
         "requiresDifferentActor": requires_different_actor,
-        "startedBy": started_by,
+        "priorStageActor": prior_actor,
         "completedBy": completed_actor,
         "verifierName": verifier_actor,
         "violations": violations,
@@ -331,7 +363,7 @@ def _evaluate_requires_different_actor_gate(
     cur.execute(
         f"""
         INSERT INTO {DB_SCHEMA}.stage_gate_rule (stage_id, stage_code, rule_code, rule_name, is_blocking, is_active, config_json)
-        VALUES (%s, %s, 'REQUIRES_DIFFERENT_ACTOR', 'Completer/verifier must differ from stage starter', TRUE, TRUE, %s::jsonb)
+        VALUES (%s, %s, 'REQUIRES_DIFFERENT_ACTOR', 'QC actor must differ from the Stage 2 refurbisher', TRUE, TRUE, %s::jsonb)
         ON CONFLICT (stage_id, rule_code)
         DO UPDATE SET is_active = TRUE, config_json = EXCLUDED.config_json
         RETURNING rule_id
@@ -1947,6 +1979,9 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
 
                 if not evaluation["passed"]:
                     fail_outcome = "FAIL"
+                    fail_stage = _resolve_transition_stage(cur, current_stage_code, "fail", current_stage_id)
+                    fail_stage_id = int(fail_stage["stage_id"]) if fail_stage else current_stage_id
+                    fail_stage_code = str(fail_stage["stage_code"]) if fail_stage else current_stage_code
                     cur.execute(
                         f"""
                         UPDATE {DB_SCHEMA}.laptop_stage_run
@@ -1967,7 +2002,7 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                             last_updated_on = now()
                         WHERE id = %s
                         """,
-                        (current_stage_code, completed_by, laptop_id),
+                        (fail_stage_code, completed_by, laptop_id),
                     )
                     conn.commit()
                     return {
@@ -1978,8 +2013,8 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                         "stageId": current_stage_id,
                         "stageCode": current_stage_code,
                         "outcome": fail_outcome,
-                        "nextStageId": current_stage_id,
-                        "nextStageCode": current_stage_code,
+                        "nextStageId": fail_stage_id,
+                        "nextStageCode": fail_stage_code,
                         "evaluation": evaluation,
                     }
 
@@ -1991,6 +2026,9 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                 )
                 if not actor_evaluation["passed"]:
                     fail_outcome = "FAIL"
+                    fail_stage = _resolve_transition_stage(cur, current_stage_code, "fail", current_stage_id)
+                    fail_stage_id = int(fail_stage["stage_id"]) if fail_stage else current_stage_id
+                    fail_stage_code = str(fail_stage["stage_code"]) if fail_stage else current_stage_code
                     cur.execute(
                         f"""
                         UPDATE {DB_SCHEMA}.laptop_stage_run
@@ -2011,7 +2049,7 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                             last_updated_on = now()
                         WHERE id = %s
                         """,
-                        (current_stage_code, completed_by, laptop_id),
+                        (fail_stage_code, completed_by, laptop_id),
                     )
                     conn.commit()
                     return {
@@ -2022,8 +2060,8 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                         "stageId": current_stage_id,
                         "stageCode": current_stage_code,
                         "outcome": fail_outcome,
-                        "nextStageId": current_stage_id,
-                        "nextStageCode": current_stage_code,
+                        "nextStageId": fail_stage_id,
+                        "nextStageCode": fail_stage_code,
                         "evaluation": {
                             "mandatory": evaluation,
                             "differentActor": actor_evaluation,
@@ -2292,7 +2330,310 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                 conn.commit()
                 return {"status": "success", "type": type_name}
 
+            if type_name == "createIssueLog":
+                laptop_id = str(_payload_get(payload, "laptopId") or "").strip()
+                description = str(_payload_get(payload, "description", "issueDescription") or "").strip()
+                severity = str(_payload_get(payload, "severity") or "P2").strip().upper()
+                reported_by = str(_payload_get(payload, "reportedBy", "updatedBy") or "system").strip()
+                run_id_raw = _payload_get(payload, "runId")
+
+                if not laptop_id:
+                    raise HTTPException(status_code=400, detail="laptopId is required")
+                if not description:
+                    raise HTTPException(status_code=400, detail="description is required")
+                if severity not in {"P1", "P2", "P3"}:
+                    severity = "P2"
+
+                run_id_int: Optional[int] = None
+                if run_id_raw is not None:
+                    try:
+                        run_id_int = int(run_id_raw)
+                    except (TypeError, ValueError):
+                        pass
+
+                cur.execute(
+                    f"""
+                    INSERT INTO {DB_SCHEMA}.issue_log
+                    (laptop_id, run_id, issue_description, severity, reported_by)
+                    VALUES (%s, %s, %s, %s, %s)
+                    RETURNING issue_id, laptop_id, run_id, issue_description, severity,
+                              reported_by, reported_at, status
+                    """,
+                    (laptop_id, run_id_int, description, severity, reported_by),
+                )
+                row = cur.fetchone()
+                conn.commit()
+                return {
+                    "status": "success",
+                    "type": type_name,
+                    "issue": _normalize_rows([row])[0] if row else None,
+                }
+
+            if type_name == "resolveIssueLog":
+                issue_id = _parse_int(_payload_get(payload, "issueId"), "issueId")
+                resolution_action = str(_payload_get(payload, "resolutionAction") or "").strip()
+                resolved_by = str(_payload_get(payload, "resolvedBy", "updatedBy") or "system").strip()
+                new_status = str(_payload_get(payload, "status") or "RESOLVED").strip().upper()
+
+                if not resolution_action:
+                    raise HTTPException(status_code=400, detail="resolutionAction is required")
+                if new_status not in {"RESOLVED", "CLOSED", "IN_PROGRESS"}:
+                    new_status = "RESOLVED"
+
+                cur.execute(
+                    f"""
+                    UPDATE {DB_SCHEMA}.issue_log
+                    SET resolution_action = %s,
+                        resolved_at = now(),
+                        status = %s
+                    WHERE issue_id = %s
+                    RETURNING issue_id, laptop_id, status, resolution_action, resolved_at
+                    """,
+                    (resolution_action, new_status, issue_id),
+                )
+                row = cur.fetchone()
+                if not row:
+                    raise HTTPException(status_code=404, detail="issueId not found")
+                conn.commit()
+                return {
+                    "status": "success",
+                    "type": type_name,
+                    "issue": _normalize_rows([row])[0] if row else None,
+                }
+
     raise HTTPException(status_code=501, detail=f"type '{type_name}' not implemented in RDS backend")
+
+
+def _query_laptop_stage_snapshot(request: Request) -> Dict[str, Any]:
+    laptop_id = (request.query_params.get("laptopId") or "").strip()
+    if not laptop_id:
+        raise HTTPException(status_code=400, detail="laptopId is required")
+
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            # 1. Laptop row + current stage metadata
+            cur.execute(
+                f"""
+                SELECT
+                    ll.id AS "laptopId",
+                    ll.status AS "currentStageCode",
+                    sd.stage_id AS "currentStageId",
+                    sd.stage_name AS "currentStageName",
+                    sd.display_order AS "currentStageOrder",
+                    sd.sla_hours AS "slaHours",
+                    sd.responsible_role AS "responsibleRole",
+                    sd.verifier_role AS "verifierRole",
+                    ll.last_updated_on AS "lastUpdatedOn",
+                    ll.last_updated_by AS "lastUpdatedBy",
+                    ll.manufacturer_model AS "model",
+                    ll.ram AS "ram",
+                    ll.rom AS "rom",
+                    ll.processor AS "processor",
+                    ll.inventory_location AS "inventoryLocation",
+                    COALESCE(d.donor_company, ll.donor_company_name) AS "donorCompany"
+                FROM {DB_SCHEMA}.laptop_labeling ll
+                LEFT JOIN {DB_SCHEMA}.stage_definition sd
+                  ON sd.stage_code = ll.status AND sd.is_active = TRUE
+                LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
+                WHERE ll.id = %s
+                LIMIT 1
+                """,
+                (laptop_id,),
+            )
+            laptop_row = cur.fetchone()
+            if not laptop_row:
+                raise HTTPException(status_code=404, detail="Laptop not found")
+            laptop = _normalize_rows([laptop_row])[0]
+
+            current_stage_code = str(laptop.get("currentStageCode") or "")
+
+            # 2. Active IN_PROGRESS run for the current stage
+            active_run = None
+            pending_mandatory_items: List[Dict[str, Any]] = []
+            if current_stage_code:
+                cur.execute(
+                    f"""
+                    SELECT
+                        run_id AS "runId",
+                        stage_id AS "stageId",
+                        stage_code AS "stageCode",
+                        run_number AS "runNumber",
+                        outcome AS "outcome",
+                        started_by AS "startedBy",
+                        started_at AS "startedAt",
+                        notes AS "notes"
+                    FROM {DB_SCHEMA}.laptop_stage_run
+                    WHERE laptop_id = %s
+                      AND stage_code = %s
+                      AND outcome = 'IN_PROGRESS'
+                    ORDER BY run_number DESC
+                    LIMIT 1
+                    """,
+                    (laptop_id, current_stage_code),
+                )
+                run_row = cur.fetchone()
+                if run_row:
+                    active_run = _normalize_rows([run_row])[0]
+                    run_id = active_run["runId"]
+                    stage_id_for_query = active_run["stageId"]
+
+                    # 3. Pending mandatory items for this active run
+                    cur.execute(
+                        f"""
+                        SELECT
+                            i.item_id AS "itemId",
+                            i.item_code AS "itemCode",
+                            i.item_text AS "itemText",
+                            s.section_code AS "sectionCode",
+                            s.section_name AS "sectionName",
+                            resp.result AS "result"
+                        FROM {DB_SCHEMA}.checklist_section s
+                        JOIN {DB_SCHEMA}.checklist_item i
+                          ON i.section_id = s.section_id AND i.is_active = TRUE
+                        LEFT JOIN {DB_SCHEMA}.checklist_response resp
+                          ON resp.run_id = %s AND resp.item_id = i.item_id
+                        WHERE s.stage_id = %s
+                          AND s.is_active = TRUE
+                          AND i.is_mandatory = TRUE
+                          AND (resp.response_id IS NULL OR resp.result != 'PASS')
+                        ORDER BY s.display_order, i.display_order
+                        """,
+                        (run_id, stage_id_for_query),
+                    )
+                    pending_mandatory_items = _normalize_rows(cur.fetchall() or [])
+
+            # 4. Three most recent failed/blocked runs for this laptop
+            cur.execute(
+                f"""
+                SELECT
+                    r.run_id AS "runId",
+                    r.stage_code AS "stageCode",
+                    sd.stage_name AS "stageName",
+                    r.run_number AS "runNumber",
+                    r.outcome AS "outcome",
+                    r.started_by AS "startedBy",
+                    r.completed_by AS "completedBy",
+                    r.started_at AS "startedAt",
+                    r.completed_at AS "completedAt",
+                    r.notes AS "notes"
+                FROM {DB_SCHEMA}.laptop_stage_run r
+                LEFT JOIN {DB_SCHEMA}.stage_definition sd ON sd.stage_code = r.stage_code
+                WHERE r.laptop_id = %s
+                  AND r.outcome IN ('FAIL', 'BLOCKED')
+                ORDER BY r.completed_at DESC NULLS LAST, r.run_id DESC
+                LIMIT 3
+                """,
+                (laptop_id,),
+            )
+            recent_failures = _normalize_rows(cur.fetchall() or [])
+
+            # 5. Open issue logs for this laptop
+            cur.execute(
+                f"""
+                SELECT
+                    issue_id AS "issueId",
+                    laptop_id AS "laptopId",
+                    run_id AS "runId",
+                    issue_description AS "description",
+                    severity AS "severity",
+                    reported_by AS "reportedBy",
+                    reported_at AS "reportedAt",
+                    status AS "status"
+                FROM {DB_SCHEMA}.issue_log
+                WHERE laptop_id = %s
+                  AND status IN ('OPEN', 'IN_PROGRESS')
+                ORDER BY reported_at DESC
+                LIMIT 5
+                """,
+                (laptop_id,),
+            )
+            open_issues = _normalize_rows(cur.fetchall() or [])
+
+    return {
+        "laptop": laptop,
+        "activeRun": active_run,
+        "pendingMandatoryItems": pending_mandatory_items,
+        "recentFailures": recent_failures,
+        "openIssues": open_issues,
+    }
+
+
+def _query_failed_gate_queue() -> List[Dict[str, Any]]:
+    sql = f"""
+        SELECT DISTINCT ON (ll.id)
+            ll.id AS "laptopId",
+            ll.status AS "currentStageCode",
+            r.run_id AS "runId",
+            r.run_number AS "runNumber",
+            r.outcome AS "outcome",
+            r.stage_code AS "stageCode",
+            sd.stage_name AS "stageName",
+            r.started_by AS "startedBy",
+            r.completed_by AS "completedBy",
+            r.completed_at AS "completedAt",
+            r.notes AS "notes",
+            COALESCE(d.donor_company, ll.donor_company_name) AS "donorCompany",
+            ll.manufacturer_model AS "model",
+            ll.inventory_location AS "inventoryLocation"
+        FROM {DB_SCHEMA}.laptop_labeling ll
+        JOIN {DB_SCHEMA}.laptop_stage_run r
+          ON r.laptop_id = ll.id
+         AND r.stage_code = ll.status
+         AND r.outcome IN ('FAIL', 'BLOCKED')
+        LEFT JOIN {DB_SCHEMA}.stage_definition sd ON sd.stage_code = ll.status
+        LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
+        WHERE NOT EXISTS (
+            SELECT 1 FROM {DB_SCHEMA}.laptop_stage_run r2
+            WHERE r2.laptop_id = ll.id
+              AND r2.stage_code = ll.status
+              AND r2.outcome = 'IN_PROGRESS'
+        )
+        ORDER BY ll.id, r.run_id DESC
+    """
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql)
+            return _normalize_rows(cur.fetchall() or [])
+
+
+def _query_issue_logs(request: Request) -> List[Dict[str, Any]]:
+    laptop_id = (request.query_params.get("laptopId") or "").strip()
+    run_id_raw = request.query_params.get("runId")
+    status_filter = (request.query_params.get("status") or "").strip().upper()
+
+    sql = f"""
+        SELECT
+            issue_id AS "issueId",
+            laptop_id AS "laptopId",
+            run_id AS "runId",
+            issue_description AS "description",
+            severity AS "severity",
+            reported_by AS "reportedBy",
+            reported_at AS "reportedAt",
+            resolution_action AS "resolutionAction",
+            resolved_at AS "resolvedAt",
+            status AS "status"
+        FROM {DB_SCHEMA}.issue_log
+        WHERE 1=1
+    """
+    params: List[Any] = []
+
+    if laptop_id:
+        sql += " AND laptop_id = %s"
+        params.append(laptop_id)
+    if run_id_raw:
+        sql += " AND run_id = %s"
+        params.append(_parse_int(run_id_raw, "runId"))
+    if status_filter in {"OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"}:
+        sql += " AND status = %s"
+        params.append(status_filter)
+
+    sql += " ORDER BY reported_at DESC, issue_id DESC"
+
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, params)
+            return _normalize_rows(cur.fetchall() or [])
 
 
 def _proxy_to_legacy(method: str, request: Request, payload: Optional[Dict[str, Any]]) -> Any:
@@ -2383,6 +2724,12 @@ def exec_get(request: Request) -> Any:
         return _query_stage_run_responses(request)
     if type_name == "getStageGateLogs":
         return _query_stage_gate_logs(request)
+    if type_name == "getLaptopStageSnapshot":
+        return _query_laptop_stage_snapshot(request)
+    if type_name == "getFailedGateQueue":
+        return _query_failed_gate_queue()
+    if type_name == "getIssueLogs":
+        return _query_issue_logs(request)
 
     return _proxy_to_legacy("GET", request, None)
 
