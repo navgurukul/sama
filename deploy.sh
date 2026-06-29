@@ -228,10 +228,14 @@ log_info "Backend dependencies installed in backend/venv."
 log_step "STEP 7: Frontend — npm install & build"
 
 cd "$APP_DIR"
-npm install --legacy-peer-deps
-npm run build
 
-log_info "React build complete. Static files in $APP_DIR/build/"
+if [ -d "$APP_DIR/build" ]; then
+    log_info "Build folder already exists. Skipping npm install & build."
+else
+    npm install --legacy-peer-deps
+    NODE_OPTIONS=--max-old-space-size=1536 npm run build
+    log_info "React build complete. Static files in $APP_DIR/build/"
+fi
 
 # =============================================
 # STEP 8: Create systemd service for backend
