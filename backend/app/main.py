@@ -4,7 +4,7 @@ import json
 import os
 import re
 import uuid
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import boto3
@@ -1839,6 +1839,39 @@ def _handle_user_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
     raise HTTPException(status_code=501, detail=f"type '{type_name}' not implemented in user backend")
 
 
+def _parse_excel_date(val: Any) -> Optional[str]:
+    if val is None or val == "":
+        return None
+    
+    if isinstance(val, (datetime, date)):
+        return val.strftime("%Y-%m-%d")
+        
+    try:
+        if isinstance(val, (int, float)) or (isinstance(val, str) and val.strip().isdigit()):
+            serial_num = int(val)
+            if serial_num > 60:
+                base_date = datetime(1899, 12, 30)
+            else:
+                base_date = datetime(1899, 12, 31)
+            parsed_date = base_date + timedelta(days=serial_num)
+            return parsed_date.strftime("%Y-%m-%d")
+    except Exception:
+        pass
+        
+    if isinstance(val, str):
+        val_str = val.strip()
+        if not val_str or val_str.lower() in ("none", "null"):
+            return None
+        for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%m/%d/%Y", "%Y/%m/%d", "%d/%m/%Y"):
+            try:
+                return datetime.strptime(val_str, fmt).strftime("%Y-%m-%d")
+            except ValueError:
+                continue
+        return val_str
+        
+    return None
+
+
 def _upsert_laptop_row(cur, item: Dict[str, Any], last_updated_by: str) -> None:
     laptop_id = _payload_get(item, "id", "ID")
     donor_name_input = _payload_get(item, "donorCompanyName", "Donor Company Name")
@@ -1897,7 +1930,7 @@ def _upsert_laptop_row(cur, item: Dict[str, Any], last_updated_by: str) -> None:
             _payload_get(item, "rom", "ROM"),
             _payload_get(item, "manufacturerModel", "Manufacturer Model", "manufacturer_model"),
             _payload_get(item, "processor", "Processor"),
-            _payload_get(item, "manufacturingDate", "Manufacturing Date", "Manufacturing Date(if available)") or None,
+            _parse_excel_date(_payload_get(item, "manufacturingDate", "Manufacturing Date", "Manufacturing Date(if available)")),
             condition_status_value,
             minor_issues,
             major_issues,
