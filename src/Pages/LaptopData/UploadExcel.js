@@ -142,25 +142,27 @@ const Upload = () => {
       //   data: XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]), // Convert sheet to JSON
       // };
 
-      // Post data to Google Apps Script
       try {
-        await fetch(
+        const response = await fetch(
           `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
-          // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
           {
             method: "POST",
             body: JSON.stringify(dataToSend),
-            mode: "no-cors",
             headers: {
               "Content-Type": "application/json",
             },
           }
         );
 
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.detail || "Server error occurred during upload.");
+        }
+
         alert("Data uploaded successfully!"); // Success alert
       } catch (error) {
         console.error("Error uploading data:", error); // Log the error
-        alert("Failed to upload data. Please try again."); // Error alert
+        alert(`Failed to upload data: ${error.message}`); // Error alert
       }
 
       setLoading(false); // Hide loader after completion

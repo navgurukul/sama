@@ -42,6 +42,7 @@ MIGRATED_TYPES = {
     "updatepickupstatus",
     "assign",
     "laptopLabeling",
+    "bulkupload",
     "userdetails",
     "editUser",
     "deleteUser",
@@ -1838,6 +1839,84 @@ def _handle_user_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
     raise HTTPException(status_code=501, detail=f"type '{type_name}' not implemented in user backend")
 
 
+def _upsert_laptop_row(cur, item: Dict[str, Any], last_updated_by: str) -> None:
+    laptop_id = _payload_get(item, "id", "ID")
+    donor_name_input = _payload_get(item, "donorCompanyName", "Donor Company Name")
+    minor_issues = _payload_get(item, "minorIssues", "minorIssue", "Minor Issues")
+    major_issues = _payload_get(item, "majorIssues", "majorIssue", "Major Issues")
+
+    if isinstance(minor_issues, list):
+        minor_issues = ", ".join(str(v).strip() for v in minor_issues if str(v).strip())
+    if isinstance(major_issues, list):
+        major_issues = ", ".join(str(v).strip() for v in major_issues if str(v).strip())
+
+    donated_to = _payload_get(item, "donatedTo", "allocatedTo", "Allocated To")
+    other_issues = _payload_get(item, "others", "otherIssues", "Other Issues")
+    status_value = _payload_get(item, "status", "Status") or "LAPTOP_RECEIVED"
+    condition_status_value = _normalize_condition_status(_payload_get(item, "conditionStatus", "Condition Status"))
+    donor_id = _get_or_create_donor_id(cur, donor_name_input)
+
+    cur.execute(
+        f"""
+        INSERT INTO {DB_SCHEMA}.laptop_labeling
+        (id, donor_company_name, donor_id, ram, rom, manufacturer_model, processor, manufacturing_date,
+         condition_status, minor_issues, major_issues, inventory_location, laptop_weight,
+         other_issues, mac_address, battery_capacity, batch, status, working,
+         allocated_to, assigned_to, comment_for_issues, last_updated_by, last_updated_on)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
+        ON CONFLICT (id) DO UPDATE SET
+          donor_company_name=EXCLUDED.donor_company_name,
+          donor_id=EXCLUDED.donor_id,
+          ram=EXCLUDED.ram,
+          rom=EXCLUDED.rom,
+          manufacturer_model=EXCLUDED.manufacturer_model,
+          processor=EXCLUDED.processor,
+          manufacturing_date=EXCLUDED.manufacturing_date,
+          condition_status=EXCLUDED.condition_status,
+          minor_issues=EXCLUDED.minor_issues,
+          major_issues=EXCLUDED.major_issues,
+          inventory_location=EXCLUDED.inventory_location,
+          laptop_weight=EXCLUDED.laptop_weight,
+          other_issues=EXCLUDED.other_issues,
+          mac_address=EXCLUDED.mac_address,
+          battery_capacity=EXCLUDED.battery_capacity,
+          batch=EXCLUDED.batch,
+          status=EXCLUDED.status,
+          working=EXCLUDED.working,
+          allocated_to=EXCLUDED.allocated_to,
+          assigned_to=EXCLUDED.assigned_to,
+          comment_for_issues=EXCLUDED.comment_for_issues,
+          last_updated_by=EXCLUDED.last_updated_by,
+          last_updated_on=now()
+        """,
+        (
+            laptop_id,
+            str(donor_id) if donor_id is not None else donor_name_input,
+            donor_id,
+            _payload_get(item, "ram", "RAM"),
+            _payload_get(item, "rom", "ROM"),
+            _payload_get(item, "manufacturerModel", "Manufacturer Model", "manufacturer_model"),
+            _payload_get(item, "processor", "Processor"),
+            _payload_get(item, "manufacturingDate", "Manufacturing Date", "Manufacturing Date(if available)") or None,
+            condition_status_value,
+            minor_issues,
+            major_issues,
+            _payload_get(item, "inventoryLocation", "Inventory Location", "inventory_location"),
+            _payload_get(item, "laptopWeight", "laptop weight", "Laptop Weight", "laptop_weight"),
+            other_issues,
+            _payload_get(item, "macAddress", "Mac address", "Mac Address", "mac_address"),
+            _payload_get(item, "batteryCapacity", "Battery Capacity", "battery_capacity"),
+            _payload_get(item, "batch", "Batch"),
+            status_value,
+            _payload_get(item, "working", "Working"),
+            donated_to,
+            _payload_get(item, "assignedTo", "Assigned To", "assigned_to"),
+            _payload_get(item, "comment", "commentForIssues", "Comment for the Issues"),
+            last_updated_by,
+        ),
+    )
+
+
 def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
     type_name = payload.get("type")
 
@@ -2182,83 +2261,26 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                 return {"status": "success", "type": type_name}
 
             if type_name == "laptopLabeling":
-                laptop_id = _payload_get(payload, "id", "ID")
-                donor_name_input = _payload_get(payload, "donorCompanyName", "Donor Company Name")
-                minor_issues = _payload_get(payload, "minorIssues", "minorIssue", "Minor Issues")
-                major_issues = _payload_get(payload, "majorIssues", "majorIssue", "Major Issues")
-
-                if isinstance(minor_issues, list):
-                    minor_issues = ", ".join(str(v).strip() for v in minor_issues if str(v).strip())
-                if isinstance(major_issues, list):
-                    major_issues = ", ".join(str(v).strip() for v in major_issues if str(v).strip())
-
-                donated_to = _payload_get(payload, "donatedTo", "allocatedTo", "Allocated To")
-                other_issues = _payload_get(payload, "others", "otherIssues", "Other Issues")
-                status_value = _payload_get(payload, "status", "Status") or "LAPTOP_RECEIVED"
-                condition_status_value = _normalize_condition_status(_payload_get(payload, "conditionStatus", "Condition Status"))
-                donor_id = _get_or_create_donor_id(cur, donor_name_input)
-
-                cur.execute(
-                    f"""
-                    INSERT INTO {DB_SCHEMA}.laptop_labeling
-                                        (id, donor_company_name, donor_id, ram, rom, manufacturer_model, processor, manufacturing_date,
-                     condition_status, minor_issues, major_issues, inventory_location, laptop_weight,
-                     other_issues, mac_address, battery_capacity, batch, status, working,
-                     allocated_to, assigned_to, comment_for_issues, last_updated_by, last_updated_on)
-                                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
-                    ON CONFLICT (id) DO UPDATE SET
-                      donor_company_name=EXCLUDED.donor_company_name,
-                                            donor_id=EXCLUDED.donor_id,
-                      ram=EXCLUDED.ram,
-                      rom=EXCLUDED.rom,
-                      manufacturer_model=EXCLUDED.manufacturer_model,
-                      processor=EXCLUDED.processor,
-                      manufacturing_date=EXCLUDED.manufacturing_date,
-                      condition_status=EXCLUDED.condition_status,
-                      minor_issues=EXCLUDED.minor_issues,
-                      major_issues=EXCLUDED.major_issues,
-                      inventory_location=EXCLUDED.inventory_location,
-                      laptop_weight=EXCLUDED.laptop_weight,
-                      other_issues=EXCLUDED.other_issues,
-                      mac_address=EXCLUDED.mac_address,
-                      battery_capacity=EXCLUDED.battery_capacity,
-                      batch=EXCLUDED.batch,
-                                            status=EXCLUDED.status,
-                                            working=EXCLUDED.working,
-                                            allocated_to=EXCLUDED.allocated_to,
-                                            assigned_to=EXCLUDED.assigned_to,
-                                            comment_for_issues=EXCLUDED.comment_for_issues,
-                                            last_updated_by=EXCLUDED.last_updated_by,
-                      last_updated_on=now()
-                    """,
-                    (
-                                                laptop_id,
-                                                str(donor_id) if donor_id is not None else _payload_get(payload, "donorCompanyName", "Donor Company Name"),
-                                                donor_id,
-                                                _payload_get(payload, "ram", "RAM"),
-                                                _payload_get(payload, "rom", "ROM"),
-                                                _payload_get(payload, "manufacturerModel", "Manufacturer Model"),
-                                                _payload_get(payload, "processor", "Processor"),
-                                                _payload_get(payload, "manufacturingDate", "Manufacturing Date") or None,
-                                                condition_status_value,
-                                                minor_issues,
-                                                major_issues,
-                                                _payload_get(payload, "inventoryLocation", "Inventory Location"),
-                                                _payload_get(payload, "laptopWeight", "laptop weight"),
-                                                other_issues,
-                                                _payload_get(payload, "macAddress", "Mac address"),
-                                                _payload_get(payload, "batteryCapacity", "Battery Capacity"),
-                                                _payload_get(payload, "batch", "Batch"),
-                                                status_value,
-                                                _payload_get(payload, "working", "Working"),
-                                                donated_to,
-                                                _payload_get(payload, "assignedTo", "Assigned To"),
-                                                _payload_get(payload, "comment", "commentForIssues", "Comment for the Issues"),
-                                                _payload_get(payload, "lastUpdatedBy", "updatedBy", "Last Updated By", "last_updated_by") or "system",
-                    ),
-                )
+                _upsert_laptop_row(cur, payload, payload.get("lastUpdatedBy", "system"))
                 conn.commit()
                 return {"status": "success", "type": type_name}
+
+            if type_name == "bulkupload":
+                data_list = payload.get("data")
+                if not isinstance(data_list, list):
+                    raise HTTPException(status_code=400, detail="data must be a JSON array")
+                
+                last_updated_by = str(_payload_get(payload, "lastUpdatedBy", "updatedBy") or "system").strip()
+                
+                count = 0
+                for item in data_list:
+                    if not isinstance(item, dict):
+                        continue
+                    _upsert_laptop_row(cur, item, last_updated_by)
+                    count += 1
+                
+                conn.commit()
+                return {"status": "success", "type": type_name, "count": count}
 
             if type_name in {"userdetails", "editUser"}:
                 user_id = payload.get("id") or payload.get("ID")
