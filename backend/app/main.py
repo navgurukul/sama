@@ -17,6 +17,7 @@ from .db import DB_SCHEMA, get_conn
 
 
 LEGACY_LAPTOP_API_URL = os.getenv("LEGACY_LAPTOP_API_URL", "").strip()
+LEGACY_NGO_API_URL = os.getenv("LEGACY_NGO_API_URL", "").strip() or "https://script.google.com/macros/s/AKfycbyCYWNg907Iu9y-ZVn8sWpLdh3NriAbG4D02zTVGHkLVK5WIfDHunknZrKe3fO8DUn9ow/exec"
 USER_PROFILE_TABLE_PREFIX = os.getenv("USER_PROFILE_TABLE_PREFIX", "user_profile").strip() or "user_profile"
 USER_REGISTRATION_TABLE = f"{USER_PROFILE_TABLE_PREFIX}_registration"
 USER_ROLE_TABLE = f"{USER_PROFILE_TABLE_PREFIX}_userrole"
@@ -643,6 +644,35 @@ def _query_users(request: Request) -> List[Dict[str, Any]]:
             return _normalize_rows(cur.fetchall())
 
 
+def _parse_states(states_str: Optional[str]) -> List[str]:
+    if not states_str:
+        return []
+    return [s.strip() for s in states_str.split(",") if s.strip()]
+
+
+def _parse_courses(courses_str: Optional[str]) -> List[Dict[str, str]]:
+    if not courses_str:
+        return []
+    courses = []
+    parts = courses_str.split(",")
+    for part in parts:
+        part = part.strip()
+        if not part:
+            continue
+        if ":" in part:
+            name, duration = part.split(":", 1)
+            courses.append({
+                "name": name.strip(),
+                "duration": duration.strip()
+            })
+        else:
+            courses.append({
+                "name": part,
+                "duration": ""
+            })
+    return courses
+
+
 def _query_preliminary(request: Request) -> List[Dict[str, Any]]:
     pre_id = request.query_params.get("id")
 
@@ -671,7 +701,11 @@ def _query_preliminary(request: Request) -> List[Dict[str, Any]]:
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(sql, params)
-            return _normalize_rows(cur.fetchall())
+            rows = _normalize_rows(cur.fetchall())
+            for row in rows:
+                row["States"] = _parse_states(row.get("States"))
+                row["Courses"] = _parse_courses(row.get("Course"))
+            return rows
 
 
 def _query_pickups() -> Dict[str, Any]:
@@ -2700,7 +2734,7 @@ def _proxy_to_legacy(method: str, request: Request, payload: Optional[Dict[str, 
 
     params = dict(request.query_params)
     timeout = httpx.Timeout(30.0)
-    with httpx.Client(timeout=timeout) as client:
+    with httpx.Client(timeout=timeout, follow_redirects=True) as client:
         if method == "GET":
             response = client.get(LEGACY_LAPTOP_API_URL, params=params)
         else:
@@ -2749,6 +2783,125 @@ async def evidence_upload(file: UploadFile = File(...)) -> Dict[str, Any]:
 @app.get("/health")
 def health() -> Dict[str, str]:
     return {"status": "ok"}
+
+
+def send_afe_approval_email(ngo_name: str, ngo_email: str, qty_requested: Any):
+    api_key = os.environ.get("MAILJET_API_KEY")
+    api_secret = os.environ.get("MAILJET_API_SECRET")
+    sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
+    sender_name = os.environ.get("MAILJET_SENDER_NAME", "SamaSocial")
+    
+    if not api_key or not api_secret or not sender_email:
+        print("Mailjet not fully configured. Skipping email.")
+        return
+        
+    ops_email = os.environ.get("SAMA_OPS_EMAIL", "ops@thesama.in")
+    afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
+    
+    payload = {
+        "Messages": [
+            {
+                "From": {
+                    "Email": sender_email,
+                    "Name": sender_name
+                },
+                "To": [
+                    {
+                        "Email": ngo_email,
+                        "Name": ngo_name
+                    }
+                ],
+                "Cc": [
+                    {"Email": ops_email, "Name": "Sama Operations"},
+                    {"Email": afe_email, "Name": "Amazon AFE Team"}
+                ],
+                "Subject": f"AFE Laptop Request Approved - {ngo_name}",
+                "HTMLPart": f"""
+                    <h3>Laptop Request Approved</h3>
+                    <p>Dear {ngo_name} Team,</p>
+                    <p>We are pleased to inform you that your request for <strong>{qty_requested} laptops</strong> has been approved by the SAMA administration.</p>
+                    <p>The SAMA Operations team is now processing the request and will update the tentative refurbishment completion date shortly.</p>
+                    <p>Best regards,<br/>SamaSocial Operations Team</p>
+                """
+            }
+        ]
+    }
+    
+    try:
+        response = httpx.post(
+            "https://api.mailjet.com/v3.1/send",
+            auth=(api_key, api_secret),
+            json=payload,
+            timeout=10.0
+        )
+        response.raise_for_status()
+        print("AFE approval email sent successfully via Mailjet REST API.")
+    except Exception as e:
+        print(f"Failed to send AFE approval email: {e}")
+
+
+@app.get("/ngo-exec")
+def ngo_exec_get(request: Request) -> Any:
+    if not LEGACY_NGO_API_URL:
+        raise HTTPException(status_code=501, detail="LEGACY_NGO_API_URL is not configured")
+    
+    params = dict(request.query_params)
+    timeout = httpx.Timeout(30.0)
+    with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+        response = client.get(LEGACY_NGO_API_URL, params=params)
+    
+    content_type = response.headers.get("content-type", "")
+    if "application/json" in content_type:
+        return response.json()
+    return {"status": "proxied", "raw": response.text}
+
+
+@app.post("/ngo-exec")
+async def ngo_exec_post(request: Request) -> Any:
+    if not LEGACY_NGO_API_URL:
+        raise HTTPException(status_code=501, detail="LEGACY_NGO_API_URL is not configured")
+    
+    try:
+        payload = await request.json()
+        if not isinstance(payload, dict):
+            payload = {}
+    except Exception:
+        payload = {}
+        
+    type_name = _type_from_request(request, payload)
+    
+    # Intercept approval status changes
+    if type_name == "NGO" and payload.get("status") == "Approved":
+        ngo_id = payload.get("id")
+        try:
+            timeout = httpx.Timeout(30.0)
+            with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+                res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
+                if res.status_code == 200:
+                    ngos = res.json().get("data", [])
+                    ngo = next((n for n in ngos if str(n.get("Id")) == str(ngo_id)), None)
+                    if ngo:
+                        ngo_name = ngo.get("organizationName", "NGO Partner")
+                        ngo_email = ngo.get("email")
+                        qty_requested = ngo.get("Laptop require", 0)
+                        if ngo_email:
+                            send_afe_approval_email(ngo_name, ngo_email, qty_requested)
+                        else:
+                            print("NGO email is empty. Skipping email.")
+                    else:
+                        print(f"NGO with ID {ngo_id} not found in registration list.")
+        except Exception as e:
+            print(f"Failed to process approval notification details: {e}")
+            
+    params = dict(request.query_params)
+    timeout = httpx.Timeout(30.0)
+    with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+        response = client.post(LEGACY_NGO_API_URL, params=params, json=payload)
+        
+    content_type = response.headers.get("content-type", "")
+    if "application/json" in content_type:
+        return response.json()
+    return {"status": "proxied", "raw": response.text}
 
 
 @app.get("/exec")

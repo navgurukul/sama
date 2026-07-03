@@ -231,7 +231,7 @@ const AdminNgo = () => {
     setPage(0); // Reset page when rowsPerPage changes
   };
 
-  const paginatedData = filteredData.slice(
+  const paginatedData = (filteredData || []).slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
@@ -416,6 +416,7 @@ const AdminNgo = () => {
                   </TableCell>
                   <TableCell sx={classes.tableHeader}>Type</TableCell>
                   <TableCell sx={classes.tableHeader}>Status</TableCell>
+                  <TableCell sx={classes.tableHeader}>Timeline</TableCell>
                   <TableCell sx={classes.tableHeader}>Donor</TableCell>
                   <TableCell sx={classes.tableHeader}></TableCell>
                 </TableRow>
@@ -544,6 +545,46 @@ const AdminNgo = () => {
                           </Select>
                         </FormControl>
                       </TableCell>
+                      <TableCell sx={classes.tablecell}>
+                        {ngo.Status === "Approved" ? (
+                          <input
+                            type="date"
+                            value={ngo.tentative_refurb_completion || ""}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={async (e) => {
+                              e.stopPropagation();
+                              const newDate = e.target.value;
+                              setNgoData(prev => prev.map(n => n.Id === ngo.Id ? { ...n, tentative_refurb_completion: newDate } : n));
+                              try {
+                                await fetch(`${process.env.REACT_APP_NgoInformationApi}?type=NGOTimeline`, {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({
+                                    id: ngo.Id,
+                                    tentative_refurb_completion: newDate,
+                                    type: "NGOTimeline"
+                                  })
+                                });
+                              } catch (err) {
+                                console.error("Failed to update timeline", err);
+                              }
+                            }}
+                            style={{
+                              backgroundColor: "#f5f5f5",
+                              border: "1px solid #ccc",
+                              borderRadius: "4px",
+                              padding: "4px 8px",
+                              color: "#333",
+                              fontSize: "14px",
+                              outline: "none"
+                            }}
+                          />
+                        ) : (
+                          <Typography variant="body2" sx={{ color: "text.secondary", pl: 1 }}>
+                            -
+                          </Typography>
+                        )}
+                      </TableCell>
                       <>
                         <TableCell sx={classes.tablecell}>
                           <FormControl fullWidth>
@@ -599,7 +640,7 @@ const AdminNgo = () => {
             sx={{ mt: 3, mb: 8 }}
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
-            count={filteredData.length}
+            count={(filteredData || []).length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
