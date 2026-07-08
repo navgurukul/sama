@@ -249,15 +249,17 @@ function RegistrationForm() {
           `${process.env.REACT_APP_NgoInformationApi}?type=donorID`
         );
         const data = await response.json();
-        setCompanies(data);
+        setCompanies(Array.isArray(data) ? data : (data?.data || []));
       } catch (error) {
         console.error("Error fetching company names:", error);
+        setCompanies([]);
       }
     }
     fetchCompanies();
   }, []);
 
-  const donorIDs = companies.find((company) => company.Donner === donorId)?.[
+  const companiesList = Array.isArray(companies) ? companies : (companies?.data || []);
+  const donorIDs = companiesList.find((company) => company.Donner === donorId)?.[
     "Donor id"
   ];
 

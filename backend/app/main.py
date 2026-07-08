@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import re
@@ -53,6 +54,7 @@ MIGRATED_TYPES = {
     "completeStageRun",
     "createIssueLog",
     "resolveIssueLog",
+    "email-webhook",
 }
 
 
@@ -632,7 +634,15 @@ def _query_users(request: Request) -> List[Dict[str, Any]]:
             id_link AS "ID Link",
             income_certificate_link AS "Income Certificate Link",
             date_time AS "Date-time",
-            doner AS "Doner"
+            doner AS "Doner",
+            purpose_of_usage AS "purposeOfUsage",
+            purpose_of_usage AS "Purpose of using the laptop",
+            how_to_use AS "howToUse",
+            how_to_use AS "How the laptop will be used",
+            expected_impact AS "expectedImpact",
+            expected_impact AS "Expected impact after receiving the device",
+            additional_info AS "additionalInfo",
+            additional_info AS "Any additional information required to understand the laptop's intended usage"
         FROM {DB_SCHEMA}.userdetails
         WHERE {' AND '.join(where_sql)}
         ORDER BY id
@@ -2359,8 +2369,9 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                     (id, ngo, name, email, contact_number, address, address_state, id_proof_type,
                      id_proof_number, qualification, occupation, date_of_birth, use_case,
                      family_members_count, guardian_occupation, family_annual_income, status,
-                     laptop_assigned, id_link, income_certificate_link, date_time, doner)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now(), %s)
+                     laptop_assigned, id_link, income_certificate_link, date_time, doner,
+                     purpose_of_usage, how_to_use, expected_impact, additional_info)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now(), %s, %s, %s, %s, %s)
                     ON CONFLICT (id) DO UPDATE SET
                       ngo=EXCLUDED.ngo,
                       name=EXCLUDED.name,
@@ -2382,6 +2393,10 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                       id_link=EXCLUDED.id_link,
                       income_certificate_link=EXCLUDED.income_certificate_link,
                       doner=EXCLUDED.doner,
+                      purpose_of_usage=EXCLUDED.purpose_of_usage,
+                      how_to_use=EXCLUDED.how_to_use,
+                      expected_impact=EXCLUDED.expected_impact,
+                      additional_info=EXCLUDED.additional_info,
                       date_time=now()
                     """,
                     (
@@ -2406,6 +2421,10 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                         payload.get("ID Link") or payload.get("idLink"),
                         payload.get("Income Certificate Link") or payload.get("incomeCertificateLink"),
                         payload.get("Doner") or payload.get("doner"),
+                        payload.get("purposeOfUsage") or payload.get("Purpose of using the laptop"),
+                        payload.get("howToUse") or payload.get("How the laptop will be used"),
+                        payload.get("expectedImpact") or payload.get("Expected impact after receiving the device"),
+                        payload.get("additionalInfo") or payload.get("Any additional information required to understand the laptop's intended usage") or payload.get("additional_info"),
                     ),
                 )
                 conn.commit()
@@ -2488,6 +2507,39 @@ def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                     "status": "success",
                     "type": type_name,
                     "issue": _normalize_rows([row])[0] if row else None,
+                }
+
+            if type_name == "email-webhook":
+                sender = str(payload.get("Sender") or "").strip()
+                subject = str(payload.get("Subject") or "").strip()
+                text_part = str(payload.get("Text-part") or payload.get("TextPart") or "").strip()
+                
+                parsed_data = _parse_ngo_request_with_ai(text_part)
+                email = str(parsed_data.get("email") or sender or "").strip()
+                
+                cur.execute(
+                    f"""
+                    INSERT INTO {DB_SCHEMA}.ngo_requests
+                    (ngo_name, laptop_quantity, location, use_case, contact_name, email, status)
+                    VALUES (%s, %s, %s, %s, %s, %s, 'draft')
+                    RETURNING id
+                    """,
+                    (
+                        parsed_data["ngo_name"],
+                        parsed_data["laptop_quantity"],
+                        parsed_data["location"],
+                        parsed_data["use_case"],
+                        parsed_data["contact_name"],
+                        email,
+                    )
+                )
+                new_id = cur.fetchone()["id"]
+                conn.commit()
+                return {
+                    "status": "success",
+                    "type": type_name,
+                    "id": new_id,
+                    "parsed": parsed_data
                 }
 
     raise HTTPException(status_code=501, detail=f"type '{type_name}' not implemented in RDS backend")
@@ -2815,13 +2867,12 @@ def send_afe_approval_email(ngo_name: str, ngo_email: str, qty_requested: Any):
                     {"Email": ops_email, "Name": "Sama Operations"},
                     {"Email": afe_email, "Name": "Amazon AFE Team"}
                 ],
-                "Subject": f"AFE Laptop Request Approved - {ngo_name}",
+                "Subject": f"AFE Laptop Request Approved – {ngo_name}",
                 "HTMLPart": f"""
-                    <h3>Laptop Request Approved</h3>
                     <p>Dear {ngo_name} Team,</p>
-                    <p>We are pleased to inform you that your request for <strong>{qty_requested} laptops</strong> has been approved by the SAMA administration.</p>
-                    <p>The SAMA Operations team is now processing the request and will update the tentative refurbishment completion date shortly.</p>
-                    <p>Best regards,<br/>SamaSocial Operations Team</p>
+                    <p>We are pleased to inform you that your request for <strong>{qty_requested} laptops</strong> has been approved. The request has now been handed over to the Sama Operations team for further processing. We will begin the refurbishment process and share the tentative completion and dispatch timeline with you within 8–10 business days.</p>
+                    <p>If you have any questions, please feel free to reach out to us.</p>
+                    <p>Best regards,<br/>Sama Operations Team</p>
                 """
             }
         ]
@@ -2835,9 +2886,169 @@ def send_afe_approval_email(ngo_name: str, ngo_email: str, qty_requested: Any):
             timeout=10.0
         )
         response.raise_for_status()
-        print("AFE approval email sent successfully via Mailjet REST API.")
+        print("AFE approval email sent successfully.")
     except Exception as e:
         print(f"Failed to send AFE approval email: {e}")
+
+
+def send_afe_dispatch_email(ngo_name: str, ngo_email: str, qty_requested: Any):
+    api_key = os.environ.get("MAILJET_API_KEY")
+    api_secret = os.environ.get("MAILJET_API_SECRET")
+    sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
+    sender_name = os.environ.get("MAILJET_SENDER_NAME", "SamaSocial")
+    
+    if not api_key or not api_secret or not sender_email:
+        print("Mailjet not fully configured. Skipping email.")
+        return
+        
+    ops_email = os.environ.get("SAMA_OPS_EMAIL", "ops@thesama.in")
+    afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
+    
+    dispatch_date_str = date.today().strftime("%d/%m/%Y")
+    
+    payload = {
+        "Messages": [
+            {
+                "From": {
+                    "Email": sender_email,
+                    "Name": sender_name
+                },
+                "To": [
+                    {
+                        "Email": ngo_email,
+                        "Name": ngo_name
+                    }
+                ],
+                "Cc": [
+                    {"Email": ops_email, "Name": "Sama Operations"},
+                    {"Email": afe_email, "Name": "Amazon AFE Team"}
+                ],
+                "Subject": f"AFE Laptop Dispatch Confirmation – {ngo_name}",
+                "HTMLPart": f"""
+                    <p>Dear {ngo_name} Team,</p>
+                    <p>We're happy to share that {qty_requested} laptops have been dispatched from our Pune/Bangalore location on {dispatch_date_str} and are on their way to you. They are expected to reach your location within 3-5 business days.</p>
+                    <p>Once the laptops are delivered, we'll follow up separately to confirm receipt and check that everything has arrived in good condition. In the meantime, if you have any questions about the shipment, please feel free to reach out.</p>
+                    <p>Warm regards,<br/>Sama Operations Team</p>
+                """
+            }
+        ]
+    }
+    
+    try:
+        response = httpx.post("https://api.mailjet.com/v3.1/send", auth=(api_key, api_secret), json=payload, timeout=15.0)
+        response.raise_for_status()
+        print("AFE dispatch confirmation email sent successfully.")
+    except Exception as e:
+        print(f"Failed to send AFE dispatch email: {e}")
+
+
+def send_afe_delivery_email(ngo_name: str, ngo_email: str, qty_requested: Any, laptops_list: List[Dict[str, Any]]):
+    import csv
+    import io
+    import base64
+    
+    api_key = os.environ.get("MAILJET_API_KEY")
+    api_secret = os.environ.get("MAILJET_API_SECRET")
+    sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
+    sender_name = os.environ.get("MAILJET_SENDER_NAME", "SamaSocial")
+    
+    if not api_key or not api_secret or not sender_email:
+        print("Mailjet not fully configured. Skipping email.")
+        return
+        
+    ops_email = os.environ.get("SAMA_OPS_EMAIL", "ops@thesama.in")
+    afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
+    
+    delivery_date_str = date.today().strftime("%d/%m/%Y")
+    
+    # 1. Generate CSV attachment content
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["#", "Serial number", "RAM", "ROM", "Manufacturer Model"])
+    for idx, laptop in enumerate(laptops_list, 1):
+        writer.writerow([
+            idx,
+            laptop.get("id", ""),
+            laptop.get("ram", ""),
+            laptop.get("rom", ""),
+            laptop.get("manufacturer_model", "")
+        ])
+    csv_content = output.getvalue()
+    base64_content = base64.b64encode(csv_content.encode("utf-8")).decode("utf-8")
+    
+    payload = {
+        "Messages": [
+            {
+                "From": {
+                    "Email": sender_email,
+                    "Name": sender_name
+                },
+                "To": [
+                    {
+                        "Email": ngo_email,
+                        "Name": ngo_name
+                    }
+                ],
+                "Cc": [
+                    {"Email": ops_email, "Name": "Sama Operations"},
+                    {"Email": afe_email, "Name": "Amazon AFE Team"}
+                ],
+                "Subject": f"AFE Laptop Delivery Confirmation – {ngo_name}",
+                "HTMLPart": f"""
+                    <p>Dear {ngo_name} Team,</p>
+                    
+                    <p>We're happy to share that {qty_requested} laptops were delivered to your organization on {delivery_date_str}. We hope they reach your beneficiaries soon and make a real difference.</p>
+                    
+                    <p>At your earliest convenience, please confirm receipt and let us know the units are all in good working condition. We've attached the <span style="color: #0066cc; text-decoration: underline; font-weight: bold;">serial number sheet</span> and credentials for your reference. If anything seems off, please do reach out within <strong>15 working days</strong> so we can sort it out quickly.</p>
+                    
+                    <p>For your reference, please find the default login credentials and specifications for the delivered laptops:</p>
+                    <table border="1" cellpadding="5" style="border-collapse: collapse; margin-bottom: 20px;">
+                        <tr style="background-color: #f2f2f2;">
+                            <th>Detail</th>
+                            <th>Value</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Default Username</strong></td>
+                            <td>Sama</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Default Password</strong></td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Scope</strong></td>
+                            <td>Standard login for all Windows laptops in this shipment</td>
+                        </tr>
+                    </table>
+
+                    <p>A couple of small things we'd appreciate:</p>
+                    <ul style="list-style-type: disc; padding-left: 20px;">
+                        <li>A signed delivery acknowledgment would be great to have on file</li>
+                        <li>A feedback form is also attached; please do share it in case you face any issues with the laptops (Feedback link: <a href="https://form.jotform.com/261834345018052">https://form.jotform.com/261834345018052</a>)</li>
+                        <li>We'd love to hear a quick update every three months on how the laptops are being used, as it really helps us understand the impact on your beneficiaries</li>
+                    </ul>
+                    
+                    <p>Thank you so much for being a valued implementation partner. We're looking forward to hearing the good things these laptops help make possible!</p>
+                    
+                    <p>Best regards,<br/>Sama Operations Team</p>
+                """,
+                "Attachments": [
+                    {
+                        "ContentType": "text/csv",
+                        "Filename": f"AFE_Laptops_List_{ngo_name.replace(' ', '_')}.csv",
+                        "Base64Content": base64_content
+                    }
+                ]
+            }
+        ]
+    }
+    
+    try:
+        response = httpx.post("https://api.mailjet.com/v3.1/send", auth=(api_key, api_secret), json=payload, timeout=15.0)
+        response.raise_for_status()
+        print("AFE delivery confirmation email sent successfully.")
+    except Exception as e:
+        print(f"Failed to send AFE delivery confirmation email: {e}")
 
 
 @app.get("/ngo-exec")
@@ -2870,29 +3081,61 @@ async def ngo_exec_post(request: Request) -> Any:
         
     type_name = _type_from_request(request, payload)
     
-    # Intercept approval status changes
-    if type_name == "NGO" and payload.get("status") == "Approved":
+    # Intercept status changes
+    if type_name == "NGO":
+        status_val = payload.get("status")
         ngo_id = payload.get("id")
-        try:
-            timeout = httpx.Timeout(30.0)
-            with httpx.Client(timeout=timeout, follow_redirects=True) as client:
-                res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
-                if res.status_code == 200:
-                    ngos = res.json().get("data", [])
-                    ngo = next((n for n in ngos if str(n.get("Id")) == str(ngo_id)), None)
-                    if ngo:
-                        ngo_name = ngo.get("organizationName", "NGO Partner")
-                        ngo_email = ngo.get("email")
-                        qty_requested = ngo.get("Laptop require", 0)
-                        if ngo_email:
-                            send_afe_approval_email(ngo_name, ngo_email, qty_requested)
+        
+        if status_val in {"Approved", "Dispatched", "Delivered"}:
+            try:
+                timeout = httpx.Timeout(30.0)
+                with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+                    res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
+                    if res.status_code == 200:
+                        ngos = res.json().get("data", [])
+                        ngo = next((n for n in ngos if str(n.get("Id")) == str(ngo_id)), None)
+                        if ngo:
+                            ngo_name = ngo.get("organizationName", "NGO Partner")
+                            ngo_email = ngo.get("email")
+                            qty_requested = ngo.get("Laptop require", 0)
+                            
+                            if ngo_email:
+                                if status_val == "Approved":
+                                    send_afe_approval_email(ngo_name, ngo_email, qty_requested)
+                                elif status_val == "Dispatched":
+                                    send_afe_dispatch_email(ngo_name, ngo_email, qty_requested)
+                                elif status_val == "Delivered":
+                                    laptops_list = []
+                                    try:
+                                        with get_conn() as conn:
+                                            with conn.cursor() as cur:
+                                                cur.execute(
+                                                    f"""
+                                                    SELECT id, manufacturer_model, ram, rom, processor 
+                                                    FROM {DB_SCHEMA}.laptop_labeling 
+                                                    WHERE UPPER(allocated_to) = UPPER(%s)
+                                                    """,
+                                                    (ngo_name,)
+                                                )
+                                                for r in cur.fetchall():
+                                                    laptops_list.append({
+                                                        "id": r[0],
+                                                        "manufacturer_model": r[1] or "",
+                                                        "ram": r[2] or "",
+                                                        "rom": r[3] or "",
+                                                        "processor": r[4] or ""
+                                                    })
+                                    except Exception as db_err:
+                                        print(f"Failed to fetch laptop serials for {ngo_name} on delivery: {db_err}")
+                                    
+                                    send_afe_delivery_email(ngo_name, ngo_email, qty_requested, laptops_list)
+                            else:
+                                print(f"NGO email is empty. Skipping email trigger for status {status_val}.")
                         else:
-                            print("NGO email is empty. Skipping email.")
-                    else:
-                        print(f"NGO with ID {ngo_id} not found in registration list.")
-        except Exception as e:
-            print(f"Failed to process approval notification details: {e}")
-            
+                            print(f"NGO with ID {ngo_id} not found in registration list.")
+            except Exception as e:
+                print(f"Failed to process status notification details for {status_val}: {e}")
+                
     params = dict(request.query_params)
     timeout = httpx.Timeout(30.0)
     with httpx.Client(timeout=timeout, follow_redirects=True) as client:
@@ -2984,3 +3227,319 @@ async def user_exec_post(request: Request) -> Any:
     if not type_name:
         raise HTTPException(status_code=400, detail="Missing 'type' in query or JSON body")
     return _handle_user_post_type(payload)
+
+
+# =====================================================================
+# Phase 3: Automated Communications, RMS Inactivity & AI Parser
+# =====================================================================
+
+def _parse_ngo_request_with_ai(email_body: str) -> Dict[str, Any]:
+    api_key = os.environ.get("MISTRAL_API_KEY")
+    if not api_key:
+        print("MISTRAL_API_KEY not configured. Falling back to default parser.")
+        return {
+            "ngo_name": "Unknown NGO (AI Key Missing)",
+            "laptop_quantity": 1,
+            "location": "",
+            "use_case": "Parsed manually from incoming email",
+            "contact_name": "",
+        }
+    
+    model = os.environ.get("MISTRAL_MODEL", "mistral-medium-3-5")
+    
+    prompt = f"""
+    Read the following email body requesting laptops for an NGO, and extract:
+    1. The NGO name (as "ngo_name")
+    2. The number of laptops requested (as "laptop_quantity", must be an integer, default to 1 if not specified)
+    3. The location/city (as "location")
+    4. The purpose/use case (as "use_case")
+    5. The contact person's name (as "contact_name")
+
+    Ensure the output is clean JSON. Do not include markdown wrappers or extra text.
+
+    Email Body:
+    \"\"\"{email_body}\"\"\"
+    """
+    
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.1
+    }
+    
+    try:
+        response = httpx.post(
+            "https://api.mistral.ai/v1/chat/completions",
+            headers=headers,
+            json=payload,
+            timeout=30.0
+        )
+        if response.status_code == 200:
+            content = response.json()["choices"][0]["message"]["content"]
+            content_clean = re.sub(r"```json\s*", "", content)
+            content_clean = re.sub(r"```\s*", "", content_clean).strip()
+            parsed = json.loads(content_clean)
+            return {
+                "ngo_name": parsed.get("ngo_name") or "Unknown NGO",
+                "laptop_quantity": int(parsed.get("laptop_quantity") or 1),
+                "location": parsed.get("location") or "",
+                "use_case": parsed.get("use_case") or "",
+                "contact_name": parsed.get("contact_name") or ""
+            }
+    except Exception as e:
+        print(f"Failed to parse email using AI: {e}")
+        
+    return {
+        "ngo_name": "Unknown NGO (AI Failed)",
+        "laptop_quantity": 1,
+        "location": "",
+        "use_case": "Failed to parse automatically",
+        "contact_name": ""
+    }
+
+
+def send_rms_inactivity_support_email(ngo_name: str, ngo_email: str, laptop_id: str, limit_days: int):
+    api_key = os.environ.get("MAILJET_API_KEY")
+    api_secret = os.environ.get("MAILJET_API_SECRET")
+    sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
+    sender_name = os.environ.get("MAILJET_SENDER_NAME", "SamaSocial")
+    
+    if not api_key or not api_secret or not sender_email:
+        print("Mailjet not fully configured. Skipping support email.")
+        return
+        
+    ops_email = os.environ.get("SAMA_OPS_EMAIL", "operations@thesama.in")
+    afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
+    
+    payload = {
+        "Messages": [
+            {
+                "From": {
+                    "Email": sender_email,
+                    "Name": sender_name
+                },
+                "To": [
+                    {
+                        "Email": ngo_email,
+                        "Name": ngo_name
+                    }
+                ],
+                "Cc": [
+                    {"Email": ops_email, "Name": "Sama Operations"},
+                    {"Email": afe_email, "Name": "Amazon AFE Team"}
+                ],
+                "Subject": f"Laptop Inactivity Alert – Support Check-in Required {ngo_name}",
+                "HTMLPart": f"""
+                    <p>Dear {ngo_name} Team,</p>
+                    <p>We hope you are doing well.</p>
+                    <p>As part of our routine monitoring under the Remote Management System (RMS), we have noticed that one of the laptops distributed to {ngo_name}, Asset Tag/Serial Number: {laptop_id}, has not connected to the internet for over {limit_days} days and has therefore been marked as inactive in our system.</p>
+                    <p>This could be due to a number of reasons, such as limited connectivity, the device being temporarily out of use, or a technical issue on the device end. We would appreciate it if you could share a quick update on the current status of this laptop within a week.</p>
+                    <p>If any support is needed on our end, whether technical troubleshooting or otherwise, please feel free to reach out to us.</p>
+                    <p>Best regards,<br/>Sama Operations Team</p>
+                """
+            }
+        ]
+    }
+    
+    try:
+        response = httpx.post("https://api.mailjet.com/v3.1/send", auth=(api_key, api_secret), json=payload, timeout=15.0)
+        response.raise_for_status()
+        print(f"RMS support email sent successfully to {ngo_email}.")
+    except Exception as e:
+        print(f"Failed to send RMS support email: {e}")
+
+
+async def check_rms_inactivity():
+    print("Checking RMS inactivity...")
+    limit_days = int(os.environ.get("RMS_INACTIVITY_LIMIT_DAYS", "30"))
+    
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"""
+                SELECT ll.id, ll.allocated_to, MAX(mc.rms_last_seen) AS rms_last_seen
+                FROM {DB_SCHEMA}.laptop_labeling ll
+                LEFT JOIN {DB_SCHEMA}.monthly_check_in mc ON mc.laptop_id = ll.id
+                WHERE ll.status = 'DISTRIBUTION'
+                GROUP BY ll.id, ll.allocated_to
+                HAVING COALESCE(MAX(mc.rms_last_seen), ll.last_updated_on) < now() - %s * INTERVAL '1 day'
+                """,
+                (limit_days,)
+            )
+            inactive_laptops = cur.fetchall()
+            
+            if not inactive_laptops:
+                print("No inactive laptops found.")
+                return
+                
+            ngos = []
+            try:
+                timeout = httpx.Timeout(30.0)
+                with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+                    res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
+                    if res.status_code == 200:
+                        ngos = res.json().get("data", [])
+            except Exception as e:
+                print(f"Failed to fetch NGO registrations for email mapping: {e}")
+                
+            for laptop in inactive_laptops:
+                laptop_id = laptop["id"]
+                ngo_name = laptop["allocated_to"]
+                last_seen = laptop["rms_last_seen"]
+                
+                cur.execute(
+                    f"""
+                    SELECT 1 FROM {DB_SCHEMA}.issue_log 
+                    WHERE laptop_id = %s 
+                      AND status = 'OPEN' 
+                      AND issue_description LIKE 'Device Inactive%%'
+                    LIMIT 1
+                    """,
+                    (laptop_id,)
+                )
+                if cur.fetchone():
+                    continue
+                    
+                desc = f"Device Inactive for {limit_days}+ days. Last seen: {last_seen.strftime('%d/%m/%Y %H:%M') if last_seen else 'Never'}"
+                cur.execute(
+                    f"""
+                    INSERT INTO {DB_SCHEMA}.issue_log (laptop_id, issue_description, severity, status)
+                    VALUES (%s, %s, 'P2', 'OPEN')
+                    """,
+                    (laptop_id, desc)
+                )
+                conn.commit()
+                
+                ngo = next((n for n in ngos if str(n.get("organizationName", "")).lower() == str(ngo_name).lower()), None)
+                ngo_email = ngo.get("email") if ngo else None
+                
+                if ngo_email:
+                    send_rms_inactivity_support_email(ngo_name, ngo_email, laptop_id, limit_days)
+                else:
+                    print(f"No email found for NGO {ngo_name}. Logged issue in DB only.")
+
+
+def send_quarterly_impact_email(ngo_name: str, ngo_email: str, months: int, jotform_url: str):
+    api_key = os.environ.get("MAILJET_API_KEY")
+    api_secret = os.environ.get("MAILJET_API_SECRET")
+    sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
+    sender_name = os.environ.get("MAILJET_SENDER_NAME", "SamaSocial")
+    
+    if not api_key or not api_secret or not sender_email:
+        print("Mailjet not fully configured. Skipping quarterly email.")
+        return
+        
+    ops_email = os.environ.get("SAMA_OPS_EMAIL", "operations@thesama.in")
+    afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
+    
+    payload = {
+        "Messages": [
+            {
+                "From": {
+                    "Email": sender_email,
+                    "Name": sender_name
+                },
+                "To": [
+                    {
+                        "Email": ngo_email,
+                        "Name": ngo_name
+                    }
+                ],
+                "Cc": [
+                    {"Email": ops_email, "Name": "Sama Operations"},
+                    {"Email": afe_email, "Name": "Amazon AFE Team"}
+                ],
+                "Subject": f"Quarterly Impact Report Submission Reminder – {ngo_name}",
+                "HTMLPart": f"""
+                    <p>Dear {ngo_name} Team,</p>
+                    <p>We hope you are doing well.</p>
+                    <p>As part of our quarterly review process, we kindly request you to submit the Impact Report for your organization. This report helps us track the usage and impact of the distributed laptops within your programs.</p>
+                    <p>Please use the link below to submit your report along with the required photos:</p>
+                    <p><a href="{jotform_url}" target="_blank">Impact report</a></p>
+                    <p>We would appreciate it if this could be completed within a week. If you have any questions or need assistance while filling out the form, please feel free to reach out to us.</p>
+                    <p>Thank you for your continued partnership and support.</p>
+                    <p>Best regards,<br/>Sama Operations Team</p>
+                """
+            }
+        ]
+    }
+    
+    try:
+        response = httpx.post("https://api.mailjet.com/v3.1/send", auth=(api_key, api_secret), json=payload, timeout=15.0)
+        response.raise_for_status()
+        print(f"Impact reminder email sent successfully to {ngo_email}.")
+    except Exception as e:
+        print(f"Failed to send impact reminder email: {e}")
+
+
+async def send_quarterly_impact_reminders():
+    print("Checking for quarterly impact reminders...")
+    jotform_url = os.environ.get("QUARTERLY_IMPACT_JOTFORM_URL", "https://form.jotform.com/sama-impact-report")
+    
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"""
+                SELECT r.laptop_id, r.completed_at, ll.allocated_to
+                FROM {DB_SCHEMA}.laptop_stage_run r
+                JOIN {DB_SCHEMA}.laptop_labeling ll ON ll.id = r.laptop_id
+                WHERE r.stage_code = 'DISTRIBUTION' 
+                  AND r.completed_at IS NOT NULL
+                """
+            )
+            shipments = cur.fetchall()
+            
+            if not shipments:
+                return
+                
+            ngos = []
+            try:
+                timeout = httpx.Timeout(30.0)
+                with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+                    res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
+                    if res.status_code == 200:
+                        ngos = res.json().get("data", [])
+            except Exception as e:
+                print(f"Failed to fetch NGO registrations: {e}")
+                
+            today = date.today()
+            for ship in shipments:
+                comp_at = ship["completed_at"]
+                if not comp_at:
+                    continue
+                diff_days = (today - comp_at.date()).days
+                
+                # Triggers exactly at 3 months (90 days), 6 months (180 days), 9 months (270 days)
+                if diff_days in {90, 180, 270}:
+                    months = diff_days // 30
+                    ngo_name = ship["allocated_to"]
+                    ngo = next((n for n in ngos if str(n.get("organizationName", "")).lower() == str(ngo_name).lower()), None)
+                    ngo_email = ngo.get("email") if ngo else None
+                    
+                    if ngo_email:
+                        send_quarterly_impact_email(ngo_name, ngo_email, months, jotform_url)
+
+
+async def run_daily_background_scheduler():
+    print("Background scheduler task initiated.")
+    while True:
+        try:
+            await check_rms_inactivity()
+            await send_quarterly_impact_reminders()
+        except Exception as e:
+            print(f"Error in background scheduler iteration: {e}")
+        # Run every 24 hours (86400 seconds)
+        await asyncio.sleep(86400)
+
+
+@app.on_event("startup")
+async def start_background_jobs():
+    asyncio.create_task(run_daily_background_scheduler())
+

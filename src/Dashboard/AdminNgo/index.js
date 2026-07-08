@@ -97,6 +97,8 @@ const AdminNgo = () => {
           "Submitted Request",
           "In Progress",
           "Approved",
+          "Dispatched",
+          "Delivered",
           "Rejected",
         ]; // Set status options manually
 
@@ -546,7 +548,7 @@ const AdminNgo = () => {
                         </FormControl>
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
-                        {ngo.Status === "Approved" ? (
+                        {["Approved", "Dispatched", "Delivered"].includes(ngo.Status) ? (
                           <input
                             type="date"
                             value={ngo.tentative_refurb_completion || ""}
