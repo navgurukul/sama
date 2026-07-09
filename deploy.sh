@@ -187,13 +187,14 @@ log_info "Writing frontend .env with server address: $SERVER_ADDR"
 # Preserve all existing vars but override the API URLs
 EXISTING_VARS=""
 if [ -f "${FRONTEND_ENV}.bak" ]; then
-    EXISTING_VARS=$(grep -v "REACT_APP_LaptopAndBeneficiaryDetailsApi\|REACT_APP_UserDetailsApis" "${FRONTEND_ENV}.bak" 2>/dev/null || true)
+    EXISTING_VARS=$(grep -v "REACT_APP_LaptopAndBeneficiaryDetailsApi\|REACT_APP_UserDetailsApis\|REACT_APP_NgoInformationApi" "${FRONTEND_ENV}.bak" 2>/dev/null || true)
 fi
 
 cat > "$FRONTEND_ENV" << EOF
 # API endpoints pointing to nginx proxy on this server
 REACT_APP_LaptopAndBeneficiaryDetailsApi=http://${SERVER_ADDR}/exec
 REACT_APP_UserDetailsApis=http://${SERVER_ADDR}/user-exec
+REACT_APP_NgoInformationApi=http://${SERVER_ADDR}/ngo-exec
 
 # --- Restore other env vars below (Firebase, etc.) ---
 ${EXISTING_VARS}
@@ -313,6 +314,17 @@ server {
     }
 
     location /user-exec {
+        proxy_pass         http://127.0.0.1:${BACKEND_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header   Host \$host;
+        proxy_set_header   X-Real-IP \$remote_addr;
+        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
+        proxy_read_timeout 120s;
+        client_max_body_size 50M;
+    }
+
+    location /ngo-exec {
         proxy_pass         http://127.0.0.1:${BACKEND_PORT};
         proxy_http_version 1.1;
         proxy_set_header   Host \$host;
