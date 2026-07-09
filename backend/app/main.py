@@ -3107,63 +3107,68 @@ def ngo_exec_get(request: Request) -> Any:
     content_type = response.headers.get("content-type", "")
     if "application/json" in content_type:
         data_json = response.json()
-        if params.get("type") == "registration" and isinstance(data_json, dict) and "data" in data_json:
-            try:
-                with get_conn() as conn:
-                    with conn.cursor() as cur:
-                        cur.execute(
-                            f"""
-                            SELECT id, ngo_name, laptop_quantity, location, use_case, contact_name, email, status, tentative_refurb_completion, donor
-                            FROM {DB_SCHEMA}.ngo_requests
-                            ORDER BY id DESC
-                            """
-                        )
-                        draft_rows = cur.fetchall()
-                        draft_list = []
-                        for r in draft_rows:
-                            # Map database status to match frontend capitalizing (e.g. 'draft' -> 'Draft')
-                            db_status = str(r['status'] or 'Draft').strip()
-                            display_status = db_status.capitalize() if db_status == 'draft' else db_status
-                            
-                            draft_list.append({
-                                "Id": f"DRAFT-{r['id']}",
-                                "organizationName": r["ngo_name"],
-                                "primaryContactName": r["contact_name"] or "",
-                                "contactNumber": "",
-                                "email": r["email"] or "",
-                                "location": r["location"] or "",
-                                "Status": display_status,
-                                "primaryUse": r["use_case"] or "",
-                                "Laptop require": r["laptop_quantity"] or 0,
-                                "Ngo Type": "",
-                                "Doner": r["donor"] or "",
-                                "tentative_refurb_completion": str(r["tentative_refurb_completion"]) if r["tentative_refurb_completion"] else None,
-                            })
-                        data_json["data"] = draft_list + data_json["data"]
-            except Exception as e:
-                print(f"Error merging ngo_requests drafts: {e}")
+    if params.get("type") == "registration":
+        if not isinstance(data_json, dict) or "data" not in data_json:
+            data_json = {"status": "success", "data": []}
+            
+        try:
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        f"""
+                        SELECT id, ngo_name, laptop_quantity, location, use_case, contact_name, email, status, tentative_refurb_completion, donor
+                        FROM {DB_SCHEMA}.ngo_requests
+                        ORDER BY id DESC
+                        """
+                    )
+                    draft_rows = cur.fetchall()
+                    draft_list = []
+                    for r in draft_rows:
+                        # Map database status to match frontend capitalizing (e.g. 'draft' -> 'Draft')
+                        db_status = str(r['status'] or 'Draft').strip()
+                        display_status = db_status.capitalize() if db_status == 'draft' else db_status
+                        
+                        id_prefix = "DRAFT-" if db_status.lower() == "draft" else "SAM-D"
+                        
+                        draft_list.append({
+                            "Id": f"{id_prefix}{r['id']}",
+                            "organizationName": r["ngo_name"],
+                            "primaryContactName": r["contact_name"] or "",
+                            "contactNumber": "",
+                            "email": r["email"] or "",
+                            "location": r["location"] or "",
+                            "Status": display_status,
+                            "primaryUse": r["use_case"] or "",
+                            "Laptop require": r["laptop_quantity"] or 0,
+                            "Ngo Type": "",
+                            "Doner": r["donor"] or "",
+                            "tentative_refurb_completion": str(r["tentative_refurb_completion"]) if r["tentative_refurb_completion"] else None,
+                        })
+                    data_json["data"] = draft_list + data_json["data"]
+        except Exception as e:
+            print(f"Error merging ngo_requests drafts: {e}")
         return data_json
     return {"status": "proxied", "raw": response.text}
-
-
+ 
+ 
 @app.post("/ngo-exec")
 async def ngo_exec_post(request: Request) -> Any:
     if not LEGACY_NGO_API_URL:
         raise HTTPException(status_code=501, detail="LEGACY_NGO_API_URL is not configured")
-    
+     
     try:
         payload = await request.json()
         if not isinstance(payload, dict):
             payload = {}
     except Exception:
         payload = {}
-        
+         
     type_name = _type_from_request(request, payload)
-    
+     
     # Intercept status changes, timeline updates, and deletions for drafts
     ngo_id = payload.get("id")
-    if isinstance(ngo_id, str) and ngo_id.startswith("DRAFT-"):
-        db_id = int(ngo_id.split("-")[1])
+    if isinstance(ngo_id, str) and (ngo_id.startswith("DRAFT-") or ngo_id.startswith("SAM-D")):
+        db_id = int(ngo_id.replace("DRAFT-", "").replace("SAM-D", ""))
         if type_name == "NGO":
             status_val = payload.get("status")
             with get_conn() as conn:
@@ -3414,7 +3419,7 @@ def _parse_ngo_request_with_ai(email_body: str) -> Dict[str, Any]:
     2. The number of laptops requested (as "laptop_quantity", must be an integer, default to 1 if not specified)
     3. The location/city (as "location")
     4. The purpose/use case (as "use_case")
-    5. The contact person's name (as "contact_name")
+    5. The contact person name (as "contact_name")
 
     Ensure the output is clean JSON. Do not include markdown wrappers or extra text.
 
@@ -3630,10 +3635,113 @@ async def send_quarterly_impact_reminders():
                         send_quarterly_impact_email(ngo_name, ngo_email, months, jotform_url)
 
 
+async def check_and_parse_inbound_emails():
+    imap_user = os.environ.get("NGO_REQUEST_EMAIL")
+    imap_pass = os.environ.get("NGO_REQUEST_EMAIL_PASSWORD")
+    if not imap_user or not imap_pass:
+        return
+        
+    import imaplib
+    import email
+    from email.header import decode_header
+    
+    try:
+        mail = imaplib.IMAP4_SSL("imap.gmail.com", 993)
+        mail.login(imap_user, imap_pass)
+        mail.select("inbox")
+        
+        status, messages = mail.search(None, "UNSEEN")
+        if status != "OK" or not messages[0]:
+            mail.logout()
+            return
+            
+        for num in messages[0].split():
+            status, data = mail.fetch(num, "(RFC822)")
+            if status != "OK":
+                continue
+                
+            raw_email = data[0][1]
+            msg = email.message_from_bytes(raw_email)
+            
+            subject, encoding = decode_header(msg.get("Subject", ""))[0]
+            if isinstance(subject, bytes):
+                subject = subject.decode(encoding or "utf-8", errors="ignore")
+                
+            # Match laptop request keywords
+            if "request" not in subject.lower() or "laptop" not in subject.lower():
+                continue
+                
+            sender, encoding = decode_header(msg.get("From", ""))[0]
+            if isinstance(sender, bytes):
+                sender = sender.decode(encoding or "utf-8", errors="ignore")
+                
+            body = ""
+            if msg.is_multipart():
+                for part in msg.walk():
+                    content_type = part.get_content_type()
+                    content_disposition = str(part.get("Content-Disposition"))
+                    if content_type == "text/plain" and "attachment" not in content_disposition:
+                        payload_data = part.get_payload(decode=True)
+                        body = payload_data.decode(part.get_content_charset() or "utf-8", errors="ignore")
+                        break
+            else:
+                payload_data = msg.get_payload(decode=True)
+                body = payload_data.decode(msg.get_content_charset() or "utf-8", errors="ignore")
+                
+            body = body.strip()
+            if not body:
+                continue
+                
+            parsed_data = _parse_ngo_request_with_ai(body)
+            email_address = str(parsed_data.get("email") or sender or "").strip()
+            email_match = re.search(r"[\w\.-]+@[\w\.-]+", email_address)
+            if email_match:
+                email_address = email_match.group(0)
+                
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        f"""
+                        INSERT INTO {DB_SCHEMA}.ngo_requests
+                        (ngo_name, laptop_quantity, location, use_case, contact_name, email, status)
+                        VALUES (%s, %s, %s, %s, %s, %s, 'draft')
+                        """,
+                        (
+                            parsed_data["ngo_name"],
+                            parsed_data["laptop_quantity"],
+                            parsed_data["location"],
+                            parsed_data["use_case"],
+                            parsed_data["contact_name"],
+                            email_address,
+                        )
+                    )
+                    conn.commit()
+            print(f"Automatically parsed and saved request draft from {email_address}")
+            
+            # Mark as read
+            mail.store(num, "+FLAGS", "\\Seen")
+            
+        mail.close()
+        mail.logout()
+    except Exception as e:
+        print(f"Error reading IMAP inbox: {e}")
+
+
+async def run_email_polling_scheduler():
+    print("Email polling scheduler task initiated.")
+    while True:
+        try:
+            await check_and_parse_inbound_emails()
+        except Exception as e:
+            print(f"Error in email polling scheduler: {e}")
+        await asyncio.sleep(60)
+
+
 async def run_daily_background_scheduler():
     print("Background scheduler task initiated.")
     while True:
         try:
+            await check_and_parse_inbound_emails()
             await check_rms_inactivity()
             await send_quarterly_impact_reminders()
         except Exception as e:
@@ -3645,4 +3753,5 @@ async def run_daily_background_scheduler():
 @app.on_event("startup")
 async def start_background_jobs():
     asyncio.create_task(run_daily_background_scheduler())
+    asyncio.create_task(run_email_polling_scheduler())
 
