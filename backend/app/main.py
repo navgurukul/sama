@@ -2882,6 +2882,7 @@ def _send_email_common(to_email: str, subject: str, html_part: str, cc: list = N
         import base64
         
         smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
+        smtp_sender = os.environ.get("SMTP_SENDER", smtp_user)
         try:
             smtp_port = int(os.environ.get("SMTP_PORT", "587"))
         except Exception:
@@ -2890,7 +2891,7 @@ def _send_email_common(to_email: str, subject: str, html_part: str, cc: list = N
         try:
             msg = MIMEMultipart("alternative")
             msg["Subject"] = subject
-            msg["From"] = f"{sender_name} <{smtp_user}>"
+            msg["From"] = f"{sender_name} <{smtp_sender}>"
             msg["To"] = to_email
             
             cc_emails = []
@@ -2920,7 +2921,7 @@ def _send_email_common(to_email: str, subject: str, html_part: str, cc: list = N
             with smtplib.SMTP(smtp_host, smtp_port, timeout=15.0) as server:
                 server.starttls()
                 server.login(smtp_user, smtp_password)
-                server.sendmail(smtp_user, all_recipients, msg.as_string())
+                server.sendmail(smtp_sender, all_recipients, msg.as_string())
             print(f"Email sent successfully via SMTP ({smtp_host}) to {to_email}")
             return True
         except Exception as e:
