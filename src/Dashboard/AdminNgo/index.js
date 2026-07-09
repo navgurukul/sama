@@ -94,6 +94,7 @@ const AdminNgo = () => {
         ];
         const locationOptions = [...new Set(data.map((item) => item.location))];
         const statusOptions = [
+          "Draft",
           "Submitted Request",
           "In Progress",
           "Approved",
@@ -170,7 +171,7 @@ const AdminNgo = () => {
   const handleConfirmStatusChange = async (e) => {
     e.stopPropagation();
     const updatedData = ngoData?.map((ngo) =>
-      ngo.Id === ngoIdToChange ? { ...ngo, status: selectedStatus } : ngo
+      ngo.Id === ngoIdToChange ? { ...ngo, Status: selectedStatus } : ngo
     );
     setNgoData(updatedData);
     setOpenDialog(false); // Close dialog

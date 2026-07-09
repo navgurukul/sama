@@ -1994,9 +1994,7 @@ def _upsert_laptop_row(cur, item: Dict[str, Any], last_updated_by: str) -> None:
     )
 
 
-def _handle_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
-    type_name = payload.get("type")
-
+def _handle_post_type(type_name: str, payload: Dict[str, Any]) -> Dict[str, Any]:
     with get_conn() as conn:
         with conn.cursor() as cur:
             if type_name == "startStageRun":
@@ -2837,109 +2835,180 @@ def health() -> Dict[str, str]:
     return {"status": "ok"}
 
 
-def send_afe_approval_email(ngo_name: str, ngo_email: str, qty_requested: Any):
+def _log_email_to_file(to_email: str, subject: str, html_part: str, cc: list = None):
+    try:
+        import datetime
+        import re
+        scratch_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scratch")
+        os.makedirs(scratch_dir, exist_ok=True)
+        log_path = os.path.join(scratch_dir, "email_log.txt")
+        
+        # Clean HTML tags for a clean terminal/text view
+        text_body = re.sub('<[^<]+?>', '', html_part)
+        text_body = "\n".join([line.strip() for line in text_body.split("\n") if line.strip()])
+        
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write("=" * 60 + "\n")
+            f.write(f"TIMESTAMP: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"TO: {to_email}\n")
+            if cc:
+                f.write(f"CC: {', '.join([c.get('Email', '') for c in cc])}\n")
+            f.write(f"SUBJECT: {subject}\n")
+            f.write("-" * 60 + "\n")
+            f.write(text_body + "\n")
+            f.write("=" * 60 + "\n\n")
+        print(f"Logged email to local sandbox: {log_path}")
+    except Exception as e:
+        print(f"Failed to log email to file: {e}")
+
+
+def _send_email_common(to_email: str, subject: str, html_part: str, cc: list = None, attachments: list = None, to_name: str = ""):
+    # 1. Try Google SMTP
+    smtp_user = os.environ.get("SMTP_USER")
+    smtp_password = os.environ.get("SMTP_PASSWORD")
+    sender_name = os.environ.get("MAILJET_SENDER_NAME", "Sama Operations")
+    
+    # 2. Try Mailjet fallback
     api_key = os.environ.get("MAILJET_API_KEY")
     api_secret = os.environ.get("MAILJET_API_SECRET")
     sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
-    sender_name = os.environ.get("MAILJET_SENDER_NAME", "SamaSocial")
     
-    if not api_key or not api_secret or not sender_email:
-        print("Mailjet not fully configured. Skipping email.")
-        return
+    if smtp_user and smtp_password:
+        import smtplib
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+        from email.mime.base import MIMEBase
+        from email import encoders
+        import base64
         
+        smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
+        try:
+            smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+        except Exception:
+            smtp_port = 587
+            
+        try:
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"] = f"{sender_name} <{smtp_user}>"
+            msg["To"] = to_email
+            
+            cc_emails = []
+            if cc:
+                cc_emails = [c.get("Email", "") for c in cc if c.get("Email")]
+                msg["Cc"] = ", ".join(cc_emails)
+                
+            all_recipients = [to_email] + cc_emails
+            msg.attach(MIMEText(html_part, "html"))
+            
+            if attachments:
+                for att in attachments:
+                    part = MIMEBase("application", "octet-stream")
+                    b64_content = att.get("Base64Content")
+                    if b64_content:
+                        raw_data = base64.b64decode(b64_content)
+                        part.set_payload(raw_data)
+                    else:
+                        part.set_payload(att.get("Content", b""))
+                    encoders.encode_base64(part)
+                    part.add_header(
+                        "Content-Disposition",
+                        f"attachment; filename={att.get('Filename', 'attachment.csv')}",
+                    )
+                    msg.attach(part)
+            
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=15.0) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_password)
+                server.sendmail(smtp_user, all_recipients, msg.as_string())
+            print(f"Email sent successfully via SMTP ({smtp_host}) to {to_email}")
+            return True
+        except Exception as e:
+            print(f"Failed to send email via SMTP ({smtp_host}): {e}. Falling back to logging.")
+            _log_email_to_file(to_email, subject, html_part, cc=cc)
+            return False
+            
+    elif api_key and api_secret and sender_email:
+        payload = {
+            "Messages": [
+                {
+                    "From": {
+                        "Email": sender_email,
+                        "Name": sender_name
+                    },
+                    "To": [
+                        {
+                            "Email": to_email,
+                            "Name": to_name or to_email
+                        }
+                    ],
+                    "Subject": subject,
+                    "HTMLPart": html_part
+                }
+            ]
+        }
+        if cc:
+            payload["Messages"][0]["Cc"] = [{"Email": c.get("Email", ""), "Name": c.get("Name", "Recipient")} for c in cc if c.get("Email")]
+        if attachments:
+            payload["Messages"][0]["Attachments"] = attachments
+            
+        try:
+            response = httpx.post("https://api.mailjet.com/v3.1/send", auth=(api_key, api_secret), json=payload, timeout=15.0)
+            response.raise_for_status()
+            print(f"Email sent successfully via Mailjet to {to_email}")
+            return True
+        except Exception as e:
+            print(f"Failed to send email via Mailjet: {e}. Falling back to logging.")
+            _log_email_to_file(to_email, subject, html_part, cc=cc)
+            return False
+    else:
+        # Attach details for the log file if present
+        log_text = html_part
+        if attachments:
+            for att in attachments:
+                log_text += f"\n\n[ATTACHMENT: {att.get('Filename', 'attachment.csv')}]"
+        _log_email_to_file(to_email, subject, log_text, cc=cc)
+        return True
+
+
+def send_afe_approval_email(ngo_name: str, ngo_email: str, qty_requested: Any):
     ops_email = os.environ.get("SAMA_OPS_EMAIL", "ops@thesama.in")
     afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
-    
-    payload = {
-        "Messages": [
-            {
-                "From": {
-                    "Email": sender_email,
-                    "Name": sender_name
-                },
-                "To": [
-                    {
-                        "Email": ngo_email,
-                        "Name": ngo_name
-                    }
-                ],
-                "Cc": [
-                    {"Email": ops_email, "Name": "Sama Operations"},
-                    {"Email": afe_email, "Name": "Amazon AFE Team"}
-                ],
-                "Subject": f"AFE Laptop Request Approved – {ngo_name}",
-                "HTMLPart": f"""
-                    <p>Dear {ngo_name} Team,</p>
-                    <p>We are pleased to inform you that your request for <strong>{qty_requested} laptops</strong> has been approved. The request has now been handed over to the Sama Operations team for further processing. We will begin the refurbishment process and share the tentative completion and dispatch timeline with you within 8–10 business days.</p>
-                    <p>If you have any questions, please feel free to reach out to us.</p>
-                    <p>Best regards,<br/>Sama Operations Team</p>
-                """
-            }
-        ]
-    }
-    
-    try:
-        response = httpx.post(
-            "https://api.mailjet.com/v3.1/send",
-            auth=(api_key, api_secret),
-            json=payload,
-            timeout=10.0
-        )
-        response.raise_for_status()
-        print("AFE approval email sent successfully.")
-    except Exception as e:
-        print(f"Failed to send AFE approval email: {e}")
+    subject = f"AFE Laptop Request Approved – {ngo_name}"
+    html_part = f"""
+        <p>Dear {ngo_name} Team,</p>
+        <p>We are pleased to inform you that your request for <strong>{qty_requested} laptops</strong> has been approved. The request has now been handed over to the Sama Operations team for further processing. We will begin the refurbishment process and share the tentative completion and dispatch timeline with you within 8–10 business days.</p>
+        <p>If you have any questions, please feel free to reach out to us.</p>
+        <p>Best regards,<br/>Sama Operations Team</p>
+    """
+    _send_email_common(
+        to_email=ngo_email,
+        subject=subject,
+        html_part=html_part,
+        cc=[{"Email": ops_email}, {"Email": afe_email}],
+        to_name=ngo_name
+    )
 
 
 def send_afe_dispatch_email(ngo_name: str, ngo_email: str, qty_requested: Any):
-    api_key = os.environ.get("MAILJET_API_KEY")
-    api_secret = os.environ.get("MAILJET_API_SECRET")
-    sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
-    sender_name = os.environ.get("MAILJET_SENDER_NAME", "SamaSocial")
-    
-    if not api_key or not api_secret or not sender_email:
-        print("Mailjet not fully configured. Skipping email.")
-        return
-        
     ops_email = os.environ.get("SAMA_OPS_EMAIL", "ops@thesama.in")
     afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
     
     dispatch_date_str = date.today().strftime("%d/%m/%Y")
-    
-    payload = {
-        "Messages": [
-            {
-                "From": {
-                    "Email": sender_email,
-                    "Name": sender_name
-                },
-                "To": [
-                    {
-                        "Email": ngo_email,
-                        "Name": ngo_name
-                    }
-                ],
-                "Cc": [
-                    {"Email": ops_email, "Name": "Sama Operations"},
-                    {"Email": afe_email, "Name": "Amazon AFE Team"}
-                ],
-                "Subject": f"AFE Laptop Dispatch Confirmation – {ngo_name}",
-                "HTMLPart": f"""
-                    <p>Dear {ngo_name} Team,</p>
-                    <p>We're happy to share that {qty_requested} laptops have been dispatched from our Pune/Bangalore location on {dispatch_date_str} and are on their way to you. They are expected to reach your location within 3-5 business days.</p>
-                    <p>Once the laptops are delivered, we'll follow up separately to confirm receipt and check that everything has arrived in good condition. In the meantime, if you have any questions about the shipment, please feel free to reach out.</p>
-                    <p>Warm regards,<br/>Sama Operations Team</p>
-                """
-            }
-        ]
-    }
-    
-    try:
-        response = httpx.post("https://api.mailjet.com/v3.1/send", auth=(api_key, api_secret), json=payload, timeout=15.0)
-        response.raise_for_status()
-        print("AFE dispatch confirmation email sent successfully.")
-    except Exception as e:
-        print(f"Failed to send AFE dispatch email: {e}")
+    subject = f"AFE Laptop Dispatch Confirmation – {ngo_name}"
+    html_part = f"""
+        <p>Dear {ngo_name} Team,</p>
+        <p>We're happy to share that {qty_requested} laptops have been dispatched from our Pune/Bangalore location on {dispatch_date_str} and are on their way to you. They are expected to reach your location within 3-5 business days.</p>
+        <p>Once the laptops are delivered, we'll follow up separately to confirm receipt and check that everything has arrived in good condition. In the meantime, if you have any questions about the shipment, please feel free to reach out.</p>
+        <p>Warm regards,<br/>Sama Operations Team</p>
+    """
+    _send_email_common(
+        to_email=ngo_email,
+        subject=subject,
+        html_part=html_part,
+        cc=[{"Email": ops_email}, {"Email": afe_email}],
+        to_name=ngo_name
+    )
 
 
 def send_afe_delivery_email(ngo_name: str, ngo_email: str, qty_requested: Any, laptops_list: List[Dict[str, Any]]):
@@ -2947,21 +3016,11 @@ def send_afe_delivery_email(ngo_name: str, ngo_email: str, qty_requested: Any, l
     import io
     import base64
     
-    api_key = os.environ.get("MAILJET_API_KEY")
-    api_secret = os.environ.get("MAILJET_API_SECRET")
-    sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
-    sender_name = os.environ.get("MAILJET_SENDER_NAME", "SamaSocial")
-    
-    if not api_key or not api_secret or not sender_email:
-        print("Mailjet not fully configured. Skipping email.")
-        return
-        
     ops_email = os.environ.get("SAMA_OPS_EMAIL", "ops@thesama.in")
     afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
     
     delivery_date_str = date.today().strftime("%d/%m/%Y")
     
-    # 1. Generate CSV attachment content
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(["#", "Serial number", "RAM", "ROM", "Manufacturer Model"])
@@ -2976,79 +3035,62 @@ def send_afe_delivery_email(ngo_name: str, ngo_email: str, qty_requested: Any, l
     csv_content = output.getvalue()
     base64_content = base64.b64encode(csv_content.encode("utf-8")).decode("utf-8")
     
-    payload = {
-        "Messages": [
-            {
-                "From": {
-                    "Email": sender_email,
-                    "Name": sender_name
-                },
-                "To": [
-                    {
-                        "Email": ngo_email,
-                        "Name": ngo_name
-                    }
-                ],
-                "Cc": [
-                    {"Email": ops_email, "Name": "Sama Operations"},
-                    {"Email": afe_email, "Name": "Amazon AFE Team"}
-                ],
-                "Subject": f"AFE Laptop Delivery Confirmation – {ngo_name}",
-                "HTMLPart": f"""
-                    <p>Dear {ngo_name} Team,</p>
-                    
-                    <p>We're happy to share that {qty_requested} laptops were delivered to your organization on {delivery_date_str}. We hope they reach your beneficiaries soon and make a real difference.</p>
-                    
-                    <p>At your earliest convenience, please confirm receipt and let us know the units are all in good working condition. We've attached the <span style="color: #0066cc; text-decoration: underline; font-weight: bold;">serial number sheet</span> and credentials for your reference. If anything seems off, please do reach out within <strong>15 working days</strong> so we can sort it out quickly.</p>
-                    
-                    <p>For your reference, please find the default login credentials and specifications for the delivered laptops:</p>
-                    <table border="1" cellpadding="5" style="border-collapse: collapse; margin-bottom: 20px;">
-                        <tr style="background-color: #f2f2f2;">
-                            <th>Detail</th>
-                            <th>Value</th>
-                        </tr>
-                        <tr>
-                            <td><strong>Default Username</strong></td>
-                            <td>Sama</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Default Password</strong></td>
-                            <td>1</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Scope</strong></td>
-                            <td>Standard login for all Windows laptops in this shipment</td>
-                        </tr>
-                    </table>
+    subject = f"AFE Laptop Delivery Confirmation – {ngo_name}"
+    html_part = f"""
+        <p>Dear {ngo_name} Team,</p>
+        
+        <p>We're happy to share that {qty_requested} laptops were delivered to your organization on {delivery_date_str}. We hope they reach your beneficiaries soon and make a real difference.</p>
+        
+        <p>At your earliest convenience, please confirm receipt and let us know the units are all in good working condition. We've attached the <span style="color: #0066cc; text-decoration: underline; font-weight: bold;">serial number sheet</span> and credentials for your reference. If anything seems off, please do reach out within <strong>15 working days</strong> so we can sort it out quickly.</p>
+        
+        <p>For your reference, please find the default login credentials and specifications for the delivered laptops:</p>
+        <table border="1" cellpadding="5" style="border-collapse: collapse; margin-bottom: 20px;">
+            <tr style="background-color: #f2f2f2;">
+                <th>Detail</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td><strong>Default Username</strong></td>
+                <td>Sama</td>
+            </tr>
+            <tr>
+                <td><strong>Default Password</strong></td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td><strong>Scope</strong></td>
+                <td>Standard login for all Windows laptops in this shipment</td>
+            </tr>
+        </table>
 
-                    <p>A couple of small things we'd appreciate:</p>
-                    <ul style="list-style-type: disc; padding-left: 20px;">
-                        <li>A signed delivery acknowledgment would be great to have on file</li>
-                        <li>A feedback form is also attached; please do share it in case you face any issues with the laptops (Feedback link: <a href="https://form.jotform.com/261834345018052">https://form.jotform.com/261834345018052</a>)</li>
-                        <li>We'd love to hear a quick update every three months on how the laptops are being used, as it really helps us understand the impact on your beneficiaries</li>
-                    </ul>
-                    
-                    <p>Thank you so much for being a valued implementation partner. We're looking forward to hearing the good things these laptops help make possible!</p>
-                    
-                    <p>Best regards,<br/>Sama Operations Team</p>
-                """,
-                "Attachments": [
-                    {
-                        "ContentType": "text/csv",
-                        "Filename": f"AFE_Laptops_List_{ngo_name.replace(' ', '_')}.csv",
-                        "Base64Content": base64_content
-                    }
-                ]
-            }
-        ]
-    }
+        <p>A couple of small things we'd appreciate:</p>
+        <ul style="list-style-type: disc; padding-left: 20px;">
+            <li>A signed delivery acknowledgment would be great to have on file</li>
+            <li>A feedback form is also attached; please do share it in case you face any issues with the laptops (Feedback link: <a href="https://form.jotform.com/261834345018052">https://form.jotform.com/261834345018052</a>)</li>
+            <li>We'd love to hear a quick update every three months on how the laptops are being used, as it really helps us understand the impact on your beneficiaries</li>
+        </ul>
+        
+        <p>Thank you so much for being a valued implementation partner. We're looking forward to hearing the good things these laptops help make possible!</p>
+        
+        <p>Best regards,<br/>Sama Operations Team</p>
+    """
     
-    try:
-        response = httpx.post("https://api.mailjet.com/v3.1/send", auth=(api_key, api_secret), json=payload, timeout=15.0)
-        response.raise_for_status()
-        print("AFE delivery confirmation email sent successfully.")
-    except Exception as e:
-        print(f"Failed to send AFE delivery confirmation email: {e}")
+    attachments = [
+        {
+            "ContentType": "text/csv",
+            "Filename": f"AFE_Laptops_List_{ngo_name.replace(' ', '_')}.csv",
+            "Base64Content": base64_content
+        }
+    ]
+    
+    _send_email_common(
+        to_email=ngo_email,
+        subject=subject,
+        html_part=html_part,
+        cc=[{"Email": ops_email}, {"Email": afe_email}],
+        attachments=attachments,
+        to_name=ngo_name
+    )
 
 
 @app.get("/ngo-exec")
@@ -3063,7 +3105,43 @@ def ngo_exec_get(request: Request) -> Any:
     
     content_type = response.headers.get("content-type", "")
     if "application/json" in content_type:
-        return response.json()
+        data_json = response.json()
+        if params.get("type") == "registration" and isinstance(data_json, dict) and "data" in data_json:
+            try:
+                with get_conn() as conn:
+                    with conn.cursor() as cur:
+                        cur.execute(
+                            f"""
+                            SELECT id, ngo_name, laptop_quantity, location, use_case, contact_name, email, status, tentative_refurb_completion, donor
+                            FROM {DB_SCHEMA}.ngo_requests
+                            ORDER BY id DESC
+                            """
+                        )
+                        draft_rows = cur.fetchall()
+                        draft_list = []
+                        for r in draft_rows:
+                            # Map database status to match frontend capitalizing (e.g. 'draft' -> 'Draft')
+                            db_status = str(r['status'] or 'Draft').strip()
+                            display_status = db_status.capitalize() if db_status == 'draft' else db_status
+                            
+                            draft_list.append({
+                                "Id": f"DRAFT-{r['id']}",
+                                "organizationName": r["ngo_name"],
+                                "primaryContactName": r["contact_name"] or "",
+                                "contactNumber": "",
+                                "email": r["email"] or "",
+                                "location": r["location"] or "",
+                                "Status": display_status,
+                                "primaryUse": r["use_case"] or "",
+                                "Laptop require": r["laptop_quantity"] or 0,
+                                "Ngo Type": "",
+                                "Doner": r["donor"] or "",
+                                "tentative_refurb_completion": str(r["tentative_refurb_completion"]) if r["tentative_refurb_completion"] else None,
+                            })
+                        data_json["data"] = draft_list + data_json["data"]
+            except Exception as e:
+                print(f"Error merging ngo_requests drafts: {e}")
+        return data_json
     return {"status": "proxied", "raw": response.text}
 
 
@@ -3081,6 +3159,88 @@ async def ngo_exec_post(request: Request) -> Any:
         
     type_name = _type_from_request(request, payload)
     
+    # Intercept status changes, timeline updates, and deletions for drafts
+    ngo_id = payload.get("id")
+    if isinstance(ngo_id, str) and ngo_id.startswith("DRAFT-"):
+        db_id = int(ngo_id.split("-")[1])
+        if type_name == "NGO":
+            status_val = payload.get("status")
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        f"""
+                        UPDATE {DB_SCHEMA}.ngo_requests
+                        SET status = %s
+                        WHERE id = %s
+                        """,
+                        (status_val, db_id)
+                    )
+                    conn.commit()
+                    
+                    if status_val in {"Approved", "Dispatched", "Delivered"}:
+                        cur.execute(f"SELECT ngo_name, email, laptop_quantity FROM {DB_SCHEMA}.ngo_requests WHERE id = %s", (db_id,))
+                        row = cur.fetchone()
+                        if row and row.get("email"):
+                            if status_val == "Approved":
+                                send_afe_approval_email(row["ngo_name"], row["email"], row["laptop_quantity"])
+                            elif status_val == "Dispatched":
+                                send_afe_dispatch_email(row["ngo_name"], row["email"], row["laptop_quantity"])
+                            elif status_val == "Delivered":
+                                # Fetch any laptops allocated to this NGO name
+                                laptops_list = []
+                                try:
+                                    cur.execute(
+                                        f"""
+                                        SELECT id, manufacturer_model, ram, rom, processor 
+                                        FROM {DB_SCHEMA}.laptop_labeling 
+                                        WHERE UPPER(allocated_to) = UPPER(%s)
+                                        """,
+                                        (row["ngo_name"],)
+                                    )
+                                    for r_lap in cur.fetchall():
+                                        laptops_list.append(dict(r_lap))
+                                except Exception as e:
+                                    print(f"Failed to fetch laptops for delivery email: {e}")
+                                send_afe_delivery_email(row["ngo_name"], row["email"], row["laptop_quantity"], laptops_list)
+            return {"status": "success", "id": ngo_id, "status_updated": status_val}
+            
+        elif type_name == "NGOTimeline":
+            date_val = payload.get("tentative_refurb_completion")
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        f"""
+                        UPDATE {DB_SCHEMA}.ngo_requests
+                        SET tentative_refurb_completion = %s
+                        WHERE id = %s
+                        """,
+                        (date_val, db_id)
+                    )
+                    conn.commit()
+            return {"status": "success", "id": ngo_id, "timeline_updated": date_val}
+            
+        elif type_name == "deleteNgo":
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(f"DELETE FROM {DB_SCHEMA}.ngo_requests WHERE id = %s", (db_id,))
+                    conn.commit()
+            return {"status": "success", "id": ngo_id, "deleted": True}
+            
+        elif type_name == "donorUpdate":
+            donor_val = payload.get("donor")
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        f"""
+                        UPDATE {DB_SCHEMA}.ngo_requests
+                        SET donor = %s
+                        WHERE id = %s
+                        """,
+                        (donor_val, db_id)
+                    )
+                    conn.commit()
+            return {"status": "success", "id": ngo_id, "donor_updated": donor_val}
+            
     # Intercept status changes
     if type_name == "NGO":
         status_val = payload.get("status")
@@ -3199,7 +3359,7 @@ async def exec_post(request: Request) -> Any:
         raise HTTPException(status_code=400, detail="Missing 'type' in query or JSON body")
 
     if type_name in MIGRATED_TYPES:
-        return _handle_post_type(payload)
+        return _handle_post_type(type_name, payload)
 
     return _proxy_to_legacy("POST", request, payload)
 
@@ -3306,54 +3466,25 @@ def _parse_ngo_request_with_ai(email_body: str) -> Dict[str, Any]:
 
 
 def send_rms_inactivity_support_email(ngo_name: str, ngo_email: str, laptop_id: str, limit_days: int):
-    api_key = os.environ.get("MAILJET_API_KEY")
-    api_secret = os.environ.get("MAILJET_API_SECRET")
-    sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
-    sender_name = os.environ.get("MAILJET_SENDER_NAME", "SamaSocial")
-    
-    if not api_key or not api_secret or not sender_email:
-        print("Mailjet not fully configured. Skipping support email.")
-        return
-        
     ops_email = os.environ.get("SAMA_OPS_EMAIL", "operations@thesama.in")
     afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
     
-    payload = {
-        "Messages": [
-            {
-                "From": {
-                    "Email": sender_email,
-                    "Name": sender_name
-                },
-                "To": [
-                    {
-                        "Email": ngo_email,
-                        "Name": ngo_name
-                    }
-                ],
-                "Cc": [
-                    {"Email": ops_email, "Name": "Sama Operations"},
-                    {"Email": afe_email, "Name": "Amazon AFE Team"}
-                ],
-                "Subject": f"Laptop Inactivity Alert – Support Check-in Required {ngo_name}",
-                "HTMLPart": f"""
-                    <p>Dear {ngo_name} Team,</p>
-                    <p>We hope you are doing well.</p>
-                    <p>As part of our routine monitoring under the Remote Management System (RMS), we have noticed that one of the laptops distributed to {ngo_name}, Asset Tag/Serial Number: {laptop_id}, has not connected to the internet for over {limit_days} days and has therefore been marked as inactive in our system.</p>
-                    <p>This could be due to a number of reasons, such as limited connectivity, the device being temporarily out of use, or a technical issue on the device end. We would appreciate it if you could share a quick update on the current status of this laptop within a week.</p>
-                    <p>If any support is needed on our end, whether technical troubleshooting or otherwise, please feel free to reach out to us.</p>
-                    <p>Best regards,<br/>Sama Operations Team</p>
-                """
-            }
-        ]
-    }
-    
-    try:
-        response = httpx.post("https://api.mailjet.com/v3.1/send", auth=(api_key, api_secret), json=payload, timeout=15.0)
-        response.raise_for_status()
-        print(f"RMS support email sent successfully to {ngo_email}.")
-    except Exception as e:
-        print(f"Failed to send RMS support email: {e}")
+    subject = f"Laptop Inactivity Alert – Support Check-in Required {ngo_name}"
+    html_part = f"""
+        <p>Dear {ngo_name} Team,</p>
+        <p>We hope you are doing well.</p>
+        <p>As part of our routine monitoring under the Remote Management System (RMS), we have noticed that one of the laptops distributed to {ngo_name}, Asset Tag/Serial Number: {laptop_id}, has not connected to the internet for over {limit_days} days and has therefore been marked as inactive in our system.</p>
+        <p>This could be due to a number of reasons, such as limited connectivity, the device being temporarily out of use, or a technical issue on the device end. We would appreciate it if you could share a quick update on the current status of this laptop within a week.</p>
+        <p>If any support is needed on our end, whether technical troubleshooting or otherwise, please feel free to reach out to us.</p>
+        <p>Best regards,<br/>Sama Operations Team</p>
+    """
+    _send_email_common(
+        to_email=ngo_email,
+        subject=subject,
+        html_part=html_part,
+        cc=[{"Email": ops_email}, {"Email": afe_email}],
+        to_name=ngo_name
+    )
 
 
 async def check_rms_inactivity():
@@ -3427,56 +3558,27 @@ async def check_rms_inactivity():
 
 
 def send_quarterly_impact_email(ngo_name: str, ngo_email: str, months: int, jotform_url: str):
-    api_key = os.environ.get("MAILJET_API_KEY")
-    api_secret = os.environ.get("MAILJET_API_SECRET")
-    sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
-    sender_name = os.environ.get("MAILJET_SENDER_NAME", "SamaSocial")
-    
-    if not api_key or not api_secret or not sender_email:
-        print("Mailjet not fully configured. Skipping quarterly email.")
-        return
-        
     ops_email = os.environ.get("SAMA_OPS_EMAIL", "operations@thesama.in")
     afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
     
-    payload = {
-        "Messages": [
-            {
-                "From": {
-                    "Email": sender_email,
-                    "Name": sender_name
-                },
-                "To": [
-                    {
-                        "Email": ngo_email,
-                        "Name": ngo_name
-                    }
-                ],
-                "Cc": [
-                    {"Email": ops_email, "Name": "Sama Operations"},
-                    {"Email": afe_email, "Name": "Amazon AFE Team"}
-                ],
-                "Subject": f"Quarterly Impact Report Submission Reminder – {ngo_name}",
-                "HTMLPart": f"""
-                    <p>Dear {ngo_name} Team,</p>
-                    <p>We hope you are doing well.</p>
-                    <p>As part of our quarterly review process, we kindly request you to submit the Impact Report for your organization. This report helps us track the usage and impact of the distributed laptops within your programs.</p>
-                    <p>Please use the link below to submit your report along with the required photos:</p>
-                    <p><a href="{jotform_url}" target="_blank">Impact report</a></p>
-                    <p>We would appreciate it if this could be completed within a week. If you have any questions or need assistance while filling out the form, please feel free to reach out to us.</p>
-                    <p>Thank you for your continued partnership and support.</p>
-                    <p>Best regards,<br/>Sama Operations Team</p>
-                """
-            }
-        ]
-    }
-    
-    try:
-        response = httpx.post("https://api.mailjet.com/v3.1/send", auth=(api_key, api_secret), json=payload, timeout=15.0)
-        response.raise_for_status()
-        print(f"Impact reminder email sent successfully to {ngo_email}.")
-    except Exception as e:
-        print(f"Failed to send impact reminder email: {e}")
+    subject = f"Quarterly Impact Report Submission Reminder – {ngo_name}"
+    html_part = f"""
+        <p>Dear {ngo_name} Team,</p>
+        <p>We hope you are doing well.</p>
+        <p>As part of our quarterly review process, we kindly request you to submit the Impact Report for your organization. This report helps us track the usage and impact of the distributed laptops within your programs.</p>
+        <p>Please use the link below to submit your report along with the required photos:</p>
+        <p><a href="{jotform_url}" target="_blank">Impact report</a></p>
+        <p>We would appreciate it if this could be completed within a week. If you have any questions or need assistance while filling out the form, please feel free to reach out to us.</p>
+        <p>Thank you for your continued partnership and support.</p>
+        <p>Best regards,<br/>Sama Operations Team</p>
+    """
+    _send_email_common(
+        to_email=ngo_email,
+        subject=subject,
+        html_part=html_part,
+        cc=[{"Email": ops_email}, {"Email": afe_email}],
+        to_name=ngo_name
+    )
 
 
 async def send_quarterly_impact_reminders():

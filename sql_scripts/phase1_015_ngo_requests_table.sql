@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS sama_ops.ngo_requests (
     contact_name TEXT,
     email TEXT,
     status TEXT NOT NULL DEFAULT 'draft',
+    tentative_refurb_completion DATE,
+    donor TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
