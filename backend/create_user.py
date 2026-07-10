@@ -32,34 +32,39 @@ def main():
     
     with psycopg.connect(database_url, row_factory=dict_row) as conn:
         with conn.cursor() as cur:
-            # 1. Create registration table if not exists, and make sure all columns are there
+            # 1. Drop old tables cascadingly to avoid corrupt columns
+            cur.execute(f"DROP TABLE IF EXISTS {db_schema}.user_profile_registration CASCADE")
+            cur.execute(f"DROP TABLE IF EXISTS {db_schema}.user_profile_userrole CASCADE")
+            print("Dropped old tables successfully.")
+
+            # 2. Re-create registration table fresh
             cur.execute(f"""
-                CREATE TABLE IF NOT EXISTS {db_schema}.user_profile_registration (
-                    email VARCHAR(255) PRIMARY KEY
+                CREATE TABLE {db_schema}.user_profile_registration (
+                    name VARCHAR(255),
+                    email VARCHAR(255) PRIMARY KEY,
+                    password VARCHAR(255),
+                    status VARCHAR(50),
+                    role VARCHAR(50),
+                    reason TEXT
                 )
             """)
-            cur.execute(f"ALTER TABLE {db_schema}.user_profile_registration ADD COLUMN IF NOT EXISTS name VARCHAR(255)")
-            cur.execute(f"ALTER TABLE {db_schema}.user_profile_registration ADD COLUMN IF NOT EXISTS password VARCHAR(255)")
-            cur.execute(f"ALTER TABLE {db_schema}.user_profile_registration ADD COLUMN IF NOT EXISTS status VARCHAR(50)")
-            cur.execute(f"ALTER TABLE {db_schema}.user_profile_registration ADD COLUMN IF NOT EXISTS role VARCHAR(50)")
-            cur.execute(f"ALTER TABLE {db_schema}.user_profile_registration ADD COLUMN IF NOT EXISTS reason TEXT")
-            print("Table user_profile_registration verified and updated.")
+            print("Created table user_profile_registration.")
 
-            # 2. Create userrole table if not exists, and make sure all columns are there
+            # 3. Re-create userrole table fresh
             cur.execute(f"""
-                CREATE TABLE IF NOT EXISTS {db_schema}.user_profile_userrole (
-                    email VARCHAR(255) PRIMARY KEY
+                CREATE TABLE {db_schema}.user_profile_userrole (
+                    name VARCHAR(255),
+                    email VARCHAR(255) PRIMARY KEY,
+                    password VARCHAR(255),
+                    role VARCHAR(50),
+                    ngo_id VARCHAR(255),
+                    type VARCHAR(255),
+                    doner VARCHAR(255)
                 )
             """)
-            cur.execute(f"ALTER TABLE {db_schema}.user_profile_userrole ADD COLUMN IF NOT EXISTS name VARCHAR(255)")
-            cur.execute(f"ALTER TABLE {db_schema}.user_profile_userrole ADD COLUMN IF NOT EXISTS password VARCHAR(255)")
-            cur.execute(f"ALTER TABLE {db_schema}.user_profile_userrole ADD COLUMN IF NOT EXISTS role VARCHAR(50)")
-            cur.execute(f"ALTER TABLE {db_schema}.user_profile_userrole ADD COLUMN IF NOT EXISTS ngo_id VARCHAR(255)")
-            cur.execute(f"ALTER TABLE {db_schema}.user_profile_userrole ADD COLUMN IF NOT EXISTS type VARCHAR(255)")
-            cur.execute(f"ALTER TABLE {db_schema}.user_profile_userrole ADD COLUMN IF NOT EXISTS doner VARCHAR(255)")
-            print("Table user_profile_userrole verified and updated.")
+            print("Created table user_profile_userrole.")
 
-            # 3. Create/Upsert the user 'sahil@thesama.in'
+            # 4. Create the default admin user 'sahil@thesama.in'
             email = "sahil@thesama.in"
             password = "sahil123"
             name = "Sahil"
@@ -68,26 +73,17 @@ def main():
             cur.execute(f"""
                 INSERT INTO {db_schema}.user_profile_registration (name, email, password, status, role, reason)
                 VALUES (%s, %s, %s, 'approved', %s, '')
-                ON CONFLICT (email) DO UPDATE 
-                SET name = EXCLUDED.name,
-                    password = EXCLUDED.password, 
-                    status = 'approved',
-                    role = EXCLUDED.role
             """, (name, email, password, role))
             
             cur.execute(f"""
                 INSERT INTO {db_schema}.user_profile_userrole (name, email, password, role, ngo_id, type, doner)
                 VALUES (%s, %s, %s, %s, '', '', '')
-                ON CONFLICT (email) DO UPDATE 
-                SET name = EXCLUDED.name,
-                    password = EXCLUDED.password,
-                    role = EXCLUDED.role
             """, (name, email, password, role))
             
             conn.commit()
             print(f"Successfully created user {email} with role '{role}' and password '{password}'!")
 
-            # 4. Fetch and print all users
+            # 5. Fetch and print all users
             cur.execute(f"SELECT name, email, password, role FROM {db_schema}.user_profile_userrole")
             users = cur.fetchall()
             print("\n--- Current Registered Users in DB ---")
