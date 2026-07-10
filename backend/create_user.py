@@ -68,7 +68,7 @@ def main():
             email = "sahil@thesama.in"
             password = "sahil123"
             name = "Sahil"
-            role = "Sama Executive"
+            role = "admin"
             
             cur.execute(f"""
                 INSERT INTO {db_schema}.user_profile_registration (name, email, password, status, role, reason)
