@@ -1,42 +1,50 @@
 import asyncio
 import sys
 import os
-import imaplib
+import httpx
 
 # Add app folder to path
 sys.path.append(os.path.join(os.path.dirname(__file__), "app"))
 
-from app.main import check_and_parse_inbound_emails
-
-async def main():
-    print("Connecting to check inbox status...")
-    imap_user = os.environ.get("NGO_REQUEST_EMAIL")
-    imap_pass = os.environ.get("NGO_REQUEST_EMAIL_PASSWORD")
+async def test_mistral_api():
+    api_key = os.environ.get("MISTRAL_API_KEY")
+    model = os.environ.get("MISTRAL_MODEL", "mistral-medium-3-5")
     
-    if not imap_user or not imap_pass:
-        print("Error: NGO_REQUEST_EMAIL or NGO_REQUEST_EMAIL_PASSWORD not configured!")
+    print(f"Using API Key: {api_key[:10]}...{api_key[-5:] if api_key else ''}")
+    print(f"Using Model Name: '{model}'")
+    
+    if not api_key:
+        print("Error: MISTRAL_API_KEY is not set!")
         return
         
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "user", "content": "Hello, output only the word 'OK'."}
+        ],
+        "temperature": 0.1
+    }
+    
     try:
-        mail = imaplib.IMAP4_SSL("imap.gmail.com", 993)
-        mail.login(imap_user, imap_pass)
-        mail.select("inbox")
-        status, messages = mail.search(None, "UNSEEN")
-        if status == "OK" and messages[0]:
-            count = len(messages[0].split())
-            print(f"Success! Found {count} UNREAD email(s) in inbox.")
-        else:
-            print("Found 0 UNREAD emails in inbox.")
-        mail.logout()
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.mistral.ai/v1/chat/completions",
+                headers=headers,
+                json=payload,
+                timeout=30.0
+            )
+            print(f"API Response Status Code: {response.status_code}")
+            if response.status_code == 200:
+                print(f"Success! Response: {response.json()['choices'][0]['message']['content']}")
+            else:
+                print(f"Failure Body: {response.text}")
     except Exception as e:
-        print(f"Error checking inbox: {e}")
-        
-    print("\nRunning full parse flow now...")
-    try:
-        await check_and_parse_inbound_emails()
-        print("Execution finished successfully!")
-    except Exception as e:
-        print(f"Error occurred: {e}")
+        print(f"Network / Connection error: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(test_mistral_api())
