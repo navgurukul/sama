@@ -1,12 +1,10 @@
-import asyncio
-import sys
+import smtplib
 import os
-import httpx
+import sys
 
 # Manually load environment variables from backend/.env
 env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
 if not os.path.exists(env_path):
-    # Try parent directory / sibling directory
     env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend", ".env")
 
 if os.path.exists(env_path):
@@ -20,49 +18,36 @@ if os.path.exists(env_path):
 else:
     print("Warning: .env file not found!")
 
-async def test_mistral_api():
-    api_key = os.environ.get("MISTRAL_API_KEY")
-    model = os.environ.get("MISTRAL_MODEL", "mistral-medium-3-5")
-    
-    if api_key:
-        print(f"Using API Key: {api_key[:10]}...{api_key[-5:]}")
-    else:
-        print("Using API Key: None")
-        
-    print(f"Using Model Name: '{model}'")
-    
-    if not api_key:
-        print("Error: MISTRAL_API_KEY is not set!")
-        return
-        
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "user", "content": "Hello, output only the word 'OK'."}
-        ],
-        "temperature": 0.1
-    }
-    
+def test_smtp():
+    smtp_host = os.environ.get("SMTP_HOST", "smtp-relay.brevo.com")
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                "https://api.mistral.ai/v1/chat/completions",
-                headers=headers,
-                json=payload,
-                timeout=30.0
-            )
-            print(f"API Response Status Code: {response.status_code}")
-            if response.status_code == 200:
-                print(f"Success! Response: {response.json()['choices'][0]['message']['content']}")
-            else:
-                print(f"Failure Body: {response.text}")
+        smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+    except:
+        smtp_port = 587
+        
+    smtp_user = os.environ.get("SMTP_USER")
+    smtp_pass = os.environ.get("SMTP_PASSWORD")
+    smtp_sender = os.environ.get("SMTP_SENDER", "ganesh@thesama.in")
+    
+    print(f"SMTP Host: {smtp_host}:{smtp_port}")
+    print(f"SMTP User: {smtp_user}")
+    print(f"SMTP Password Length: {len(smtp_pass) if smtp_pass else 0}")
+    print(f"SMTP Sender: {smtp_sender}")
+    
+    if not smtp_user or not smtp_pass:
+        print("Error: SMTP_USER or SMTP_PASSWORD not set in environment.")
+        return
+
+    try:
+        print("Connecting to SMTP server...")
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=15.0) as server:
+            print("Sending STARTTLS...")
+            server.starttls()
+            print("Attempting Login...")
+            server.login(smtp_user, smtp_pass)
+            print("Success! SMTP Login Succeeded.")
     except Exception as e:
-        print(f"Network / Connection error: {e}")
+        print(f"SMTP Login Failed: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(test_mistral_api())
+    test_smtp()
