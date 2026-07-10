@@ -3,14 +3,32 @@ import sys
 import os
 import httpx
 
-# Add app folder to path
-sys.path.append(os.path.join(os.path.dirname(__file__), "app"))
+# Manually load environment variables from backend/.env
+env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+if not os.path.exists(env_path):
+    # Try parent directory / sibling directory
+    env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend", ".env")
+
+if os.path.exists(env_path):
+    print(f"Loading environment from: {env_path}")
+    with open(env_path, "r") as f:
+        for line in f:
+            line_str = line.strip()
+            if "=" in line_str and not line_str.startswith("#"):
+                parts = line_str.split("=", 1)
+                os.environ[parts[0].strip()] = parts[1].strip()
+else:
+    print("Warning: .env file not found!")
 
 async def test_mistral_api():
     api_key = os.environ.get("MISTRAL_API_KEY")
     model = os.environ.get("MISTRAL_MODEL", "mistral-medium-3-5")
     
-    print(f"Using API Key: {api_key[:10]}...{api_key[-5:] if api_key else ''}")
+    if api_key:
+        print(f"Using API Key: {api_key[:10]}...{api_key[-5:]}")
+    else:
+        print("Using API Key: None")
+        
     print(f"Using Model Name: '{model}'")
     
     if not api_key:
