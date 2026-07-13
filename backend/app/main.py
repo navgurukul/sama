@@ -2991,15 +2991,58 @@ def send_afe_approval_email(ngo_name: str, ngo_email: str, qty_requested: Any):
     )
 
 
-def send_afe_dispatch_email(ngo_name: str, ngo_email: str, qty_requested: Any):
-    ops_email = os.environ.get("SAMA_OPS_EMAIL", "ops@thesama.in")
+def send_afe_internal_approval_email(ngo_name: str, approver_name: str, qty_approved: Any):
+    ops_email = os.environ.get("SAMA_OPS_EMAIL", "operations@thesama.in")
+    afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
+    subject = f"[INTERNAL ONLY] AFE Request Approved for {ngo_name}"
+    html_part = f"""
+        <p>Dear AFE and Sama Teams,</p>
+        <p>This is to confirm that the laptop request from <strong>{ngo_name}</strong> has been internally approved.</p>
+        <p><strong>Approved Quantity:</strong> {qty_approved} laptops</p>
+        <p><strong>Approver:</strong> {approver_name}</p>
+        <p>Sama Operations team will now take ownership, assign a refurbishment completion timeline, and begin the refurbishment process.</p>
+        <p>Best regards,<br/>Sama Operations System</p>
+    """
+    _send_email_common(
+        to_email=ops_email,
+        subject=subject,
+        html_part=html_part,
+        cc=[{"Email": afe_email}],
+        to_name="Sama Operations"
+    )
+
+
+def send_afe_serial_number_sheet_email(ngo_name: str, ngo_email: str, sheet_link: str):
+    afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
+    subject = f"AFE Laptop Serial Numbers – {ngo_name}"
+    html_part = f"""
+        <p>Dear {ngo_name} Team,</p>
+        <p>Please find the link to the Google Sheet containing the serial numbers and hardware details of the laptops dispatched to your organization:</p>
+        <p><a href="{sheet_link}" target="_blank">View Serial Numbers Sheet</a></p>
+        <p>If you have any questions or require support, please contact us.</p>
+        <p>Best regards,<br/>Sama Operations Team</p>
+    """
+    _send_email_common(
+        to_email=ngo_email,
+        subject=subject,
+        html_part=html_part,
+        cc=[{"Email": afe_email}],
+        to_name=ngo_name
+    )
+
+
+def send_afe_dispatch_email(ngo_name: str, ngo_email: str, qty_requested: Any, dispatch_date_val: Any = None, dispatch_location: Any = None, expected_days: Any = None):
+    ops_email = os.environ.get("SAMA_OPS_EMAIL", "operations@thesama.in")
     afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
     
-    dispatch_date_str = date.today().strftime("%d/%m/%Y")
+    date_str = str(dispatch_date_val) if dispatch_date_val else date.today().strftime("%d/%m/%Y")
+    loc_str = str(dispatch_location) if dispatch_location else "Pune/Bangalore"
+    days_str = str(expected_days) if expected_days else "3-5"
+    
     subject = f"AFE Laptop Dispatch Confirmation – {ngo_name}"
     html_part = f"""
         <p>Dear {ngo_name} Team,</p>
-        <p>We're happy to share that {qty_requested} laptops have been dispatched from our Pune/Bangalore location on {dispatch_date_str} and are on their way to you. They are expected to reach your location within 3-5 business days.</p>
+        <p>We're happy to share that {qty_requested} laptops have been dispatched from our {loc_str} location on {date_str} and are on their way to you. They are expected to reach your location within {days_str} business days.</p>
         <p>Once the laptops are delivered, we'll follow up separately to confirm receipt and check that everything has arrived in good condition. In the meantime, if you have any questions about the shipment, please feel free to reach out.</p>
         <p>Warm regards,<br/>Sama Operations Team</p>
     """
@@ -3012,15 +3055,15 @@ def send_afe_dispatch_email(ngo_name: str, ngo_email: str, qty_requested: Any):
     )
 
 
-def send_afe_delivery_email(ngo_name: str, ngo_email: str, qty_requested: Any, laptops_list: List[Dict[str, Any]]):
+def send_afe_delivery_email(ngo_name: str, ngo_email: str, qty_requested: Any, laptops_list: List[Dict[str, Any]], delivery_date_val: Any = None):
     import csv
     import io
     import base64
     
-    ops_email = os.environ.get("SAMA_OPS_EMAIL", "ops@thesama.in")
+    ops_email = os.environ.get("SAMA_OPS_EMAIL", "operations@thesama.in")
     afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
     
-    delivery_date_str = date.today().strftime("%d/%m/%Y")
+    date_str = str(delivery_date_val) if delivery_date_val else date.today().strftime("%d/%m/%Y")
     
     output = io.StringIO()
     writer = csv.writer(output)
@@ -3040,7 +3083,7 @@ def send_afe_delivery_email(ngo_name: str, ngo_email: str, qty_requested: Any, l
     html_part = f"""
         <p>Dear {ngo_name} Team,</p>
         
-        <p>We're happy to share that {qty_requested} laptops were delivered to your organization on {delivery_date_str}. We hope they reach your beneficiaries soon and make a real difference.</p>
+        <p>We're happy to share that {qty_requested} laptops were delivered to your organization on {date_str}. We hope they reach your beneficiaries soon and make a real difference.</p>
         
         <p>At your earliest convenience, please confirm receipt and let us know the units are all in good working condition. We've attached the <span style="color: #0066cc; text-decoration: underline; font-weight: bold;">serial number sheet</span> and credentials for your reference. If anything seems off, please do reach out within <strong>15 working days</strong> so we can sort it out quickly.</p>
         
@@ -3116,7 +3159,9 @@ def ngo_exec_get(request: Request) -> Any:
                 with conn.cursor() as cur:
                     cur.execute(
                         f"""
-                        SELECT id, ngo_name, laptop_quantity, location, use_case, contact_name, email, status, tentative_refurb_completion, donor
+                        SELECT id, ngo_name, laptop_quantity, location, use_case, contact_name, email, status, tentative_refurb_completion, donor,
+                               partner_type, date_received, attached_email_link, approver_name, approved_quantity,
+                               dispatch_location, expected_delivery_days, dispatch_date, delivery_date, last_impact_report_date
                         FROM {DB_SCHEMA}.ngo_requests
                         ORDER BY id DESC
                         """
@@ -3143,6 +3188,16 @@ def ngo_exec_get(request: Request) -> Any:
                             "Ngo Type": "",
                             "Doner": r["donor"] or "",
                             "tentative_refurb_completion": str(r["tentative_refurb_completion"]) if r["tentative_refurb_completion"] else None,
+                            "partner_type": r["partner_type"] or "External Partner",
+                            "date_received": str(r["date_received"]) if r["date_received"] else None,
+                            "attached_email_link": r["attached_email_link"] or "",
+                            "approver_name": r["approver_name"] or "",
+                            "approved_quantity": r["approved_quantity"] or 0,
+                            "dispatch_location": r["dispatch_location"] or "",
+                            "expected_delivery_days": r["expected_delivery_days"] or 0,
+                            "dispatch_date": str(r["dispatch_date"]) if r["dispatch_date"] else None,
+                            "delivery_date": str(r["delivery_date"]) if r["delivery_date"] else None,
+                            "last_impact_report_date": str(r["last_impact_report_date"]) if r["last_impact_report_date"] else None,
                         })
                     data_json["data"] = draft_list + data_json["data"]
         except Exception as e:
@@ -3171,26 +3226,84 @@ async def ngo_exec_post(request: Request) -> Any:
         db_id = int(ngo_id.replace("DRAFT-", "").replace("SAM-D", ""))
         if type_name == "NGO":
             status_val = payload.get("status")
+            approved_qty = payload.get("approved_quantity")
+            approver = payload.get("approver_name")
+            partner = payload.get("partner_type")
+            disp_loc = payload.get("dispatch_location")
+            exp_days = payload.get("expected_delivery_days")
+            disp_date = payload.get("dispatch_date")
+            del_date = payload.get("delivery_date")
+            
             with get_conn() as conn:
                 with conn.cursor() as cur:
-                    cur.execute(
-                        f"""
-                        UPDATE {DB_SCHEMA}.ngo_requests
-                        SET status = %s
-                        WHERE id = %s
-                        """,
-                        (status_val, db_id)
-                    )
-                    conn.commit()
+                    update_fields = []
+                    params = []
+                    
+                    if status_val is not None:
+                        update_fields.append("status = %s")
+                        params.append(status_val)
+                    if approved_qty is not None:
+                        update_fields.append("approved_quantity = %s")
+                        params.append(approved_qty)
+                    if approver is not None:
+                        update_fields.append("approver_name = %s")
+                        params.append(approver)
+                    if partner is not None:
+                        update_fields.append("partner_type = %s")
+                        params.append(partner)
+                    if disp_loc is not None:
+                        update_fields.append("dispatch_location = %s")
+                        params.append(disp_loc)
+                    if exp_days is not None:
+                        update_fields.append("expected_delivery_days = %s")
+                        params.append(exp_days)
+                    if disp_date is not None:
+                        update_fields.append("dispatch_date = %s")
+                        params.append(disp_date)
+                    if del_date is not None:
+                        update_fields.append("delivery_date = %s")
+                        params.append(del_date)
+                        
+                    if update_fields:
+                        query = f"""
+                            UPDATE {DB_SCHEMA}.ngo_requests
+                            SET {', '.join(update_fields)}
+                            WHERE id = %s
+                        """
+                        params.append(db_id)
+                        cur.execute(query, tuple(params))
+                        conn.commit()
                     
                     if status_val in {"Approved", "Dispatched", "Delivered"}:
-                        cur.execute(f"SELECT ngo_name, email, laptop_quantity FROM {DB_SCHEMA}.ngo_requests WHERE id = %s", (db_id,))
+                        cur.execute(
+                            f"""
+                            SELECT ngo_name, email, laptop_quantity, approver_name, approved_quantity, 
+                                   dispatch_location, expected_delivery_days, dispatch_date, delivery_date, attached_email_link
+                            FROM {DB_SCHEMA}.ngo_requests 
+                            WHERE id = %s
+                            """, 
+                            (db_id,)
+                        )
                         row = cur.fetchone()
                         if row and row.get("email"):
+                            final_qty = row["approved_quantity"] or row["laptop_quantity"]
                             if status_val == "Approved":
-                                send_afe_approval_email(row["ngo_name"], row["email"], row["laptop_quantity"])
+                                send_afe_internal_approval_email(row["ngo_name"], row["approver_name"] or "AFE Approver", final_qty)
+                                send_afe_approval_email(row["ngo_name"], row["email"], final_qty)
                             elif status_val == "Dispatched":
-                                send_afe_dispatch_email(row["ngo_name"], row["email"], row["laptop_quantity"])
+                                send_afe_dispatch_email(
+                                    row["ngo_name"], 
+                                    row["email"], 
+                                    final_qty, 
+                                    row["dispatch_date"], 
+                                    row["dispatch_location"], 
+                                    row["expected_delivery_days"]
+                                )
+                                send_afe_serial_number_sheet_email(
+                                    row["ngo_name"], 
+                                    row["email"], 
+                                    row["attached_email_link"] or "https://docs.google.com/spreadsheets/d/your-master-sheet"
+                                )
                             elif status_val == "Delivered":
                                 # Fetch any laptops allocated to this NGO name
                                 laptops_list = []
@@ -3207,7 +3320,7 @@ async def ngo_exec_post(request: Request) -> Any:
                                         laptops_list.append(dict(r_lap))
                                 except Exception as e:
                                     print(f"Failed to fetch laptops for delivery email: {e}")
-                                send_afe_delivery_email(row["ngo_name"], row["email"], row["laptop_quantity"], laptops_list)
+                                send_afe_delivery_email(row["ngo_name"], row["email"], final_qty, laptops_list, row["delivery_date"])
             return {"status": "success", "id": ngo_id, "status_updated": status_val}
             
         elif type_name == "NGOTimeline":
@@ -3704,7 +3817,7 @@ async def check_and_parse_inbound_emails():
                         f"""
                         INSERT INTO {DB_SCHEMA}.ngo_requests
                         (ngo_name, laptop_quantity, location, use_case, contact_name, email, status)
-                        VALUES (%s, %s, %s, %s, %s, %s, 'draft')
+                        VALUES (%s, %s, %s, %s, %s, %s, 'Pending Review')
                         """,
                         (
                             parsed_data["ngo_name"],
@@ -3755,3 +3868,35 @@ async def start_background_jobs():
     asyncio.create_task(run_daily_background_scheduler())
     asyncio.create_task(run_email_polling_scheduler())
 
+
+@app.post("/jotform-webhook")
+async def jotform_webhook(request: Request):
+    try:
+        payload = await request.json()
+    except Exception:
+        form_data = await request.form()
+        payload = dict(form_data)
+        
+    print(f"JotForm webhook received payload: {payload}")
+    
+    email = None
+    ngo_name = None
+    
+    for key, val in payload.items():
+        if "email" in key.lower():
+            email = str(val).strip()
+        if "ngo" in key.lower() or "organization" in key.lower():
+            ngo_name = str(val).strip()
+            
+    if not email and not ngo_name:
+        return {"status": "ignored", "reason": "No email or NGO name found in submission"}
+        
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            if email:
+                cur.execute(f"UPDATE {DB_SCHEMA}.ngo_requests SET last_impact_report_date = CURRENT_DATE WHERE LOWER(email) = LOWER(%s)", (email,))
+            elif ngo_name:
+                cur.execute(f"UPDATE {DB_SCHEMA}.ngo_requests SET last_impact_report_date = CURRENT_DATE WHERE LOWER(ngo_name) = LOWER(%s)", (ngo_name,))
+            conn.commit()
+            
+    return {"status": "success"}

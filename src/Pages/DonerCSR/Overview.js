@@ -50,6 +50,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import OverviewHeader from "./OverviewHeader";
+import AfeTracker from "./AfeTracker";
 
 const Overview = () => {
   const { donorName } = useParams();
@@ -1278,6 +1279,9 @@ const Overview = () => {
             </Box>
           </CardContent>
         </Card>
+
+        <AfeTracker />
+
         <Grid container spacing={3}>
 
           {/* Recent Activity Section */}
