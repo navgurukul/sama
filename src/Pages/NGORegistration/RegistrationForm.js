@@ -75,10 +75,33 @@ const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
   );
 };
 
+const formfields = [
+  {
+    name: "impactReport",
+    label: "Impact Report",
+    type: "fileUpload",
+    required: true,
+  },
+  { name: "contactNumber", label: "Contact Number", required: true },
+  { name: "email", label: "Email", required: true },
+  { name: "organizationName", label: "Organization Name", required: true },
+  {
+    name: "registrationNumber",
+    label: "Registration Number",
+    required: true,
+  },
+  {
+    name: "primaryContactName",
+    label: "Primary Contact Name ",
+    required: true,
+  },
+];
+
 function RegistrationForm() {
   const navigate = useNavigate();
   const { donorId } = useParams();
   const [formFields, setFormFields] = useState([]);
+  const [fetchingQuestions, setFetchingQuestions] = useState(false);
   const [emailExists, setEmailExists] = useState(false);
   const [contactExists, setContactExists] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
@@ -265,6 +288,7 @@ function RegistrationForm() {
 
   useEffect(() => {
     const fetchFormFields = async () => {
+      setFetchingQuestions(true);
       try {
         const baseURL =
           `${process.env.REACT_APP_NgoInformationApi}?type=donorQuestion`;
@@ -273,9 +297,14 @@ function RegistrationForm() {
 
         const response = await fetch(apiUrl);
         const data = await response.json();
-        setFormFields(data);
+        
+        let fetchedFields = Array.isArray(data) ? data : (data?.data || []);
+        
+        setFormFields(fetchedFields);
       } catch (error) {
         console.error("Error fetching form fields:", error);
+      } finally {
+        setFetchingQuestions(false);
       }
     };
 
@@ -378,27 +407,6 @@ function RegistrationForm() {
     }
   };
 
-  const formfields = [
-    {
-      name: "impactReport",
-      label: "Impact Report",
-      type: "fileUpload",
-      required: true,
-    },
-    { name: "contactNumber", label: "Contact Number", required: true },
-    { name: "email", label: "Email", required: true },
-    { name: "organizationName", label: "Organization Name", required: true },
-    {
-      name: "registrationNumber",
-      label: "Registration Number",
-      required: true,
-    },
-    {
-      name: "primaryContactName",
-      label: "Primary Contact Name ",
-      required: true,
-    },
-  ];
 
   const validate = () => {
     const newErrors = {};
@@ -496,7 +504,7 @@ function RegistrationForm() {
     if (!showRequestTypeModal) {
       setIsFormValid(validate());
     }
-  }, [formData, formfields, showRequestTypeModal]);
+  }, [formData, showRequestTypeModal]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -537,6 +545,8 @@ function RegistrationForm() {
       orgLaptopRequire: updatedFormData.orgLaptopRequire,
       requestType: requestType,
       organizationName: updatedFormData.organizationName.trim(),
+      status: "Pending Review",
+      partnerType: "AFE Partner"
     };
 
     if (requestType === "subsequent" && selectedExistingNgo) {
@@ -748,9 +758,15 @@ function RegistrationForm() {
             </Typography>
           </Box>
 
-          {formFields?.length === 0 ? (
+          {fetchingQuestions ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
               <CircularProgress />
+            </Box>
+          ) : formFields?.length === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography variant="body1" color="textSecondary">
+                No fields available for this registration right now.
+              </Typography>
             </Box>
           ) : (
             <form onSubmit={handleSubmit}>

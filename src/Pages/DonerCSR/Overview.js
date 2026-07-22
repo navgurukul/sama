@@ -47,7 +47,8 @@ import {
   Filter,
   X,
   ChevronDown,
-  ArrowLeft
+  ArrowLeft,
+  Download
 } from 'lucide-react';
 import OverviewHeader from "./OverviewHeader";
 import AfeTracker from "./AfeTracker";
@@ -91,15 +92,15 @@ const Overview = () => {
     if (!appliedStartDate || !appliedEndDate || !dateStr) return true;
     const date = formatDateForDisplay(dateStr);
     if (!date) return true;
-    
+
     const start = new Date(appliedStartDate);
     start.setHours(0, 0, 0, 0);
     const end = new Date(appliedEndDate);
     end.setHours(23, 59, 59, 999);
-    
+
     return date >= start && date <= end;
   };
-  
+
   const handleDateFilter = () => {
     setAppliedStartDate(startDate);
     setAppliedEndDate(endDate);
@@ -150,11 +151,28 @@ const Overview = () => {
     }
   };
 
+  const handleDownloadCSV = () => {
+    let url = 'https://rms-api.thesama.in/api/afe/export-csv';
+    const params = [];
+    if (appliedStartDate) {
+      params.push(`startDate=${appliedStartDate}`);
+    }
+    if (appliedEndDate) {
+      params.push(`endDate=${appliedEndDate}`);
+    }
+    if (params.length > 0) {
+      url += `?${params.join('&')}`;
+    }
+    window.open(url, '_blank');
+  };
+
   const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
-  const userRole = NgoDetails?.[0]?.role?.[0];
+  const roles = JSON.parse(localStorage.getItem("role") || "[]");
+  const fallbackRole = NgoDetails?.[0]?.role?.[0];
   const donorOrgName = NgoDetails?.[0]?.Doner || null;
-  const isAdmin = userRole === "admin";
-  const isDoner = userRole === "doner";
+  const isAdmin = roles.includes("admin") || fallbackRole === "admin";
+  const isDoner = roles.includes("doner") || fallbackRole === "doner";
+  const isAfeApprover = roles.includes("afe_approver") || fallbackRole === "afe_approver" || isAdmin;
 
 
   useEffect(() => {
@@ -178,7 +196,7 @@ const Overview = () => {
       setIsLoading(true);
       try {
         const laptopRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`);
-        const laptopJson = await laptopRes.json();        
+        const laptopJson = await laptopRes.json();
 
         const ngoRes = await fetch(`${process.env.REACT_APP_NgoInformationApi}?type=registration`);
         const ngoJson = await ngoRes.json();
@@ -343,30 +361,30 @@ const Overview = () => {
   // Filter functions
   const getFilteredLaptopData = () => {
     if (!laptopData) return [];
-    
+
     return laptopData.filter(laptop => {
       // Organization filter
-      const orgMatch = !selectedOrganization || 
+      const orgMatch = !selectedOrganization ||
         (laptop["Donor Company Name"] || "").trim().toLowerCase() === selectedOrganization.trim().toLowerCase();
-      
+
       // Date filter based on Date Committed
       const dateMatch = isWithinDateRange(laptop["Date Committed"]);
-      
+
       return orgMatch && dateMatch;
     });
   };
 
   const getFilteredPickups = () => {
     if (!pickups) return [];
-    
+
     return pickups.filter(pickup => {
       // Organization filter
-      const orgMatch = !selectedOrganization || 
+      const orgMatch = !selectedOrganization ||
         (pickup["Donor Company"] || "").trim().toLowerCase() === selectedOrganization.trim().toLowerCase();
-      
+
       // Date filter based on Current Date & Time
       const dateMatch = isWithinDateRange(pickup["Current Date & Time"]);
-      
+
       return orgMatch && dateMatch;
     });
   };
@@ -462,7 +480,7 @@ const Overview = () => {
 
   // Total Counting
   const totalLaptops = filteredLaptopData.length;
-  
+
   const statusesAtOrAfterReceived = new Set([
     "laptop received",
     "not working",
@@ -532,8 +550,8 @@ const Overview = () => {
   }).length;
 
 
-  
-  
+
+
   const MetricCard = ({ title, value, subtitle, growth, icon: Icon, onClick }) => (
     <Card sx={{
       height: '100%',
@@ -662,19 +680,19 @@ const Overview = () => {
     if (!workingValue || (typeof workingValue === 'string' && workingValue.trim() === '')) {
       return "Yes";
     }
-    
+
     const status = String(workingValue).trim().toLowerCase();
-    
+
     // If status is "working" → return "Yes"
     if (status === "working") {
       return "Yes";
     }
-    
+
     // If status is "not working" → return "No"
     if (status === "not working") {
       return "No";
     }
-    
+
     // For any other value, default to "Yes" (Working)
     return "Yes";
   };
@@ -701,7 +719,7 @@ const Overview = () => {
     const lastUpdated = parseDate(lastUpdatedStr);
     if (!lastUpdated) return false;
     const hoursAgo = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
-    return hoursAgo <= 24 ;
+    return hoursAgo <= 24;
   });
   // console.log("Last 24 hours data:", last24HoursData);
   const last24HoursPickups = filteredPickups.filter(p => {
@@ -851,7 +869,7 @@ const Overview = () => {
   function formatDateForDisplay(dateStr) {
     if (!dateStr) return null;
     dateStr = String(dateStr).trim();
-    
+
     // 1. Built-in parse
     const builtIn = new Date(dateStr);
     if (!isNaN(builtIn)) {
@@ -886,7 +904,7 @@ const Overview = () => {
   //   : 0;
 
   // const avgProcessingTimeRounded = Math.round(avgProcessingTime);
-  
+
   // const [loading, setLoading] = useState(true);
 
 
@@ -908,121 +926,129 @@ const Overview = () => {
           <CircularProgress />
         </Box>
       ) : (
-      <>
-      <OverviewHeader
-        uniqueOrganizations={uniqueOrganizations}
-        onOrganizationChange={setSelectedOrganization}
-        selectedOrganization={selectedOrganization} // Add this
-        isAdmin={isAdmin} // Add this
-        isDoner={isDoner} // Add this
-      />
+        <>
+          <OverviewHeader
+            uniqueOrganizations={uniqueOrganizations}
+            onOrganizationChange={setSelectedOrganization}
+            selectedOrganization={selectedOrganization} // Add this
+            isAdmin={isAdmin} // Add this
+            isDoner={isDoner} // Add this
+          />
 
-      <Divider sx={{ mb: 3, width: "100%" }} />
+          <Divider sx={{ mb: 3, width: "100%" }} />
 
-      <Box sx={{ p: 3, pb: 10 }}>
-        <Box sx={{ mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
-            <Box>
-              <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
-                CSR Impact Dashboard
-              </Typography>
-              <Typography variant="body1" sx={{ color: "#666", fontSize: 16 }}>
-                {selectedOrganization
-                  ? `Impact tracking for ${selectedOrganization}`
-                  : "Comprehensive tracking of laptop refurbishment and distribution impact"}
-              </Typography>
+          <Box sx={{ p: 3, pb: 10 }}>
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+                <Box>
+                  <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
+                    CSR Impact Dashboard
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "#666", fontSize: 16 }}>
+                    {selectedOrganization
+                      ? `Impact tracking for ${selectedOrganization}`
+                      : "Comprehensive tracking of laptop refurbishment and distribution impact"}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                  <TextField
+                    label="Start Date"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    InputLabelProps={{ shrink: true }}
+                    size="small"
+                  />
+                  <TextField
+                    label="End Date"
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    InputLabelProps={{ shrink: true }}
+                    size="small"
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={handleDateFilter}
+                    disabled={!startDate || !endDate}
+                    size="small"
+                  >
+                    Apply Filter
+                  </Button>
+                  {(appliedStartDate || appliedEndDate) && (
+                    <Button
+                      variant="outlined"
+                      onClick={clearDateFilter}
+                      size="small"
+                    >
+                      Clear Filter
+                    </Button>
+                  )}
+                </Box>
+              </Box>
             </Box>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <TextField
-                label="Start Date"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                size="small"
-              />
-              <TextField
-                label="End Date"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                size="small"
-              />
-              <Button
-                variant="contained"
-                onClick={handleDateFilter}
-                disabled={!startDate || !endDate}
-                size="small"
-              >
-                Apply Filter
-              </Button>
-              {(appliedStartDate || appliedEndDate) && (
-                <Button
-                  variant="outlined"
-                  onClick={clearDateFilter}
-                  size="small"
-                >
-                  Clear Filter
-                </Button>
+
+            {/* Top Metrics Row */}
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={12} sm={6} md={3}>
+                <MetricCard
+                  title="Total Laptops Commited"
+                  value={totalLaptops.toLocaleString('en-IN')}
+                  // subtitle="Lifetime donations from corporates"
+                  subtitle={selectedOrganization ? `From ${selectedOrganization}` : "Lifetime donations from corporates"}
+                  // growth="+15.2% from last month"
+                  icon={Package}
+                  onClick={() => handleMetricClick("totalLaptops")}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <MetricCard
+                  title="Successfully Refurbished"
+                  value={refurbishedCount.toLocaleString('en-IN')} // need to change this.
+                  subtitle={`${successRate}% success rate`}
+                  // growth="+8.1% from last month"
+                  icon={CheckCircle}
+                  onClick={() => handleMetricClick("successfullyRefurbished")}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+
+                <MetricCard
+                  title="Active Beneficiaries"
+                  value={(() => {
+                    // 1) Count from preData (filtered)
+                    const preCount = getFilteredPreData().reduce(
+                      (sum, item) => sum + (parseInt(item["Number of student"], 10) || 0),
+                      0
+                    );
+
+                    // 2) Count from userData (filtered using ngoPartner data like the old code)
+                    const userCount = filteredUserData.length;
+
+                    const total = preCount + userCount;
+                    return total.toLocaleString('en-IN');
+                  })()}
+                  subtitle="Currently using laptops"
+                  icon={Users}
+                  onClick={() => handleMetricClick("activeBeneficiaries")}
+                />
+
+              </Grid>
+              {isAfeApprover && (
+                <Grid item xs={12} sm={6} md={3}>
+                  <MetricCard
+                    title="Download Report"
+                    value="Export CSV"
+                    subtitle="Download learning analytics data"
+                    icon={Download}
+                    onClick={handleDownloadCSV}
+                  />
+                </Grid>
               )}
-            </Box>
-          </Box>
-        </Box>
+            </Grid>
 
-        {/* Top Metrics Row */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <MetricCard
-              title="Total Laptops Commited"
-              value={totalLaptops.toLocaleString('en-IN')}
-              // subtitle="Lifetime donations from corporates"
-              subtitle={selectedOrganization ? `From ${selectedOrganization}` : "Lifetime donations from corporates"}
-              // growth="+15.2% from last month"
-              icon={Package}
-              onClick={() => handleMetricClick("totalLaptops")}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <MetricCard
-              title="Successfully Refurbished"
-              value={refurbishedCount.toLocaleString('en-IN')} // need to change this.
-              subtitle={`${successRate}% success rate`}
-              // growth="+8.1% from last month"
-              icon={CheckCircle}
-              onClick={() => handleMetricClick("successfullyRefurbished")}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-
-            <MetricCard
-              title="Active Beneficiaries"
-              value={(() => {
-                // 1) Count from preData (filtered)
-                const preCount = getFilteredPreData().reduce(
-                  (sum, item) => sum + (parseInt(item["Number of student"], 10) || 0),
-                  0
-                );
-
-                // 2) Count from userData (filtered using ngoPartner data like the old code)
-                const userCount = filteredUserData.length;
-
-                const total = preCount + userCount;
-                return total.toLocaleString('en-IN');
-              })()}
-              subtitle="Currently using laptops"
-              icon={Users}
-              onClick={() => handleMetricClick("activeBeneficiaries")}
-            />
-
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            {/* NGO Partners card commented out */}
-          </Grid>
-        </Grid>
-
-        {/* Secondary Metrics Row */}
-        {/* <Grid container spacing={2} sx={{ mb: 3 }}>
+            {/* Secondary Metrics Row */}
+            {/* <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid item xs={12} sm={6} md={4}>
             <SecondaryCard
               title="Environmental Impact"
@@ -1052,430 +1078,430 @@ const Overview = () => {
              </Grid>
             </Grid> */}
 
-        {/* Laptop Journey Pipeline */}
-        <Card sx={{
-          mb: 3,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          border: '1px solid #e0e0e0'
-        }}>
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h5" sx={{ fontSize: 20, fontWeight: 600, color: '#1a1a1a', mb: 1 }}>
-                Laptop Journey Pipeline
-                {selectedOrganization && (
-                  <Chip
-                    label={selectedOrganization}
-                    size="small"
-                    variant="outlined"
-                    sx={{ ml: 2 }}
-                  />
-                )}
-              </Typography>
-              <Typography variant="body1" sx={{ fontSize: 14, color: '#666' }}>
-                Real-time tracking of laptops through the refurbishment process
-              </Typography>
-            </Box>
-
-            {/* Pipeline Steps */}
-            <Grid container spacing={3} sx={{ mb: 4 }}>
-              {[
-                {
-                  icon: Package,
-                  title: "Pickup Requested",
-                  subtitle: "Initial request submitted",
-                  count: `${filteredLaptopData.filter(l => l.Status === "Pickup Requested").length} laptops`,
-                  // count: selectedOrganization 
-                  //   ? `${filteredPickups.filter(p => p.Status === "Pending")
-                  //       .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`
-                  //   : `${pickups.filter(p => p.Status === "Pending")
-                  //       .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`,
-                  bgColor: "#e3f2fd",
-                  iconColor: "#1976d2",
-                  stepType: "pickupRequests"
-                },
-                {
-                  icon: Truck,
-                  title: "In Transit",
-                  subtitle: "Pickup in progress",
-                  count: `${filteredLaptopData.filter(l => l.Status === "In Transit").length} laptops`,
-                  bgColor: "#fff3e0",
-                  iconColor: "#f57c00",
-                  stepType: "inTransit"
-                },
-                {
-                  icon: Laptop,
-                  title: "Laptop Received", 
-                  subtitle: "Initial check-in",
-                  count: `${receivedCount} laptops`,
-                  // count: `${receivedCount} laptops`,
-                  bgColor: "#e8f5e8",
-                  iconColor: "#388e3c",
-                  stepType: "received"
-                },
-                // NEW: Only Laptop Received - shows only items where Status === "Laptop Received"
-                {
-                  icon: Laptop,
-                  title: "Ready To Be Processed",
-                  subtitle: "Refurbishment will begin shortly.",
-                  count: `${onlyLaptopReceivedCount} laptops`,
-                  bgColor: "#e8f5e8",
-                  iconColor: "#388e3c",
-                  stepType: "onlyLaptopReceived"
-                },
-                {
-                  icon: X,
-                  title: "Not Working",
-                  subtitle: "Failed initial health check",
-                  count: `${filteredLaptopData.filter(l => l.Status === "Not Working").length} laptops`,
-                  bgColor: "#ffebee",
-                  iconColor: "#d32f2f",
-                  stepType: "notWorking"
-                },
-                {
-                  icon: Settings,
-                  title: "Refurbishment Started",
-                  subtitle: "Under processing",
-                  count: `${filteredLaptopData.filter(l => l.Status === "Refurbishment Started").length} laptops`,
-                  bgColor: "#e0f7fa",
-                  iconColor: "#0097a7",
-                  stepType: "refurbishmentStarted"
-                },
-                {
-                  icon: CheckCircle,
-                  title: "Laptop Refurbished",
-                  subtitle: "Repair completed",
-                  count: `${filteredLaptopData.filter(l => l.Status === "Laptop Refurbished").length} laptops`,
-                  bgColor: "#f3e5f5",
-                  iconColor: "#7b1fa2",
-                  stepType: "refurbished"
-                },
-                // {
-                //   icon: Truck,
-                //   title: "To Be Dispatch",
-                //   subtitle: "Ready for delivery",
-                //   count: `${filteredLaptopData.filter(l => l.Status === "To Be Dispatch").length} laptops`,
-                //   bgColor: "#fce4ec",
-                //   iconColor: "#c2185b",
-                //   stepType: "toBeDispatch"
-                // },
-                // {
-                //   icon: Building,
-                //   title: "Allocated",
-                //   subtitle: "Assigned to NGO",
-                //   count: `${filteredLaptopData.filter(l => l.Status === "Allocated").length} laptops`,
-                //   bgColor: "#f1f8e9",
-                //   iconColor: "#558b2f",
-                //   stepType: "allocated"
-                // },
-                {
-                  icon: UserCheck,
-                  title: "Distributed",
-                  subtitle: "Delivered to NGO",
-                  count: `${filteredLaptopData.filter(l => l.Status === "Distributed").length} laptops`,
-                  bgColor: "#e8f5e9",
-                  iconColor: "#2e7d32",
-                  stepType: "distributed"
-                },
-                {
-                  icon: UserCheck,
-                  title: "Active Usage",
-                  subtitle: "In use by beneficiaries",
-                  count: `${filteredLaptopData.filter(l => {
-                    const d = formatDateForDisplay(l["Date"]);
-                    if (!d) return false;
-                    const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
-                    return diffDays <= 15 && l.Status === "Distributed";
-                  }).length} laptops`,
-                  bgColor: "#ffebee",
-                  iconColor: "#d32f2f",
-                  stepType: "activeUsage"
-                }
-              ].map((step, index) => (
-                // <Grid item xs={6} sm={4} md={2.4} key={index}>
-                <Grid item xs={6} sm={4} md={3} key={index}>
-                  <PipelineStep
-                    icon={step.icon}
-                    title={step.title}
-                    subtitle={step.subtitle}
-                    count={step.count}
-                    backgroundColor={step.bgColor}
-                    iconColor={step.iconColor}
-                    onClick={() => handlePipelineStepClick(step.stepType)}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-
-            {/* Summary Metrics */}
-            <Box sx={{
-              borderTop: '1px solid #e0e0e0',
-              pt: 3
+            {/* Laptop Journey Pipeline */}
+            <Card sx={{
+              mb: 3,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              border: '1px solid #e0e0e0'
             }}>
-              <Grid container spacing={3}>
-                <Grid item xs={6} sm={3}>
-                  <Box
-                    sx={{
-                      textAlign: 'center',
-                      cursor: 'pointer',
-                    
-                    }}
-                    onClick={() => handlePipelineStepClick("refurbished")}
-                  >
-                    <SummaryMetric label="Total Processed" value={refurbishedCount} />
-                  </Box>
-                </Grid>
-                <Grid item xs={6} sm={3}>
-                  <Box
-                    sx={{
-                      textAlign: 'center',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        '& .metric-value': {
-                          color: 'primary.main',
-                        }
-                      }
-                    }}
-                    onClick={() => {
-                      if (selectedOrganization) {
-                        navigate(`/donorcsr/${selectedOrganization}/table-view?metric=successfullyRefurbished&total=${totalLaptops}&processed=${refurbishedCount}`);
-                      } else {
-                        navigate(`/donorcsr/table-view?metric=successfullyRefurbished&total=${totalLaptops}&processed=${refurbishedCount}`);
-                      }
-                    }}
-                  >
-                    <Typography variant="body2" sx={{ fontSize: 12, color: '#666', mb: 0.5 }}>
-                      Success Rate
-                    </Typography>
-                    <Typography 
-                      variant="h6" 
-                      className="metric-value"
-                      sx={{ 
-                        fontSize: 20, 
-                        fontWeight: 600, 
-                        color: '#4caf50',
-                        transition: 'color 0.2s ease'
-                      }}
-                    >
-                      {`${successRate}%`}
-                    </Typography>
-                  </Box>
-                </Grid>
-                {/* <Grid item xs={6} sm={3}>
-                  <SummaryMetric label="Avg. Processing Time" value={`${averageDays} days`} />
-                </Grid> */}
-                <Grid item xs={6} sm={3}>
-                  <Box
-                    sx={{
-                      textAlign: 'center',
-                      cursor: 'pointer',
-      
-                    }}
-                    onClick={() => handleMetricClick("ngosServed")}
-                  >
-                    <SummaryMetric label="NGOs Served" value={ngosServedCount} />
-                    </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          </CardContent>
-        </Card>
-
-        <AfeTracker />
-
-        <Grid container spacing={3}>
-
-          {/* Recent Activity Section */}
-          <Grid item xs={12} md={6}>
-            <RecentActivity
-              recentActivities={recentActivities}
-              showAllActivities={showAllActivities}
-              setShowAllActivities={setShowAllActivities}
-              getActivityColor={getActivityColor}
-              formatActivityMessage={formatActivityMessage}
-              getStatusIcon={getStatusIcon}
-              timeAgo={timeAgo}
-              onActivityClick={handleActivityClick}
-            />
-          </Grid>
-
-          {/* NGO Partners Section */}
-          <Grid item xs={12} md={6}>
-            <Card 
-              variant="outlined" 
-              sx={{ 
-                borderRadius: 2,
-                cursor: 'pointer',
-                '&:hover': {
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                }
-              }}
-              onClick={() => setShowNgoDetails(!showNgoDetails)}
-            >
-              <CardContent>
-                <Box display="flex" alignItems="center" mb={1}>
-                  <Building size={20} style={{ marginRight: 8, color: "#555" }} />
-                  <Typography variant="h6" fontWeight={600}>
-                    NGO Partners
-                    <Chip
-                      label={`${ngosServedCount} NGOs`}
-                      size="small"
-                      variant="outlined"
-                      sx={{ ml: 2 }}
-                    />
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="h5" sx={{ fontSize: 20, fontWeight: 600, color: '#1a1a1a', mb: 1 }}>
+                    Laptop Journey Pipeline
+                    {selectedOrganization && (
+                      <Chip
+                        label={selectedOrganization}
+                        size="small"
+                        variant="outlined"
+                        sx={{ ml: 2 }}
+                      />
+                    )}
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontSize: 14, color: '#666' }}>
+                    Real-time tracking of laptops through the refurbishment process
                   </Typography>
                 </Box>
-                <Typography variant="body2" color="text.secondary" mb={3}>
-                  {selectedOrganization
-                    ? `Organizations matching ${selectedOrganization}`
-                    : "Organizations receiving laptop distributions"
-                  }
-                </Typography>
-                                  {showNgoDetails ? (
-                    filteredNgoPartners.filter(partner => partner.laptops > 0).map(
-                      (partner, index) => (
-                        <Box key={partner.name} mb={3}>
-                          <Box display="flex" justifyContent="space-between" mb={1}>
-                            <Typography variant="body2" fontWeight={600}>
-                              {partner.name}
+
+                {/* Pipeline Steps */}
+                <Grid container spacing={3} sx={{ mb: 4 }}>
+                  {[
+                    {
+                      icon: Package,
+                      title: "Pickup Requested",
+                      subtitle: "Initial request submitted",
+                      count: `${filteredLaptopData.filter(l => l.Status === "Pickup Requested").length} laptops`,
+                      // count: selectedOrganization 
+                      //   ? `${filteredPickups.filter(p => p.Status === "Pending")
+                      //       .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`
+                      //   : `${pickups.filter(p => p.Status === "Pending")
+                      //       .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`,
+                      bgColor: "#e3f2fd",
+                      iconColor: "#1976d2",
+                      stepType: "pickupRequests"
+                    },
+                    {
+                      icon: Truck,
+                      title: "In Transit",
+                      subtitle: "Pickup in progress",
+                      count: `${filteredLaptopData.filter(l => l.Status === "In Transit").length} laptops`,
+                      bgColor: "#fff3e0",
+                      iconColor: "#f57c00",
+                      stepType: "inTransit"
+                    },
+                    {
+                      icon: Laptop,
+                      title: "Laptop Received",
+                      subtitle: "Initial check-in",
+                      count: `${receivedCount} laptops`,
+                      // count: `${receivedCount} laptops`,
+                      bgColor: "#e8f5e8",
+                      iconColor: "#388e3c",
+                      stepType: "received"
+                    },
+                    // NEW: Only Laptop Received - shows only items where Status === "Laptop Received"
+                    {
+                      icon: Laptop,
+                      title: "Ready To Be Processed",
+                      subtitle: "Refurbishment will begin shortly.",
+                      count: `${onlyLaptopReceivedCount} laptops`,
+                      bgColor: "#e8f5e8",
+                      iconColor: "#388e3c",
+                      stepType: "onlyLaptopReceived"
+                    },
+                    {
+                      icon: X,
+                      title: "Not Working",
+                      subtitle: "Failed initial health check",
+                      count: `${filteredLaptopData.filter(l => l.Status === "Not Working").length} laptops`,
+                      bgColor: "#ffebee",
+                      iconColor: "#d32f2f",
+                      stepType: "notWorking"
+                    },
+                    {
+                      icon: Settings,
+                      title: "Refurbishment Started",
+                      subtitle: "Under processing",
+                      count: `${filteredLaptopData.filter(l => l.Status === "Refurbishment Started").length} laptops`,
+                      bgColor: "#e0f7fa",
+                      iconColor: "#0097a7",
+                      stepType: "refurbishmentStarted"
+                    },
+                    {
+                      icon: CheckCircle,
+                      title: "Laptop Refurbished",
+                      subtitle: "Repair completed",
+                      count: `${filteredLaptopData.filter(l => l.Status === "Laptop Refurbished").length} laptops`,
+                      bgColor: "#f3e5f5",
+                      iconColor: "#7b1fa2",
+                      stepType: "refurbished"
+                    },
+                    // {
+                    //   icon: Truck,
+                    //   title: "To Be Dispatch",
+                    //   subtitle: "Ready for delivery",
+                    //   count: `${filteredLaptopData.filter(l => l.Status === "To Be Dispatch").length} laptops`,
+                    //   bgColor: "#fce4ec",
+                    //   iconColor: "#c2185b",
+                    //   stepType: "toBeDispatch"
+                    // },
+                    // {
+                    //   icon: Building,
+                    //   title: "Allocated",
+                    //   subtitle: "Assigned to NGO",
+                    //   count: `${filteredLaptopData.filter(l => l.Status === "Allocated").length} laptops`,
+                    //   bgColor: "#f1f8e9",
+                    //   iconColor: "#558b2f",
+                    //   stepType: "allocated"
+                    // },
+                    {
+                      icon: UserCheck,
+                      title: "Distributed",
+                      subtitle: "Delivered to NGO",
+                      count: `${filteredLaptopData.filter(l => l.Status === "Distributed").length} laptops`,
+                      bgColor: "#e8f5e9",
+                      iconColor: "#2e7d32",
+                      stepType: "distributed"
+                    },
+                    {
+                      icon: UserCheck,
+                      title: "Active Usage",
+                      subtitle: "In use by beneficiaries",
+                      count: `${filteredLaptopData.filter(l => {
+                        const d = formatDateForDisplay(l["Date"]);
+                        if (!d) return false;
+                        const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
+                        return diffDays <= 15 && l.Status === "Distributed";
+                      }).length} laptops`,
+                      bgColor: "#ffebee",
+                      iconColor: "#d32f2f",
+                      stepType: "activeUsage"
+                    }
+                  ].map((step, index) => (
+                    // <Grid item xs={6} sm={4} md={2.4} key={index}>
+                    <Grid item xs={6} sm={4} md={3} key={index}>
+                      <PipelineStep
+                        icon={step.icon}
+                        title={step.title}
+                        subtitle={step.subtitle}
+                        count={step.count}
+                        backgroundColor={step.bgColor}
+                        iconColor={step.iconColor}
+                        onClick={() => handlePipelineStepClick(step.stepType)}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+
+                {/* Summary Metrics */}
+                <Box sx={{
+                  borderTop: '1px solid #e0e0e0',
+                  pt: 3
+                }}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={6} sm={3}>
+                      <Box
+                        sx={{
+                          textAlign: 'center',
+                          cursor: 'pointer',
+
+                        }}
+                        onClick={() => handlePipelineStepClick("refurbished")}
+                      >
+                        <SummaryMetric label="Total Processed" value={refurbishedCount} />
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6} sm={3}>
+                      <Box
+                        sx={{
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            '& .metric-value': {
+                              color: 'primary.main',
+                            }
+                          }
+                        }}
+                        onClick={() => {
+                          if (selectedOrganization) {
+                            navigate(`/donorcsr/${selectedOrganization}/table-view?metric=successfullyRefurbished&total=${totalLaptops}&processed=${refurbishedCount}`);
+                          } else {
+                            navigate(`/donorcsr/table-view?metric=successfullyRefurbished&total=${totalLaptops}&processed=${refurbishedCount}`);
+                          }
+                        }}
+                      >
+                        <Typography variant="body2" sx={{ fontSize: 12, color: '#666', mb: 0.5 }}>
+                          Success Rate
+                        </Typography>
+                        <Typography
+                          variant="h6"
+                          className="metric-value"
+                          sx={{
+                            fontSize: 20,
+                            fontWeight: 600,
+                            color: '#4caf50',
+                            transition: 'color 0.2s ease'
+                          }}
+                        >
+                          {`${successRate}%`}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    {/* <Grid item xs={6} sm={3}>
+                  <SummaryMetric label="Avg. Processing Time" value={`${averageDays} days`} />
+                </Grid> */}
+                    <Grid item xs={6} sm={3}>
+                      <Box
+                        sx={{
+                          textAlign: 'center',
+                          cursor: 'pointer',
+
+                        }}
+                        onClick={() => handleMetricClick("ngosServed")}
+                      >
+                        <SummaryMetric label="NGOs Served" value={ngosServedCount} />
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </CardContent>
+            </Card>
+
+            <AfeTracker />
+
+            <Grid container spacing={3}>
+
+              {/* Recent Activity Section */}
+              <Grid item xs={12} md={6}>
+                <RecentActivity
+                  recentActivities={recentActivities}
+                  showAllActivities={showAllActivities}
+                  setShowAllActivities={setShowAllActivities}
+                  getActivityColor={getActivityColor}
+                  formatActivityMessage={formatActivityMessage}
+                  getStatusIcon={getStatusIcon}
+                  timeAgo={timeAgo}
+                  onActivityClick={handleActivityClick}
+                />
+              </Grid>
+
+              {/* NGO Partners Section */}
+              <Grid item xs={12} md={6}>
+                <Card
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                    '&:hover': {
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                    }
+                  }}
+                  onClick={() => setShowNgoDetails(!showNgoDetails)}
+                >
+                  <CardContent>
+                    <Box display="flex" alignItems="center" mb={1}>
+                      <Building size={20} style={{ marginRight: 8, color: "#555" }} />
+                      <Typography variant="h6" fontWeight={600}>
+                        NGO Partners
+                        <Chip
+                          label={`${ngosServedCount} NGOs`}
+                          size="small"
+                          variant="outlined"
+                          sx={{ ml: 2 }}
+                        />
+                      </Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" mb={3}>
+                      {selectedOrganization
+                        ? `Organizations matching ${selectedOrganization}`
+                        : "Organizations receiving laptop distributions"
+                      }
+                    </Typography>
+                    {showNgoDetails ? (
+                      filteredNgoPartners.filter(partner => partner.laptops > 0).map(
+                        (partner, index) => (
+                          <Box key={partner.name} mb={3}>
+                            <Box display="flex" justifyContent="space-between" mb={1}>
+                              <Typography variant="body2" fontWeight={600}>
+                                {partner.name}
+                              </Typography>
+                              {getStatusChip(partner.status)}
+                            </Box>
+
+                            <Typography variant="caption" color="text.secondary">
+                              📍 {partner.location}
                             </Typography>
-                            {getStatusChip(partner.status)}
-                          </Box>
 
-                          <Typography variant="caption" color="text.secondary">
-                            📍 {partner.location}
-                          </Typography>
-
-                          <Box display="flex" justifyContent="space-between" mt={2}>
-                            <Box display="flex" gap={4}>
-                              <Box textAlign="center">
-                                <Box display="flex" alignItems="center" gap={0.5}
-                                  sx={{
-                                    cursor: "pointer",
-                                    color: expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "inherit"
-                                  }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleToggle(partner.id, "laptops");
-                                  }}
-                                >
-                                  <Laptop size={16} color="#555" />
-                                  <Typography
-                                    variant="subtitle1"
-                                    fontWeight={600}
-                                    color={expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "primary"}
+                            <Box display="flex" justifyContent="space-between" mt={2}>
+                              <Box display="flex" gap={4}>
+                                <Box textAlign="center">
+                                  <Box display="flex" alignItems="center" gap={0.5}
+                                    sx={{
+                                      cursor: "pointer",
+                                      color: expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "inherit"
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleToggle(partner.id, "laptops");
+                                    }}
                                   >
-                                   {
+                                    <Laptop size={16} color="#555" />
+                                    <Typography
+                                      variant="subtitle1"
+                                      fontWeight={600}
+                                      color={expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "primary"}
+                                    >
+                                      {
                                         // show only laptops whose Donor Company Name matches selectedOrganization (case-insensitive)
                                         selectedOrganization
                                           ? (partner.laptopDetails || []).filter(l =>
-                                              String(l["Donor Company Name"] || "").trim().toLowerCase() ===
-                                              selectedOrganization.trim().toLowerCase()
-                                            ).length
+                                            String(l["Donor Company Name"] || "").trim().toLowerCase() ===
+                                            selectedOrganization.trim().toLowerCase()
+                                          ).length
                                           : partner.laptops
                                       }
-                                    {/* {partner.laptops} */}
+                                      {/* {partner.laptops} */}
+                                    </Typography>
+                                  </Box>
+                                  <Typography variant="caption" color="text.secondary">
+                                    Laptops
                                   </Typography>
                                 </Box>
-                                <Typography variant="caption" color="text.secondary">
-                                  Laptops
-                                </Typography>
+
+                                <Box textAlign="center">
+                                  <Box display="flex" alignItems="center" gap={0.5}>
+                                    <Users size={16} color="#555" />
+                                    <Typography
+                                      variant="subtitle1"
+                                      fontWeight={600}
+                                      color="success.main"
+                                    >
+                                      {partner.beneficiaries}
+                                    </Typography>
+                                  </Box>
+                                  <Typography variant="caption" color="text.secondary">
+                                    Beneficiaries
+                                  </Typography>
+                                </Box>
                               </Box>
 
-                              <Box textAlign="center">
-                                <Box display="flex" alignItems="center" gap={0.5}>
-                                  <Users size={16} color="#555" />
-                                  <Typography
-                                    variant="subtitle1"
-                                    fontWeight={600}
-                                    color="success.main"
-                                  >
-                                    {partner.beneficiaries}
-                                  </Typography>
-                                </Box>
+                              <Box textAlign="right">
+                                <Typography variant="body2" fontWeight={500}>
+                                  {partner.lastDelivery}
+                                </Typography>
                                 <Typography variant="caption" color="text.secondary">
-                                  Beneficiaries
+                                  Last delivery
                                 </Typography>
                               </Box>
                             </Box>
+                            {/* Expanded Laptop Data Table */}
+                            {expandedCard === partner.id && activeType === "laptops" && (
+                              <Box mt={3} onClick={(e) => e.stopPropagation()}>
+                                <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem', fontWeight: 600 }}>
+                                  {partner.name} - Laptop Data
+                                </Typography>
 
-                            <Box textAlign="right">
-                              <Typography variant="body2" fontWeight={500}>
-                                {partner.lastDelivery}
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                Last delivery
-                              </Typography>
-                            </Box>
-                          </Box>
-                          {/* Expanded Laptop Data Table */}
-                          {expandedCard === partner.id && activeType === "laptops" && (
-                            <Box mt={3} onClick={(e) => e.stopPropagation()}>
-                              <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem', fontWeight: 600 }}>
-                                {partner.name} - Laptop Data
-                              </Typography>
-
-                              {(() => {
-                                // apply selectedOrganization filter to the partner's laptopDetails when a donor is selected
-                                const displayedLaptopDetails = selectedOrganization
-                                  ? (partner.laptopDetails || []).filter(l =>
+                                {(() => {
+                                  // apply selectedOrganization filter to the partner's laptopDetails when a donor is selected
+                                  const displayedLaptopDetails = selectedOrganization
+                                    ? (partner.laptopDetails || []).filter(l =>
                                       String(l["Donor Company Name"] || "").trim().toLowerCase() ===
                                       selectedOrganization.trim().toLowerCase()
                                     )
-                                  : (partner.laptopDetails || []);
+                                    : (partner.laptopDetails || []);
 
-                                return (
-                                  <>
-                                    <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                                      <TableHead>
-                                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                          <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
-                                          <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
-                                          <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-                                          <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
-                                        </TableRow>
-                                      </TableHead>
-                                      <TableBody>
-                                        {displayedLaptopDetails && displayedLaptopDetails.length > 0 ? (
-                                          displayedLaptopDetails
-                                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                            .map((laptop, laptopIndex) => (
-                                              <TableRow key={laptopIndex} hover>
-                                                <TableCell>{laptop.ID || 'N/A'}</TableCell>
-                                                <TableCell>{laptop["Manufacturer Model"] || 'N/A'}</TableCell>
-                                                <TableCell>{laptop.Status || 'Unknown'}</TableCell>
-                                                <TableCell>{formatWorkingStatus(laptop.Working)}</TableCell>
-                                              </TableRow>
-                                            ))
-                                        ) : (
-                                          <TableRow>
-                                            <TableCell colSpan={4} align="center" sx={{ py: 2 }}>
-                                              <Typography variant="body2" color="text.secondary">
-                                                No laptop data available
-                                              </Typography>
-                                            </TableCell>
+                                  return (
+                                    <>
+                                      <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                                        <TableHead>
+                                          <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                            <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
+                                            <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
+                                            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                                            <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
                                           </TableRow>
-                                        )}
-                                      </TableBody>
-                                    </Table>
+                                        </TableHead>
+                                        <TableBody>
+                                          {displayedLaptopDetails && displayedLaptopDetails.length > 0 ? (
+                                            displayedLaptopDetails
+                                              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                              .map((laptop, laptopIndex) => (
+                                                <TableRow key={laptopIndex} hover>
+                                                  <TableCell>{laptop.ID || 'N/A'}</TableCell>
+                                                  <TableCell>{laptop["Manufacturer Model"] || 'N/A'}</TableCell>
+                                                  <TableCell>{laptop.Status || 'Unknown'}</TableCell>
+                                                  <TableCell>{formatWorkingStatus(laptop.Working)}</TableCell>
+                                                </TableRow>
+                                              ))
+                                          ) : (
+                                            <TableRow>
+                                              <TableCell colSpan={4} align="center" sx={{ py: 2 }}>
+                                                <Typography variant="body2" color="text.secondary">
+                                                  No laptop data available
+                                                </Typography>
+                                              </TableCell>
+                                            </TableRow>
+                                          )}
+                                        </TableBody>
+                                      </Table>
 
-                                    {displayedLaptopDetails && displayedLaptopDetails.length > rowsPerPage && (
-                                      <TablePagination
-                                        component="div"
-                                        count={displayedLaptopDetails.length}
-                                        page={page}
-                                        onPageChange={handleChangePage}
-                                        rowsPerPage={rowsPerPage}
-                                        rowsPerPageOptions={[10]}
-                                        sx={{ border: 'none' }}
-                                      />
-                                    )}
-                                  </>
-                                );
-                              })()}
-                            </Box>
-                          )}
-                          
-                          {/* {expandedCard === partner.id && activeType === "laptops" && (
+                                      {displayedLaptopDetails && displayedLaptopDetails.length > rowsPerPage && (
+                                        <TablePagination
+                                          component="div"
+                                          count={displayedLaptopDetails.length}
+                                          page={page}
+                                          onPageChange={handleChangePage}
+                                          rowsPerPage={rowsPerPage}
+                                          rowsPerPageOptions={[10]}
+                                          sx={{ border: 'none' }}
+                                        />
+                                      )}
+                                    </>
+                                  );
+                                })()}
+                              </Box>
+                            )}
+
+                            {/* {expandedCard === partner.id && activeType === "laptops" && (
                             <Box mt={3} onClick={(e) => e.stopPropagation()}>
                               <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem', fontWeight: 600 }}>
                                 {partner.name} - Laptop Data
@@ -1528,30 +1554,30 @@ const Overview = () => {
                             </Box>
                           )} */}
 
-                          {index < filteredNgoPartners.length - 1 && <Divider sx={{ mt: 2 }} />}
-                        </Box>
+                            {index < filteredNgoPartners.length - 1 && <Divider sx={{ mt: 2 }} />}
+                          </Box>
+                        )
                       )
-                    )
-                  ) : (
-                  <Box 
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      py: 2
-                    }}
-                  >
-                    <Typography variant="body2" color="primary" sx={{ display: 'flex', alignItems: 'center' }}>
-                      Click to view NGO details
-                    </Typography>
-                  </Box>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Box>
-      </>
+                    ) : (
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          py: 2
+                        }}
+                      >
+                        <Typography variant="body2" color="primary" sx={{ display: 'flex', alignItems: 'center' }}>
+                          Click to view NGO details
+                        </Typography>
+                      </Box>
+                    )}
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          </Box>
+        </>
       )}
     </>
   );

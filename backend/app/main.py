@@ -13,6 +13,8 @@ import httpx
 from botocore.exceptions import ClientError
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 from .db import DB_SCHEMA, get_conn
 
@@ -2862,7 +2864,7 @@ def _log_email_to_file(to_email: str, subject: str, html_part: str, cc: list = N
         print(f"Failed to log email to file: {e}")
 
 
-def _send_email_common(to_email: str, subject: str, html_part: str, cc: list = None, attachments: list = None, to_name: str = ""):
+def _send_email_common(to_email: str, subject: str, html_part: str, cc: list = None, attachments: list = None, to_name: str = "", from_email: str = None):
     # 1. Try Google SMTP
     smtp_user = os.environ.get("SMTP_USER")
     smtp_password = os.environ.get("SMTP_PASSWORD")
@@ -2871,7 +2873,7 @@ def _send_email_common(to_email: str, subject: str, html_part: str, cc: list = N
     # 2. Try Mailjet fallback
     api_key = os.environ.get("MAILJET_API_KEY")
     api_secret = os.environ.get("MAILJET_API_SECRET")
-    sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
+    sender_email = from_email or os.environ.get("MAILJET_SENDER_EMAIL")
     
     if smtp_user and smtp_password:
         import smtplib
@@ -2882,7 +2884,7 @@ def _send_email_common(to_email: str, subject: str, html_part: str, cc: list = N
         import base64
         
         smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-        smtp_sender = os.environ.get("SMTP_SENDER", smtp_user)
+        smtp_sender = from_email or os.environ.get("SMTP_SENDER", smtp_user)
         try:
             smtp_port = int(os.environ.get("SMTP_PORT", "587"))
         except Exception:
@@ -2996,7 +2998,7 @@ def send_afe_internal_approval_email(ngo_name: str, approver_name: str, qty_appr
     afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
     subject = f"[INTERNAL ONLY] AFE Request Approved for {ngo_name}"
     html_part = f"""
-        <p>Dear AFE and Sama Teams,</p>
+        <p>Dear Sama Team,</p>
         <p>This is to confirm that the laptop request from <strong>{ngo_name}</strong> has been internally approved.</p>
         <p><strong>Approved Quantity:</strong> {qty_approved} laptops</p>
         <p><strong>Approver:</strong> {approver_name}</p>
@@ -3012,13 +3014,62 @@ def send_afe_internal_approval_email(ngo_name: str, approver_name: str, qty_appr
     )
 
 
-def send_afe_serial_number_sheet_email(ngo_name: str, ngo_email: str, sheet_link: str):
+def send_afe_draft_submission_email(ngo_name: str, ngo_email: str, qty_requested: Any, contact_name: str, location: str, use_case: str):
+    ops_email = os.environ.get("SAMA_OPS_EMAIL", "operations@thesama.in")
+    afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
+    subject = f"New NGO Draft Request Submitted – {ngo_name}"
+    html_part = f"""
+        <p>Dear Sama Team,</p>
+        <p>A new NGO laptop request has been submitted as a draft.</p>
+        <p><strong>NGO Name:</strong> {ngo_name}</p>
+        <p><strong>Contact Email:</strong> {ngo_email}</p>
+        <p><strong>Contact Name:</strong> {contact_name}</p>
+        <p><strong>Requested Quantity:</strong> {qty_requested} laptops</p>
+        <p><strong>Location:</strong> {location}</p>
+        <p><strong>Use Case:</strong> {use_case}</p>
+        <p>This request is now available as a draft on the admin dashboard for your review.</p>
+        <p>Best regards,<br/>Sama Operations System</p>
+    """
+    _send_email_common(
+        to_email=ops_email,
+        subject=subject,
+        html_part=html_part,
+        cc=[{"Email": afe_email}],
+        to_name="Sama Operations",
+        from_email="product@thesama.in"
+    )
+
+
+def send_afe_serial_number_sheet_email(ngo_name: str, ngo_email: str, laptops_list: list):
+    import csv, io, base64
     afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
     subject = f"AFE Laptop Serial Numbers – {ngo_name}"
+    
+    # Generate CSV
+    csv_io = io.StringIO()
+    writer = csv.writer(csv_io)
+    writer.writerow(["Serial Number", "Manufacturer/Model", "Processor", "RAM", "ROM"])
+    for lap in laptops_list:
+        writer.writerow([
+            lap.get("id", ""),
+            lap.get("manufacturer_model", ""),
+            lap.get("processor", ""),
+            lap.get("ram", ""),
+            lap.get("rom", "")
+        ])
+    
+    csv_content = csv_io.getvalue().encode("utf-8")
+    b64_content = base64.b64encode(csv_content).decode("utf-8")
+    
+    attachments = [{
+        "Filename": f"{ngo_name.replace(' ', '_')}_Laptops.csv",
+        "Base64Content": b64_content,
+        "ContentType": "text/csv"
+    }]
+    
     html_part = f"""
         <p>Dear {ngo_name} Team,</p>
-        <p>Please find the link to the Google Sheet containing the serial numbers and hardware details of the laptops dispatched to your organization:</p>
-        <p><a href="{sheet_link}" target="_blank">View Serial Numbers Sheet</a></p>
+        <p>Please find attached the CSV file containing the serial numbers and hardware details of the laptops dispatched to your organization.</p>
         <p>If you have any questions or require support, please contact us.</p>
         <p>Best regards,<br/>Sama Operations Team</p>
     """
@@ -3027,6 +3078,7 @@ def send_afe_serial_number_sheet_email(ngo_name: str, ngo_email: str, sheet_link
         subject=subject,
         html_part=html_part,
         cc=[{"Email": afe_email}],
+        attachments=attachments,
         to_name=ngo_name
     )
 
@@ -3137,6 +3189,58 @@ def send_afe_delivery_email(ngo_name: str, ngo_email: str, qty_requested: Any, l
     )
 
 
+@app.get("/api/afe/inventory-summary")
+def get_afe_inventory_summary():
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    f"""
+                    SELECT manufacturer_model, status
+                    FROM {DB_SCHEMA}.laptop_labeling
+                    WHERE UPPER(donor_company_name) LIKE '%AMAZON%' OR UPPER(donor_company_name) LIKE '%AFE%'
+                    """
+                )
+                rows = cur.fetchall()
+                
+                summary = {
+                    "Total Received": {"Macbook": 0, "Windows": 0, "Total": 0},
+                    "Total Refurbished": {"Macbook": 0, "Windows": 0, "Total": 0},
+                    "Total Distributed": {"Macbook": 0, "Windows": 0, "Total": 0},
+                    "Current Stock": {"Macbook": 0, "Windows": 0, "Total": 0}
+                }
+                
+                for r in rows:
+                    model = str(r.get("manufacturer_model") or "").strip().lower()
+                    status = str(r.get("status") or "").strip().upper()
+                    
+                    if "mac" in model:
+                        brand = "Macbook"
+                    else:
+                        brand = "Windows"
+                        
+                    # Total Received
+                    summary["Total Received"][brand] += 1
+                    summary["Total Received"]["Total"] += 1
+                    
+                    # Refurbished (includes anything Ready or already Distributed)
+                    if status in ["READY", "DISTRIBUTION", "DISTRIBUTED", "DISPATCHED", "IN TRANSIT"]:
+                        summary["Total Refurbished"][brand] += 1
+                        summary["Total Refurbished"]["Total"] += 1
+                        
+                    # Dispatched / Distributed
+                    if status in ["DISTRIBUTION", "DISTRIBUTED", "DISPATCHED", "IN TRANSIT"]:
+                        summary["Total Distributed"][brand] += 1
+                        summary["Total Distributed"]["Total"] += 1
+                        
+                # Mathematically calculate Current Stock = Total Received - Total Distributed
+                for b in ["Macbook", "Windows", "Total"]:
+                    summary["Current Stock"][b] = summary["Total Received"][b] - summary["Total Distributed"][b]
+                        
+                return {"status": "success", "data": summary}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 @app.get("/ngo-exec")
 def ngo_exec_get(request: Request) -> Any:
     if not LEGACY_NGO_API_URL:
@@ -3147,9 +3251,15 @@ def ngo_exec_get(request: Request) -> Any:
     with httpx.Client(timeout=timeout, follow_redirects=True) as client:
         response = client.get(LEGACY_NGO_API_URL, params=params)
     
-    content_type = response.headers.get("content-type", "")
-    if "application/json" in content_type:
+    data_json = None
+    try:
         data_json = response.json()
+    except Exception:
+        import json
+        try:
+            data_json = json.loads(response.text)
+        except Exception:
+            pass
     if params.get("type") == "registration":
         if not isinstance(data_json, dict) or "data" not in data_json:
             data_json = {"status": "success", "data": []}
@@ -3203,8 +3313,12 @@ def ngo_exec_get(request: Request) -> Any:
         except Exception as e:
             print(f"Error merging ngo_requests drafts: {e}")
         return data_json
+        
+    if params.get("type") == "donorQuestion":
+        return data_json if data_json is not None else {"status": "proxied", "raw": response.text}
+        
     return {"status": "proxied", "raw": response.text}
- 
+
  
 @app.post("/ngo-exec")
 async def ngo_exec_post(request: Request) -> Any:
@@ -3220,8 +3334,56 @@ async def ngo_exec_post(request: Request) -> Any:
          
     type_name = _type_from_request(request, payload)
      
-    # Intercept status changes, timeline updates, and deletions for drafts
+    # Intercept new NGO requirements submissions from the web form
     ngo_id = payload.get("id")
+    if type_name == "NGO" and not ngo_id:
+        org_name = (payload.get("organizationName") or "").strip()
+        qty = payload.get("orgLaptopRequire")
+        try:
+            qty_int = int(qty) if qty is not None else 1
+        except Exception:
+            qty_int = 1
+            
+        location = (payload.get("operatingState") or "").strip()
+        use_case = payload.get("primaryUse")
+        if isinstance(use_case, list):
+            use_case = ", ".join(use_case)
+        else:
+            use_case = str(use_case or "").strip()
+            
+        contact_name = (payload.get("primaryContactName") or "").strip()
+        email = (payload.get("email") or "").strip()
+        partner_type = "AFE Partner"
+        
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    f"""
+                    INSERT INTO {DB_SCHEMA}.ngo_requests
+                    (ngo_name, laptop_quantity, location, use_case, contact_name, email, status, partner_type, date_received)
+                    VALUES (%s, %s, %s, %s, %s, %s, 'draft', %s, CURRENT_DATE)
+                    RETURNING id
+                    """,
+                    (org_name, qty_int, location, use_case, contact_name, email, partner_type)
+                )
+                new_id = cur.fetchone()["id"]
+                conn.commit()
+                
+        # Send the draft submission notification email to Sama Ops and AFE Teams
+        try:
+            send_afe_draft_submission_email(org_name, email, qty_int, contact_name, location, use_case)
+        except Exception as e:
+            print(f"Error sending draft submission email: {e}")
+                
+        return {
+            "status": "success",
+            "type": type_name,
+            "id": f"DRAFT-{new_id}",
+            "organizationName": org_name,
+            "message": "Web requirements submitted successfully"
+        }
+
+    # Intercept status changes, timeline updates, and deletions for drafts
     if isinstance(ngo_id, str) and (ngo_id.startswith("DRAFT-") or ngo_id.startswith("SAM-D")):
         db_id = int(ngo_id.replace("DRAFT-", "").replace("SAM-D", ""))
         if type_name == "NGO":
@@ -3242,6 +3404,11 @@ async def ngo_exec_post(request: Request) -> Any:
                     if status_val is not None:
                         update_fields.append("status = %s")
                         params.append(status_val)
+                        if status_val == "Submitted Request":
+                            update_fields.append("partner_type = %s")
+                            params.append("AFE Partner")
+                            update_fields.append("donor = %s")
+                            params.append("Amazon")
                     if approved_qty is not None:
                         update_fields.append("approved_quantity = %s")
                         params.append(approved_qty)
@@ -3258,9 +3425,11 @@ async def ngo_exec_post(request: Request) -> Any:
                         update_fields.append("expected_delivery_days = %s")
                         params.append(exp_days)
                     if disp_date is not None:
+                        if disp_date == "": disp_date = None
                         update_fields.append("dispatch_date = %s")
                         params.append(disp_date)
                     if del_date is not None:
+                        if del_date == "": del_date = None
                         update_fields.append("delivery_date = %s")
                         params.append(del_date)
                         
@@ -3290,21 +3459,7 @@ async def ngo_exec_post(request: Request) -> Any:
                             if status_val == "Approved":
                                 send_afe_internal_approval_email(row["ngo_name"], row["approver_name"] or "AFE Approver", final_qty)
                                 send_afe_approval_email(row["ngo_name"], row["email"], final_qty)
-                            elif status_val == "Dispatched":
-                                send_afe_dispatch_email(
-                                    row["ngo_name"], 
-                                    row["email"], 
-                                    final_qty, 
-                                    row["dispatch_date"], 
-                                    row["dispatch_location"], 
-                                    row["expected_delivery_days"]
-                                )
-                                send_afe_serial_number_sheet_email(
-                                    row["ngo_name"], 
-                                    row["email"], 
-                                    row["attached_email_link"] or "https://docs.google.com/spreadsheets/d/your-master-sheet"
-                                )
-                            elif status_val == "Delivered":
+                            elif status_val in ["Dispatched", "Delivered"]:
                                 # Fetch any laptops allocated to this NGO name
                                 laptops_list = []
                                 try:
@@ -3319,12 +3474,29 @@ async def ngo_exec_post(request: Request) -> Any:
                                     for r_lap in cur.fetchall():
                                         laptops_list.append(dict(r_lap))
                                 except Exception as e:
-                                    print(f"Failed to fetch laptops for delivery email: {e}")
-                                send_afe_delivery_email(row["ngo_name"], row["email"], final_qty, laptops_list, row["delivery_date"])
+                                    print(f"Failed to fetch laptops for email: {e}")
+                                    
+                                if status_val == "Dispatched":
+                                    send_afe_dispatch_email(
+                                        row["ngo_name"], 
+                                        row["email"], 
+                                        final_qty, 
+                                        row["dispatch_date"], 
+                                        row["dispatch_location"], 
+                                        row["expected_delivery_days"]
+                                    )
+                                    send_afe_serial_number_sheet_email(
+                                        row["ngo_name"], 
+                                        row["email"], 
+                                        laptops_list
+                                    )
+                                elif status_val == "Delivered":
+                                    send_afe_delivery_email(row["ngo_name"], row["email"], final_qty, laptops_list, row["delivery_date"])
             return {"status": "success", "id": ngo_id, "status_updated": status_val}
             
         elif type_name == "NGOTimeline":
             date_val = payload.get("tentative_refurb_completion")
+            if date_val == "": date_val = None
             with get_conn() as conn:
                 with conn.cursor() as cur:
                     cur.execute(
@@ -3849,12 +4021,103 @@ async def run_email_polling_scheduler():
             print(f"Error in email polling scheduler: {e}")
         await asyncio.sleep(60)
 
+async def check_rms_inactivity():
+    # Placeholder for scheduled check if needed
+    # (Inactivity is mostly driven by the webhook now)
+    pass
+
+async def send_quarterly_impact_reminders():
+    print("Checking for quarterly impact reminders...")
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                # Find requests delivered exactly 90 days ago
+                cur.execute(f"""
+                    SELECT id, ngo_name, email, delivery_date 
+                    FROM {DB_SCHEMA}.ngo_requests 
+                    WHERE status = 'Delivered' 
+                    AND delivery_date IS NOT NULL 
+                    AND CURRENT_DATE = (delivery_date + INTERVAL '90 days')
+                """)
+                due_requests = cur.fetchall()
+                
+                for req in due_requests:
+                    if req.get("email"):
+                        # Send the Stage 7 email
+                        body = f"Dear {req.get('ngo_name')} Team,\\n\\nAs part of our quarterly review process, we kindly request you to submit the Impact Report for your organization...\\nImpact report: https://www.jotform.com/form/261872559359069"
+                        
+                        await send_brevo_email(
+                            to_email=req.get("email"),
+                            to_name=req.get("ngo_name"),
+                            subject=f"Quarterly Impact Report Submission Reminder - {req.get('ngo_name')}",
+                            html_content=body.replace("\\n", "<br>")
+                        )
+                        print(f"Sent quarterly reminder to {req.get('ngo_name')}")
+    except Exception as e:
+        print(f"Failed to send quarterly reminders: {e}")
+
+@app.post("/api/rms-webhook")
+async def rms_webhook(request: Request):
+    try:
+        payload = await request.json()
+        asset_tag = payload.get("asset_tag")
+        status = payload.get("status")
+        
+        if not asset_tag:
+            raise HTTPException(status_code=400, detail="Missing asset_tag")
+            
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"""
+                    UPDATE {DB_SCHEMA}.laptop_labeling 
+                    SET rms_status = %s, last_active_date = CURRENT_TIMESTAMP
+                    WHERE id = %s OR serial_number = %s
+                """, (status, str(asset_tag), str(asset_tag)))
+                conn.commit()
+                
+        # If marked inactive, trigger the Stage 6 email alert to Ops
+        if status and status.upper() == "INACTIVE":
+            body = f"Laptop Inactivity Alert for Asset Tag/Serial Number: {asset_tag}. It has not connected to the internet for over 30 days."
+            await send_brevo_email(
+                to_email="operations@thesama.in",
+                to_name="Sama Operations",
+                subject=f"Laptop Inactivity Alert - Support Check-in Required",
+                html_content=body
+            )
+            
+        return {"status": "success", "message": f"Updated RMS status for {asset_tag}"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/rms-stats")
+async def get_rms_stats():
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"""
+                    SELECT rms_status, COUNT(*) 
+                    FROM {DB_SCHEMA}.laptop_labeling 
+                    WHERE rms_status IS NOT NULL
+                    GROUP BY rms_status
+                """)
+                rows = cur.fetchall()
+                
+                active = 0
+                inactive = 0
+                for r in rows:
+                    if r.get("rms_status", "").upper() == "ACTIVE":
+                        active += r.get("count", 0)
+                    elif r.get("rms_status", "").upper() == "INACTIVE":
+                        inactive += r.get("count", 0)
+                        
+                return {"active": active, "inactive": inactive}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 async def run_daily_background_scheduler():
     print("Background scheduler task initiated.")
     while True:
         try:
-            await check_and_parse_inbound_emails()
             await check_rms_inactivity()
             await send_quarterly_impact_reminders()
         except Exception as e:
@@ -3866,7 +4129,7 @@ async def run_daily_background_scheduler():
 @app.on_event("startup")
 async def start_background_jobs():
     asyncio.create_task(run_daily_background_scheduler())
-    asyncio.create_task(run_email_polling_scheduler())
+    # asyncio.create_task(run_email_polling_scheduler())
 
 
 @app.post("/jotform-webhook")

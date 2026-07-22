@@ -250,6 +250,9 @@ const AdminNgo = () => {
     if (ngoIdToChange && donor) {
       setDonor(donor); // Update state
       await sendToBackend(ngoIdToChange, donor); // Send data to backend
+      setNgoData((prev) =>
+        prev.map((n) => (n.Id === ngoIdToChange ? { ...n, Doner: donor } : n))
+      );
       setOpen(false);
     }
   };
@@ -592,7 +595,7 @@ const AdminNgo = () => {
                         <TableCell sx={classes.tablecell}>
                           <FormControl fullWidth>
                             <Select
-                              value={ngo["Doner"] || donorSelections[ngo.Id]}
+                              value={ngo["Doner"] || donorSelections[ngo.Id] || ""}
                               onChange={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -603,9 +606,6 @@ const AdminNgo = () => {
                                 handleDonerChange(e);
                                 setNgoIdToChange(ngo.Id);
                               }}
-
-                              disabled={!!ngo["Doner"]}
-                              IconComponent={ngo["Doner"] ? () => null : undefined}
                             >
                               {AssociatedDoner.map((option) => (
                                 <MenuItem key={option} value={option} onClick={(e) => e.stopPropagation()}>
