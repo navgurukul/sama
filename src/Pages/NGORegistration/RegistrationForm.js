@@ -556,7 +556,7 @@ function RegistrationForm() {
         org => org.organizationName.trim() === selectedExistingNgo.trim()
       );
       if (existingOrg) {
-        payload.organizationId = existingOrg.id;
+        payload.organizationId = existingOrg.Id;
       }
     }
 

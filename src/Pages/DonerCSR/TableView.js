@@ -42,7 +42,8 @@ const TableView = ({
   
   // Get user role and donor organization from localStorage
   const authData = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
-  const userRole = authData[0]?.role?.[0];
+  const userRoleRaw = authData[0]?.role || "";
+  const userRole = userRoleRaw.includes("admin") ? "admin" : (userRoleRaw.includes("doner") ? "doner" : userRoleRaw);
   const donorOrgName = authData[0]?.Doner;
 
   const isStandalone = !metricType && !onBack;
@@ -101,15 +102,25 @@ const TableView = ({
         case "Not Working":
         case "In Transit":
           filteredData = data.filter(laptop => {
-            const matches = laptop.Status === activity.status;
-            return matches;
+            const status = (laptop.Status || "").trim().toLowerCase();
+            const actStatus = (activity.status || "").trim().toLowerCase();
+            // Map legacy to new db status for activity
+            if (actStatus === "laptop received" && (status === "laptop received" || status === "laptop_received")) return true;
+            if (actStatus === "laptop refurbished" && (status === "laptop refurbished" || status === "qc_check")) return true;
+            if (actStatus === "refurbishment started" && (status === "refurbishment started" || status === "refurbishment_testing")) return true;
+            if (actStatus === "not working" && (status === "not working" || status === "not_working")) return true;
+            if (actStatus === "in transit" && (status === "in transit" || status === "in_transit")) return true;
+            if (status === actStatus) return true;
+            return false;
           });
           break;
 
         default:
           filteredData = data.filter(laptop => {
-            const matches = laptop.Status === activity.status;
-            return matches;
+            const status = (laptop.Status || "").trim().toLowerCase();
+            const actStatus = (activity.status || "").trim().toLowerCase();
+            if (actStatus === "distributed" && (status === "distributed" || status === "distribution")) return true;
+            return status === actStatus;
           });
       }
 
@@ -334,39 +345,35 @@ const TableView = ({
           break;
         case "refurbished":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "Laptop Refurbished"
-          );
-          break;
-        case "successfullyRefurbished":
-          apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            return laptop.Status === "Laptop Refurbished" ||
-              laptop.Status === "To Be Dispatch" ||
-              laptop.Status === "Allocated" ||
-              laptop.Status === "Distributed";
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return s === "laptop refurbished" || s === "qc_check";
           });
           break;
+        case "successfullyRefurbished":
         case "totalProcessed":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            return laptop.Status === "Laptop Refurbished" ||
-              laptop.Status === "To Be Dispatch" ||
-              laptop.Status === "Allocated" ||
-              laptop.Status === "Distributed";
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return s === "laptop refurbished" || s === "qc_check" ||
+              s === "to be dispatch" || s === "ready" ||
+              s === "allocated" ||
+              s === "distributed" || s === "distribution" || s === "post_deployment_15d" || s === "monthly_monitoring";
           });
           break;
         case "pickupRequests":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop => 
-            laptop.Status === "Pickup Requested" || laptop.Status === "Pickup requested"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return s === "pickup requested" || s === "pickup_requested";
+          });
           break;
         case "inTransit":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "In Transit"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return s === "in transit" || s === "in_transit";
+          });
           break;
         case "received":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
@@ -379,6 +386,12 @@ const TableView = ({
               "to be dispatch",
               "allocated",
               "distributed",
+              "laptop_received",
+              "refurbishment_testing",
+              "qc_check",
+              "distribution",
+              "post_deployment_15d",
+              "monthly_monitoring",
             ]);
 
             return data.filter(laptop =>
@@ -388,39 +401,45 @@ const TableView = ({
           break;
         case "onlyLaptopReceived":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            ((laptop.Status || "").trim().toLowerCase() === "laptop received")
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return s === "laptop received" || s === "laptop_received";
+          });
           break;
         case "refurbishmentStarted":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "Refurbishment Started"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return s === "refurbishment started" || s === "refurbishment_testing";
+          });
           break;
         case "notWorking":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            (laptop.Status || "").trim().toLowerCase() === "not working"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return s === "not working" || s === "not_working";
+          });
           break;
         case "toBeDispatch":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "To Be Dispatch"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return s === "to be dispatch" || s === "ready";
+          });
           break;
         case "allocated":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "Allocated"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return s === "allocated";
+          });
           break;
         case "distributed":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "Distributed"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return s === "distributed" || s === "distribution";
+          });
           break;
         case "activeUsage":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
@@ -428,21 +447,19 @@ const TableView = ({
             const d = parseDateUniversal(laptop["Date"]);
             if (!d) return false;
             const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
-            return diffDays <= 15;
-            //  && (laptop.Status || "").toLowerCase() === "distributed"; // 
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return diffDays <= 15 && (s === "distributed" || s === "distribution" || s === "post_deployment_15d" || s === "monthly_monitoring");
           });
           break;
           
       case "successRate":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const status = (laptop.Status || "").toLowerCase();
-            return (
-              status.includes("laptop refurbished") ||
-              status.includes("to be dispatch") ||
-              status.includes("allocated") ||
-              status.includes("distributed")
-            );
+            const s = (laptop.Status || "").trim().toLowerCase();
+            return s === "laptop refurbished" || s === "qc_check" ||
+              s === "to be dispatch" || s === "ready" ||
+              s === "allocated" ||
+              s === "distributed" || s === "distribution" || s === "post_deployment_15d" || s === "monthly_monitoring";
           });
           break;
 

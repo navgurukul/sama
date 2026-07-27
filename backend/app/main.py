@@ -2785,6 +2785,13 @@ def _proxy_to_legacy(method: str, request: Request, payload: Optional[Dict[str, 
         )
 
     params = dict(request.query_params)
+    org_filter = params.get("orgName")
+    
+    # Remove orgName from params sent to Google API so we always fetch the FULL list.
+    # This is required so we can accurately count len(data) for dynamic ID assignment!
+    if "orgName" in params:
+        del params["orgName"]
+        
     timeout = httpx.Timeout(30.0)
     with httpx.Client(timeout=timeout, follow_redirects=True) as client:
         if method == "GET":
@@ -3196,9 +3203,11 @@ def get_afe_inventory_summary():
             with conn.cursor() as cur:
                 cur.execute(
                     f"""
-                    SELECT manufacturer_model, status
-                    FROM {DB_SCHEMA}.laptop_labeling
-                    WHERE UPPER(donor_company_name) LIKE '%AMAZON%' OR UPPER(donor_company_name) LIKE '%AFE%'
+                    SELECT ll.manufacturer_model, ll.status
+                    FROM {DB_SCHEMA}.laptop_labeling ll
+                    LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
+                    WHERE UPPER(COALESCE(d.donor_company, ll.donor_company_name)) LIKE '%AMAZON%' 
+                       OR UPPER(COALESCE(d.donor_company, ll.donor_company_name)) LIKE '%AFE%'
                     """
                 )
                 rows = cur.fetchall()
@@ -3223,13 +3232,13 @@ def get_afe_inventory_summary():
                     summary["Total Received"][brand] += 1
                     summary["Total Received"]["Total"] += 1
                     
-                    # Refurbished (includes anything Ready or already Distributed)
-                    if status in ["READY", "DISTRIBUTION", "DISTRIBUTED", "DISPATCHED", "IN TRANSIT"]:
+                    # Refurbished (includes anything that has finished repair)
+                    if status in ["READY", "QC_CHECK", "LAPTOP REFURBISHED", "ALLOCATED", "TO BE DISPATCH", "DISPATCHED", "DISTRIBUTION", "DISTRIBUTED", "POST_DEPLOYMENT_15D", "MONTHLY_MONITORING"]:
                         summary["Total Refurbished"][brand] += 1
                         summary["Total Refurbished"]["Total"] += 1
                         
                     # Dispatched / Distributed
-                    if status in ["DISTRIBUTION", "DISTRIBUTED", "DISPATCHED", "IN TRANSIT"]:
+                    if status in ["DISTRIBUTION", "DISTRIBUTED", "POST_DEPLOYMENT_15D", "MONTHLY_MONITORING"]:
                         summary["Total Distributed"][brand] += 1
                         summary["Total Distributed"]["Total"] += 1
                         
@@ -3247,6 +3256,13 @@ def ngo_exec_get(request: Request) -> Any:
         raise HTTPException(status_code=501, detail="LEGACY_NGO_API_URL is not configured")
     
     params = dict(request.query_params)
+    org_filter = params.get("orgName")
+    
+    # Remove orgName from params sent to Google API so we always fetch the FULL list.
+    # This is required so we can accurately count len(data) for dynamic ID assignment!
+    if "orgName" in params:
+        del params["orgName"]
+        
     timeout = httpx.Timeout(30.0)
     with httpx.Client(timeout=timeout, follow_redirects=True) as client:
         response = client.get(LEGACY_NGO_API_URL, params=params)
@@ -3277,26 +3293,95 @@ def ngo_exec_get(request: Request) -> Any:
                         """
                     )
                     draft_rows = cur.fetchall()
+                    # Determine the base serial number based on the HIGHEST existing ID
+                    max_serial = 0
+                    for x in data_json.get("data", []):
+                        id_str = str(x.get("Id", ""))
+                        if id_str.startswith("SAM-"):
+                            try:
+                                max_serial = max(max_serial, int(id_str.split("-")[-1]))
+                            except ValueError:
+                                pass
+                    current_serial = max_serial
+                    
                     draft_list = []
+                    # We sort by id ASC so the oldest request gets the first sequential serial number
+                    draft_rows = sorted(draft_rows, key=lambda x: x['id'])
+                    
                     for r in draft_rows:
-                        # Map database status to match frontend capitalizing (e.g. 'draft' -> 'Draft')
                         db_status = str(r['status'] or 'Draft').strip()
                         display_status = db_status.capitalize() if db_status == 'draft' else db_status
                         
-                        id_prefix = "DRAFT-" if db_status.lower() == "draft" else "SAM-D"
+                        id_prefix = "DRAFT-"
+                        dynamic_display_id = ""
                         
+                        if display_status in ["Submitted Request", "Approved", "Dispatched", "Delivered"]:
+                            current_serial += 1
+                            if display_status == "Submitted Request":
+                                dynamic_display_id = f"SAM-D{current_serial}"
+                            else:
+                                dynamic_display_id = f"SAM-{current_serial}"
+                        
+                        db_contact = r["contact_name"] or ""
+                        if " | " in db_contact:
+                            c_name, c_num = db_contact.split(" | ", 1)
+                        else:
+                            c_name, c_num = db_contact, ""
+                            
+                        db_ngo_name = r["ngo_name"] or ""
+                        display_id = dynamic_display_id
+                        stored_display_id = None
+                        
+                        # If it's an additional request for an existing NGO, it has an explicit display ID stored
+                        if "||" in db_ngo_name:
+                            real_ngo_name, stored_display_id = db_ngo_name.split("||", 1)
+                            display_id = stored_display_id
+                            # It doesn't consume a new serial number since it already belongs to an existing NGO,
+                            # so we roll back the counter we just incremented.
+                            if display_status in ["Submitted Request", "Approved", "Dispatched", "Delivered"]:
+                                current_serial -= 1
+                        else:
+                            real_ngo_name = db_ngo_name
+                            
+                        actual_id = f"{id_prefix}{r['id']}"
+                        
+                        # Read the full payload from the JSON file to populate missing frontend fields
+                        payload_json = {}
+                        try:
+                            import json, os
+                            payload_path = os.path.join(os.path.dirname(__file__), "ngo_payloads", f"{actual_id}.json")
+                            if os.path.exists(payload_path):
+                                with open(payload_path, "r") as jf:
+                                    payload_json = json.load(jf)
+                        except Exception:
+                            pass
+                            
+                        # FILTERING LOGIC for detail page
+                        if org_filter:
+                            if actual_id != org_filter and display_id != org_filter:
+                                continue
+                            
                         draft_list.append({
-                            "Id": f"{id_prefix}{r['id']}",
-                            "organizationName": r["ngo_name"],
-                            "primaryContactName": r["contact_name"] or "",
-                            "contactNumber": "",
+                            "Id": actual_id,
+                            "displayId": display_id,
+                            "organizationName": real_ngo_name,
+                            "primaryContactName": c_name,
+                            "contactNumber": c_num,
                             "email": r["email"] or "",
                             "location": r["location"] or "",
                             "Status": display_status,
                             "primaryUse": r["use_case"] or "",
+                            "expectedOutcome": r["use_case"] or "",
                             "Laptop require": r["laptop_quantity"] or 0,
-                            "Ngo Type": "",
+                            "Ngo Type": payload_json.get("infrastructure", ""),
                             "Doner": r["donor"] or "",
+                            "operatingState": payload_json.get("operatingState", ""),
+                            "yearsOperating": payload_json.get("yearsOperating", ""),
+                            "focusArea": payload_json.get("focusArea", ""),
+                            "infrastructure": payload_json.get("infrastructure", ""),
+                            "beneficiariesCount": payload_json.get("beneficiariesCount", ""),
+                            "ageGroup": payload_json.get("ageGroup", ""),
+                            "laptopTracking": payload_json.get("laptopTracking", ""),
                             "tentative_refurb_completion": str(r["tentative_refurb_completion"]) if r["tentative_refurb_completion"] else None,
                             "partner_type": r["partner_type"] or "External Partner",
                             "date_received": str(r["date_received"]) if r["date_received"] else None,
@@ -3309,7 +3394,17 @@ def ngo_exec_get(request: Request) -> Any:
                             "delivery_date": str(r["delivery_date"]) if r["delivery_date"] else None,
                             "last_impact_report_date": str(r["last_impact_report_date"]) if r["last_impact_report_date"] else None,
                         })
-                    data_json["data"] = draft_list + data_json["data"]
+                    
+                    if org_filter:
+                        # Filter the legacy data to only include the requested orgName
+                        filtered_legacy = [x for x in data_json.get("data", []) if str(x.get("Id", "")) == org_filter or str(x.get("displayId", "")) == org_filter]
+                        
+                        # For detail page, maintain chronological order (oldest/main first) and append after legacy data
+                        data_json["data"] = filtered_legacy + draft_list
+                    else:
+                        # For dashboard, reverse so newest appears first
+                        draft_list.reverse()
+                        data_json["data"] = draft_list + data_json["data"]
         except Exception as e:
             print(f"Error merging ngo_requests drafts: {e}")
         return data_json
@@ -3338,20 +3433,44 @@ async def ngo_exec_post(request: Request) -> Any:
     ngo_id = payload.get("id")
     if type_name == "NGO" and not ngo_id:
         org_name = (payload.get("organizationName") or "").strip()
+        request_type = payload.get("requestType")
+        organization_id = payload.get("organizationId")
+        if request_type == "subsequent" and organization_id:
+            org_name = f"{org_name}||{organization_id}"
+            
         qty = payload.get("orgLaptopRequire")
         try:
             qty_int = int(qty) if qty is not None else 1
         except Exception:
             qty_int = 1
             
-        location = (payload.get("operatingState") or "").strip()
+        loc_list = payload.get("location")
+        if isinstance(loc_list, list):
+            rural_urban = ", ".join(loc_list)
+        else:
+            rural_urban = str(loc_list or "").strip()
+            
+        op_state = (payload.get("operatingState") or "").strip()
+        
+        if op_state and rural_urban:
+            location = f"{op_state} ({rural_urban})"
+        elif op_state:
+            location = op_state
+        elif rural_urban:
+            location = rural_urban
+        else:
+            location = ""
+            
         use_case = payload.get("primaryUse")
         if isinstance(use_case, list):
             use_case = ", ".join(use_case)
         else:
             use_case = str(use_case or "").strip()
             
-        contact_name = (payload.get("primaryContactName") or "").strip()
+        contact_name_val = (payload.get("primaryContactName") or "").strip()
+        contact_num_val = (payload.get("contactNumber") or "").strip()
+        contact_name = f"{contact_name_val} | {contact_num_val}" if contact_num_val else contact_name_val
+        
         email = (payload.get("email") or "").strip()
         partner_type = "AFE Partner"
         
@@ -3369,6 +3488,15 @@ async def ngo_exec_post(request: Request) -> Any:
                 new_id = cur.fetchone()["id"]
                 conn.commit()
                 
+                # Save the full payload into a JSON file for the detail page
+                try:
+                    os.makedirs("backend/app/ngo_payloads", exist_ok=True)
+                    import json
+                    with open(f"backend/app/ngo_payloads/DRAFT-{new_id}.json", "w") as jf:
+                        json.dump(payload, jf)
+                except Exception as e:
+                    print(f"Error saving JSON payload: {e}")
+                
         # Send the draft submission notification email to Sama Ops and AFE Teams
         try:
             send_afe_draft_submission_email(org_name, email, qty_int, contact_name, location, use_case)
@@ -3383,9 +3511,16 @@ async def ngo_exec_post(request: Request) -> Any:
             "message": "Web requirements submitted successfully"
         }
 
+
+    def is_pg_id(nid):
+        if not isinstance(nid, str): return False
+        if nid.startswith("DRAFT-"): return True
+        return False
+
+
     # Intercept status changes, timeline updates, and deletions for drafts
-    if isinstance(ngo_id, str) and (ngo_id.startswith("DRAFT-") or ngo_id.startswith("SAM-D")):
-        db_id = int(ngo_id.replace("DRAFT-", "").replace("SAM-D", ""))
+    if is_pg_id(ngo_id):
+        db_id = int(ngo_id.replace("DRAFT-", "").replace("SAM-D", "").replace("SAM-", ""))
         if type_name == "NGO":
             status_val = payload.get("status")
             approved_qty = payload.get("approved_quantity")
@@ -3588,6 +3723,13 @@ async def ngo_exec_post(request: Request) -> Any:
                 print(f"Failed to process status notification details for {status_val}: {e}")
                 
     params = dict(request.query_params)
+    org_filter = params.get("orgName")
+    
+    # Remove orgName from params sent to Google API so we always fetch the FULL list.
+    # This is required so we can accurately count len(data) for dynamic ID assignment!
+    if "orgName" in params:
+        del params["orgName"]
+        
     timeout = httpx.Timeout(30.0)
     with httpx.Client(timeout=timeout, follow_redirects=True) as client:
         response = client.post(LEGACY_NGO_API_URL, params=params, json=payload)

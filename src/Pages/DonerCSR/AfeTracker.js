@@ -18,7 +18,8 @@ import {
   CircularProgress,
   Grid,
   Chip,
-  IconButton
+  IconButton,
+  Collapse
 } from "@mui/material";
 import { Edit2, Check, X, ShieldAlert } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
@@ -32,6 +33,7 @@ const AfeTracker = () => {
   const [editFields, setEditFields] = useState({});
   const [userRole, setUserRole] = useState([]);
   const [visibleCount, setVisibleCount] = useState(5);
+  const [expandedRow, setExpandedRow] = useState(null);
 
   // Check roles
   useEffect(() => {
@@ -190,38 +192,6 @@ const AfeTracker = () => {
 
   return (
     <Box sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, color: "#5C785A" }}>
-        AFE Laptop Inventory Tracker
-      </Typography>
-
-      {/* Inventory Summary Cards */}
-      {inventorySummary && (
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {["Total Received", "Total Refurbished", "Total Distributed", "Current Stock"].map((key, idx) => (
-            <Grid item xs={12} sm={6} md={3} key={idx}>
-              <Card variant="outlined" sx={{ borderRadius: 2, backgroundColor: "#fcfaf8" }}>
-                <CardContent sx={{ pb: "16px !important", textAlign: "center" }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, mb: 1 }}>
-                    {key}
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: "#5C785A", mb: 1 }}>
-                    {inventorySummary[key]?.Total || 0}
-                  </Typography>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", px: 1 }}>
-                    <Typography variant="caption" sx={{ color: "#666" }}>
-                      Macbook: <b>{inventorySummary[key]?.Macbook || 0}</b>
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: "#666" }}>
-                      Windows: <b>{inventorySummary[key]?.Windows || 0}</b>
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      )}
-
       {/* Visualizations Grid */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={8}>
@@ -315,122 +285,166 @@ const AfeTracker = () => {
                   {requests.slice(0, visibleCount).map((req) => {
                     const isEditing = editingId === req.Id;
                     return (
-                      <TableRow key={req.Id} hover>
-                      <TableCell>
-                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                          {req.organizationName}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {req.email}
-                        </Typography>
-                      </TableCell>
-                      
-                      <TableCell>
-                        {isEditing ? (
-                          <Select
-                            size="small"
-                            value={editFields.partner_type}
-                            onChange={(e) => setEditFields({ ...editFields, partner_type: e.target.value })}
-                          >
-                            <MenuItem value="External Partner">External Partner</MenuItem>
-                            <MenuItem value="AFE Partner">AFE Partner</MenuItem>
-                          </Select>
-                        ) : (
-                          <Chip label={req.partner_type || "External Partner"} size="small" variant="outlined" />
-                        )}
-                      </TableCell>
-                      
-                      <TableCell>{req["Laptop require"] || 0}</TableCell>
-                      
-                      <TableCell>
-                        {isEditing ? (
-                          <TextField
-                            size="small"
-                            type="number"
-                            style={{ width: 80 }}
-                            value={editFields.approved_quantity}
-                            onChange={(e) => setEditFields({ ...editFields, approved_quantity: parseInt(e.target.value) || 0 })}
-                          />
-                        ) : (
-                          req.approved_quantity || "-"
-                        )}
-                      </TableCell>
-                      
-                      <TableCell>
-                        {isEditing ? (
-                          <Select
-                            size="small"
-                            value={editFields.approver_name}
-                            onChange={(e) => setEditFields({ ...editFields, approver_name: e.target.value })}
-                          >
-                            <MenuItem value="">Select Approver</MenuItem>
-                            <MenuItem value="Prateek">Prateek</MenuItem>
-                            <MenuItem value="Ashhar">Ashhar</MenuItem>
-                            <MenuItem value="Shruthi">Shruthi</MenuItem>
-                          </Select>
-                        ) : (
-                          req.approver_name || "-"
-                        )}
-                      </TableCell>
-                      
-                      <TableCell>
-                        {isEditing ? (
-                          <Select
-                            size="small"
-                            value={editFields.status}
-                            onChange={(e) => setEditFields({ ...editFields, status: e.target.value })}
-                          >
-                            <MenuItem value="Pending Review">Pending Review</MenuItem>
-                            <MenuItem value="Approved">Approved</MenuItem>
-                          </Select>
-                        ) : (
-                          <Chip 
-                            label={req.Status} 
-                            size="small" 
-                            color={
-                              req.Status === "Delivered" ? "success" : 
-                              req.Status === "Dispatched" ? "info" : 
-                              req.Status === "Approved" ? "primary" : "default"
-                            } 
-                          />
-                        )}
-                      </TableCell>
-                      
-                      <TableCell>
-                        {isEditing ? (
-                          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                            <TextField
-                              size="small"
-                              label="Dispatch Location"
-                              value={editFields.dispatch_location}
-                              onChange={(e) => setEditFields({ ...editFields, dispatch_location: e.target.value })}
-                            />
-                          </Box>
-                        ) : (
-                          <Box>
-                            {req.dispatch_location && <Typography variant="caption" display="block">Loc: {req.dispatch_location}</Typography>}
-                          </Box>
-                        )}
-                      </TableCell>
-                      
-                      <TableCell align="right">
-                        {isEditing ? (
-                          <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
-                            <IconButton size="small" onClick={() => handleSaveEdit(req.Id)}>
-                              <Check size={16} color="green" />
-                            </IconButton>
-                            <IconButton size="small" onClick={handleCancelEdit}>
-                              <X size={16} color="red" />
-                            </IconButton>
-                          </Box>
-                        ) : (
-                          <IconButton size="small" onClick={() => handleStartEdit(req)}>
-                            <Edit2 size={16} />
-                          </IconButton>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
+                      <React.Fragment key={req.Id}>
+                        <TableRow 
+                          hover 
+                          onClick={(e) => {
+                            // Don't expand if clicking on an input/button/select
+                            if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.MuiSelect-select')) {
+                              return;
+                            }
+                            setExpandedRow(expandedRow === req.Id ? null : req.Id);
+                          }}
+                          sx={{ cursor: 'pointer' }}
+                        >
+                          <TableCell>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {req.organizationName}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {req.email}
+                            </Typography>
+                          </TableCell>
+                          
+                          <TableCell>
+                            {isEditing ? (
+                              <Select
+                                size="small"
+                                value={editFields.partner_type}
+                                onChange={(e) => setEditFields({ ...editFields, partner_type: e.target.value })}
+                              >
+                                <MenuItem value="External Partner">External Partner</MenuItem>
+                                <MenuItem value="AFE Partner">AFE Partner</MenuItem>
+                              </Select>
+                            ) : (
+                              <Chip label={req.partner_type || "External Partner"} size="small" variant="outlined" />
+                            )}
+                          </TableCell>
+                          
+
+                          <TableCell>{req["Laptop require"] || 0}</TableCell>
+                          
+                          <TableCell>
+                            {isEditing ? (
+                              <TextField
+                                size="small"
+                                type="number"
+                                style={{ width: 80 }}
+                                value={editFields.approved_quantity}
+                                onChange={(e) => setEditFields({ ...editFields, approved_quantity: parseInt(e.target.value) || 0 })}
+                              />
+                            ) : (
+                              req.approved_quantity || "-"
+                            )}
+                          </TableCell>
+                          
+                          <TableCell>
+                            {isEditing ? (
+                              <Select
+                                size="small"
+                                value={editFields.approver_name}
+                                onChange={(e) => setEditFields({ ...editFields, approver_name: e.target.value })}
+                              >
+                                <MenuItem value="">Select Approver</MenuItem>
+                                <MenuItem value="Prateek">Prateek</MenuItem>
+                                <MenuItem value="Ashhar">Ashhar</MenuItem>
+                                <MenuItem value="Shruthi">Shruthi</MenuItem>
+                              </Select>
+                            ) : (
+                              req.approver_name || "-"
+                            )}
+                          </TableCell>
+                          
+                          <TableCell>
+                            {isEditing ? (
+                              <Select
+                                size="small"
+                                value={editFields.status}
+                                onChange={(e) => setEditFields({ ...editFields, status: e.target.value })}
+                              >
+                                <MenuItem value="Pending Review">Pending Review</MenuItem>
+                                <MenuItem value="Approved">Approved</MenuItem>
+                              </Select>
+                            ) : (
+                              <Chip 
+                                label={req.Status} 
+                                size="small" 
+                                color={
+                                  req.Status === "Delivered" ? "success" : 
+                                  req.Status === "Dispatched" ? "info" : 
+                                  req.Status === "Approved" ? "primary" : "default"
+                                } 
+                              />
+                            )}
+                          </TableCell>
+                          
+                          <TableCell>
+                            {isEditing ? (
+                              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                                <TextField
+                                  size="small"
+                                  label="Dispatch Location"
+                                  value={editFields.dispatch_location}
+                                  onChange={(e) => setEditFields({ ...editFields, dispatch_location: e.target.value })}
+                                />
+                              </Box>
+                            ) : (
+                              <Box>
+                                {req.dispatch_location && <Typography variant="caption" display="block">Loc: {req.dispatch_location}</Typography>}
+                              </Box>
+                            )}
+                          </TableCell>
+                          
+                          <TableCell align="right">
+                            {isEditing ? (
+                              <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
+                                <IconButton size="small" onClick={() => handleSaveEdit(req.Id)}>
+                                  <Check size={16} color="green" />
+                                </IconButton>
+                                <IconButton size="small" onClick={handleCancelEdit}>
+                                  <X size={16} color="red" />
+                                </IconButton>
+                              </Box>
+                            ) : (
+                              <IconButton size="small" onClick={() => handleStartEdit(req)}>
+                                <Edit2 size={16} />
+                              </IconButton>
+                            )}
+                          </TableCell>
+                        </TableRow>
+
+                        {/* Expandable Details Row */}
+                        <TableRow>
+                          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+                            <Collapse in={expandedRow === req.Id} timeout="auto" unmountOnExit>
+                              <Box sx={{ margin: 2, padding: 2, backgroundColor: "#f9fbf9", borderRadius: 1, border: "1px solid #e0e0e0" }}>
+                                <Typography variant="subtitle2" gutterBottom component="div" sx={{ color: "#5C785A", fontWeight: "bold" }}>
+                                  NGO Request Details
+                                </Typography>
+                                <Grid container spacing={2}>
+                                  <Grid item xs={12} sm={6} md={3}>
+                                    <Typography variant="caption" color="text.secondary">Point of Contact</Typography>
+                                    <Typography variant="body2">{req.primaryContactName || "N/A"}</Typography>
+                                  </Grid>
+                                  <Grid item xs={12} sm={6} md={3}>
+                                    <Typography variant="caption" color="text.secondary">Contact Number</Typography>
+                                    <Typography variant="body2">{req.contactNumber || "N/A"}</Typography>
+                                  </Grid>
+                                  <Grid item xs={12} sm={6} md={3}>
+                                    <Typography variant="caption" color="text.secondary">Location</Typography>
+                                    <Typography variant="body2">{req.location || "N/A"}</Typography>
+                                  </Grid>
+                                  <Grid item xs={12} sm={6} md={3}>
+                                    <Typography variant="caption" color="text.secondary">Purpose</Typography>
+                                    <Typography variant="body2">{req.primaryUse || "N/A"}</Typography>
+                                  </Grid>
+                                </Grid>
+                              </Box>
+                            </Collapse>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    );
                   })}
                   {visibleCount < requests.length && (
                     <TableRow>

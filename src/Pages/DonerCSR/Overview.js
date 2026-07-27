@@ -168,11 +168,11 @@ const Overview = () => {
 
   const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
   const roles = JSON.parse(localStorage.getItem("role") || "[]");
-  const fallbackRole = NgoDetails?.[0]?.role?.[0];
+  const fallbackRole = NgoDetails?.[0]?.role || "";
   const donorOrgName = NgoDetails?.[0]?.Doner || null;
-  const isAdmin = roles.includes("admin") || fallbackRole === "admin";
-  const isDoner = roles.includes("doner") || fallbackRole === "doner";
-  const isAfeApprover = roles.includes("afe_approver") || fallbackRole === "afe_approver" || isAdmin;
+  const isAdmin = roles.includes("admin") || fallbackRole.includes("admin");
+  const isDoner = roles.includes("doner") || fallbackRole.includes("doner");
+  const isAfeApprover = roles.includes("afe_approver") || fallbackRole.includes("afe_approver") || (isAdmin && Boolean(selectedOrganization && selectedOrganization.toLowerCase().includes("amazon"))) || (isDoner && Boolean(donorOrgName && donorOrgName.toLowerCase().includes("amazon")));
 
 
   useEffect(() => {
@@ -184,12 +184,12 @@ const Overview = () => {
 
   // Set selected organization for donor from localStorage
   useEffect(() => {
-    if (isDoner && donorOrgName) {
+    if ((isDoner || roles.includes("afe_approver") || fallbackRole.includes("afe_approver")) && donorOrgName) {
       setSelectedOrganization(donorOrgName);
     } else if (donorName) {
       setSelectedOrganization(donorName);
     }
-  }, [donorName, donorOrgName, isDoner]);
+  }, [donorName, donorOrgName, isDoner, roles, fallbackRole]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -489,6 +489,12 @@ const Overview = () => {
     "to be dispatch",
     "allocated",
     "distributed",
+    "laptop_received",
+    "refurbishment_testing",
+    "qc_check",
+    "distribution",
+    "post_deployment_15d",
+    "monthly_monitoring",
   ]);
 
   const receivedCount = filteredLaptopData.reduce((acc, item) => {
@@ -503,7 +509,7 @@ const Overview = () => {
     const status = (item.Status || "").toLowerCase();
     // console.log("Laptop Status:", status);
 
-    if (status.includes("laptop refurbished")) {
+    if (status.includes("laptop refurbished") || status.includes("qc_check")) {
       return acc + 1;
     }
 
@@ -515,7 +521,7 @@ const Overview = () => {
       return acc + 1;
     }
 
-    if (status.includes("distributed")) {
+    if (status.includes("distribut") || status.includes("post_deployment") || status.includes("monthly_monitoring")) {
       return acc + 1;
     }
     return acc;
@@ -528,7 +534,7 @@ const Overview = () => {
   // NEW: count for ONLY "Laptop Received" (exact match, case-insensitive)
   const onlyLaptopReceivedCount = filteredLaptopData.reduce((acc, item) => {
     const status = (item.Status || "").trim().toLowerCase();
-    return status === "laptop received" ? acc + 1 : acc;
+    return status === "laptop received" || status === "laptop_received" ? acc + 1 : acc;
   }, 0);
 
   const successRate =
@@ -1109,7 +1115,10 @@ const Overview = () => {
                       icon: Package,
                       title: "Pickup Requested",
                       subtitle: "Initial request submitted",
-                      count: `${filteredLaptopData.filter(l => l.Status === "Pickup Requested").length} laptops`,
+                      count: `${filteredLaptopData.filter(l => {
+                        const s = (l.Status || "").trim().toLowerCase();
+                        return s === "pickup requested" || s === "pickup_requested";
+                      }).length} laptops`,
                       // count: selectedOrganization 
                       //   ? `${filteredPickups.filter(p => p.Status === "Pending")
                       //       .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`
@@ -1123,7 +1132,10 @@ const Overview = () => {
                       icon: Truck,
                       title: "In Transit",
                       subtitle: "Pickup in progress",
-                      count: `${filteredLaptopData.filter(l => l.Status === "In Transit").length} laptops`,
+                      count: `${filteredLaptopData.filter(l => {
+                        const s = (l.Status || "").trim().toLowerCase();
+                        return s === "in transit" || s === "in_transit";
+                      }).length} laptops`,
                       bgColor: "#fff3e0",
                       iconColor: "#f57c00",
                       stepType: "inTransit"
@@ -1133,12 +1145,10 @@ const Overview = () => {
                       title: "Laptop Received",
                       subtitle: "Initial check-in",
                       count: `${receivedCount} laptops`,
-                      // count: `${receivedCount} laptops`,
                       bgColor: "#e8f5e8",
                       iconColor: "#388e3c",
                       stepType: "received"
                     },
-                    // NEW: Only Laptop Received - shows only items where Status === "Laptop Received"
                     {
                       icon: Laptop,
                       title: "Ready To Be Processed",
@@ -1148,11 +1158,15 @@ const Overview = () => {
                       iconColor: "#388e3c",
                       stepType: "onlyLaptopReceived"
                     },
+
                     {
                       icon: X,
                       title: "Not Working",
                       subtitle: "Failed initial health check",
-                      count: `${filteredLaptopData.filter(l => l.Status === "Not Working").length} laptops`,
+                      count: `${filteredLaptopData.filter(l => {
+                        const s = (l.Status || "").trim().toLowerCase();
+                        return s === "not working" || s === "not_working";
+                      }).length} laptops`,
                       bgColor: "#ffebee",
                       iconColor: "#d32f2f",
                       stepType: "notWorking"
@@ -1161,7 +1175,10 @@ const Overview = () => {
                       icon: Settings,
                       title: "Refurbishment Started",
                       subtitle: "Under processing",
-                      count: `${filteredLaptopData.filter(l => l.Status === "Refurbishment Started").length} laptops`,
+                      count: `${filteredLaptopData.filter(l => {
+                        const s = (l.Status || "").trim().toLowerCase();
+                        return s === "refurbishment started" || s === "refurbishment_testing";
+                      }).length} laptops`,
                       bgColor: "#e0f7fa",
                       iconColor: "#0097a7",
                       stepType: "refurbishmentStarted"
@@ -1170,7 +1187,10 @@ const Overview = () => {
                       icon: CheckCircle,
                       title: "Laptop Refurbished",
                       subtitle: "Repair completed",
-                      count: `${filteredLaptopData.filter(l => l.Status === "Laptop Refurbished").length} laptops`,
+                      count: `${filteredLaptopData.filter(l => {
+                        const s = (l.Status || "").trim().toLowerCase();
+                        return s === "laptop refurbished" || s === "qc_check";
+                      }).length} laptops`,
                       bgColor: "#f3e5f5",
                       iconColor: "#7b1fa2",
                       stepType: "refurbished"
@@ -1197,7 +1217,10 @@ const Overview = () => {
                       icon: UserCheck,
                       title: "Distributed",
                       subtitle: "Delivered to NGO",
-                      count: `${filteredLaptopData.filter(l => l.Status === "Distributed").length} laptops`,
+                      count: `${filteredLaptopData.filter(l => {
+                        const s = (l.Status || "").trim().toLowerCase();
+                        return s === "distributed" || s === "distribution";
+                      }).length} laptops`,
                       bgColor: "#e8f5e9",
                       iconColor: "#2e7d32",
                       stepType: "distributed"
@@ -1210,7 +1233,8 @@ const Overview = () => {
                         const d = formatDateForDisplay(l["Date"]);
                         if (!d) return false;
                         const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
-                        return diffDays <= 15 && l.Status === "Distributed";
+                        const s = (l.Status || "").trim().toLowerCase();
+                        return diffDays <= 15 && (s === "distributed" || s === "distribution" || s === "post_deployment_15d" || s === "monthly_monitoring");
                       }).length} laptops`,
                       bgColor: "#ffebee",
                       iconColor: "#d32f2f",
@@ -1306,7 +1330,7 @@ const Overview = () => {
               </CardContent>
             </Card>
 
-            <AfeTracker />
+            {isAfeApprover && <AfeTracker />}
 
             <Grid container spacing={3}>
 

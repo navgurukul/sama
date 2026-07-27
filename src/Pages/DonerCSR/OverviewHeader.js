@@ -21,10 +21,10 @@ const OverviewHeader = ({ uniqueOrganizations, onOrganizationChange, }) => {
   const [selectedOrganization, setSelectedOrganization] = useState(null);
 
   const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
-  const userRole = NgoDetails?.[0]?.role?.[0];
+  const userRoleStr = NgoDetails?.[0]?.role || "";
   const donorOrgName = NgoDetails?.[0]?.Doner || null;
-  const isAdmin = userRole === "admin";
-  const isDoner = userRole === "doner";
+  const isAdmin = userRoleStr.includes("admin");
+  const isDoner = userRoleStr.includes("doner");
 
 
   useEffect(() => {

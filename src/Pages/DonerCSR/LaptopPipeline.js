@@ -159,10 +159,10 @@ const LaptopPipeline = () => {
     // Return the value from backend (could be "Working", "Not Working", etc.)
     return String(workingValue).trim();
   };
-  const userRole = NgoDetails?.[0]?.role?.[0];
+  const userRoleStr = NgoDetails?.[0]?.role || "";
   const donorOrgName = NgoDetails?.[0]?.Doner || null;
-  const isAdmin = userRole === "admin";
-  const isDoner = userRole === "doner";
+  const isAdmin = userRoleStr.includes("admin");
+  const isDoner = userRoleStr.includes("doner");
 
   const [laptopData, setLaptopData] = useState([]);
   const [totalLaptops, setTotalLaptops] = useState(0);
