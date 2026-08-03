@@ -4272,6 +4272,35 @@ async def get_rms_stats():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/public/impact-stats")
+async def get_public_impact_stats():
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"""
+                    SELECT 
+                        COALESCE(address_state, 'Unknown') as state,
+                        COUNT(laptop_assigned) as devices_donated,
+                        SUM(COALESCE(CAST(NULLIF(expected_impact, '') AS INTEGER), 0)) as people_reached,
+                        COUNT(DISTINCT ngo) as ngo_partners
+                    FROM {DB_SCHEMA}.userdetails
+                    GROUP BY address_state;
+                """)
+                rows = cur.fetchall()
+                
+                stats_by_state = []
+                for r in rows:
+                    stats_by_state.append({
+                        "state": r.get("state"),
+                        "devices_donated": r.get("devices_donated", 0),
+                        "people_reached": r.get("people_reached", 0),
+                        "ngo_partners": r.get("ngo_partners", 0)
+                    })
+                    
+                return {"status": "success", "data": stats_by_state}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 async def run_daily_background_scheduler():
     print("Background scheduler task initiated.")
     while True:
