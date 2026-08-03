@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 import boto3
 import httpx
 from botocore.exceptions import ClientError
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -546,6 +546,7 @@ def _query_laptops(request: Request) -> Any:
         where_sql.append("ll.allocated_to = %s")
         params.append(allocated_to_filter)
 
+    where_sql.append("(ll.is_deleted_from_sheet = FALSE OR ll.is_deleted_from_sheet IS NULL)")
     where_clause = " AND ".join(where_sql)
     select_expr = ",\n            ".join(LAPTOP_SELECT_MAP[f] for f in fields)
 
@@ -2871,11 +2872,11 @@ def _log_email_to_file(to_email: str, subject: str, html_part: str, cc: list = N
         print(f"Failed to log email to file: {e}")
 
 
-def _send_email_common(to_email: str, subject: str, html_part: str, cc: list = None, attachments: list = None, to_name: str = "", from_email: str = None):
+def _send_email_common(to_email: str, subject: str, html_part: str, cc: list = None, attachments: list = None, to_name: str = "", from_email: str = None, from_name: str = None):
     # 1. Try Google SMTP
     smtp_user = os.environ.get("SMTP_USER")
     smtp_password = os.environ.get("SMTP_PASSWORD")
-    sender_name = os.environ.get("MAILJET_SENDER_NAME", "Sama Operations")
+    sender_name = from_name or os.environ.get("MAILJET_SENDER_NAME", "Sama Operations")
     
     # 2. Try Mailjet fallback
     api_key = os.environ.get("MAILJET_API_KEY")
@@ -3010,14 +3011,15 @@ def send_afe_internal_approval_email(ngo_name: str, approver_name: str, qty_appr
         <p><strong>Approved Quantity:</strong> {qty_approved} laptops</p>
         <p><strong>Approver:</strong> {approver_name}</p>
         <p>Sama Operations team will now take ownership, assign a refurbishment completion timeline, and begin the refurbishment process.</p>
-        <p>Best regards,<br/>Sama Operations System</p>
+        <p>Best regards,<br/>Amazon AFE Team</p>
     """
     _send_email_common(
         to_email=ops_email,
         subject=subject,
         html_part=html_part,
-        cc=[{"Email": afe_email}],
-        to_name="Sama Operations"
+        to_name="Sama Operations",
+        from_name="Amazon AFE Team",
+        from_email=afe_email
     )
 
 
@@ -3041,7 +3043,6 @@ def send_afe_draft_submission_email(ngo_name: str, ngo_email: str, qty_requested
         to_email=ops_email,
         subject=subject,
         html_part=html_part,
-        cc=[{"Email": afe_email}],
         to_name="Sama Operations",
         from_email="product@thesama.in"
     )
@@ -3287,7 +3288,8 @@ def ngo_exec_get(request: Request) -> Any:
                         f"""
                         SELECT id, ngo_name, laptop_quantity, location, use_case, contact_name, email, status, tentative_refurb_completion, donor,
                                partner_type, date_received, attached_email_link, approver_name, approved_quantity,
-                               dispatch_location, expected_delivery_days, dispatch_date, delivery_date, last_impact_report_date
+                               dispatch_location, expected_delivery_days, dispatch_date, delivery_date, last_impact_report_date,
+                               operating_state, years_operating, focus_area, infrastructure, beneficiaries_count, age_group, expected_outcome, laptop_tracking
                         FROM {DB_SCHEMA}.ngo_requests
                         ORDER BY id DESC
                         """
@@ -3323,8 +3325,10 @@ def ngo_exec_get(request: Request) -> Any:
                                 dynamic_display_id = f"SAM-{current_serial}"
                         
                         db_contact = r["contact_name"] or ""
-                        if " | " in db_contact:
-                            c_name, c_num = db_contact.split(" | ", 1)
+                        if "|" in db_contact:
+                            parts = db_contact.split("|", 1)
+                            c_name = parts[0].strip()
+                            c_num = parts[1].strip()
                         else:
                             c_name, c_num = db_contact, ""
                             
@@ -3335,7 +3339,17 @@ def ngo_exec_get(request: Request) -> Any:
                         # If it's an additional request for an existing NGO, it has an explicit display ID stored
                         if "||" in db_ngo_name:
                             real_ngo_name, stored_display_id = db_ngo_name.split("||", 1)
-                            display_id = stored_display_id
+                            
+                            # Auto-convert DRAFT tags to SAM tags if the request progresses
+                            if stored_display_id.startswith("DRAFT-") and display_status in ["Submitted Request", "Approved", "Dispatched", "Delivered"]:
+                                draft_num = stored_display_id.replace("DRAFT-", "")
+                                if display_status == "Submitted Request":
+                                    display_id = f"SAM-D{draft_num}"
+                                else:
+                                    display_id = f"SAM-{draft_num}"
+                            else:
+                                display_id = stored_display_id
+                                
                             # It doesn't consume a new serial number since it already belongs to an existing NGO,
                             # so we roll back the counter we just incremented.
                             if display_status in ["Submitted Request", "Approved", "Dispatched", "Delivered"]:
@@ -3345,17 +3359,6 @@ def ngo_exec_get(request: Request) -> Any:
                             
                         actual_id = f"{id_prefix}{r['id']}"
                         
-                        # Read the full payload from the JSON file to populate missing frontend fields
-                        payload_json = {}
-                        try:
-                            import json, os
-                            payload_path = os.path.join(os.path.dirname(__file__), "ngo_payloads", f"{actual_id}.json")
-                            if os.path.exists(payload_path):
-                                with open(payload_path, "r") as jf:
-                                    payload_json = json.load(jf)
-                        except Exception:
-                            pass
-                            
                         # FILTERING LOGIC for detail page
                         if org_filter:
                             if actual_id != org_filter and display_id != org_filter:
@@ -3371,17 +3374,17 @@ def ngo_exec_get(request: Request) -> Any:
                             "location": r["location"] or "",
                             "Status": display_status,
                             "primaryUse": r["use_case"] or "",
-                            "expectedOutcome": r["use_case"] or "",
+                            "expectedOutcome": r["expected_outcome"] or r["use_case"] or "",
                             "Laptop require": r["laptop_quantity"] or 0,
-                            "Ngo Type": payload_json.get("infrastructure", ""),
+                            "Ngo Type": "",
                             "Doner": r["donor"] or "",
-                            "operatingState": payload_json.get("operatingState", ""),
-                            "yearsOperating": payload_json.get("yearsOperating", ""),
-                            "focusArea": payload_json.get("focusArea", ""),
-                            "infrastructure": payload_json.get("infrastructure", ""),
-                            "beneficiariesCount": payload_json.get("beneficiariesCount", ""),
-                            "ageGroup": payload_json.get("ageGroup", ""),
-                            "laptopTracking": payload_json.get("laptopTracking", ""),
+                            "operatingState": r["operating_state"] or "",
+                            "yearsOperating": r["years_operating"] or "",
+                            "focusArea": r["focus_area"] or "",
+                            "infrastructure": r["infrastructure"] or "",
+                            "beneficiariesCount": r["beneficiaries_count"] or "",
+                            "ageGroup": r["age_group"] or "",
+                            "laptopTracking": r["laptop_tracking"] or "",
                             "tentative_refurb_completion": str(r["tentative_refurb_completion"]) if r["tentative_refurb_completion"] else None,
                             "partner_type": r["partner_type"] or "External Partner",
                             "date_received": str(r["date_received"]) if r["date_received"] else None,
@@ -3474,28 +3477,28 @@ async def ngo_exec_post(request: Request) -> Any:
         email = (payload.get("email") or "").strip()
         partner_type = "AFE Partner"
         
+        years_operating = str(payload.get("yearsOperating") or "").strip()
+        focus_area = str(payload.get("focusArea") or "").strip()
+        infrastructure = str(payload.get("infrastructure") or "").strip()
+        beneficiaries_count = str(payload.get("beneficiariesCount") or payload.get("numberOfBeneficiaries") or "").strip()
+        age_group = str(payload.get("ageGroup") or "").strip()
+        expected_outcome = str(payload.get("expectedOutcome") or "").strip()
+        laptop_tracking = str(payload.get("laptopTracking") or "").strip()
+        
         with get_conn() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     f"""
                     INSERT INTO {DB_SCHEMA}.ngo_requests
-                    (ngo_name, laptop_quantity, location, use_case, contact_name, email, status, partner_type, date_received)
-                    VALUES (%s, %s, %s, %s, %s, %s, 'draft', %s, CURRENT_DATE)
+                    (ngo_name, laptop_quantity, location, use_case, contact_name, email, status, partner_type, date_received,
+                     operating_state, years_operating, focus_area, infrastructure, beneficiaries_count, age_group, expected_outcome, laptop_tracking)
+                    VALUES (%s, %s, %s, %s, %s, %s, 'draft', %s, CURRENT_DATE, %s, %s, %s, %s, %s, %s, %s, %s)
                     RETURNING id
                     """,
-                    (org_name, qty_int, location, use_case, contact_name, email, partner_type)
+                    (org_name, qty_int, location, use_case, contact_name, email, partner_type, op_state, years_operating, focus_area, infrastructure, beneficiaries_count, age_group, expected_outcome, laptop_tracking)
                 )
                 new_id = cur.fetchone()["id"]
                 conn.commit()
-                
-                # Save the full payload into a JSON file for the detail page
-                try:
-                    os.makedirs("backend/app/ngo_payloads", exist_ok=True)
-                    import json
-                    with open(f"backend/app/ngo_payloads/DRAFT-{new_id}.json", "w") as jf:
-                        json.dump(payload, jf)
-                except Exception as e:
-                    print(f"Error saving JSON payload: {e}")
                 
         # Send the draft submission notification email to Sama Ops and AFE Teams
         try:
@@ -3779,7 +3782,7 @@ def exec_get(request: Request) -> Any:
 
 
 @app.post("/exec")
-async def exec_post(request: Request) -> Any:
+async def exec_post(request: Request, background_tasks: BackgroundTasks) -> Any:
     try:
         payload = await request.json()
         if not isinstance(payload, dict):
@@ -3792,7 +3795,9 @@ async def exec_post(request: Request) -> Any:
         raise HTTPException(status_code=400, detail="Missing 'type' in query or JSON body")
 
     if type_name in MIGRATED_TYPES:
-        return _handle_post_type(type_name, payload)
+        res = _handle_post_type(type_name, payload)
+        background_tasks.add_task(_proxy_to_legacy, "POST", request, payload)
+        return res
 
     return _proxy_to_legacy("POST", request, payload)
 
@@ -4237,10 +4242,21 @@ async def get_rms_stats():
         with get_conn() as conn:
             with conn.cursor() as cur:
                 cur.execute(f"""
-                    SELECT rms_status, COUNT(*) 
-                    FROM {DB_SCHEMA}.laptop_labeling 
-                    WHERE rms_status IS NOT NULL
-                    GROUP BY rms_status
+                    SELECT rms_status, COUNT(*) AS count
+                    FROM (
+                        SELECT 
+                            CASE 
+                                WHEN COALESCE(MAX(mc.rms_last_seen), MAX(ll.last_updated_on)) >= now() - 30 * INTERVAL '1 day' THEN 'ACTIVE'
+                                ELSE 'INACTIVE'
+                            END AS rms_status
+                        FROM {DB_SCHEMA}.laptop_labeling ll
+                        LEFT JOIN {DB_SCHEMA}.monthly_check_in mc ON mc.laptop_id = ll.id
+                        LEFT JOIN {DB_SCHEMA}.donor d ON ll.donor_id = d.donor_id
+                        WHERE (ll.donor_company_name ILIKE '%amazon%' OR d.donor_company ILIKE '%amazon%')
+                          AND ll.status = 'DISTRIBUTED'
+                        GROUP BY ll.id
+                    ) AS subquery
+                    GROUP BY rms_status;
                 """)
                 rows = cur.fetchall()
                 
@@ -4268,12 +4284,33 @@ async def run_daily_background_scheduler():
         await asyncio.sleep(86400)
 
 
+async def run_frequent_background_scheduler():
+    print("Frequent background scheduler task initiated.")
+    while True:
+        try:
+            print("Starting background laptop sync...")
+            # Run sync.py as a subprocess
+            process = await asyncio.create_subprocess_exec(
+                "python", "sync.py",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+            stdout, stderr = await process.communicate()
+            if process.returncode != 0:
+                print(f"Background sync failed: {stderr.decode()}")
+            else:
+                print("Background sync completed successfully.")
+        except Exception as e:
+            print(f"Error in frequent background scheduler: {e}")
+        # Run every 5 minutes (300 seconds)
+        await asyncio.sleep(300)
+
+
 @app.on_event("startup")
 async def start_background_jobs():
     asyncio.create_task(run_daily_background_scheduler())
+    asyncio.create_task(run_frequent_background_scheduler())
     # asyncio.create_task(run_email_polling_scheduler())
-
-
 @app.post("/jotform-webhook")
 async def jotform_webhook(request: Request):
     try:

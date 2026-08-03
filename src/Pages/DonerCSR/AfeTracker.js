@@ -48,7 +48,12 @@ const AfeTracker = () => {
   }, []);
 
   const isAdmin = userRole.includes("admin");
-  const isAfeApprover = userRole.includes("afe_approver");
+  const isDoner = userRole.includes("doner");
+  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  
+  const isAmazonOnly = (name) => Boolean(name && name.toLowerCase().includes("amazon") && !name.toLowerCase().includes("- ng") && !name.toLowerCase().includes("-ng"));
+  const isAfeApprover = userRole.includes("afe_approver") || (isDoner && isAmazonOnly(donorOrgName));
   const hasAccess = isAdmin || isAfeApprover;
 
   const fetchRequests = async () => {
@@ -269,14 +274,13 @@ const AfeTracker = () => {
                 <TableCell sx={{ fontWeight: 600 }}>Approved Qty</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Approver</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Timeline / Location</TableCell>
                 <TableCell sx={{ fontWeight: 600 }} align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {requests.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
                     No AFE laptop requests found.
                   </TableCell>
                 </TableRow>
@@ -313,7 +317,6 @@ const AfeTracker = () => {
                                 value={editFields.partner_type}
                                 onChange={(e) => setEditFields({ ...editFields, partner_type: e.target.value })}
                               >
-                                <MenuItem value="External Partner">External Partner</MenuItem>
                                 <MenuItem value="AFE Partner">AFE Partner</MenuItem>
                               </Select>
                             ) : (
@@ -378,22 +381,6 @@ const AfeTracker = () => {
                             )}
                           </TableCell>
                           
-                          <TableCell>
-                            {isEditing ? (
-                              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                                <TextField
-                                  size="small"
-                                  label="Dispatch Location"
-                                  value={editFields.dispatch_location}
-                                  onChange={(e) => setEditFields({ ...editFields, dispatch_location: e.target.value })}
-                                />
-                              </Box>
-                            ) : (
-                              <Box>
-                                {req.dispatch_location && <Typography variant="caption" display="block">Loc: {req.dispatch_location}</Typography>}
-                              </Box>
-                            )}
-                          </TableCell>
                           
                           <TableCell align="right">
                             {isEditing ? (

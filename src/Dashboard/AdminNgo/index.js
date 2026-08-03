@@ -437,7 +437,7 @@ const AdminNgo = () => {
                       hover
                       sx={classes.tablecell}
                       onClick={(e) => {
-                        handleRowClick(ngo.displayId || ngo.Id);
+                        handleRowClick(ngo.Id);
                       }}
                     >
                       <TableCell sx={classes.tablecell}>{ngo.displayId || ngo.Id}</TableCell>

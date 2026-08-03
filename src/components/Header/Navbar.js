@@ -273,7 +273,7 @@ const Navbar = () => {
           )}
 
           <Box
-            sx={{ display: "flex", alignItems: "center", ml: "auto", mr: 3 }}
+            sx={{ display: "flex", alignItems: "center", mx: "auto" }}
           >
             <Tabs
               value={activeOpsTabValue}
@@ -474,6 +474,7 @@ const Navbar = () => {
           />
         )}
 
+        <Box sx={{ display: "flex", alignItems: "center", mx: "auto", gap: 1 }}>
         {isLoggedIn && role.includes("admin") && (
           <>
             <Button
@@ -485,7 +486,6 @@ const Navbar = () => {
                 minHeight: "unset",
                 px: 2,
                 py: 1,
-                ml: 2,
                 color:
                   location.pathname === "/pickup-request-by-donor"
                     ? "common.white"
@@ -519,7 +519,6 @@ const Navbar = () => {
                 minHeight: "unset",
                 px: 2,
                 py: 1,
-                ml: 2,
                 color: registrationActive ? "common.white" : "text.primary",
                 // fontWeight: 'medium',
                 backgroundColor: registrationActive
@@ -539,7 +538,6 @@ const Navbar = () => {
             </Button>
           </>
         )}
-        <Box sx={{ display: "flex", alignItems: "center", ml: "auto", ml: 0 }}>
           <Tabs
             value={activeOpsTabValue}
             onChange={(e, newValue) => {

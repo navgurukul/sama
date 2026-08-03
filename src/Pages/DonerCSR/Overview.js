@@ -172,8 +172,8 @@ const Overview = () => {
   const donorOrgName = NgoDetails?.[0]?.Doner || null;
   const isAdmin = roles.includes("admin") || fallbackRole.includes("admin");
   const isDoner = roles.includes("doner") || fallbackRole.includes("doner");
-  const isAfeApprover = roles.includes("afe_approver") || fallbackRole.includes("afe_approver") || (isAdmin && Boolean(selectedOrganization && selectedOrganization.toLowerCase().includes("amazon"))) || (isDoner && Boolean(donorOrgName && donorOrgName.toLowerCase().includes("amazon")));
-
+  const isAmazonOnly = (name) => Boolean(name && name.toLowerCase().includes("amazon") && !name.toLowerCase().includes("- ng") && !name.toLowerCase().includes("-ng"));
+  const isAfeApprover = roles.includes("afe_approver") || fallbackRole.includes("afe_approver") || (isAdmin && isAmazonOnly(selectedOrganization)) || (isDoner && isAmazonOnly(donorOrgName));
 
   useEffect(() => {
     if (isDoner) {
@@ -702,11 +702,14 @@ const Overview = () => {
     // For any other value, default to "Yes" (Working)
     return "Yes";
   };
-  // Fixed date parsing function for DD-MM-YYYY HH:MM:SS format
+  // Fixed date parsing function to handle both ISO dates and DD-MM-YYYY HH:MM:SS format
   function parseDate(dateString) {
     if (!dateString || typeof dateString !== "string" || dateString.trim() === "") {
       return null;
     }
+    const isoDate = Date.parse(dateString);
+    if (!isNaN(isoDate)) return new Date(isoDate);
+    
     try {
       const [datePart, timePart] = dateString.trim().split(" ");
       if (!datePart || !timePart) return null;
@@ -744,8 +747,31 @@ const Overview = () => {
     if (last24HoursData.length > 0) {
       const activityMap = {};
       last24HoursData.forEach(laptop => {
-        const status = laptop.Status || "Unknown";
+        let status = laptop.Status || "Unknown";
+        
+        // Map postgres snake_case to UI Title Case so frontend mapping works perfectly
+        const statusMap = {
+          "laptop_received": "Laptop Received",
+          "not_working": "Not Working",
+          "refurbishment_testing": "Refurbishment Started",
+          "refurbishment_started": "Refurbishment Started",
+          "laptop_refurbished": "Laptop Refurbished",
+          "qc_check": "Laptop Refurbished",
+          "to_be_dispatch": "To be dispatch",
+          "ready": "To be dispatch",
+          "in_transit": "In Transit",
+          "allocated": "Allocated",
+          "distributed": "Distributed",
+          "distribution": "Distributed",
+          "pickup_requested": "Pickup Request"
+        };
+        
+        if (statusMap[status.toLowerCase()]) {
+            status = statusMap[status.toLowerCase()];
+        }
+        
         const allocatedTo = laptop["Allocated To"] || "Unassigned";
+        const updatedBy = laptop["Last Updated By"] || null;
 
         // ✅ Special case: if status is "In Transit", use "Date Committed"
         let lastUpdated;
@@ -762,6 +788,9 @@ const Overview = () => {
         } else {
           key = status;
         }
+        
+        // Add updatedBy to the key so activities by different people don't merge, or just merge them?
+        // Let's keep it simple and just use the most recent updater if they merge
 
         if (!activityMap[key]) {
           activityMap[key] = {
@@ -770,6 +799,7 @@ const Overview = () => {
             count: 0,
             lastUpdated,
             id: allocatedTo?.charAt(0).toUpperCase() || "?", // Avatar 
+            updatedBy: updatedBy
           };
         }
         activityMap[key].count++;
@@ -822,31 +852,38 @@ const Overview = () => {
 
 
   const formatActivityMessage = (activity) => {
+    let message = "";
+    
     if (activity.status === "Pickup Request") {
-      return activity.message || `New pickup request by ${activity.allocatedTo}`;
-    }
-
-    if (activity.status === "In Transit") {
-      return `${activity.count} new laptop${activity.count > 1 ? "s" : ""} added with status In Transit`;
-    }
-
-    const statusMessages = {
-      "Laptop Received": "received",
-      "Laptop Refurbished": "refurbished",
-      "To be dispatch": "prepared for dispatch",
-      "Distributed": "distributed to",
-      "Allocated": "allocated to"
-    };
-
-    const action = statusMessages[activity.status] || activity.status.toLowerCase();
-    const count = activity.count;
-    const laptop = count === 1 ? "laptop" : "laptops";
-
-    if (activity.status === "Distributed" || activity.status === "Allocated") {
-      return `${count} ${laptop} ${action} ${activity.allocatedTo}`;
+      message = activity.message || `New pickup request by ${activity.allocatedTo}`;
+    } else if (activity.status === "In Transit") {
+      message = `${activity.count} new laptop${activity.count > 1 ? "s" : ""} added with status In Transit`;
     } else {
-      return `${count} ${laptop} ${action}`;
+      const statusMessages = {
+        "Laptop Received": "received",
+        "Laptop Refurbished": "refurbished",
+        "To be dispatch": "prepared for dispatch",
+        "Distributed": "distributed to",
+        "Allocated": "allocated to"
+      };
+
+      const action = statusMessages[activity.status] || activity.status.toLowerCase();
+      const count = activity.count;
+      const laptop = count === 1 ? "laptop" : "laptops";
+
+      if (activity.status === "Distributed" || activity.status === "Allocated") {
+        message = `${count} ${laptop} ${action} ${activity.allocatedTo}`;
+      } else {
+        message = `${count} ${laptop} ${action}`;
+      }
     }
+    
+    // Append the user who made the change, if available
+    if (activity.updatedBy && activity.updatedBy !== "Unknown") {
+      message += ` by ${activity.updatedBy}`;
+    }
+    
+    return message;
   };
 
   const getActivityColor = (status) => {
