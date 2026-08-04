@@ -244,6 +244,17 @@ def seed(database_url: str, schema: str, workbook_path: Path, truncate: bool) ->
         laptop_src = _read_sheet_dicts(wb, "Laptop Labeling")
         laptop_rows: List[Dict[str, Any]] = []
         for s in laptop_src:
+            raw_cond = _convert(s.get("Condition Status"), "text")
+            normalized_cond = None
+            if raw_cond:
+                cond_upper = str(raw_cond).strip().upper()
+                if "GOOD" in cond_upper:
+                    normalized_cond = "GOOD"
+                elif "BAD" in cond_upper:
+                    normalized_cond = "BAD"
+                elif "REPAIR" in cond_upper or "NEED" in cond_upper:
+                    normalized_cond = "NEEDS_REPAIR"
+            
             row = {
                 "id": _convert(s.get("ID"), "text"),
                 "date_committed": _convert(s.get("Date Committed"), "ts"),
@@ -253,7 +264,7 @@ def seed(database_url: str, schema: str, workbook_path: Path, truncate: bool) ->
                 "manufacturer_model": _convert(s.get("Manufacturer Model"), "text"),
                 "processor": _convert(s.get("Processor"), "text"),
                 "manufacturing_date": _convert(s.get("Manufacturing Date"), "date"),
-                "condition_status": _convert(s.get("Condition Status"), "text"),
+                "condition_status": normalized_cond,
                 "minor_issues": _convert(s.get("Minor Issues"), "text"),
                 "major_issues": _convert(s.get("Major Issues"), "text"),
                 "other_issues": _convert(s.get("Other Issues"), "text"),
