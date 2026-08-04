@@ -318,6 +318,7 @@ const AfeTracker = () => {
                                 onChange={(e) => setEditFields({ ...editFields, partner_type: e.target.value })}
                               >
                                 <MenuItem value="AFE Partner">AFE Partner</MenuItem>
+                                <MenuItem value="External Partner">External Partner</MenuItem>
                               </Select>
                             ) : (
                               <Chip label={req.partner_type || "External Partner"} size="small" variant="outlined" />
