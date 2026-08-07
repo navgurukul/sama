@@ -6,6 +6,7 @@ import asyncio
 from dotenv import load_dotenv
 import psycopg
 from psycopg.rows import dict_row
+import csv
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
 from db import DB_SCHEMA
@@ -63,16 +64,19 @@ def clean_number(val):
         return None
 
 async def sync():
-    url = os.environ.get("LEGACY_LAPTOP_API_URL") + "?type=getLaptopData"
+    url = "https://docs.google.com/spreadsheets/d/16t_EqujkDWTDtVNKZvyHGuUsFt1tGqnTvmMCgz49d2Q/export?format=csv&gid=0"
     db_url = os.environ.get("DATABASE_URL")
     
-    print(f"Fetching from {url}...")
+    print(f"Fetching CSV from {url}...")
     
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as client:
         response = await client.get(url)
-        data = response.json()
+        content = response.text
         
-    print(f"Fetched {len(data)} laptops. Syncing to DB in reverse order...")
+    reader = csv.DictReader(content.splitlines())
+    data = list(reader)
+    
+    print(f"Fetched {len(data)} laptops from CSV. Syncing to DB in reverse order...")
     
     data.reverse()
     
@@ -206,5 +210,170 @@ async def sync():
                 
     print(f"Successfully synced {success_count} laptops to the database!")
 
+async def sync_audit():
+    url = "https://docs.google.com/spreadsheets/d/16t_EqujkDWTDtVNKZvyHGuUsFt1tGqnTvmMCgz49d2Q/export?format=csv&gid=1086804433"
+    db_url = os.environ.get("DATABASE_URL")
+    
+    print(f"Fetching Audit CSV from {url}...")
+    
+    async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as client:
+        response = await client.get(url)
+        content = response.text
+        
+    reader = csv.DictReader(content.splitlines())
+    data = list(reader)
+    
+    # Fetch valid laptop IDs to avoid foreign key constraint violations
+    print("Fetching valid laptop IDs from DB...")
+    with psycopg.connect(db_url, row_factory=dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute(f"SELECT id FROM {DB_SCHEMA}.laptop_labeling")
+            # Map lowercased + stripped ID to the exact original DB ID (including spaces and casing)
+            valid_laptop_ids = {}
+            for row in cur.fetchall():
+                raw_id = row.get("id")
+                if raw_id:
+                    valid_laptop_ids[str(raw_id).strip().lower()] = str(raw_id)
+
+    params_list = []
+    skipped_count = 0
+    for item in data:
+        laptop_id_raw = str(item.get("ID") or item.get("id") or "").strip()
+        laptop_id_lookup = laptop_id_raw.lower()
+        if not laptop_id_raw or laptop_id_lookup not in valid_laptop_ids:
+            skipped_count += 1
+            continue
+            
+        exact_db_id = valid_laptop_ids[laptop_id_lookup]
+
+        updated_on_raw = item.get("Updated On")
+        parsed_dt = None
+        if updated_on_raw:
+            updated_on_raw = updated_on_raw.strip()
+            # Try parse DD-MM-YYYY HH:MM:SS
+            for fmt in ("%d-%m-%Y %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%d/%m/%Y %H:%M:%S", "%Y/%m/%d %H:%M:%S"):
+                try:
+                    parsed_dt = datetime.strptime(updated_on_raw, fmt).isoformat()
+                    break
+                except ValueError:
+                    continue
+        
+        # If it contains "T" or has other formats
+        if not parsed_dt and updated_on_raw and "T" in updated_on_raw:
+            parsed_dt = updated_on_raw
+            
+        params = {
+            "id": exact_db_id,
+            "field": item.get("Field") or item.get("field"),
+            "from_value": item.get("From ") or item.get("From") or item.get("from"),
+            "to_value": item.get("To") or item.get("to"),
+            "updated_by": item.get("Updated By") or item.get("updated_by"),
+            "updated_on": parsed_dt
+        }
+        params_list.append(params)
+
+    print(f"Prepared {len(params_list)} valid audit records. Skipped {skipped_count} invalid IDs.")
+            
+    query = f"""
+        INSERT INTO {DB_SCHEMA}.audit_for_laptops (
+            id, field, from_value, to_value, updated_by, updated_on
+        ) VALUES (
+            %(id)s, %(field)s, %(from_value)s, %(to_value)s, %(updated_by)s, %(updated_on)s
+        )
+    """
+    
+    print("Clearing and reloading audit table...")
+    with psycopg.connect(db_url, row_factory=dict_row) as conn:
+        with conn.transaction():
+            with conn.cursor() as cur:
+                # Wipes existing to reload clean copy
+                cur.execute(f"TRUNCATE TABLE {DB_SCHEMA}.audit_for_laptops RESTART IDENTITY CASCADE;")
+                
+        # Batch insert in chunks of 5000
+        chunk_size = 5000
+        success_count = 0
+        for i in range(0, len(params_list), chunk_size):
+            chunk = params_list[i:i + chunk_size]
+            with conn.transaction():
+                with conn.cursor() as cur:
+                    cur.executemany(query, chunk)
+            success_count += len(chunk)
+            
+    print(f"Successfully synced {success_count} audit records to the database!")
+
+async def sync_preliminary():
+    legacy_url = os.getenv("LEGACY_LAPTOP_API_URL")
+    db_url = os.environ.get("DATABASE_URL")
+    if not legacy_url:
+        print("Skipping preliminary sync: LEGACY_LAPTOP_API_URL is not configured.")
+        return
+        
+    print("Fetching preliminary NGO requests from Apps Script...")
+    async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as client:
+        response = await client.get(legacy_url, params={"type": "getpre"})
+        if response.status_code != 200:
+            print(f"Failed to fetch preliminary data: {response.status_code}")
+            return
+        data = response.json()
+        
+    params_list = []
+    for item in data:
+        courses_list = item.get("Courses") or []
+        course_parts = []
+        for c in courses_list:
+            if isinstance(c, dict):
+                name = c.get("name") or ""
+                duration = c.get("duration") or ""
+                if duration:
+                    course_parts.append(f"{name}: {duration}")
+                else:
+                    course_parts.append(name)
+            else:
+                course_parts.append(str(c))
+        course_str = ", ".join(course_parts)
+        
+        states_list = item.get("States") or []
+        states_str = ", ".join(states_list) if isinstance(states_list, list) else str(states_list)
+        
+        params = {
+            "id": item.get("Id"),
+            "ngoid": item.get("NgoId"),
+            "number_of_school": clean_number(item.get("Number of school")),
+            "number_of_teacher": clean_number(item.get("Number of teacher")),
+            "number_of_student": clean_number(item.get("Number of student")),
+            "number_of_female_student": clean_number(item.get("Number of Female student")),
+            "states": states_str,
+            "course": course_str,
+            "unit": item.get("Unit"),
+            "doner": item.get("Doner"),
+            "request_type": item.get("requestType"),
+            "ngo_prelim_requests": json.dumps(item.get("NGOPrelimRequests") or {})
+        }
+        params_list.append(params)
+        
+    query = f"""
+        INSERT INTO {DB_SCHEMA}.preliminary (
+            id, ngoid, number_of_school, number_of_teacher, number_of_student, 
+            number_of_female_student, states, course, unit, doner, request_type, ngo_prelim_requests
+        ) VALUES (
+            %(id)s, %(ngoid)s, %(number_of_school)s, %(number_of_teacher)s, %(number_of_student)s,
+            %(number_of_female_student)s, %(states)s, %(course)s, %(unit)s, %(doner)s, %(request_type)s, %(ngo_prelim_requests)s
+        )
+    """
+    
+    print(f"Reloading preliminary table with {len(params_list)} rows...")
+    with psycopg.connect(db_url, row_factory=dict_row) as conn:
+        with conn.transaction():
+            with conn.cursor() as cur:
+                cur.execute(f"TRUNCATE TABLE {DB_SCHEMA}.preliminary RESTART IDENTITY CASCADE;")
+                cur.executemany(query, params_list)
+                
+    print("Successfully synced preliminary table!")
+
+async def main_sync():
+    await sync()
+    await sync_audit()
+    await sync_preliminary()
+
 if __name__ == "__main__":
-    asyncio.run(sync())
+    asyncio.run(main_sync())

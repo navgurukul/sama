@@ -16,6 +16,7 @@ import {
   Tabs,
   Tab,
   CircularProgress,
+  TextField,
 } from '@mui/material';
 import { ArrowLeft } from 'lucide-react';
 
@@ -39,6 +40,8 @@ const TableView = ({
   const [preData, setPreData] = useState([]);
   const [userData, setUserData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [learningStartDate, setLearningStartDate] = useState('');
+  const [learningEndDate, setLearningEndDate] = useState('');
   
   // Get user role and donor organization from localStorage
   const authData = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
@@ -47,6 +50,15 @@ const TableView = ({
   const donorOrgName = authData[0]?.Doner;
 
   const isStandalone = !metricType && !onBack;
+  const displayMetricType = isStandalone ? standaloneMetricType : metricType;
+
+  useEffect(() => {
+    if (displayMetricType === "learningAnalytics") {
+      setRowsPerPage(50);
+    } else {
+      setRowsPerPage(10);
+    }
+  }, [displayMetricType]);
 
   const filterDataByActivity = async (metricType, activity) => {
     setIsLoading(true);
@@ -102,14 +114,14 @@ const TableView = ({
         case "Not Working":
         case "In Transit":
           filteredData = data.filter(laptop => {
-            const status = (laptop.Status || "").trim().toLowerCase();
-            const actStatus = (activity.status || "").trim().toLowerCase();
+            const status = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            const actStatus = (activity.status || "").trim().toLowerCase().replace(/_/g, " ");
             // Map legacy to new db status for activity
-            if (actStatus === "laptop received" && (status === "laptop received" || status === "laptop_received")) return true;
-            if (actStatus === "laptop refurbished" && (status === "laptop refurbished" || status === "qc_check")) return true;
-            if (actStatus === "refurbishment started" && (status === "refurbishment started" || status === "refurbishment_testing")) return true;
-            if (actStatus === "not working" && (status === "not working" || status === "not_working")) return true;
-            if (actStatus === "in transit" && (status === "in transit" || status === "in_transit")) return true;
+            if (actStatus === "laptop received" && (status === "laptop received")) return true;
+            if (actStatus === "laptop refurbished" && (status === "laptop refurbished" || status === "qc check")) return true;
+            if (actStatus === "refurbishment started" && (status === "refurbishment started" || status === "refurbishment testing")) return true;
+            if (actStatus === "not working" && (status === "not working")) return true;
+            if (actStatus === "in transit" && (status === "in transit")) return true;
             if (status === actStatus) return true;
             return false;
           });
@@ -117,8 +129,8 @@ const TableView = ({
 
         default:
           filteredData = data.filter(laptop => {
-            const status = (laptop.Status || "").trim().toLowerCase();
-            const actStatus = (activity.status || "").trim().toLowerCase();
+            const status = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            const actStatus = (activity.status || "").trim().toLowerCase().replace(/_/g, " ");
             if (actStatus === "distributed" && (status === "distributed" || status === "distribution")) return true;
             return status === actStatus;
           });
@@ -200,7 +212,7 @@ const TableView = ({
         fetchStandaloneData(urlMetricType);
       }
     }
-  }, [isStandalone, donorName, location.search]);
+  }, [isStandalone, donorName, location.search, page, rowsPerPage, learningStartDate, learningEndDate]);
 
 
   // for activity clicks
@@ -220,7 +232,7 @@ const TableView = ({
         fetchStandaloneData(urlMetricType);
       }
     }
-  }, [isStandalone, donorName, location.search]);
+  }, [isStandalone, donorName, location.search, page, rowsPerPage, learningStartDate, learningEndDate]);
 
   const fetchBeneficiaryData = async () => {
     setIsLoading(true);
@@ -340,39 +352,44 @@ const TableView = ({
       let filterFunction = null;
 
       switch (metric) {
+        case "learningAnalytics":
+          apiUrl = `https://rms-api.thesama.in/api/afe/details?page=${page + 1}&limit=${rowsPerPage}`;
+          if (learningStartDate) apiUrl += `&startDate=${learningStartDate}`;
+          if (learningEndDate) apiUrl += `&endDate=${learningEndDate}`;
+          break;
         case "totalLaptops":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           break;
         case "refurbished":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const s = (laptop.Status || "").trim().toLowerCase();
-            return s === "laptop refurbished" || s === "qc_check";
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "laptop refurbished" || s === "qc check";
           });
           break;
         case "successfullyRefurbished":
         case "totalProcessed":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const s = (laptop.Status || "").trim().toLowerCase();
-            return s === "laptop refurbished" || s === "qc_check" ||
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "laptop refurbished" || s === "qc check" ||
               s === "to be dispatch" || s === "ready" ||
               s === "allocated" ||
-              s === "distributed" || s === "distribution" || s === "post_deployment_15d" || s === "monthly_monitoring";
+              s === "distributed" || s === "distribution" || s === "post deployment 15d" || s === "monthly monitoring";
           });
           break;
         case "pickupRequests":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const s = (laptop.Status || "").trim().toLowerCase();
-            return s === "pickup requested" || s === "pickup_requested";
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "pickup requested";
           });
           break;
         case "inTransit":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const s = (laptop.Status || "").trim().toLowerCase();
-            return s === "in transit" || s === "in_transit";
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "in transit";
           });
           break;
         case "received":
@@ -386,58 +403,57 @@ const TableView = ({
               "to be dispatch",
               "allocated",
               "distributed",
-              "laptop_received",
-              "refurbishment_testing",
-              "qc_check",
+              "refurbishment testing",
+              "qc check",
               "distribution",
-              "post_deployment_15d",
-              "monthly_monitoring",
+              "post deployment 15d",
+              "monthly monitoring",
             ]);
 
             return data.filter(laptop =>
-              statusesAtOrAfterReceived.has((laptop.Status || "").trim().toLowerCase())
+              statusesAtOrAfterReceived.has((laptop.Status || "").trim().toLowerCase().replace(/_/g, " "))
             );
           };
           break;
         case "onlyLaptopReceived":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const s = (laptop.Status || "").trim().toLowerCase();
-            return s === "laptop received" || s === "laptop_received";
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "laptop received";
           });
           break;
         case "refurbishmentStarted":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const s = (laptop.Status || "").trim().toLowerCase();
-            return s === "refurbishment started" || s === "refurbishment_testing";
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "refurbishment started" || s === "refurbishment testing";
           });
           break;
         case "notWorking":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const s = (laptop.Status || "").trim().toLowerCase();
-            return s === "not working" || s === "not_working";
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "not working";
           });
           break;
         case "toBeDispatch":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const s = (laptop.Status || "").trim().toLowerCase();
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
             return s === "to be dispatch" || s === "ready";
           });
           break;
         case "allocated":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const s = (laptop.Status || "").trim().toLowerCase();
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
             return s === "allocated";
           });
           break;
         case "distributed":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const s = (laptop.Status || "").trim().toLowerCase();
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
             return s === "distributed" || s === "distribution";
           });
           break;
@@ -447,19 +463,19 @@ const TableView = ({
             const d = parseDateUniversal(laptop["Date"]);
             if (!d) return false;
             const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
-            const s = (laptop.Status || "").trim().toLowerCase();
-            return diffDays <= 15 && (s === "distributed" || s === "distribution" || s === "post_deployment_15d" || s === "monthly_monitoring");
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return diffDays <= 15 && (s === "distributed" || s === "distribution" || s === "post deployment 15d" || s === "monthly monitoring");
           });
           break;
           
       case "successRate":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const s = (laptop.Status || "").trim().toLowerCase();
-            return s === "laptop refurbished" || s === "qc_check" ||
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "laptop refurbished" || s === "qc check" ||
               s === "to be dispatch" || s === "ready" ||
               s === "allocated" ||
-              s === "distributed" || s === "distribution" || s === "post_deployment_15d" || s === "monthly_monitoring";
+              s === "distributed" || s === "distribution" || s === "post deployment 15d" || s === "monthly monitoring";
           });
           break;
 
@@ -502,7 +518,7 @@ const TableView = ({
       if (metric === "pickupRequests" && filterFunction) {
         data = filterFunction(data);
       }
-      if (donorName && metric !== "ngoPartners" && metric !== "pickupRequests" && metric !== "ngosServed") {
+      if (donorName && metric !== "ngoPartners" && metric !== "pickupRequests" && metric !== "ngosServed" && metric !== "learningAnalytics") {
         const beforeFilter = data.length;
         data = data.filter(item =>
           String(item["Donor Company Name"] || "").trim().toLowerCase() === donorName.toLowerCase()
@@ -558,7 +574,6 @@ const TableView = ({
   };
 
   const displayData = isStandalone ? standaloneData : data;
-  const displayMetricType = isStandalone ? standaloneMetricType : metricType;
   const displayOrganization = isStandalone ? donorName : selectedOrganization;
 
   if (isLoading) {
@@ -571,6 +586,20 @@ const TableView = ({
 
   const getTableHeaders = () => {
     switch (displayMetricType) {
+      case "learningAnalytics":
+        return (
+          <>
+            <TableCell sx={{ fontWeight: "bold" }}>Session ID</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Partner Name</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>NGO Name</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Session Date</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>School Name</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>State & District</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Grade</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Video Completion %</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Quiz Accuracy %</TableCell>
+          </>
+        );
       case "activeBeneficiaries":
         return activeTab === 0 ? (
           <>
@@ -715,6 +744,8 @@ const TableView = ({
     }
 
     switch (displayMetricType) {
+      case "learningAnalytics":
+        return "Amazon Learning Analytics Report";
       case "totalLaptops":
         return "All Laptops Data";
       case "activeBeneficiaries":
@@ -786,7 +817,25 @@ const TableView = ({
       dataToDisplay = activeTab === 0 ? userData : preData;
     }
 
-    const currentData = dataToDisplay ? dataToDisplay.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : [];
+    const currentData = (displayMetricType === "learningAnalytics")
+      ? (dataToDisplay || [])
+      : (dataToDisplay ? dataToDisplay.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : []);
+
+    if (displayMetricType === "learningAnalytics") {
+      return currentData.map((item, index) => (
+        <TableRow key={item.id || index} hover>
+          <TableCell>{item.session_id || "-"}</TableCell>
+          <TableCell>{item.partner_name || "-"}</TableCell>
+          <TableCell>{item.ngo_name || "-"}</TableCell>
+          <TableCell>{item.session_date || "-"}</TableCell>
+          <TableCell>{item.school_name || "-"}</TableCell>
+          <TableCell>{`${item.state || "-"}, ${item.district || "-"}`}</TableCell>
+          <TableCell>{item.grade || "-"}</TableCell>
+          <TableCell>{item.video_completion_rate ? `${item.video_completion_rate}%` : "-"}</TableCell>
+          <TableCell>{item.quiz_accuracy_percentage ? `${item.quiz_accuracy_percentage}%` : "-"}</TableCell>
+        </TableRow>
+      ));
+    }
 
     const laptopMetrics = [
       "totalLaptops", "refurbished", "distributed", "activeUsage",
@@ -963,29 +1012,67 @@ const TableView = ({
   };
   return (
     <Box sx={{ p: 3, pb: 10 }}>
-      {/* Header with Back Button */}
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
-        <Button
-          startIcon={<ArrowLeft size={20} />}
-          onClick={handleBack}
-          variant="outlined"
-          sx={{ textTransform: 'none' }}
-        >
-          Back to Dashboard
-        </Button>
-        <Box>
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
-            {getTableTitle()}
-          </Typography>
-          {displayOrganization && (
-            <Chip
-              label={`Filtered: ${displayOrganization}`}
-              size="small"
-              variant="outlined"
-              sx={{ mt: 1 }}
-            />
-          )}
+      {/* Header with Back Button and Date Filters */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Button
+            startIcon={<ArrowLeft size={20} />}
+            onClick={handleBack}
+            variant="outlined"
+            sx={{ textTransform: 'none' }}
+          >
+            Back to Dashboard
+          </Button>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
+              {getTableTitle()}
+            </Typography>
+            {displayOrganization && (
+              <Chip
+                label={`Filtered: ${displayOrganization}`}
+                size="small"
+                variant="outlined"
+                sx={{ mt: 1 }}
+              />
+            )}
+          </Box>
         </Box>
+
+        {displayMetricType === "learningAnalytics" && (
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <TextField
+              label="Start Date"
+              type="date"
+              value={learningStartDate}
+              onChange={(e) => setLearningStartDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              size="small"
+            />
+            <TextField
+              label="End Date"
+              type="date"
+              value={learningEndDate}
+              onChange={(e) => setLearningEndDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              size="small"
+            />
+            <Button
+              variant="contained"
+              onClick={() => {
+                let url = 'https://rms-api.thesama.in/api/afe/export-csv';
+                const params = [];
+                if (learningStartDate) params.push(`startDate=${learningStartDate}`);
+                if (learningEndDate) params.push(`endDate=${learningEndDate}`);
+                if (params.length > 0) url += `?${params.join('&')}`;
+                window.open(url, '_blank');
+              }}
+              size="medium"
+              sx={{ textTransform: 'none' }}
+            >
+              Download CSV
+            </Button>
+          </Box>
+        )}
       </Box>
 
       {/* Data Table */}
@@ -1047,9 +1134,15 @@ const TableView = ({
 
           <TablePagination
             component="div"
-            count={displayMetricType === "activeBeneficiaries" 
-              ? (activeTab === 0 ? userData.length : preData.length)
-              : (displayData?.length || 0)}
+            count={(() => {
+              if (displayMetricType === "activeBeneficiaries") {
+                return activeTab === 0 ? userData.length : preData.length;
+              }
+              if (displayMetricType === "learningAnalytics") {
+                return displayData.length === rowsPerPage ? (page + 2) * rowsPerPage : (page * rowsPerPage) + displayData.length;
+              }
+              return displayData?.length || 0;
+            })()}
             page={page}
             onPageChange={handlePageChange}
             rowsPerPage={rowsPerPage}

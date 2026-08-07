@@ -152,18 +152,11 @@ const Overview = () => {
   };
 
   const handleDownloadCSV = () => {
-    let url = 'https://rms-api.thesama.in/api/afe/export-csv';
-    const params = [];
-    if (appliedStartDate) {
-      params.push(`startDate=${appliedStartDate}`);
+    if (selectedOrganization) {
+      navigate(`/donorcsr/${selectedOrganization}/table-view?metric=learningAnalytics`);
+    } else {
+      navigate('/donorcsr/table-view?metric=learningAnalytics');
     }
-    if (appliedEndDate) {
-      params.push(`endDate=${appliedEndDate}`);
-    }
-    if (params.length > 0) {
-      url += `?${params.join('&')}`;
-    }
-    window.open(url, '_blank');
   };
 
   const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
@@ -498,7 +491,7 @@ const Overview = () => {
   ]);
 
   const receivedCount = filteredLaptopData.reduce((acc, item) => {
-    const status = (item.Status || "").trim().toLowerCase();
+    const status = (item.Status || "").trim().toLowerCase().replace(/_/g, " ");
     if (statusesAtOrAfterReceived.has(status)) {
       return acc + 1;
     }
@@ -506,7 +499,7 @@ const Overview = () => {
   }, 0);
 
   const refurbishedCount = filteredLaptopData.reduce((acc, item) => {
-    const status = (item.Status || "").toLowerCase();
+    const status = (item.Status || "").toLowerCase().replace(/_/g, " ");
     // console.log("Laptop Status:", status);
 
     if (status.includes("laptop refurbished") || status.includes("qc_check")) {
@@ -528,13 +521,13 @@ const Overview = () => {
   }, 0);
 
   const distributedCount = filteredLaptopData.filter(
-    (laptop) => laptop.Status === "Distributed"
+    (laptop) => (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ") === "distributed"
   ).length;
 
   // NEW: count for ONLY "Laptop Received" (exact match, case-insensitive)
   const onlyLaptopReceivedCount = filteredLaptopData.reduce((acc, item) => {
-    const status = (item.Status || "").trim().toLowerCase();
-    return status === "laptop received" || status === "laptop_received" ? acc + 1 : acc;
+    const status = (item.Status || "").trim().toLowerCase().replace(/_/g, " ");
+    return status === "laptop received" ? acc + 1 : acc;
   }, 0);
 
   const successRate =
@@ -1080,9 +1073,9 @@ const Overview = () => {
               {isAfeApprover && (
                 <Grid item xs={12} sm={6} md={3}>
                   <MetricCard
-                    title="Download Report"
-                    value="Export CSV"
-                    subtitle="Download learning analytics data"
+                    title="Amazon AFE Report"
+                    value="Learning Analytics"
+                    subtitle="Click to view details and reports"
                     icon={Download}
                     onClick={handleDownloadCSV}
                   />
@@ -1153,8 +1146,8 @@ const Overview = () => {
                       title: "Pickup Requested",
                       subtitle: "Initial request submitted",
                       count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase();
-                        return s === "pickup requested" || s === "pickup_requested";
+                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
+                        return s === "pickup requested";
                       }).length} laptops`,
                       // count: selectedOrganization 
                       //   ? `${filteredPickups.filter(p => p.Status === "Pending")
@@ -1170,8 +1163,8 @@ const Overview = () => {
                       title: "In Transit",
                       subtitle: "Pickup in progress",
                       count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase();
-                        return s === "in transit" || s === "in_transit";
+                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
+                        return s === "in transit";
                       }).length} laptops`,
                       bgColor: "#fff3e0",
                       iconColor: "#f57c00",
@@ -1201,8 +1194,8 @@ const Overview = () => {
                       title: "Not Working",
                       subtitle: "Failed initial health check",
                       count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase();
-                        return s === "not working" || s === "not_working";
+                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
+                        return s === "not working";
                       }).length} laptops`,
                       bgColor: "#ffebee",
                       iconColor: "#d32f2f",
@@ -1213,8 +1206,8 @@ const Overview = () => {
                       title: "Refurbishment Started",
                       subtitle: "Under processing",
                       count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase();
-                        return s === "refurbishment started" || s === "refurbishment_testing";
+                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
+                        return s === "refurbishment started";
                       }).length} laptops`,
                       bgColor: "#e0f7fa",
                       iconColor: "#0097a7",
@@ -1225,8 +1218,8 @@ const Overview = () => {
                       title: "Laptop Refurbished",
                       subtitle: "Repair completed",
                       count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase();
-                        return s === "laptop refurbished" || s === "qc_check";
+                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
+                        return s === "laptop refurbished" || s === "qc check";
                       }).length} laptops`,
                       bgColor: "#f3e5f5",
                       iconColor: "#7b1fa2",
@@ -1255,7 +1248,7 @@ const Overview = () => {
                       title: "Distributed",
                       subtitle: "Delivered to NGO",
                       count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase();
+                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
                         return s === "distributed" || s === "distribution";
                       }).length} laptops`,
                       bgColor: "#e8f5e9",
@@ -1270,8 +1263,8 @@ const Overview = () => {
                         const d = formatDateForDisplay(l["Date"]);
                         if (!d) return false;
                         const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
-                        const s = (l.Status || "").trim().toLowerCase();
-                        return diffDays <= 15 && (s === "distributed" || s === "distribution" || s === "post_deployment_15d" || s === "monthly_monitoring");
+                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
+                        return diffDays <= 15 && (s === "distributed" || s === "distribution" || s === "post deployment 15d" || s === "monthly monitoring");
                       }).length} laptops`,
                       bgColor: "#ffebee",
                       iconColor: "#d32f2f",

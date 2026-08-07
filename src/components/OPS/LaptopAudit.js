@@ -6,6 +6,12 @@ import { TextField, Button, Box, Typography } from "@mui/material";
 
 const formatDate = (dateStr) => {
   if (!dateStr) return null;
+  
+  if (dateStr.includes("T")) {
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
   const [datePart, timePart] = dateStr.split(" ");
   if (!datePart || !timePart) return null;
 

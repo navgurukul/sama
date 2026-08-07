@@ -91,7 +91,7 @@ function Opslogin() {
               // 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
             );
             const result = await response.json();
-            const finduser = result.data.find(item => item.Id === user["Ngo Id"]);
+            const finduser = result.data.find(item => item.Id === user["Ngo Id"] || item.displayId === user["Ngo Id"]);
 
             if (finduser) {
               try {
@@ -166,12 +166,17 @@ function Opslogin() {
 
               } catch (error) {
                 console.error('Error fetching document data:', error);
+                setError('Error loading document verification status.');
+                setLoder(false);
               }
             } else {
-              console.log("User not found");
+              setError('This login is linked to an NGO ID that is not registered (like SAM-165).');
+              setLoder(false);
             }
           } catch (error) {
             console.error('Error fetching registration data:', error);
+            setError('Error connecting to the NGO registration database.');
+            setLoder(false);
           }
         }
         else if (user?.Role?.includes('ops')) {
@@ -181,8 +186,8 @@ function Opslogin() {
         }
     } else {
       setError('Invalid Email or password.');
+      setLoder(false);
     }
-    setLoder(false);
   };
 
   const handleForgotPasswordSubmit = async () => {

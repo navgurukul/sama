@@ -16,7 +16,7 @@ import {
     DialogContent,
     DialogTitle,
     Button,
-
+    Box,
 } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 
@@ -32,6 +32,9 @@ const Registration = () => {
     const [selectedRole, setSelectedRole] = useState('');
     const [openReasonDialog, setOpenReasonDialog] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
+    const [ngoId, setNgoId] = useState('');
+    const [ngoType, setNgoType] = useState('1 to many');
+    const [donor, setDonor] = useState('');
 
 
 
@@ -125,6 +128,9 @@ const Registration = () => {
                     status: statusParam,
                     role: roleParam,
                     reason: statusParam === "Reject" ? rejectReason : "", // <-- Add this line
+                    ngo_id: ngoId,
+                    ngo_type: ngoType,
+                    doner: donor,
                 }),
             });
             const text = await response.text();
@@ -205,7 +211,7 @@ const Registration = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Dialog open={openRoleDialog} onClose={() => setOpenRoleDialog(false)}>
+            <Dialog open={openRoleDialog} onClose={() => setOpenRoleDialog(false)} maxWidth="xs" fullWidth>
                 <DialogTitle>Select Role</DialogTitle>
                 <DialogContent>
                     <Typography>Select a role to assign:</Typography>
@@ -219,12 +225,45 @@ const Registration = () => {
                         <MenuItem value=""><em>None</em></MenuItem>
                         <MenuItem value="admin">Admin</MenuItem>
                         <MenuItem value="ops">Ops</MenuItem>
-                        <MenuItem value="customer">Customer</MenuItem>
+                        <MenuItem value="ngo">Customer</MenuItem>
                     </Select>
+
+                    {selectedRole === 'ngo' && (
+                        <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            <TextField
+                                label="NGO ID (e.g. SAM-04)"
+                                value={ngoId}
+                                onChange={(e) => setNgoId(e.target.value)}
+                                fullWidth
+                                variant="outlined"
+                                required
+                                margin="dense"
+                            />
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <Typography sx={{ mb: 0.5, fontSize: '0.85rem', color: 'text.secondary' }}>NGO Type:</Typography>
+                                <Select
+                                    value={ngoType}
+                                    onChange={(e) => setNgoType(e.target.value)}
+                                    fullWidth
+                                >
+                                    <MenuItem value="1 to one">1 to one (Single User)</MenuItem>
+                                    <MenuItem value="1 to many">1 to many (Multi User)</MenuItem>
+                                </Select>
+                            </Box>
+                            <TextField
+                                label="Donor (Optional)"
+                                value={donor}
+                                onChange={(e) => setDonor(e.target.value)}
+                                fullWidth
+                                variant="outlined"
+                                margin="dense"
+                            />
+                        </Box>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => handleRoleDialogClose(false)}>Cancel</Button>
-                    <Button onClick={() => handleRoleDialogClose(true)} disabled={!selectedRole}>
+                    <Button onClick={() => handleRoleDialogClose(true)} disabled={!selectedRole || (selectedRole === 'ngo' && !ngoId)}>
                         Next
                     </Button>
                 </DialogActions>

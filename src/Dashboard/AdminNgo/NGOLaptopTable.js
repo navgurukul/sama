@@ -273,7 +273,7 @@ function NGOLaptopTable({ ngoData }) {
             <InputLabel>Select NGO</InputLabel>
             <Select value={selectedNgoId} onChange={handleNgoChange}>
               {ngoData.map((ngo) => (
-                <MenuItem key={ngo.Id} value={ngo.Id}>{ngo.organizationName} ({ngo.Id})</MenuItem>
+                <MenuItem key={ngo.Id} value={ngo.Id}>{ngo.organizationName} ({ngo.displayId || ngo.Id})</MenuItem>
               ))}
             </Select>
           </FormControl>

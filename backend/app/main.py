@@ -1806,6 +1806,9 @@ def _handle_user_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                 status = payload.get("status")
                 role = payload.get("role")
                 reason = payload.get("reason") or ""
+                payload_ngo_id = payload.get("ngo_id") or payload.get("NgoId")
+                payload_ngo_type = payload.get("ngo_type") or payload.get("Type")
+                payload_doner = payload.get("doner") or payload.get("Doner")
 
                 if not email:
                     raise HTTPException(status_code=400, detail="email is required")
@@ -1846,6 +1849,13 @@ def _handle_user_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                         ngo_id = (existing or {}).get("ngo_id") if isinstance(existing, dict) else None
                         ngo_type = (existing or {}).get("type") if isinstance(existing, dict) else None
                         doner = (existing or {}).get("doner") if isinstance(existing, dict) else None
+
+                        if not ngo_id:
+                            ngo_id = payload_ngo_id
+                        if not ngo_type:
+                            ngo_type = payload_ngo_type
+                        if not doner:
+                            doner = payload_doner
 
                         cur.execute(
                             f"DELETE FROM {DB_SCHEMA}.{USER_ROLE_TABLE} WHERE lower(email) = lower(%s)",
@@ -1909,7 +1919,7 @@ def _parse_excel_date(val: Any) -> Optional[str]:
         val_str = val.strip()
         if not val_str or val_str.lower() in ("none", "null"):
             return None
-        for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%m/%d/%Y", "%Y/%m/%d", "%d/%m/%Y"):
+        for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%m/%d/%Y", "%Y/%m/%d"):
             try:
                 return datetime.strptime(val_str, fmt).strftime("%Y-%m-%d")
             except ValueError:
@@ -2793,7 +2803,7 @@ def _proxy_to_legacy(method: str, request: Request, payload: Optional[Dict[str, 
     if "orgName" in params:
         del params["orgName"]
         
-    timeout = httpx.Timeout(30.0)
+    timeout = httpx.Timeout(120.0)
     with httpx.Client(timeout=timeout, follow_redirects=True) as client:
         if method == "GET":
             response = client.get(LEGACY_LAPTOP_API_URL, params=params)
@@ -3264,7 +3274,7 @@ def ngo_exec_get(request: Request) -> Any:
     if "orgName" in params:
         del params["orgName"]
         
-    timeout = httpx.Timeout(30.0)
+    timeout = httpx.Timeout(120.0)
     with httpx.Client(timeout=timeout, follow_redirects=True) as client:
         response = client.get(LEGACY_NGO_API_URL, params=params)
     
@@ -3677,7 +3687,7 @@ async def ngo_exec_post(request: Request) -> Any:
         
         if status_val in {"Approved", "Dispatched", "Delivered"}:
             try:
-                timeout = httpx.Timeout(30.0)
+                timeout = httpx.Timeout(120.0)
                 with httpx.Client(timeout=timeout, follow_redirects=True) as client:
                     res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
                     if res.status_code == 200:
@@ -3733,7 +3743,7 @@ async def ngo_exec_post(request: Request) -> Any:
     if "orgName" in params:
         del params["orgName"]
         
-    timeout = httpx.Timeout(30.0)
+    timeout = httpx.Timeout(120.0)
     with httpx.Client(timeout=timeout, follow_redirects=True) as client:
         response = client.post(LEGACY_NGO_API_URL, params=params, json=payload)
         
@@ -3950,7 +3960,7 @@ async def check_rms_inactivity():
                 
             ngos = []
             try:
-                timeout = httpx.Timeout(30.0)
+                timeout = httpx.Timeout(120.0)
                 with httpx.Client(timeout=timeout, follow_redirects=True) as client:
                     res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
                     if res.status_code == 200:
@@ -4041,7 +4051,7 @@ async def send_quarterly_impact_reminders():
                 
             ngos = []
             try:
-                timeout = httpx.Timeout(30.0)
+                timeout = httpx.Timeout(120.0)
                 with httpx.Client(timeout=timeout, follow_redirects=True) as client:
                     res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
                     if res.status_code == 200:
@@ -4270,6 +4280,199 @@ async def get_rms_stats():
                         
                 return {"active": active, "inactive": inactive}
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+def normalize_state_name(raw_state: str) -> str:
+    if not raw_state:
+        return ""
+    s = raw_state.strip().upper()
+    if s.startswith("MAHA"):
+        return "Maharashtra"
+    if s.startswith("DELH"):
+        return "Delhi"
+    if s.startswith("JAM") or "KASHMIR" in s:
+        return "Jammu and Kashmir"
+    if s.startswith("RAJ"):
+        return "Rajasthan"
+    if s.startswith("TEL"):
+        return "Telangana"
+    if s.startswith("KER"):
+        return "Kerala"
+    if s.startswith("KAR"):
+        return "Karnataka"
+    if s.startswith("MAD") or s == "MP":
+        return "Madhya Pradesh"
+    if s.startswith("UTT") or s == "UP":
+        if "PRADESH" in s or s == "UP":
+            return "Uttar Pradesh"
+        else:
+            return "Uttarakhand"
+    if s.startswith("BIH"):
+        return "Bihar"
+    if s.startswith("ODI") or s.startswith("ORI"):
+        return "Odisha"
+    if s.startswith("CHH") or s.startswith("CHI"):
+        return "Chhattisgarh"
+    if s.startswith("WES") or "BENGAL" in s or s == "WB":
+        return "West Bengal"
+    if s.startswith("GUJ"):
+        return "Gujarat"
+    if s.startswith("TAM") or s == "TN":
+        return "Tamil Nadu"
+    if s.startswith("ASS"):
+        return "Assam"
+    if s.startswith("HAR"):
+        return "Haryana"
+    if s.startswith("JHA"):
+        return "Jharkhand"
+    if s.startswith("PUN"):
+        return "Punjab"
+    if s.startswith("HIM") or s == "HP":
+        return "Himachal Pradesh"
+    if s.startswith("ARU"):
+        return "Arunachal Pradesh"
+    return raw_state.strip().title()
+
+
+@app.get("/api/public/live-map-stats")
+async def get_public_live_map_stats():
+    try:
+        # 1. Fetch NGO ID mapping and operatingState fallback from Google Sheet registration API
+        name_to_id = {}
+        id_to_states = {}
+        id_to_beneficiaries = {}
+        try:
+            with httpx.Client(timeout=120.0, follow_redirects=True) as client:
+                res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
+                if res.status_code == 200:
+                    ngos = res.json().get("data", [])
+                    for n in ngos:
+                        org_name = n.get("organizationName")
+                        ngo_id = n.get("Id")
+                        if org_name and ngo_id:
+                            name_to_id[org_name.strip().lower()] = ngo_id
+                            
+                            state = n.get("operatingState")
+                            if state:
+                                id_to_states[ngo_id] = [normalize_state_name(s.strip()) for s in state.split(",") if s.strip()]
+                                
+                            beneficiaries = n.get("beneficiariesCount") or n.get("Laptop require", 0) * 13
+                            try:
+                                id_to_beneficiaries[ngo_id] = int(beneficiaries)
+                            except Exception:
+                                id_to_beneficiaries[ngo_id] = 0
+        except Exception as e:
+            print(f"Error fetching NGO names for map stats: {e}")
+
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                # Get exact database target counts
+                cur.execute(f"SELECT COUNT(id) AS count FROM {DB_SCHEMA}.laptop_labeling")
+                row_dev = cur.fetchone()
+                target_devices = row_dev.get("count") if row_dev else 0
+
+                cur.execute(f"SELECT SUM(number_of_student) AS sum FROM {DB_SCHEMA}.preliminary")
+                row_pep = cur.fetchone()
+                target_people = row_pep.get("sum") if row_pep else 0
+
+                cur.execute(f"SELECT COUNT(DISTINCT allocated_to) AS count FROM {DB_SCHEMA}.laptop_labeling WHERE allocated_to IS NOT NULL AND allocated_to != ''")
+                row_ngo = cur.fetchone()
+                target_ngos = row_ngo.get("count") if row_ngo else 0
+
+                # Overwrite states/students with preliminary table data if exists
+                cur.execute(f"SELECT ngoid, states, number_of_student FROM {DB_SCHEMA}.preliminary")
+                prelim_rows = cur.fetchall()
+                
+                id_to_prelim_students = {}
+                for row in prelim_rows:
+                    ngoid = row.get("ngoid")
+                    states_str = row.get("states")
+                    students = row.get("number_of_student")
+                    
+                    if states_str:
+                        id_to_states[ngoid] = [normalize_state_name(s.strip()) for s in states_str.split(",") if s.strip()]
+                    if students:
+                        id_to_prelim_students[ngoid] = students
+
+                # Fetch distributed laptops per NGO name
+                cur.execute(f"""
+                    SELECT allocated_to, COUNT(id) 
+                    FROM {DB_SCHEMA}.laptop_labeling 
+                    WHERE status = 'DISTRIBUTED' 
+                      AND allocated_to IS NOT NULL 
+                      AND allocated_to != '' 
+                    GROUP BY allocated_to
+                """)
+                ngo_laptops = {row["allocated_to"].strip().lower(): row["count"] for row in cur.fetchall()}
+                
+                id_laptops = {}
+                for name, count in ngo_laptops.items():
+                    ngo_id = name_to_id.get(name)
+                    if ngo_id:
+                        id_laptops[ngo_id] = id_laptops.get(ngo_id, 0) + count
+
+                # Aggregate initial stats by state
+                stats_map = {}
+                for ngo_id, laptops in id_laptops.items():
+                    states = id_to_states.get(ngo_id, [])
+                    if not states:
+                        states = ["Maharashtra"]  # Fallback state
+                    N = len(states)
+                    students = id_to_prelim_students.get(ngo_id) or id_to_beneficiaries.get(ngo_id, 0)
+                    
+                    for state in states:
+                        if state not in stats_map:
+                            stats_map[state] = {
+                                "devices_donated": 0,
+                                "people_reached": 0,
+                                "ngo_partners": set()
+                            }
+                        stats_map[state]["devices_donated"] += int(laptops / N)
+                        stats_map[state]["people_reached"] += int(students / N)
+                        stats_map[state]["ngo_partners"].add(ngo_id)
+
+                # Proportional scaling to match targets exactly
+                sum_laptops = sum(s["devices_donated"] for s in stats_map.values())
+                sum_people = sum(s["people_reached"] for s in stats_map.values())
+
+                laptops_scale = target_devices / sum_laptops if sum_laptops else 1.0
+                people_scale = target_people / sum_people if sum_people else 1.0
+
+                for state, v in stats_map.items():
+                    v["devices_donated"] = int(v["devices_donated"] * laptops_scale)
+                    v["people_reached"] = int(v["people_reached"] * people_scale)
+
+                # Correct rounding differences on the largest state (usually Maharashtra)
+                if stats_map:
+                    diff_laptops = target_devices - sum(s["devices_donated"] for s in stats_map.values())
+                    diff_people = target_people - sum(s["people_reached"] for s in stats_map.values())
+                    max_state = max(stats_map.keys(), key=lambda k: stats_map[k]["devices_donated"])
+                    stats_map[max_state]["devices_donated"] += diff_laptops
+                    stats_map[max_state]["people_reached"] += diff_people
+
+                # Format response list
+                data_list = []
+                for state, v in stats_map.items():
+                    data_list.append({
+                        "state": state,
+                        "devices_donated": v["devices_donated"],
+                        "people_reached": v["people_reached"],
+                        "ngo_partners": len(v["ngo_partners"])
+                    })
+                    
+                return {
+                    "status": "success",
+                    "data": data_list,
+                    "national": {
+                        "devices_donated": target_devices,
+                        "people_reached": target_people,
+                        "ngo_partners": target_ngos
+                    }
+                }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/public/impact-stats")
