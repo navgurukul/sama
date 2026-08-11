@@ -4367,8 +4367,15 @@ async def get_public_live_map_stats():
 
         with get_conn() as conn:
             with conn.cursor() as cur:
-                # Get exact database target counts
-                cur.execute(f"SELECT COUNT(id) AS count FROM {DB_SCHEMA}.laptop_labeling")
+                # Get exact database target counts (only successfully refurbished laptops)
+                cur.execute(f"""
+                    SELECT COUNT(id) AS count 
+                    FROM {DB_SCHEMA}.laptop_labeling 
+                    WHERE status IN (
+                        'LAPTOP_REFURBISHED', 'QC_CHECK', 'TO_BE_DISPATCH', 
+                        'ALLOCATED', 'DISTRIBUTED', 'POST_DEPLOYMENT', 'MONTHLY_MONITORING'
+                    )
+                """)
                 row_dev = cur.fetchone()
                 target_devices = row_dev.get("count") if row_dev else 0
 
