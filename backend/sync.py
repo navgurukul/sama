@@ -359,6 +359,18 @@ async def sync_preliminary():
             %(id)s, %(ngoid)s, %(number_of_school)s, %(number_of_teacher)s, %(number_of_student)s,
             %(number_of_female_student)s, %(states)s, %(course)s, %(unit)s, %(doner)s, %(request_type)s, %(ngo_prelim_requests)s
         )
+        ON CONFLICT (id) DO UPDATE SET
+            ngoid = EXCLUDED.ngoid,
+            number_of_school = EXCLUDED.number_of_school,
+            number_of_teacher = EXCLUDED.number_of_teacher,
+            number_of_student = EXCLUDED.number_of_student,
+            number_of_female_student = EXCLUDED.number_of_female_student,
+            states = EXCLUDED.states,
+            course = EXCLUDED.course,
+            unit = EXCLUDED.unit,
+            doner = EXCLUDED.doner,
+            request_type = EXCLUDED.request_type,
+            ngo_prelim_requests = EXCLUDED.ngo_prelim_requests
     """
     
     print(f"Reloading preliminary table with {len(params_list)} rows...")

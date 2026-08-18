@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 import boto3
 import httpx
 from botocore.exceptions import ClientError
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile, BackgroundTasks
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile, BackgroundTasks, Response
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -4283,14 +4283,25 @@ async def get_rms_stats():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+VALID_INDIAN_STATES = {
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", 
+    "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", 
+    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
+    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", 
+    "West Bengal", "Delhi", "Jammu and Kashmir", "Puducherry", "Ladakh", "Chandigarh", 
+    "Dadra and Nagar Haveli and Daman and Diu", "Lakshadweep", "Andaman and Nicobar Islands"
+}
+
 def normalize_state_name(raw_state: str) -> str:
     if not raw_state:
         return ""
     s = raw_state.strip().upper()
+    if "DELHI" in s:
+        return "Delhi"
+    if "PONDICHERRY" in s or "PUDUCHERRY" in s:
+        return "Puducherry"
     if s.startswith("MAHA"):
         return "Maharashtra"
-    if s.startswith("DELH"):
-        return "Delhi"
     if s.startswith("JAM") or "KASHMIR" in s:
         return "Jammu and Kashmir"
     if s.startswith("RAJ"):
@@ -4332,7 +4343,112 @@ def normalize_state_name(raw_state: str) -> str:
         return "Himachal Pradesh"
     if s.startswith("ARU"):
         return "Arunachal Pradesh"
-    return raw_state.strip().title()
+    
+    title_state = raw_state.strip().title()
+    return title_state if title_state in VALID_INDIAN_STATES else ""
+
+
+@app.get("/api/public/state-wise-sheet")
+async def get_state_wise_sheet():
+    try:
+        # Re-use the exact same logic as live-map-stats
+        name_to_id = {}
+        id_to_states = {}
+        try:
+            with httpx.Client(timeout=120.0, follow_redirects=True) as client:
+                res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
+                if res.status_code == 200:
+                    ngos = res.json().get("data", [])
+                    for n in ngos:
+                        org_name = n.get("organizationName")
+                        ngo_id = n.get("Id")
+                        if org_name and ngo_id:
+                            name_to_id[org_name.strip().lower()] = ngo_id
+                            state = n.get("operatingState")
+                            if state:
+                                id_to_states[ngo_id] = [normalize_state_name(s.strip()) for s in state.split(",") if s.strip()]
+        except Exception as e:
+            print(f"Error fetching NGO names for CSV download: {e}")
+
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                # Overwrite states/students with preliminary table data if exists
+                cur.execute(f"SELECT ngoid, states, number_of_student FROM {DB_SCHEMA}.preliminary")
+                prelim_rows = cur.fetchall()
+                
+                id_to_prelim_students = {}
+                for row in prelim_rows:
+                    ngoid = row.get("ngoid")
+                    states_str = row.get("states")
+                    students = row.get("number_of_student")
+                    if states_str:
+                        id_to_states[ngoid] = [normalize_state_name(s.strip()) for s in states_str.split(",") if s.strip()]
+                    if students:
+                        id_to_prelim_students[ngoid] = students
+
+                # Fetch only successfully refurbished laptops per NGO name
+                cur.execute(f"""
+                    SELECT allocated_to, COUNT(id) 
+                    FROM {DB_SCHEMA}.laptop_labeling 
+                    WHERE status IN (
+                        'LAPTOP_REFURBISHED', 'QC_CHECK', 'TO_BE_DISPATCH', 
+                        'ALLOCATED', 'DISTRIBUTED', 'POST_DEPLOYMENT', 'MONTHLY_MONITORING'
+                    )
+                      AND allocated_to IS NOT NULL 
+                      AND allocated_to != '' 
+                    GROUP BY allocated_to
+                """)
+                ngo_laptops = {row["allocated_to"].strip().lower(): row["count"] for row in cur.fetchall()}
+                
+                id_laptops = {}
+                for name, count in ngo_laptops.items():
+                    ngo_id = name_to_id.get(name)
+                    if ngo_id:
+                        id_laptops[ngo_id] = id_laptops.get(ngo_id, 0) + count
+
+
+        id_to_name = {nid: name.title() for name, nid in name_to_id.items()}
+
+        csv_rows = []
+        for ngo_id, laptops in id_laptops.items():
+            states = id_to_states.get(ngo_id, [])
+            states = [s for s in states if s in VALID_INDIAN_STATES]
+            if not states:
+                states = ["Maharashtra"]  # Fallback state
+            
+            ngo_name = id_to_name.get(ngo_id, "Unknown NGO")
+            people = id_to_prelim_students.get(ngo_id, 0)
+            
+            state_laptops = laptops // len(states) if states else 0
+            state_people = people // len(states) if states else 0
+            
+            for state in states:
+                csv_rows.append([
+                    ngo_id,
+                    ngo_name,
+                    state,
+                    state_laptops,
+                    state_people
+                ])
+
+        csv_rows.sort(key=lambda r: (r[2], r[1]))
+
+        import csv
+        import io
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["NGO ID", "NGO Name", "State", "Laptops Donated", "Students Reached"])
+        for row in csv_rows:
+            writer.writerow(row)
+            
+        csv_content = output.getvalue()
+        return Response(
+            content=csv_content,
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=state_wise_donations.csv"}
+        )
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 @app.get("/api/public/live-map-stats")
