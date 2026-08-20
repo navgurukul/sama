@@ -4348,6 +4348,336 @@ def normalize_state_name(raw_state: str) -> str:
     return title_state if title_state in VALID_INDIAN_STATES else ""
 
 
+@app.post("/api/public/donate")
+async def public_donate(payload: dict):
+    try:
+        first_name = payload.get("firstName", "").strip()
+        last_name = payload.get("lastName", "").strip()
+        email = payload.get("email", "").strip()
+        phone = payload.get("phone", "").strip()
+        contribution_type = payload.get("contributionType", "").strip()
+        company_name = payload.get("companyName", "").strip()
+        donation_type = payload.get("donationType", "").strip()
+        number_of_laptops = payload.get("numberOfLaptops")
+        message = payload.get("message", "").strip()
+
+        num_laptops = 0
+        if number_of_laptops:
+            try:
+                num_laptops = int(number_of_laptops)
+            except Exception:
+                num_laptops = 0
+
+        poc_name = f"{first_name} {last_name}".strip()
+        donor_company = company_name if contribution_type == "company" else "Individual"
+        
+        import uuid
+        pickup_id = f"PK-{uuid.uuid4().hex[:8].upper()}"
+
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"""
+                    INSERT INTO {DB_SCHEMA}.pickup (
+                        pickup_id, donor_company, poc_name, poc_contact, poc_email, 
+                        number_of_laptops, pickup_location, status, current_date_time, updated_on
+                    ) VALUES (
+                        %s, %s, %s, %s, %s, %s, %s, %s, now(), now()
+                    )
+                """, (
+                    pickup_id, donor_company, poc_name, phone, email, 
+                    num_laptops, message or "Online Submission", "Pending"
+                ))
+                conn.commit()
+
+        return {"status": "success", "message": "Donation details successfully recorded.", "pickup_id": pickup_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/public/donor-stats")
+async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str] = None, endDate: Optional[str] = None):
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                org_filter_sql = ""
+                params = []
+                if orgName:
+                    org_filter_sql = "AND (LOWER(TRIM(d.donor_company)) = LOWER(TRIM(%s)) OR LOWER(TRIM(ll.donor_company_name)) = LOWER(TRIM(%s)))"
+                    params.extend([orgName, orgName])
+
+                date_filter_sql = ""
+                date_params = []
+                if startDate and endDate:
+                    # Append 23:59:59 to endDate to include the entire day
+                    date_filter_sql = "AND ll.last_updated_on BETWEEN %s AND %s"
+                    date_params.extend([f"{startDate} 00:00:00", f"{endDate} 23:59:59"])
+
+                cur.execute(f"""
+                    SELECT COUNT(*) 
+                    FROM {DB_SCHEMA}.laptop_labeling ll
+                    LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
+                    WHERE (ll.is_deleted_from_sheet = FALSE OR ll.is_deleted_from_sheet IS NULL)
+                    {org_filter_sql} {date_filter_sql}
+                """, params + date_params)
+                total_laptops = cur.fetchone()["count"]
+
+                cur.execute(f"""
+                    SELECT COUNT(*) 
+                    FROM {DB_SCHEMA}.laptop_labeling ll
+                    LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
+                    WHERE (ll.is_deleted_from_sheet = FALSE OR ll.is_deleted_from_sheet IS NULL)
+                      AND ll.status IN ('LAPTOP_REFURBISHED', 'QC_CHECK', 'TO_BE_DISPATCH', 'ALLOCATED', 'DISTRIBUTED', 'POST_DEPLOYMENT_15D', 'MONTHLY_MONITORING')
+                      {org_filter_sql} {date_filter_sql}
+                """, params + date_params)
+                refurbished_count = cur.fetchone()["count"]
+
+                statuses = [
+                    "PICKUP_REQUESTED", "IN_TRANSIT", "LAPTOP_RECEIVED", "NOT_WORKING", 
+                    "REFURBISHMENT_TESTING", "REFURBISHMENT_STARTED", "LAPTOP_REFURBISHED", "QC_CHECK",
+                    "DISTRIBUTED", "POST_DEPLOYMENT_15D", "MONTHLY_MONITORING"
+                ]
+                pipeline = {}
+                for status in statuses:
+                    cur.execute(f"""
+                        SELECT COUNT(*) 
+                        FROM {DB_SCHEMA}.laptop_labeling ll
+                        LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
+                        WHERE (ll.is_deleted_from_sheet = FALSE OR ll.is_deleted_from_sheet IS NULL)
+                          AND ll.status = %s
+                          {org_filter_sql} {date_filter_sql}
+                    """, [status] + params + date_params)
+                    pipeline[status] = cur.fetchone()["count"]
+
+                cur.execute(f"""
+                    SELECT COUNT(*) 
+                    FROM {DB_SCHEMA}.laptop_labeling ll
+                    LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
+                    WHERE (ll.is_deleted_from_sheet = FALSE OR ll.is_deleted_from_sheet IS NULL)
+                      AND ll.status IN ('DISTRIBUTED', 'POST_DEPLOYMENT_15D', 'MONTHLY_MONITORING')
+                      AND ll.last_updated_on >= NOW() - INTERVAL '15 days'
+                      {org_filter_sql} {date_filter_sql}
+                """, params + date_params)
+                active_usage_count = cur.fetchone()["count"]
+
+                pipeline_ui = {
+                    "pickupRequested": pipeline.get("PICKUP_REQUESTED", 0),
+                    "inTransit": pipeline.get("IN_TRANSIT", 0),
+                    "received": (
+                        total_laptops - pipeline.get("PICKUP_REQUESTED", 0) - pipeline.get("IN_TRANSIT", 0)
+                    ),
+                    "onlyLaptopReceived": pipeline.get("LAPTOP_RECEIVED", 0),
+                    "notWorking": pipeline.get("NOT_WORKING", 0),
+                    "refurbishmentStarted": pipeline.get("REFURBISHMENT_TESTING", 0) + pipeline.get("REFURBISHMENT_STARTED", 0),
+                    "refurbished": pipeline.get("LAPTOP_REFURBISHED", 0) + pipeline.get("QC_CHECK", 0),
+                    "distributed": (
+                        pipeline.get("DISTRIBUTED", 0) + 
+                        pipeline.get("POST_DEPLOYMENT_15D", 0) + 
+                        pipeline.get("MONTHLY_MONITORING", 0)
+                    ),
+                    "activeUsage": active_usage_count
+                }
+
+                pre_filter_sql = ""
+                user_filter_sql = ""
+                if orgName:
+                    pre_filter_sql = "WHERE LOWER(TRIM(doner)) = LOWER(TRIM(%s))"
+                    user_filter_sql = "WHERE LOWER(TRIM(doner)) = LOWER(TRIM(%s))"
+
+                cur.execute(f"SELECT COALESCE(SUM(number_of_student), 0) FROM {DB_SCHEMA}.preliminary {pre_filter_sql}", [orgName] if orgName else [])
+                prelim_student_count = cur.fetchone()["coalesce"]
+
+                cur.execute(f"SELECT COUNT(*) FROM {DB_SCHEMA}.userdetails {user_filter_sql}", [orgName] if orgName else [])
+                user_student_count = cur.fetchone()["count"]
+
+                active_beneficiaries = prelim_student_count + user_student_count
+
+                ngos = []
+                try:
+                    with httpx.Client(timeout=120.0, follow_redirects=True) as client:
+                        res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
+                        if res.status_code == 200:
+                            ngo_data = res.json().get("data", [])
+                            for ngo in ngo_data:
+                                if ngo.get("Status") == "Approved":
+                                    ngos.append({
+                                        "id": str(ngo.get("Id") or ""),
+                                        "ngo_name": ngo.get("organizationName") or "",
+                                        "status": ngo.get("Status") or "Approved",
+                                        "location": ngo.get("location") or "Unknown",
+                                        "donor": ngo.get("Doner") or ngo.get("Donor") or ""
+                                    })
+                except Exception as e:
+                    cur.execute(f"""
+                        SELECT id, ngo_name, status, location, donor
+                        FROM {DB_SCHEMA}.ngo_requests
+                        WHERE status = 'Approved'
+                    """)
+                    for r in cur.fetchall():
+                        ngos.append({
+                            "id": str(r["id"]),
+                            "ngo_name": r["ngo_name"],
+                            "status": r["status"],
+                            "location": r["location"] or "Unknown",
+                            "donor": r["donor"]
+                        })
+
+                ngo_partners = []
+                for ngo in ngos:
+                    ngo_id_str = str(ngo["id"])
+                    ngo_name_str = ngo["ngo_name"]
+                    
+                    if orgName and ngo["donor"] and orgName.lower() != ngo["donor"].lower():
+                        continue
+
+                    cur.execute(f"""
+                        SELECT COUNT(*) 
+                        FROM {DB_SCHEMA}.laptop_labeling
+                        WHERE LOWER(TRIM(allocated_to)) = LOWER(TRIM(%s))
+                          AND (is_deleted_from_sheet = FALSE OR is_deleted_from_sheet IS NULL)
+                          {date_filter_sql.replace("ll.last_updated_on", "last_updated_on")}
+                    """, [ngo_name_str] + date_params)
+                    ngo_laptops = cur.fetchone()["count"]
+
+                    cur.execute(f"""
+                        SELECT COUNT(*) 
+                        FROM {DB_SCHEMA}.userdetails
+                        WHERE LOWER(TRIM(ngo)) = LOWER(TRIM(%s))
+                    """, (ngo_name_str,))
+                    ngo_users_count = cur.fetchone()["count"]
+
+                    cur.execute(f"""
+                        SELECT COALESCE(SUM(number_of_student), 0) 
+                        FROM {DB_SCHEMA}.preliminary
+                        WHERE LOWER(TRIM(ngoid)) = LOWER(TRIM(%s))
+                    """, (ngo_name_str,))
+                    ngo_prelim_count = cur.fetchone()["coalesce"]
+
+                    total_ngo_beneficiaries = ngo_users_count + ngo_prelim_count
+
+                    cur.execute(f"""
+                        SELECT MAX(last_delivery_date) 
+                        FROM {DB_SCHEMA}.laptop_labeling
+                        WHERE LOWER(TRIM(allocated_to)) = LOWER(TRIM(%s))
+                          AND status = 'DISTRIBUTED'
+                          AND (is_deleted_from_sheet = FALSE OR is_deleted_from_sheet IS NULL)
+                    """, (ngo_name_str,))
+                    last_del = cur.fetchone()["max"]
+
+                    ngo_partners.append({
+                        "id": ngo_id_str,
+                        "name": ngo_name_str,
+                        "status": ngo["status"],
+                        "location": ngo["location"] or "Unknown",
+                        "laptops": ngo_laptops,
+                        "beneficiaries": total_ngo_beneficiaries,
+                        "lastDelivery": last_del.strftime("%d/%m/%Y") if last_del else "N/A",
+                        "Doner": ngo["donor"]
+                    })
+
+                # 7. Query recent activities in the last 24 hours
+                cur.execute(f"""
+                    SELECT 
+                        ll.status,
+                        ll.allocated_to,
+                        ll.last_updated_by,
+                        ll.last_updated_on
+                    FROM {DB_SCHEMA}.laptop_labeling ll
+                    LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
+                    WHERE ll.last_updated_on >= NOW() - INTERVAL '24 hours'
+                      AND (ll.is_deleted_from_sheet = FALSE OR ll.is_deleted_from_sheet IS NULL)
+                      {org_filter_sql}
+                    ORDER BY ll.last_updated_on DESC
+                """, params)
+                recent_laptops = cur.fetchall()
+
+                activities_map = {}
+                for rl in recent_laptops:
+                    status = rl["status"] or "Unknown"
+                    status_map = {
+                        "laptop_received": "Laptop Received",
+                        "not_working": "Not Working",
+                        "refurbishment_testing": "Refurbishment Started",
+                        "refurbishment_started": "Refurbishment Started",
+                        "laptop_refurbished": "Laptop Refurbished",
+                        "qc_check": "Laptop Refurbished",
+                        "to_be_dispatch": "To be dispatch",
+                        "ready": "To be dispatch",
+                        "in_transit": "In Transit",
+                        "allocated": "Allocated",
+                        "distributed": "Distributed",
+                        "distribution": "Distributed",
+                        "pickup_requested": "Pickup Request"
+                    }
+                    status_normalized = status_map.get(status.lower(), status)
+                    allocated_to = rl["allocated_to"] or "Unassigned"
+                    updated_by = rl["last_updated_by"] or "System"
+                    last_updated = rl["last_updated_on"]
+
+                    key = f"{status_normalized}-{allocated_to}" if status_normalized in ("Allocated", "Distributed") else status_normalized
+                    
+                    if key not in activities_map:
+                        activities_map[key] = {
+                            "status": status_normalized,
+                            "allocatedTo": allocated_to if status_normalized in ("Allocated", "Distributed") else None,
+                            "count": 0,
+                            "lastUpdated": last_updated.isoformat(),
+                            "id": allocated_to[0].upper() if allocated_to else "?",
+                            "updatedBy": updated_by
+                        }
+                    activities_map[key]["count"] += 1
+                    if last_updated.isoformat() > activities_map[key]["lastUpdated"]:
+                        activities_map[key]["lastUpdated"] = last_updated.isoformat()
+
+                recent_activities_list = list(activities_map.values())
+
+                cur.execute(f"""
+                    SELECT 
+                        pickup_id,
+                        donor_company,
+                        current_date_time
+                    FROM {DB_SCHEMA}.pickup
+                    WHERE current_date_time >= NOW() - INTERVAL '24 hours'
+                """)
+                recent_pickups = cur.fetchall()
+                for rp in recent_pickups:
+                    donor = rp["donor_company"] or "Unknown Donor"
+                    if orgName and donor.lower() != orgName.lower():
+                        continue
+                    recent_activities_list.append({
+                        "status": "Pickup Request",
+                        "allocatedTo": donor,
+                        "count": 1,
+                        "lastUpdated": rp["current_date_time"].isoformat(),
+                        "id": rp["pickup_id"],
+                        "message": f"New pickup request by {donor}",
+                        "updatedBy": "System"
+                    })
+
+                recent_activities_list.sort(key=lambda x: x["lastUpdated"], reverse=True)
+
+                cur.execute(f"""
+                    SELECT DISTINCT COALESCE(d.donor_company, ll.donor_company_name) AS donor_name
+                    FROM {DB_SCHEMA}.laptop_labeling ll
+                    LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
+                    WHERE (ll.is_deleted_from_sheet = FALSE OR ll.is_deleted_from_sheet IS NULL)
+                      AND COALESCE(d.donor_company, ll.donor_company_name) IS NOT NULL
+                      AND COALESCE(d.donor_company, ll.donor_company_name) != ''
+                """)
+                unique_orgs = [row["donor_name"] for row in cur.fetchall() if row.get("donor_name")]
+
+        return {
+            "totalLaptops": total_laptops,
+            "refurbishedCount": refurbished_count,
+            "activeBeneficiaries": active_beneficiaries,
+            "pipeline": pipeline_ui,
+            "ngoPartners": ngo_partners,
+            "recentActivities": recent_activities_list,
+            "uniqueOrganizations": unique_orgs
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/api/public/state-wise-sheet")
 async def get_state_wise_sheet():
     try:

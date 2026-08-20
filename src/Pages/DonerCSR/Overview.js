@@ -113,6 +113,7 @@ const Overview = () => {
     setAppliedEndDate('');
   };
   const [approvedCount, setApprovedCount] = useState(0);
+  const [uniqueOrgs, setUniqueOrgs] = useState([]);
   const [ngoPartner, setNgoPartner] = useState([]);
   const [userData, setUserData] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
@@ -184,96 +185,67 @@ const Overview = () => {
     }
   }, [donorName, donorOrgName, isDoner, roles, fallbackRole]);
 
+  const [stats, setStats] = useState({
+    totalLaptops: 0,
+    refurbishedCount: 0,
+    activeBeneficiaries: 0,
+    pipeline: {
+      pickupRequested: 0,
+      inTransit: 0,
+      received: 0,
+      onlyLaptopReceived: 0,
+      notWorking: 0,
+      refurbishmentStarted: 0,
+      refurbished: 0,
+      distributed: 0,
+      activeUsage: 0
+    },
+    recentActivities: []
+  });
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const laptopRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`);
-        const laptopJson = await laptopRes.json();
+        const apiBase = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
+          ? "http://localhost:8000"
+          : window.location.origin;
 
-        const ngoRes = await fetch(`${process.env.REACT_APP_NgoInformationApi}?type=registration`);
-        const ngoJson = await ngoRes.json();
-
-        const userRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getUserData`);
-        const userJson = await userRes.json();
-
-        const userPre = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getpre`);
-        const preJson = await userPre.json();
-        setPreData(preJson || []);
-
-        const approved = ngoJson.data.filter((ngo) => ngo.Status === "Approved");
-        function parseDate(dateStr) {
-          if (!dateStr) return null;
-          const iso = Date.parse(dateStr);
-          if (!isNaN(iso)) return new Date(iso);
-          const parts = dateStr.split(/[-/ :]/);
-          if (parts.length >= 3) {
-            const [d, m, y, hh = 0, mm = 0, ss = 0] = parts.map((p) => parseInt(p, 10));
-            return new Date(y, m - 1, d, hh, mm, ss);
-          }
+        const params = new URLSearchParams();
+        if (selectedOrganization) {
+          params.append("orgName", selectedOrganization);
+        }
+        if (appliedStartDate) {
+          params.append("startDate", appliedStartDate);
+        }
+        if (appliedEndDate) {
+          params.append("endDate", appliedEndDate);
         }
 
-        const partners = approved.map((ngo) => {
-          const filteredLaptops = laptopJson.filter(
-            (laptop) =>
-              String(laptop["Allocated To"]).trim().toLowerCase() ===
-              String(ngo.organizationName).trim().toLowerCase()
-          );
+        const res = await fetch(`${apiBase}/api/public/donor-stats?${params.toString()}`);
+        const data = await res.json();
 
-          const laptopsAllocated = filteredLaptops.length;
-          const laptopDetails = filteredLaptops;
-
-
-          const beneficiariesFromUserData = userJson.filter(
-            (user) => String(user.Ngo).trim() === String(ngo.Id).trim()
-          ).length;
-
-          const beneficiariesFromPreData = preJson
-            .filter((preItem) => String(preItem.NgoId).trim() === String(ngo.Id).trim())
-            .reduce((total, preItem) => total + (parseInt(preItem["Number of student"], 10) || 0), 0);
-
-          const totalBeneficiaries = beneficiariesFromUserData + beneficiariesFromPreData;
-
-          const deliveries = filteredLaptops
-            .filter(
-              (laptop) =>
-                laptop["Status"]?.trim().toLowerCase() === "distributed" &&
-                laptop["Last Delivery Date"]
-            )
-            .map((laptop) => parseDate(laptop["Last Delivery Date"]))
-            .filter((d) => d !== null);
-
-          const lastDelivery =
-            deliveries.length > 0 ? new Date(Math.max(...deliveries)) : null;
-          return {
-            id: ngo.Id,
-            name: ngo.organizationName,
-            status: ngo.Status,
-            location: ngo.location || "Unknown",
-            laptops: laptopsAllocated,
-            laptopDetails: laptopDetails,
-            beneficiaries: totalBeneficiaries,
-            beneficiariesFromUserData,
-            beneficiariesFromPreData,
-            lastDelivery: lastDelivery
-              ? lastDelivery.toLocaleString("en-GB", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-              })
-              : "N/A",
-            Doner: ngo.Doner || ngo.Donor || null,
-            Id: ngo.Id,
-          };
+        setStats({
+          totalLaptops: data.totalLaptops || 0,
+          refurbishedCount: data.refurbishedCount || 0,
+          activeBeneficiaries: data.activeBeneficiaries || 0,
+          pipeline: data.pipeline || {
+            pickupRequested: 0,
+            inTransit: 0,
+            received: 0,
+            onlyLaptopReceived: 0,
+            notWorking: 0,
+            refurbishmentStarted: 0,
+            refurbished: 0,
+            distributed: 0,
+            activeUsage: 0
+          },
+          recentActivities: data.recentActivities || []
         });
 
-        setNgoPartner(partners);
-        setLaptopData(laptopJson || []);
-        setUserData(userJson || []);
-        setApprovedCount(approved.length);
+        setNgoPartner(data.ngoPartners || []);
+        setApprovedCount((data.ngoPartners || []).length);
+        setUniqueOrgs(data.uniqueOrganizations || []);
 
       } catch (err) {
         console.error("Error fetching overview data:", err);
@@ -283,7 +255,7 @@ const Overview = () => {
     };
 
     fetchData();
-  }, []);
+  }, [selectedOrganization, appliedStartDate, appliedEndDate]);
 
 
   // average days count
@@ -472,81 +444,13 @@ const Overview = () => {
 
 
   // Total Counting
-  const totalLaptops = filteredLaptopData.length;
-
-  const statusesAtOrAfterReceived = new Set([
-    "laptop received",
-    "not working",
-    "refurbishment started",
-    "laptop refurbished",
-    "to be dispatch",
-    "allocated",
-    "distributed",
-    "laptop_received",
-    "refurbishment_testing",
-    "qc_check",
-    "distribution",
-    "post_deployment_15d",
-    "monthly_monitoring",
-  ]);
-
-  const receivedCount = filteredLaptopData.reduce((acc, item) => {
-    const status = (item.Status || "").trim().toLowerCase().replace(/_/g, " ");
-    if (statusesAtOrAfterReceived.has(status)) {
-      return acc + 1;
-    }
-    return acc;
-  }, 0);
-
-  const refurbishedCount = filteredLaptopData.reduce((acc, item) => {
-    const status = (item.Status || "").toLowerCase().replace(/_/g, " ");
-    // console.log("Laptop Status:", status);
-
-    if (status.includes("laptop refurbished") || status.includes("qc_check")) {
-      return acc + 1;
-    }
-
-    if (status.includes("to be dispatch")) {
-      return acc + 1;
-    }
-
-    if (status.includes("allocated")) {
-      return acc + 1;
-    }
-
-    if (status.includes("distribut") || status.includes("post_deployment") || status.includes("monthly_monitoring")) {
-      return acc + 1;
-    }
-    return acc;
-  }, 0);
-
-  const distributedCount = filteredLaptopData.filter(
-    (laptop) => (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ") === "distributed"
-  ).length;
-
-  // NEW: count for ONLY "Laptop Received" (exact match, case-insensitive)
-  const onlyLaptopReceivedCount = filteredLaptopData.reduce((acc, item) => {
-    const status = (item.Status || "").trim().toLowerCase().replace(/_/g, " ");
-    return status === "laptop received" ? acc + 1 : acc;
-  }, 0);
-
-  const successRate =
-    totalLaptops > 0 ? ((refurbishedCount / totalLaptops) * 100).toFixed(2) : 0;
-  const ngosServedCount = filteredNgoPartners.filter((partner) => {
-    // If no organization is selected, count NGOs with any laptops
-    if (!selectedOrganization) {
-      return partner.laptops > 0;
-    }
-    // If organization is selected, count only NGOs with laptops from that donor
-    if (partner.laptopDetails && partner.laptopDetails.length > 0) {
-      const selOrg = selectedOrganization.trim().toLowerCase();
-      const matchingLaptops = partner.laptopDetails.filter(l =>
-        String(l["Donor Company Name"] || "").trim().toLowerCase() === selOrg
-      );
-      return matchingLaptops.length > 0;
-    }
-    return false;
-  }).length;
+  const totalLaptops = stats.totalLaptops;
+  const receivedCount = stats.pipeline.received;
+  const refurbishedCount = stats.refurbishedCount;
+  const distributedCount = stats.pipeline.refurbished; // distributed counts map to refurbished stage in UI
+  const onlyLaptopReceivedCount = stats.pipeline.onlyLaptopReceived;
+  const successRate = totalLaptops > 0 ? ((refurbishedCount / totalLaptops) * 100).toFixed(2) : 0;
+  const ngosServedCount = filteredNgoPartners.filter((partner) => partner.laptops > 0).length;
 
 
 
@@ -829,7 +733,22 @@ const Overview = () => {
 
   const timeAgo = (timestamp) => {
     if (!timestamp) return "Unknown time";
-    const diffMs = Date.now() - timestamp.getTime();
+    const dateObj = (typeof timestamp === "string" || typeof timestamp === "number") ? new Date(timestamp) : timestamp;
+    const diffMs = Date.now() - dateObj.getTime();
+    
+    // Handle timezone offset mismatch (future times)
+    if (diffMs < 0) {
+      const absDiffMins = Math.floor(Math.abs(diffMs) / (1000 * 60));
+      if (absDiffMins < 60) {
+        return absDiffMins <= 1 ? "Just now" : `${absDiffMins} mins ago`;
+      }
+      const absDiffHours = Math.floor(absDiffMins / 60);
+      if (absDiffHours < 12) {
+        return `${absDiffHours} hours ago`;
+      }
+      return "Just now";
+    }
+
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffMins = Math.floor(diffMs / (1000 * 60));
     if (diffHours === 0) {
@@ -899,8 +818,8 @@ const Overview = () => {
   };
 
 
-  const recentActivities = getRecentActivities();
-  const uniqueOrganizations = getUniqueOrganizations();
+  const recentActivities = stats.recentActivities;
+  const uniqueOrganizations = uniqueOrgs;
 
   function formatDateForDisplay(dateStr) {
     if (!dateStr) return null;
@@ -1051,19 +970,7 @@ const Overview = () => {
 
                 <MetricCard
                   title="Active Beneficiaries"
-                  value={(() => {
-                    // 1) Count from preData (filtered)
-                    const preCount = getFilteredPreData().reduce(
-                      (sum, item) => sum + (parseInt(item["Number of student"], 10) || 0),
-                      0
-                    );
-
-                    // 2) Count from userData (filtered using ngoPartner data like the old code)
-                    const userCount = filteredUserData.length;
-
-                    const total = preCount + userCount;
-                    return total.toLocaleString('en-IN');
-                  })()}
+                  value={stats.activeBeneficiaries.toLocaleString('en-IN')}
                   subtitle="Currently using laptops"
                   icon={Users}
                   onClick={() => handleMetricClick("activeBeneficiaries")}
@@ -1145,15 +1052,7 @@ const Overview = () => {
                       icon: Package,
                       title: "Pickup Requested",
                       subtitle: "Initial request submitted",
-                      count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
-                        return s === "pickup requested";
-                      }).length} laptops`,
-                      // count: selectedOrganization 
-                      //   ? `${filteredPickups.filter(p => p.Status === "Pending")
-                      //       .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`
-                      //   : `${pickups.filter(p => p.Status === "Pending")
-                      //       .reduce((total, pickup) => total + (parseInt(pickup["Number of Laptops"]) || 0), 0)} laptops`,
+                      count: `${stats.pipeline.pickupRequested} laptops`,
                       bgColor: "#e3f2fd",
                       iconColor: "#1976d2",
                       stepType: "pickupRequests"
@@ -1162,10 +1061,7 @@ const Overview = () => {
                       icon: Truck,
                       title: "In Transit",
                       subtitle: "Pickup in progress",
-                      count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
-                        return s === "in transit";
-                      }).length} laptops`,
+                      count: `${stats.pipeline.inTransit} laptops`,
                       bgColor: "#fff3e0",
                       iconColor: "#f57c00",
                       stepType: "inTransit"
@@ -1174,7 +1070,7 @@ const Overview = () => {
                       icon: Laptop,
                       title: "Laptop Received",
                       subtitle: "Initial check-in",
-                      count: `${receivedCount} laptops`,
+                      count: `${stats.pipeline.received} laptops`,
                       bgColor: "#e8f5e8",
                       iconColor: "#388e3c",
                       stepType: "received"
@@ -1183,7 +1079,7 @@ const Overview = () => {
                       icon: Laptop,
                       title: "Ready To Be Processed",
                       subtitle: "Refurbishment will begin shortly.",
-                      count: `${onlyLaptopReceivedCount} laptops`,
+                      count: `${stats.pipeline.onlyLaptopReceived} laptops`,
                       bgColor: "#e8f5e8",
                       iconColor: "#388e3c",
                       stepType: "onlyLaptopReceived"
@@ -1193,10 +1089,7 @@ const Overview = () => {
                       icon: X,
                       title: "Not Working",
                       subtitle: "Failed initial health check",
-                      count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
-                        return s === "not working";
-                      }).length} laptops`,
+                      count: `${stats.pipeline.notWorking} laptops`,
                       bgColor: "#ffebee",
                       iconColor: "#d32f2f",
                       stepType: "notWorking"
@@ -1205,10 +1098,7 @@ const Overview = () => {
                       icon: Settings,
                       title: "Refurbishment Started",
                       subtitle: "Under processing",
-                      count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
-                        return s === "refurbishment started";
-                      }).length} laptops`,
+                      count: `${stats.pipeline.refurbishmentStarted} laptops`,
                       bgColor: "#e0f7fa",
                       iconColor: "#0097a7",
                       stepType: "refurbishmentStarted"
@@ -1217,40 +1107,16 @@ const Overview = () => {
                       icon: CheckCircle,
                       title: "Laptop Refurbished",
                       subtitle: "Repair completed",
-                      count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
-                        return s === "laptop refurbished" || s === "qc check";
-                      }).length} laptops`,
+                      count: `${stats.pipeline.refurbished} laptops`,
                       bgColor: "#f3e5f5",
                       iconColor: "#7b1fa2",
                       stepType: "refurbished"
                     },
-                    // {
-                    //   icon: Truck,
-                    //   title: "To Be Dispatch",
-                    //   subtitle: "Ready for delivery",
-                    //   count: `${filteredLaptopData.filter(l => l.Status === "To Be Dispatch").length} laptops`,
-                    //   bgColor: "#fce4ec",
-                    //   iconColor: "#c2185b",
-                    //   stepType: "toBeDispatch"
-                    // },
-                    // {
-                    //   icon: Building,
-                    //   title: "Allocated",
-                    //   subtitle: "Assigned to NGO",
-                    //   count: `${filteredLaptopData.filter(l => l.Status === "Allocated").length} laptops`,
-                    //   bgColor: "#f1f8e9",
-                    //   iconColor: "#558b2f",
-                    //   stepType: "allocated"
-                    // },
                     {
                       icon: UserCheck,
                       title: "Distributed",
                       subtitle: "Delivered to NGO",
-                      count: `${filteredLaptopData.filter(l => {
-                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
-                        return s === "distributed" || s === "distribution";
-                      }).length} laptops`,
+                      count: `${stats.pipeline.distributed} laptops`,
                       bgColor: "#e8f5e9",
                       iconColor: "#2e7d32",
                       stepType: "distributed"
@@ -1259,13 +1125,7 @@ const Overview = () => {
                       icon: UserCheck,
                       title: "Active Usage",
                       subtitle: "In use by beneficiaries",
-                      count: `${filteredLaptopData.filter(l => {
-                        const d = formatDateForDisplay(l["Date"]);
-                        if (!d) return false;
-                        const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
-                        const s = (l.Status || "").trim().toLowerCase().replace(/_/g, " ");
-                        return diffDays <= 15 && (s === "distributed" || s === "distribution" || s === "post deployment 15d" || s === "monthly monitoring");
-                      }).length} laptops`,
+                      count: `${stats.pipeline.activeUsage} laptops`,
                       bgColor: "#ffebee",
                       iconColor: "#d32f2f",
                       stepType: "activeUsage"

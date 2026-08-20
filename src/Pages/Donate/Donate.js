@@ -124,15 +124,18 @@ function Donation() {
       setErrors(validationErrors);
     } else {
       try {
+        const apiBase = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
+          ? "http://localhost:8000"
+          : window.location.origin;
+
         const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxwfJKTEMZkpAHtsh8rT1E6Ba3BrqvAd3FzlCKOIhCbD2A5kC_hXN5I0VCTvMgrjgBR/exec",
+          `${apiBase}/api/public/donate`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(submissionData),
-            mode: "no-cors",
           }
         );
 
