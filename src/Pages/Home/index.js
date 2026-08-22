@@ -1,33 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Container, Grid, Button, Typography, Box } from "@mui/material";
 import HomeImg from "./assets/HeroSection.svg";
 import "./Styles.css";
-import TestimonialSlider from "./TestimonialSlider";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LaptopDonor from "./LaptopDonor";
 import ContactForm from "./ContactForm";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import diamond from "./assets/dimanod.png";
 import BGIMG from "./assets/Group365.png";
+import DashboardPage from "../../Dashboard";
 function Home() {
 
-  const [impact, setImpact] = useState("social");
   const isActive = useMediaQuery("(max-width:600px)");
-  const isActiveIpad = useMediaQuery("(max-width:1300px)");
-  const isXs = useMediaQuery('(max-width:600px)');
-  const [bgImagesLoaded, setBgImagesLoaded] = useState(false);
-
-  useEffect(() => {
-    const img1 = new Image();
-    const img2 = new Image();
-
-    img1.src = diamond;
-    img2.src = HomeImg;
-
-    img1.onload = img2.onload = () => {
-      setBgImagesLoaded(true);
-    };
-  }, []);
 
   const commonImageStyle = {
     width: "100%",
@@ -40,21 +24,19 @@ function Home() {
   const commonOverlayImageStyle = {
     position: 'absolute',
     width: '167px',
-    height: 'auto',
     bottom: '15px',
     right: '15px',
-    height: "167px",
+    height: '167px',
     boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)"
   };
+
 
 
   return (
     <>
       <Box
         sx={{
-          backgroundImage: bgImagesLoaded
-            ? `url(${diamond}), url(${HomeImg})`
-            : "none", // Hide background until loaded
+          backgroundImage: `url(${diamond}), url(${HomeImg.default || HomeImg})`,
           backgroundSize: "cover, cover",
           backgroundPosition: "center, center",
           color: "white",
@@ -64,7 +46,6 @@ function Home() {
           alignItems: "center",
           textAlign: "center",
           width: "100%",
-          transition: "background-image 0.5s ease-in-out", // Smooth transition when images load
         }}
         paddingY={isActive ? 5 : 28}
       >
@@ -215,28 +196,52 @@ function Home() {
       <Container maxWidth="lg" sx={{ py: "80px" }}>
         <Typography variant="h5" textAlign="center">Metrics that Matter</Typography>
         <Typography variant="body1" textAlign="center" mt={2}>Here’s how the impact is measured through data driven insights</Typography>
-        <Box sx={!isActive && { display: 'flex', my: 4, justifyContent: "center", alignItems: "center" }} spacing={3}>
-          <Button color="primary" variant={impact === "social" ? "contained" : "outlined"}
-            style={isActive ? { margin: "16px 0px" } : { borderRadius: "100px"}}
-            onClick={() => setImpact("social")}
-            sx={{ width: { xs: "100%", sm: "280px" } }}>
-            Social Impact
-          </Button>
-          <Button color="primary" variant={impact === "environmental" ? "contained" : "outlined"}
-            style={isActive ? { marginTop: "16px" } : { borderRadius: "100px", marginLeft: "24px"  }}
-            onClick={() => setImpact("environmental")}
-            sx={{ width: { xs: "100%", sm: "280px" } }}>
-            Environmental Impact
-          </Button>
-
-        </Box>
-        <Box>
-          {impact === "environmental" ? (
-            <img src={require("./assets/Sama - Environmental Impact.jpg")} height="auto" width="100%" alt="sama" style={{ boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)", borderRadius: "16px" }}
-            />
-          ) : (
-            <img src={require("./assets/Dashboard.jpg")} height="auto" width="100%" alt="sama social" style={{ boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)", borderRadius: "16px" }} />
-          )}
+        <Box sx={{ mt: 4 }}>
+          <Box
+            sx={{
+              backgroundColor: "#FEFBF8",
+              borderRadius: "16px",
+              boxShadow: "0px 1px 2px 0px rgba(74, 74, 74, 0.06), 0px 2px 1px 0px rgba(74, 74, 74, 0.04), 0px 1px 5px 0px rgba(74, 74, 74, 0.08)",
+              overflow: "hidden",
+              border: "1px solid #EBEBEB"
+            }}
+          >
+            {/* Mock Top Bar */}
+            <Box sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              py: 1.5,
+              px: 2.5,
+              borderBottom: "1px solid #EBEBEB"
+            }}>
+              <img src={require("../../components/Header/samalogo.png")} alt="Sama Logo" style={{ height: "32px" }} />
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box sx={{
+                  width: "48px",
+                  height: "24px",
+                  backgroundColor: "#FFF",
+                  borderRadius: "12px",
+                  border: "1px solid #EBEBEB",
+                  display: "flex",
+                  alignItems: "center",
+                  px: "2px"
+                }}>
+                  <Box sx={{
+                    width: "18px",
+                    height: "18px",
+                    backgroundColor: "#F2C94C",
+                    borderRadius: "50%"
+                  }} />
+                </Box>
+                <img src={require("./assets/image 10.svg").default} alt="Profile" style={{ height: "28px", width: "28px", borderRadius: "50%", objectFit: "cover" }} />
+              </Box>
+            </Box>
+            {/* Actual Live Dashboard */}
+            <Box sx={{ p: { xs: 1, md: 2 } }}>
+              <DashboardPage />
+            </Box>
+          </Box>
         </Box>
       </Container>
 
@@ -299,7 +304,6 @@ function Home() {
 
 
 
-      <TestimonialSlider />
       <ContactForm />
     </>
   );

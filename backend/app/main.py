@@ -1756,6 +1756,58 @@ def _handle_user_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     with get_conn() as conn:
         with conn.cursor() as cur:
+            if type_name == "login":
+                email = (payload.get("email") or payload.get("Email") or "").strip()
+                password = payload.get("password") or payload.get("Password")
+
+                if not email or password is None:
+                    raise HTTPException(status_code=400, detail="Email and password are required")
+
+                cur.execute(
+                    f"""
+                    WITH approved_registration AS (
+                        SELECT
+                            r.name,
+                            r.email,
+                            r.password,
+                            r.role,
+                            ''::text AS ngo_id,
+                            ''::text AS type,
+                            ''::text AS doner
+                        FROM {DB_SCHEMA}.{USER_REGISTRATION_TABLE} r
+                        WHERE lower(coalesce(r.status, '')) = 'approved'
+                          AND coalesce(r.role, '') <> ''
+                          AND NOT EXISTS (
+                              SELECT 1
+                              FROM {DB_SCHEMA}.{USER_ROLE_TABLE} u
+                              WHERE lower(u.email) = lower(r.email)
+                          )
+                    )
+                    SELECT
+                        t.name AS "Name",
+                        t.email AS "Email",
+                        t.role AS "Role",
+                        t.ngo_id AS "Ngo Id",
+                        t.type AS "Type",
+                        t.doner AS "Doner"
+                    FROM (
+                        SELECT name, email, password, role, ngo_id, type, doner
+                        FROM {DB_SCHEMA}.{USER_ROLE_TABLE}
+                        UNION ALL
+                        SELECT name, email, password, role, ngo_id, type, doner
+                        FROM approved_registration
+                    ) t
+                    WHERE lower(t.email) = lower(%s)
+                      AND t.password = %s
+                    LIMIT 1
+                    """,
+                    (email, password),
+                )
+                user = cur.fetchone()
+                if not user:
+                    raise HTTPException(status_code=401, detail="Invalid Email or password.")
+                return {"status": "success", "user": _normalize_rows([user])[0]}
+
             if type_name == "addRegistration":
                 email = (payload.get("Email") or payload.get("email") or "").strip()
                 name = (payload.get("Name") or payload.get("name") or "").strip()
@@ -3263,31 +3315,309 @@ def get_afe_inventory_summary():
 
 @app.get("/ngo-exec")
 def ngo_exec_get(request: Request) -> Any:
-    if not LEGACY_NGO_API_URL:
-        raise HTTPException(status_code=501, detail="LEGACY_NGO_API_URL is not configured")
-    
     params = dict(request.query_params)
     org_filter = params.get("orgName")
-    
-    # Remove orgName from params sent to Google API so we always fetch the FULL list.
-    # This is required so we can accurately count len(data) for dynamic ID assignment!
-    if "orgName" in params:
-        del params["orgName"]
-        
-    timeout = httpx.Timeout(120.0)
-    with httpx.Client(timeout=timeout, follow_redirects=True) as client:
-        response = client.get(LEGACY_NGO_API_URL, params=params)
-    
-    data_json = None
-    try:
-        data_json = response.json()
-    except Exception:
-        import json
+
+    if params.get("type") == "laptopinfo":
+        ngo_id = (params.get("id") or "").strip()
+        if not ngo_id:
+            raise HTTPException(status_code=400, detail="id is required")
+
         try:
-            data_json = json.loads(response.text)
-        except Exception:
-            pass
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        f"""
+                        SELECT organization_name
+                        FROM {DB_SCHEMA}.external_registered_ngo
+                        WHERE lower(id) = lower(%s)
+                        LIMIT 1
+                        """,
+                        (ngo_id,),
+                    )
+                    ngo = cur.fetchone()
+                    ngo_name = ngo["organization_name"] if ngo else ""
+
+                    cur.execute(
+                        f"""
+                        SELECT
+                            l.id,
+                            l.date_committed,
+                            l.donor_company_name,
+                            l.ram,
+                            l.rom,
+                            l.manufacturer_model,
+                            l.processor,
+                            l.condition_status,
+                            l.inventory_location,
+                            l.status,
+                            l.battery_capacity,
+                            l.allocated_to,
+                            l.assigned_to,
+                            l.last_updated_on,
+                            l.major_issues,
+                            l.minor_issues,
+                            l.comment_for_issues,
+                            l.batch
+                        FROM {DB_SCHEMA}.laptop_labeling l
+                                                WHERE trim(coalesce(l.allocated_to, '')) <> ''
+                                                    AND lower(l.allocated_to) IN (lower(%s), lower(%s))
+                        ORDER BY l.id
+                        """,
+                                (ngo_id, ngo_name),
+                    )
+                    rows = cur.fetchall()
+
+            def split_issues(value: Optional[str]) -> List[str]:
+                if not value:
+                    return []
+                return [item.strip() for item in str(value).split(",") if item.strip()]
+
+            laptops = []
+            for row in rows:
+                laptops.append({
+                    "ID": row["id"],
+                    "Date": row["date_committed"].isoformat() if row["date_committed"] else "",
+                    "Donor Company Name": row["donor_company_name"] or "",
+                    "RAM": row["ram"] or "",
+                    "ROM": row["rom"] or "",
+                    "Manufacturer Model": row["manufacturer_model"] or "",
+                    "Processor": row["processor"] or "",
+                    "Condition Status": row["condition_status"] or "",
+                    "Inventory Location": row["inventory_location"] or "",
+                    "Status": row["status"] or "",
+                    "Battery Capacity": row["battery_capacity"],
+                    "Date of laptop Assignment": row["last_updated_on"].isoformat() if row["last_updated_on"] else "",
+                    "MajorIssue": split_issues(row["major_issues"]),
+                    "MinorIssue": split_issues(row["minor_issues"]),
+                    "Comment for the Issues": row["comment_for_issues"] or "",
+                    "Batch": row["batch"] or "",
+                })
+
+            return {"status": "success", "laptops": laptops}
+        except Exception as db_e:
+            print(f"Error loading NGO laptops from DB: {db_e}")
+            raise HTTPException(status_code=500, detail="Database query error")
+
+    if params.get("type") == "MultipleDocsGet":
+        user_id = (params.get("userId") or "").strip()
+        if not user_id:
+            raise HTTPException(status_code=400, detail="userId is required")
+
+        try:
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        f"""
+                        SELECT user_id, ngo_name, n_12a_registration, status, discription,
+                               n_80g_certification, status_2, discription_2,
+                               certificate_of_incorporation_coi, status_3, discription_3,
+                               fcra_approval, status_4, discription_4,
+                               financial_report_fy_2021_22, status_5, col_17,
+                               financial_report_fy_2022_23, status_6, discription_5,
+                               financial_report_fy_2023_24, status_7, discription_6,
+                               subfolderid
+                        FROM {DB_SCHEMA}.ngo_data_ngo_uploaded_docs
+                        WHERE lower(user_id) = lower(%s)
+                        LIMIT 1
+                        """,
+                        (user_id,),
+                    )
+                    row = cur.fetchone()
+
+            if not row:
+                return {"isDataAvailable": False, "User-Id": user_id}
+
+            def document(link: Optional[str], status: Optional[str], description: Optional[str]) -> Dict[str, Any]:
+                return {
+                    "link": link or "",
+                    "status": status or "",
+                    "description": description or "",
+                }
+
+            return {
+                "isDataAvailable": True,
+                "User-Id": row["user_id"],
+                "NGO Name": row["ngo_name"] or "",
+                "subfolderId": row["subfolderid"] or "",
+                "12A Registration": document(row["n_12a_registration"], row["status"], row["discription"]),
+                "80G Certification": document(row["n_80g_certification"], row["status_2"], row["discription_2"]),
+                "Certificate of Incorporation (COI)": document(row["certificate_of_incorporation_coi"], row["status_3"], row["discription_3"]),
+                "FCRA Approval": document(row["fcra_approval"], row["status_4"], row["discription_4"]),
+                "Financial Report FY 2021-22": document(row["financial_report_fy_2021_22"], row["status_5"], row["col_17"]),
+                "Financial Report FY 2022-23": document(row["financial_report_fy_2022_23"], row["status_6"], row["discription_5"]),
+                "Financial Report FY 2023-24": document(row["financial_report_fy_2023_24"], row["status_7"], row["discription_6"]),
+            }
+        except Exception as db_e:
+            print(f"Error loading NGO documents from DB: {db_e}")
+            raise HTTPException(status_code=500, detail="Database query error")
+    
     if params.get("type") == "registration":
+        data_json = {"status": "success", "data": []}
+        try:
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        f"""
+                        SELECT id, organization_name, registration_number, primary_contact_name, contact_number,
+                               email, operating_state, location, years_operating, focus_area, works_with_women,
+                               infrastructure, beneficiary_selection, beneficiaries_count, age_group, primary_use,
+                               expected_outcome, laptop_tracking, jobs_created, previous_projects, sufficient_staff,
+                               impact_report, status, ngo_type, laptop_require, doner, request_type, ngo_requests
+                        FROM {DB_SCHEMA}.external_registered_ngo
+                        ORDER BY id ASC
+                        """
+                    )
+                    rows = cur.fetchall()
+                    data_list = []
+                    for r in rows:
+                        data_list.append({
+                            "Id": r["id"],
+                            "organizationName": r["organization_name"],
+                            "registrationNumber": r["registration_number"],
+                            "primaryContactName": r["primary_contact_name"],
+                            "contactNumber": r["contact_number"],
+                            "email": r["email"],
+                            "operatingState": r["operating_state"],
+                            "location": r["location"],
+                            "yearsOperating": r["years_operating"],
+                            "focusArea": r["focus_area"],
+                            "worksWithWomen": r["works_with_women"],
+                            "infrastructure": r["infrastructure"],
+                            "beneficiarySelection": r["beneficiary_selection"],
+                            "beneficiariesCount": r["beneficiaries_count"],
+                            "ageGroup": r["age_group"],
+                            "primaryUse": r["primary_use"],
+                            "expectedOutcome": r["expected_outcome"],
+                            "laptopTracking": r["laptop_tracking"],
+                            "jobsCreated": r["jobs_created"],
+                            "previousProjects": r["previous_projects"],
+                            "sufficientStaff": r["sufficient_staff"],
+                            "impactReport": r["impact_report"],
+                            "Status": r["status"],
+                            "Ngo Type": r["ngo_type"],
+                            "Laptop require": r["laptop_require"],
+                            "Doner": r["doner"],
+                            "requestType": r["request_type"],
+                            "NGORequests": json.loads(r["ngo_requests"]) if r["ngo_requests"] else ""
+                        })
+                    data_json["data"] = data_list
+        except Exception as db_e:
+            print(f"Error loading registrations from DB: {db_e}")
+            raise HTTPException(status_code=500, detail="Database query error")
+            
+        try:
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        f"""
+                        SELECT id, ngo_name, laptop_quantity, location, use_case, contact_name, email, status, tentative_refurb_completion, donor,
+                               partner_type, date_received, attached_email_link, approver_name, approved_quantity,
+                               dispatch_location, expected_delivery_days, dispatch_date, delivery_date, last_impact_report_date,
+                               operating_state, years_operating, focus_area, infrastructure, beneficiaries_count, age_group, expected_outcome, laptop_tracking
+                        FROM {DB_SCHEMA}.ngo_requests
+                        ORDER BY id DESC
+                        """
+                    )
+                    draft_rows = cur.fetchall()
+                    # Determine the base serial number based on the HIGHEST existing ID
+                    max_serial = 0
+                    for x in data_json.get("data", []):
+                        id_str = str(x.get("Id", ""))
+                        if id_str.startswith("SAM-"):
+                            try:
+                                max_serial = max(max_serial, int(id_str.split("-")[-1]))
+                            except ValueError:
+                                pass
+                    current_serial = max_serial
+                    
+                    draft_list = []
+                    # We sort by id ASC so the oldest request gets the first sequential serial number
+                    for r in draft_rows:
+                        status_val = r["status"]
+                        ngo_name = r["ngo_name"]
+                        qty_requested = r["laptop_quantity"]
+                        location_val = r["location"]
+                        use_case_val = r["use_case"]
+                        contact_name_val = r["contact_name"]
+                        email_val = r["email"]
+                        db_id = r["id"]
+                        
+                        current_serial += 1
+                        display_id = f"SAM-{current_serial}"
+                        
+                        draft_list.append({
+                            "Id": display_id,
+                            "displayId": display_id,
+                            "db_id": db_id,
+                            "organizationName": ngo_name,
+                            "Laptop require": qty_requested,
+                            "location": location_val,
+                            "primaryUse": use_case_val,
+                            "primaryContactName": contact_name_val,
+                            "email": email_val,
+                            "Status": status_val,
+                            "registrationNumber": "",
+                            "contactNumber": "",
+                            "operatingState": r["operating_state"] or "",
+                            "yearsOperating": r["operating_state"] or "",
+                            "focusArea": r["focus_area"] or "",
+                            "worksWithWomen": "",
+                            "infrastructure": r["infrastructure"] or "",
+                            "beneficiarySelection": "",
+                            "beneficiariesCount": r["beneficiaries_count"] or "",
+                            "ageGroup": r["age_group"] or "",
+                            "laptopTracking": r["laptop_tracking"] or "",
+                            "tentative_refurb_completion": str(r["tentative_refurb_completion"]) if r["tentative_refurb_completion"] else None,
+                            "partner_type": r["partner_type"] or "External Partner",
+                            "date_received": str(r["date_received"]) if r["date_received"] else None,
+                            "attached_email_link": r["attached_email_link"] or "",
+                            "approver_name": r["approver_name"] or "",
+                            "approved_quantity": r["approved_quantity"] or 0,
+                            "dispatch_location": r["dispatch_location"] or "",
+                            "expected_delivery_days": r["expected_delivery_days"] or 0,
+                            "dispatch_date": str(r["dispatch_date"]) if r["dispatch_date"] else None,
+                            "delivery_date": str(r["delivery_date"]) if r["delivery_date"] else None,
+                            "last_impact_report_date": str(r["last_impact_report_date"]) if r["last_impact_report_date"] else None,
+                        })
+                    
+                    if org_filter:
+                        # Filter the legacy data to only include the requested orgName
+                        filtered_legacy = [x for x in data_json.get("data", []) if str(x.get("Id", "")) == org_filter or str(x.get("displayId", "")) == org_filter]
+                        
+                        # For detail page, maintain chronological order (oldest/main first) and append after legacy data
+                        data_json["data"] = filtered_legacy + draft_list
+                    else:
+                        # For dashboard, reverse so newest appears first
+                        draft_list.reverse()
+                        data_json["data"] = draft_list + data_json["data"]
+        except Exception as e:
+            print(f"Error merging ngo_requests drafts: {e}")
+        return data_json
+    else:
+        if not LEGACY_NGO_API_URL:
+            raise HTTPException(status_code=501, detail="LEGACY_NGO_API_URL is not configured")
+        
+        # Remove orgName from params sent to Google API so we always fetch the FULL list.
+        # This is required so we can accurately count len(data) for dynamic ID assignment!
+        if "orgName" in params:
+            del params["orgName"]
+            
+        timeout = httpx.Timeout(300.0)
+        try:
+            with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+                response = client.get(LEGACY_NGO_API_URL, params=params)
+        except httpx.RequestError as e:
+            raise HTTPException(status_code=504, detail=f"Upstream API error: {str(e)}")
+        
+        data_json = None
+        try:
+            data_json = response.json()
+        except Exception:
+            try:
+                data_json = json.loads(response.text)
+            except Exception:
+                pass
         if not isinstance(data_json, dict) or "data" not in data_json:
             data_json = {"status": "success", "data": []}
             
@@ -3687,16 +4017,21 @@ async def ngo_exec_post(request: Request) -> Any:
         
         if status_val in {"Approved", "Dispatched", "Delivered"}:
             try:
-                timeout = httpx.Timeout(120.0)
-                with httpx.Client(timeout=timeout, follow_redirects=True) as client:
-                    res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
-                    if res.status_code == 200:
-                        ngos = res.json().get("data", [])
-                        ngo = next((n for n in ngos if str(n.get("Id")) == str(ngo_id)), None)
-                        if ngo:
-                            ngo_name = ngo.get("organizationName", "NGO Partner")
-                            ngo_email = ngo.get("email")
-                            qty_requested = ngo.get("Laptop require", 0)
+                with get_conn() as conn:
+                    with conn.cursor() as cur:
+                        cur.execute(
+                            f"""
+                            SELECT organization_name, email, laptop_require
+                            FROM {DB_SCHEMA}.external_registered_ngo
+                            WHERE id = %s
+                            """,
+                            (str(ngo_id),)
+                        )
+                        row = cur.fetchone()
+                        if row:
+                            ngo_name = row["organization_name"] or "NGO Partner"
+                            ngo_email = row["email"]
+                            qty_requested = row["laptop_require"] or 0
                             
                             if ngo_email:
                                 if status_val == "Approved":
@@ -3834,7 +4169,13 @@ async def user_exec_post(request: Request) -> Any:
     type_name = _type_from_request(request, payload)
     if not type_name:
         raise HTTPException(status_code=400, detail="Missing 'type' in query or JSON body")
-    return _handle_user_post_type(payload)
+    try:
+        return await asyncio.wait_for(
+            asyncio.to_thread(_handle_user_post_type, payload),
+            timeout=10,
+        )
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="Login database request timed out")
 
 
 # =====================================================================
@@ -3960,13 +4301,15 @@ async def check_rms_inactivity():
                 
             ngos = []
             try:
-                timeout = httpx.Timeout(120.0)
-                with httpx.Client(timeout=timeout, follow_redirects=True) as client:
-                    res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
-                    if res.status_code == 200:
-                        ngos = res.json().get("data", [])
+                cur.execute(
+                    f"""
+                    SELECT id, organization_name, email
+                    FROM {DB_SCHEMA}.external_registered_ngo
+                    """
+                )
+                ngos = [{"Id": r["id"], "organizationName": r["organization_name"], "email": r["email"]} for r in cur.fetchall()]
             except Exception as e:
-                print(f"Failed to fetch NGO registrations for email mapping: {e}")
+                print(f"Failed to fetch NGO registrations from DB for email mapping: {e}")
                 
             for laptop in inactive_laptops:
                 laptop_id = laptop["id"]
@@ -4051,13 +4394,15 @@ async def send_quarterly_impact_reminders():
                 
             ngos = []
             try:
-                timeout = httpx.Timeout(120.0)
-                with httpx.Client(timeout=timeout, follow_redirects=True) as client:
-                    res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
-                    if res.status_code == 200:
-                        ngos = res.json().get("data", [])
+                cur.execute(
+                    f"""
+                    SELECT id, organization_name, email
+                    FROM {DB_SCHEMA}.external_registered_ngo
+                    """
+                )
+                ngos = [{"Id": r["id"], "organizationName": r["organization_name"], "email": r["email"]} for r in cur.fetchall()]
             except Exception as e:
-                print(f"Failed to fetch NGO registrations: {e}")
+                print(f"Failed to fetch NGO registrations from DB: {e}")
                 
             today = date.today()
             for ship in shipments:
@@ -4394,6 +4739,104 @@ async def public_donate(payload: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/api/public/social-impact-stats")
+async def get_social_impact_stats():
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                # Laptops Distributed (including all processed/refurbished/allocated statuses)
+                cur.execute(f"""
+                    SELECT COUNT(*) 
+                    FROM {DB_SCHEMA}.laptop_labeling
+                    WHERE (is_deleted_from_sheet = FALSE OR is_deleted_from_sheet IS NULL)
+                      AND status IN (
+                          'DISTRIBUTED', 
+                          'POST_DEPLOYMENT_15D', 
+                          'MONTHLY_MONITORING', 
+                          'LAPTOP_REFURBISHED', 
+                          'ALLOCATED', 
+                          'Allocated', 
+                          'DISTRIBUTION'
+                      )
+                """)
+                laptops_distributed = cur.fetchone()["count"]
+
+                # Beneficiaries Impacted (from userdetails)
+                cur.execute(f"SELECT COUNT(*) as total FROM {DB_SCHEMA}.userdetails")
+                beneficiaries_from_users = cur.fetchone()["total"]
+
+                # Females Reached, Schools Reached & Prelim Students (from preliminary)
+                cur.execute(f"""
+                    SELECT 
+                        COALESCE(SUM(number_of_student), 0) as prelim_students,
+                        COALESCE(SUM(number_of_female_student), 0) as females_reached,
+                        COALESCE(SUM(number_of_school), 0) as schools_reached
+                    FROM {DB_SCHEMA}.preliminary
+                """)
+                preliminary_stats = cur.fetchone()
+                
+                # Total beneficiaries = individual users + prelim students
+                beneficiaries_impacted = beneficiaries_from_users + preliminary_stats["prelim_students"]
+
+                # Calculate dynamic environmental metrics based on 4131 laptops baseline
+                plastic = round(laptops_distributed * 0.295933, 1)
+                aluminium = round(laptops_distributed * 0.118373, 1)
+                copper = round(laptops_distributed * 0.059186, 1)
+                gold = round(laptops_distributed * 0.000004914, 4)
+                silver = round(laptops_distributed * 0.00004914, 3)
+                resource_waste = round(plastic + aluminium + copper + gold + silver, 1)
+
+                lead = round(laptops_distributed * 1.381021, 1)
+                mercury = round(laptops_distributed * 0.098644, 1)
+                cadmium = round(laptops_distributed * 0.019728, 1)
+                chromium = round(laptops_distributed * 0.197288, 1)
+                toxic_waste = round(lead + mercury + cadmium + chromium, 1)
+
+                carbon_footprint = round(laptops_distributed * 0.078915, 1)
+
+                # Calculate states impacted dynamically
+                cur.execute(f"SELECT states FROM {DB_SCHEMA}.preliminary")
+                states_rows = cur.fetchall()
+                unique_states = set()
+                for row in states_rows:
+                    if row["states"]:
+                        for s in row["states"].split(","):
+                            cleaned = s.strip()
+                            if cleaned:
+                                if cleaned.lower() in ("jammu and kashmir", "jammu & kashmir"):
+                                    cleaned = "Jammu & Kashmir"
+                                elif cleaned.lower() == "mp":
+                                    cleaned = "MP"
+                                elif cleaned.lower() == "up":
+                                    cleaned = "UP"
+                                unique_states.add(cleaned)
+                states_impacted = len(unique_states)
+                states_list = ", ".join(sorted(list(unique_states)))
+
+        return {
+            "laptopsDistributed": laptops_distributed,
+            "beneficiariesImpacted": beneficiaries_impacted,
+            "femalesReached": preliminary_stats["females_reached"],
+            "schoolsReached": preliminary_stats["schools_reached"],
+            "statesImpacted": states_impacted,
+            "statesList": states_list,
+            "Resource Waste Reduction": resource_waste,
+            "Plastic": plastic,
+            "Aluminium": aluminium,
+            "Copper": copper,
+            "Gold": gold,
+            "Silver": silver,
+            "Toxic Waste Seepage Reduction": toxic_waste,
+            "Lead": lead,
+            "Mercury": mercury,
+            "Cadmium": cadmium,
+            "Chromium": chromium,
+            "Carbon Footprint Reduction": carbon_footprint
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/api/public/donor-stats")
 async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str] = None, endDate: Optional[str] = None):
     try:
@@ -4431,22 +4874,20 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
                 """, params + date_params)
                 refurbished_count = cur.fetchone()["count"]
 
-                statuses = [
-                    "PICKUP_REQUESTED", "IN_TRANSIT", "LAPTOP_RECEIVED", "NOT_WORKING", 
-                    "REFURBISHMENT_TESTING", "REFURBISHMENT_STARTED", "LAPTOP_REFURBISHED", "QC_CHECK",
-                    "DISTRIBUTED", "POST_DEPLOYMENT_15D", "MONTHLY_MONITORING"
-                ]
+                cur.execute(f"""
+                    SELECT ll.status, COUNT(*) 
+                    FROM {DB_SCHEMA}.laptop_labeling ll
+                    LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
+                    WHERE (ll.is_deleted_from_sheet = FALSE OR ll.is_deleted_from_sheet IS NULL)
+                      {org_filter_sql} {date_filter_sql}
+                    GROUP BY ll.status
+                """, params + date_params)
+                
                 pipeline = {}
-                for status in statuses:
-                    cur.execute(f"""
-                        SELECT COUNT(*) 
-                        FROM {DB_SCHEMA}.laptop_labeling ll
-                        LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
-                        WHERE (ll.is_deleted_from_sheet = FALSE OR ll.is_deleted_from_sheet IS NULL)
-                          AND ll.status = %s
-                          {org_filter_sql} {date_filter_sql}
-                    """, [status] + params + date_params)
-                    pipeline[status] = cur.fetchone()["count"]
+                for row in cur.fetchall():
+                    status = row["status"]
+                    if status:
+                        pipeline[status] = row["count"]
 
                 cur.execute(f"""
                     SELECT COUNT(*) 
@@ -4486,40 +4927,31 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
                 cur.execute(f"SELECT COALESCE(SUM(number_of_student), 0) FROM {DB_SCHEMA}.preliminary {pre_filter_sql}", [orgName] if orgName else [])
                 prelim_student_count = cur.fetchone()["coalesce"]
 
+                cur.execute(f"SELECT COALESCE(SUM(number_of_female_student), 0) FROM {DB_SCHEMA}.preliminary {pre_filter_sql}", [orgName] if orgName else [])
+                females_reached = cur.fetchone()["coalesce"]
+
+                cur.execute(f"SELECT COALESCE(SUM(number_of_school), 0) FROM {DB_SCHEMA}.preliminary {pre_filter_sql}", [orgName] if orgName else [])
+                schools_reached = cur.fetchone()["coalesce"]
+
                 cur.execute(f"SELECT COUNT(*) FROM {DB_SCHEMA}.userdetails {user_filter_sql}", [orgName] if orgName else [])
                 user_student_count = cur.fetchone()["count"]
 
                 active_beneficiaries = prelim_student_count + user_student_count
 
                 ngos = []
-                try:
-                    with httpx.Client(timeout=120.0, follow_redirects=True) as client:
-                        res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
-                        if res.status_code == 200:
-                            ngo_data = res.json().get("data", [])
-                            for ngo in ngo_data:
-                                if ngo.get("Status") == "Approved":
-                                    ngos.append({
-                                        "id": str(ngo.get("Id") or ""),
-                                        "ngo_name": ngo.get("organizationName") or "",
-                                        "status": ngo.get("Status") or "Approved",
-                                        "location": ngo.get("location") or "Unknown",
-                                        "donor": ngo.get("Doner") or ngo.get("Donor") or ""
-                                    })
-                except Exception as e:
-                    cur.execute(f"""
-                        SELECT id, ngo_name, status, location, donor
-                        FROM {DB_SCHEMA}.ngo_requests
-                        WHERE status = 'Approved'
-                    """)
-                    for r in cur.fetchall():
-                        ngos.append({
-                            "id": str(r["id"]),
-                            "ngo_name": r["ngo_name"],
-                            "status": r["status"],
-                            "location": r["location"] or "Unknown",
-                            "donor": r["donor"]
-                        })
+                cur.execute(f"""
+                    SELECT id, organization_name AS ngo_name, status, location, doner AS donor
+                    FROM {DB_SCHEMA}.external_registered_ngo
+                    WHERE status = 'Approved'
+                """)
+                for r in cur.fetchall():
+                    ngos.append({
+                        "id": str(r["id"]),
+                        "ngo_name": r["ngo_name"],
+                        "status": r["status"],
+                        "location": r["location"] or "Unknown",
+                        "donor": r["donor"]
+                    })
 
                 ngo_partners = []
                 for ngo in ngos:
@@ -4659,8 +5091,7 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
                     SELECT DISTINCT COALESCE(d.donor_company, ll.donor_company_name) AS donor_name
                     FROM {DB_SCHEMA}.laptop_labeling ll
                     LEFT JOIN {DB_SCHEMA}.{DONOR_TABLE} d ON d.donor_id = ll.donor_id
-                    WHERE (ll.is_deleted_from_sheet = FALSE OR ll.is_deleted_from_sheet IS NULL)
-                      AND COALESCE(d.donor_company, ll.donor_company_name) IS NOT NULL
+                    WHERE COALESCE(d.donor_company, ll.donor_company_name) IS NOT NULL
                       AND COALESCE(d.donor_company, ll.donor_company_name) != ''
                 """)
                 unique_orgs = [row["donor_name"] for row in cur.fetchall() if row.get("donor_name")]
@@ -4669,6 +5100,8 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
             "totalLaptops": total_laptops,
             "refurbishedCount": refurbished_count,
             "activeBeneficiaries": active_beneficiaries,
+            "femalesReached": females_reached,
+            "schoolsReached": schools_reached,
             "pipeline": pipeline_ui,
             "ngoPartners": ngo_partners,
             "recentActivities": recent_activities_list,
@@ -4685,16 +5118,21 @@ async def get_state_wise_sheet():
         name_to_id = {}
         id_to_states = {}
         try:
-            with httpx.Client(timeout=120.0, follow_redirects=True) as client:
-                res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
-                if res.status_code == 200:
-                    ngos = res.json().get("data", [])
-                    for n in ngos:
-                        org_name = n.get("organizationName")
-                        ngo_id = n.get("Id")
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        f"""
+                        SELECT id, organization_name, operating_state
+                        FROM {DB_SCHEMA}.external_registered_ngo
+                        """
+                    )
+                    rows = cur.fetchall()
+                    for r in rows:
+                        org_name = r["organization_name"]
+                        ngo_id = r["id"]
                         if org_name and ngo_id:
                             name_to_id[org_name.strip().lower()] = ngo_id
-                            state = n.get("operatingState")
+                            state = r["operating_state"]
                             if state:
                                 id_to_states[ngo_id] = [normalize_state_name(s.strip()) for s in state.split(",") if s.strip()]
         except Exception as e:
@@ -4789,21 +5227,26 @@ async def get_public_live_map_stats():
         id_to_states = {}
         id_to_beneficiaries = {}
         try:
-            with httpx.Client(timeout=120.0, follow_redirects=True) as client:
-                res = client.get(LEGACY_NGO_API_URL, params={"type": "registration"})
-                if res.status_code == 200:
-                    ngos = res.json().get("data", [])
-                    for n in ngos:
-                        org_name = n.get("organizationName")
-                        ngo_id = n.get("Id")
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        f"""
+                        SELECT id, organization_name, operating_state, beneficiaries_count, laptop_require
+                        FROM {DB_SCHEMA}.external_registered_ngo
+                        """
+                    )
+                    rows = cur.fetchall()
+                    for r in rows:
+                        org_name = r["organization_name"]
+                        ngo_id = r["id"]
                         if org_name and ngo_id:
                             name_to_id[org_name.strip().lower()] = ngo_id
                             
-                            state = n.get("operatingState")
+                            state = r["operating_state"]
                             if state:
                                 id_to_states[ngo_id] = [normalize_state_name(s.strip()) for s in state.split(",") if s.strip()]
                                 
-                            beneficiaries = n.get("beneficiariesCount") or n.get("Laptop require", 0) * 13
+                            beneficiaries = r["beneficiaries_count"] or (r["laptop_require"] or 0) * 13
                             try:
                                 id_to_beneficiaries[ngo_id] = int(beneficiaries)
                             except Exception:
@@ -4813,21 +5256,30 @@ async def get_public_live_map_stats():
 
         with get_conn() as conn:
             with conn.cursor() as cur:
-                # Get exact database target counts (only successfully refurbished laptops)
+                # Get exact database target counts (sync status list with social impact cards)
                 cur.execute(f"""
                     SELECT COUNT(id) AS count 
                     FROM {DB_SCHEMA}.laptop_labeling 
-                    WHERE status IN (
-                        'LAPTOP_REFURBISHED', 'QC_CHECK', 'TO_BE_DISPATCH', 
-                        'ALLOCATED', 'DISTRIBUTED', 'POST_DEPLOYMENT', 'MONTHLY_MONITORING'
-                    )
+                    WHERE (is_deleted_from_sheet = FALSE OR is_deleted_from_sheet IS NULL)
+                      AND status IN (
+                          'DISTRIBUTED', 
+                          'POST_DEPLOYMENT_15D', 
+                          'MONTHLY_MONITORING', 
+                          'LAPTOP_REFURBISHED', 
+                          'ALLOCATED', 
+                          'Allocated', 
+                          'DISTRIBUTION'
+                      )
                 """)
                 row_dev = cur.fetchone()
                 target_devices = row_dev.get("count") if row_dev else 0
 
+                cur.execute(f"SELECT COUNT(*) as total FROM {DB_SCHEMA}.userdetails")
+                userdetails_count = cur.fetchone()["total"]
+
                 cur.execute(f"SELECT SUM(number_of_student) AS sum FROM {DB_SCHEMA}.preliminary")
                 row_pep = cur.fetchone()
-                target_people = row_pep.get("sum") if row_pep else 0
+                target_people = (row_pep.get("sum") if row_pep and row_pep.get("sum") is not None else 0) + userdetails_count
 
                 cur.execute(f"SELECT COUNT(DISTINCT allocated_to) AS count FROM {DB_SCHEMA}.laptop_labeling WHERE allocated_to IS NOT NULL AND allocated_to != ''")
                 row_ngo = cur.fetchone()
@@ -4848,11 +5300,19 @@ async def get_public_live_map_stats():
                     if students:
                         id_to_prelim_students[ngoid] = students
 
-                # Fetch distributed laptops per NGO name
+                # Fetch distributed laptops per NGO name (expanded statuses list)
                 cur.execute(f"""
                     SELECT allocated_to, COUNT(id) 
                     FROM {DB_SCHEMA}.laptop_labeling 
-                    WHERE status = 'DISTRIBUTED' 
+                    WHERE status IN (
+                        'DISTRIBUTED', 
+                        'POST_DEPLOYMENT_15D', 
+                        'MONTHLY_MONITORING', 
+                        'LAPTOP_REFURBISHED', 
+                        'ALLOCATED', 
+                        'Allocated', 
+                        'DISTRIBUTION'
+                    )
                       AND allocated_to IS NOT NULL 
                       AND allocated_to != '' 
                     GROUP BY allocated_to
@@ -4962,7 +5422,7 @@ async def run_daily_background_scheduler():
     while True:
         try:
             await check_rms_inactivity()
-            await send_quarterly_impact_reminders()
+            await asyncio.to_thread(asyncio.run, send_quarterly_impact_reminders())
         except Exception as e:
             print(f"Error in background scheduler iteration: {e}")
         # Run every 24 hours (86400 seconds)
@@ -4974,9 +5434,10 @@ async def run_frequent_background_scheduler():
     while True:
         try:
             print("Starting background laptop sync...")
+            import sys
             # Run sync.py as a subprocess
             process = await asyncio.create_subprocess_exec(
-                "python", "sync.py",
+                sys.executable, "sync.py",
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE
             )
@@ -4993,6 +5454,12 @@ async def run_frequent_background_scheduler():
 
 @app.on_event("startup")
 async def start_background_jobs():
+    background_jobs_enabled = os.getenv("ENABLE_BACKGROUND_JOBS", "true").strip().lower() in {
+        "1", "true", "yes", "on"
+    }
+    if not background_jobs_enabled:
+        print("Background jobs disabled.")
+        return
     asyncio.create_task(run_daily_background_scheduler())
     asyncio.create_task(run_frequent_background_scheduler())
     # asyncio.create_task(run_email_polling_scheduler())

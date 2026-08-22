@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import RecentActivity from './RecentActivity';
@@ -930,7 +931,7 @@ const Overview = () => {
                   >
                     Apply Filter
                   </Button>
-                  {(appliedStartDate || appliedEndDate) && (
+                  {(startDate || endDate || appliedStartDate || appliedEndDate) && (
                     <Button
                       variant="outlined"
                       onClick={clearDateFilter}

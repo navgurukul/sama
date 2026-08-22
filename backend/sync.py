@@ -281,7 +281,6 @@ async def sync_audit():
             %(id)s, %(field)s, %(from_value)s, %(to_value)s, %(updated_by)s, %(updated_on)s
         )
     """
-    
     print("Clearing and reloading audit table...")
     with psycopg.connect(db_url, row_factory=dict_row) as conn:
         with conn.transaction():
@@ -289,15 +288,16 @@ async def sync_audit():
                 # Wipes existing to reload clean copy
                 cur.execute(f"TRUNCATE TABLE {DB_SCHEMA}.audit_for_laptops RESTART IDENTITY CASCADE;")
                 
-        # Batch insert in chunks of 5000
-        chunk_size = 5000
-        success_count = 0
-        for i in range(0, len(params_list), chunk_size):
-            chunk = params_list[i:i + chunk_size]
+    # Batch insert in chunks of 1000 with a new connection per chunk
+    chunk_size = 1000
+    success_count = 0
+    for i in range(0, len(params_list), chunk_size):
+        chunk = params_list[i:i + chunk_size]
+        with psycopg.connect(db_url, row_factory=dict_row) as conn:
             with conn.transaction():
                 with conn.cursor() as cur:
                     cur.executemany(query, chunk)
-            success_count += len(chunk)
+        success_count += len(chunk)
             
     print(f"Successfully synced {success_count} audit records to the database!")
 
@@ -317,7 +317,10 @@ async def sync_preliminary():
         data = response.json()
         
     params_list = []
-    for item in data:
+    for index, item in enumerate(data):
+        if not item.get("NgoId"):
+            continue
+        
         courses_list = item.get("Courses") or []
         course_parts = []
         for c in courses_list:
@@ -336,7 +339,7 @@ async def sync_preliminary():
         states_str = ", ".join(states_list) if isinstance(states_list, list) else str(states_list)
         
         params = {
-            "id": item.get("Id"),
+            "id": index + 1,
             "ngoid": item.get("NgoId"),
             "number_of_school": clean_number(item.get("Number of school")),
             "number_of_teacher": clean_number(item.get("Number of teacher")),
@@ -359,18 +362,6 @@ async def sync_preliminary():
             %(id)s, %(ngoid)s, %(number_of_school)s, %(number_of_teacher)s, %(number_of_student)s,
             %(number_of_female_student)s, %(states)s, %(course)s, %(unit)s, %(doner)s, %(request_type)s, %(ngo_prelim_requests)s
         )
-        ON CONFLICT (id) DO UPDATE SET
-            ngoid = EXCLUDED.ngoid,
-            number_of_school = EXCLUDED.number_of_school,
-            number_of_teacher = EXCLUDED.number_of_teacher,
-            number_of_student = EXCLUDED.number_of_student,
-            number_of_female_student = EXCLUDED.number_of_female_student,
-            states = EXCLUDED.states,
-            course = EXCLUDED.course,
-            unit = EXCLUDED.unit,
-            doner = EXCLUDED.doner,
-            request_type = EXCLUDED.request_type,
-            ngo_prelim_requests = EXCLUDED.ngo_prelim_requests
     """
     
     print(f"Reloading preliminary table with {len(params_list)} rows...")
@@ -382,10 +373,109 @@ async def sync_preliminary():
                 
     print("Successfully synced preliminary table!")
 
+async def sync_external_registered_ngo():
+    db_url = os.environ.get("DATABASE_URL")
+    url = os.environ.get("LEGACY_NGO_API_URL")
+    if not url:
+        print("LEGACY_NGO_API_URL not configured. Skipping external NGO sync.")
+        return
+        
+    print("Syncing external_registered_ngo from sheet...")
+    async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as client:
+        response = await client.get(url, params={"type": "registration"})
+        if response.status_code != 200:
+            print("Failed to fetch NGO registrations from sheet.")
+            return
+        data = response.json().get("data", [])
+        
+    params_list = []
+    for item in data:
+        params = {
+            "id": item.get("Id"),
+            "organization_name": item.get("organizationName"),
+            "registration_number": clean_number(item.get("registrationNumber")),
+            "primary_contact_name": item.get("primaryContactName"),
+            "contact_number": clean_number(item.get("contactNumber")),
+            "email": item.get("email"),
+            "operating_state": item.get("operatingState"),
+            "location": item.get("location"),
+            "years_operating": item.get("yearsOperating"),
+            "focus_area": item.get("focusArea"),
+            "works_with_women": item.get("worksWithWomen"),
+            "infrastructure": item.get("infrastructure"),
+            "beneficiary_selection": item.get("beneficiarySelection"),
+            "beneficiaries_count": clean_number(item.get("beneficiariesCount")),
+            "age_group": item.get("ageGroup"),
+            "primary_use": item.get("primaryUse"),
+            "expected_outcome": item.get("expectedOutcome"),
+            "laptop_tracking": item.get("laptopTracking"),
+            "jobs_created": item.get("jobsCreated"),
+            "previous_projects": item.get("previousProjects"),
+            "sufficient_staff": item.get("sufficientStaff"),
+            "impact_report": item.get("impactReport"),
+            "status": item.get("Status"),
+            "ngo_type": item.get("Ngo Type"),
+            "laptop_require": clean_number(item.get("Laptop require")),
+            "doner": item.get("Doner"),
+            "request_type": item.get("requestType"),
+            "ngo_requests": json.dumps(item.get("NGORequests") or {})
+        }
+        params_list.append(params)
+        
+    query = f"""
+        INSERT INTO {DB_SCHEMA}.external_registered_ngo (
+            id, organization_name, registration_number, primary_contact_name, contact_number,
+            email, operating_state, location, years_operating, focus_area, works_with_women,
+            infrastructure, beneficiary_selection, beneficiaries_count, age_group, primary_use,
+            expected_outcome, laptop_tracking, jobs_created, previous_projects, sufficient_staff,
+            impact_report, status, ngo_type, laptop_require, doner, request_type, ngo_requests
+        ) VALUES (
+            %(id)s, %(organization_name)s, %(registration_number)s, %(primary_contact_name)s, %(contact_number)s,
+            %(email)s, %(operating_state)s, %(location)s, %(years_operating)s, %(focus_area)s, %(works_with_women)s,
+            %(infrastructure)s, %(beneficiary_selection)s, %(beneficiaries_count)s, %(age_group)s, %(primary_use)s,
+            %(expected_outcome)s, %(laptop_tracking)s, %(jobs_created)s, %(previous_projects)s, %(sufficient_staff)s,
+            %(impact_report)s, %(status)s, %(ngo_type)s, %(laptop_require)s, %(doner)s, %(request_type)s, %(ngo_requests)s
+        )
+        ON CONFLICT (id) DO UPDATE SET
+            organization_name = EXCLUDED.organization_name,
+            registration_number = EXCLUDED.registration_number,
+            primary_contact_name = EXCLUDED.primary_contact_name,
+            contact_number = EXCLUDED.contact_number,
+            email = EXCLUDED.email,
+            operating_state = EXCLUDED.operating_state,
+            location = EXCLUDED.location,
+            years_operating = EXCLUDED.years_operating,
+            focus_area = EXCLUDED.focus_area,
+            works_with_women = EXCLUDED.works_with_women,
+            infrastructure = EXCLUDED.infrastructure,
+            beneficiary_selection = EXCLUDED.beneficiary_selection,
+            beneficiaries_count = EXCLUDED.beneficiaries_count,
+            age_group = EXCLUDED.age_group,
+            primary_use = EXCLUDED.primary_use,
+            expected_outcome = EXCLUDED.expected_outcome,
+            laptop_tracking = EXCLUDED.laptop_tracking,
+            jobs_created = EXCLUDED.jobs_created,
+            previous_projects = EXCLUDED.previous_projects,
+            sufficient_staff = EXCLUDED.sufficient_staff,
+            impact_report = EXCLUDED.impact_report,
+            status = EXCLUDED.status,
+            ngo_type = EXCLUDED.ngo_type,
+            laptop_require = EXCLUDED.laptop_require,
+            doner = EXCLUDED.doner,
+            request_type = EXCLUDED.request_type,
+            ngo_requests = EXCLUDED.ngo_requests
+    """
+    with psycopg.connect(db_url, row_factory=dict_row) as conn:
+        with conn.transaction():
+            with conn.cursor() as cur:
+                cur.executemany(query, params_list)
+    print("Successfully synced external_registered_ngo table!")
+
 async def main_sync():
     await sync()
     await sync_audit()
     await sync_preliminary()
+    await sync_external_registered_ngo()
 
 if __name__ == "__main__":
     asyncio.run(main_sync())

@@ -18,5 +18,10 @@ def get_conn() -> Iterator[psycopg.Connection]:
     database_url = os.getenv("DATABASE_URL", "")
     if not database_url:
         raise RuntimeError("DATABASE_URL is not set")
-    with psycopg.connect(database_url, row_factory=dict_row) as conn:
+    connect_timeout = int(os.getenv("DB_CONNECT_TIMEOUT", "10"))
+    with psycopg.connect(
+        database_url,
+        row_factory=dict_row,
+        connect_timeout=connect_timeout,
+    ) as conn:
         yield conn

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import MUIDataTable from "mui-datatables";
 import { TextField, Button, Box, Typography } from "@mui/material";
@@ -32,13 +32,13 @@ const Audit = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({
-    field: null,
-    direction: 'asc'
+    field: "Updated On",
+    direction: "desc"
   });
 
 
 
-  const fetchAuditData = async () => {
+  const fetchAuditData = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get(
@@ -57,11 +57,11 @@ const Audit = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, rowsPerPage, appliedSearchId]);
 
   useEffect(() => {
     fetchAuditData();
-  }, [page, rowsPerPage, appliedSearchId]);
+  }, [fetchAuditData]);
 
   const handleSearch = () => {
     setAppliedSearchId(searchId.trim());
@@ -200,8 +200,8 @@ const Audit = () => {
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           sx={{ width: 200 }}
         />
-        <Button variant="contained" size="small" onClick={handleSearch}>
-          Search
+        <Button variant="contained" size="small" onClick={handleSearch} disabled={loading}>
+          {loading ? "Searching..." : "Search"}
         </Button>
       </Box>
 
