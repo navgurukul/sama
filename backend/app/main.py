@@ -19,13 +19,11 @@ from apscheduler.triggers.cron import CronTrigger
 from .db import DB_SCHEMA, get_conn
 
 
-LEGACY_LAPTOP_API_URL = os.getenv("LEGACY_LAPTOP_API_URL", "").strip()
-LEGACY_NGO_API_URL = os.getenv("LEGACY_NGO_API_URL", "").strip() or "https://script.google.com/macros/s/AKfycbyCYWNg907Iu9y-ZVn8sWpLdh3NriAbG4D02zTVGHkLVK5WIfDHunknZrKe3fO8DUn9ow/exec"
-LEGACY_GET_INVOLVED_FORM = os.getenv("LEGACY_GET_INVOLVED_FORM", "").strip()
 USER_PROFILE_TABLE_PREFIX = os.getenv("USER_PROFILE_TABLE_PREFIX", "user_profile").strip() or "user_profile"
 USER_REGISTRATION_TABLE = f"{USER_PROFILE_TABLE_PREFIX}_registration"
 USER_ROLE_TABLE = f"{USER_PROFILE_TABLE_PREFIX}_userrole"
 DONOR_TABLE = os.getenv("DONOR_TABLE", "donor").strip() or "donor"
+LEGACY_NGO_API_URL = ""
 
 app = FastAPI(title="Sama Laptop Backend", version="0.1.0")
 
@@ -42,6 +40,7 @@ MIGRATED_TYPES = {
     "getUserData",
     "getpre",
     "pickupget",
+    "pickup",
     "audit",
     "UpdateLaptopComment",
     "updatepickupstatus",
@@ -1801,13 +1800,21 @@ def _handle_user_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                     ) t
                     WHERE lower(t.email) = lower(%s)
                       AND t.password = %s
-                    LIMIT 1
                     """,
                     (email, password),
                 )
-                user = cur.fetchone()
-                if not user:
+                matching_users = cur.fetchall()
+                if not matching_users:
                     raise HTTPException(status_code=401, detail="Invalid Email or password.")
+
+                user = dict(matching_users[0])
+                roles = []
+                for matching_user in matching_users:
+                    for role in str(matching_user.get("Role") or "").split(","):
+                        role = role.strip()
+                        if role and role not in roles:
+                            roles.append(role)
+                user["Role"] = ", ".join(roles)
                 conn.rollback()
                 return {"status": "success", "user": _normalize_rows([user])[0]}
 
@@ -2408,6 +2415,30 @@ def _handle_post_type(type_name: str, payload: Dict[str, Any]) -> Dict[str, Any]
                 conn.commit()
                 return {"status": "success", "type": type_name}
 
+            if type_name == "pickup":
+                pickup_id = f"PK-{uuid.uuid4().hex[:8].upper()}"
+                cur.execute(
+                    f"""
+                    INSERT INTO {DB_SCHEMA}.pickup
+                    (pickup_id, donor_company, poc_name, poc_contact, poc_email,
+                     number_of_laptops, pickup_location, pickup_by, status,
+                     current_date_time, updated_on)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'Pending', now(), now())
+                    """,
+                    (
+                        pickup_id,
+                        payload.get("donorCompany"),
+                        payload.get("pocName"),
+                        payload.get("pocContact"),
+                        payload.get("email"),
+                        int(payload.get("numberOfLaptops") or 0),
+                        payload.get("pickupLocation"),
+                        payload.get("pickupBy"),
+                    ),
+                )
+                conn.commit()
+                return {"status": "success", "type": type_name, "pickup_id": pickup_id}
+
             if type_name == "bulkupload":
                 data_list = payload.get("data")
                 if not isinstance(data_list, list):
@@ -2843,37 +2874,9 @@ def _query_issue_logs(request: Request) -> List[Dict[str, Any]]:
             return _normalize_rows(cur.fetchall() or [])
 
 
-def _proxy_to_legacy(method: str, request: Request, payload: Optional[Dict[str, Any]]) -> Any:
-    if not LEGACY_LAPTOP_API_URL:
-        raise HTTPException(
-            status_code=501,
-            detail="Type is not migrated and LEGACY_LAPTOP_API_URL is not configured",
-        )
-
-    params = dict(request.query_params)
-    org_filter = params.get("orgName")
-    
-    # Remove orgName from params sent to Google API so we always fetch the FULL list.
-    # This is required so we can accurately count len(data) for dynamic ID assignment!
-    if "orgName" in params:
-        del params["orgName"]
-        
-    timeout = httpx.Timeout(120.0)
-    with httpx.Client(timeout=timeout, follow_redirects=True) as client:
-        if method == "GET":
-            response = client.get(LEGACY_LAPTOP_API_URL, params=params)
-        else:
-            response = client.post(LEGACY_LAPTOP_API_URL, params=params, json=payload or {})
-
-    content_type = response.headers.get("content-type", "")
-    if "application/json" in content_type:
-        return response.json()
-    return {"status": "proxied", "raw": response.text}
-
-
 def _save_public_inquiry(payload: Dict[str, Any]) -> Dict[str, Any]:
     form_type = str(payload.get("formType") or "").strip().lower()
-    if form_type not in {"email", "community", "corporate", "government"}:
+    if form_type not in {"email", "community", "corporate", "government", "contact", "callback", "newsletter"}:
         raise HTTPException(status_code=400, detail="Unsupported public form type")
 
     with get_conn() as conn:
@@ -2903,6 +2906,73 @@ def _save_public_inquiry(payload: Dict[str, Any]) -> Dict[str, Any]:
             conn.commit()
 
     return {"status": "success", "databaseId": inquiry_id}
+
+
+def _ngo_operation_key(payload: Dict[str, Any], params: Optional[Dict[str, Any]] = None) -> str:
+    values = payload if payload else (params or {})
+    return str(values.get("id") or values.get("Id") or values.get("month") or "default")
+
+
+def _save_ngo_operation(operation: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+    ngo_id = payload.get("ngoId") or payload.get("userId") or payload.get("id") or payload.get("Id")
+    record_key = _ngo_operation_key(payload)
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"""
+                INSERT INTO {DB_SCHEMA}.ngo_operation_records
+                (operation, ngo_id, record_key, payload)
+                VALUES (%s, %s, %s, %s::jsonb)
+                ON CONFLICT (operation, ngo_id, record_key)
+                DO UPDATE SET payload = EXCLUDED.payload, updated_at = now()
+                RETURNING record_id
+                """,
+                (operation, str(ngo_id) if ngo_id is not None else None, record_key, json.dumps(payload)),
+            )
+            record_id = cur.fetchone()["record_id"]
+            conn.commit()
+    return {"status": "success", "type": operation, "recordId": record_id}
+
+
+def _query_ngo_operation(operation: str, params: Dict[str, Any]) -> Any:
+    ngo_id = params.get("ngoId") or params.get("userId") or params.get("id") or params.get("ngoId")
+    operation_filter = (
+        "operation IN ('MultipleDocsUpload', 'MultipleDocsUpdate', 'NewMultipleDocsUpload', 'updateDocStatus')"
+        if operation == "MultipleDocsGet"
+        else "operation = %s"
+    )
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"""
+                SELECT payload
+                FROM {DB_SCHEMA}.ngo_operation_records
+                WHERE {operation_filter} AND (%s IS NULL OR ngo_id = %s)
+                ORDER BY updated_at DESC, record_id DESC
+                """,
+                ((operation,) if operation != "MultipleDocsGet" else ())
+                + (str(ngo_id) if ngo_id else None, str(ngo_id) if ngo_id else None),
+            )
+            rows = [row["payload"] for row in cur.fetchall()]
+    if operation == "MultipleDocsGet":
+        documents: Dict[str, Any] = {}
+        for payload in rows:
+            for file_item in payload.get("files", []) if isinstance(payload, dict) else []:
+                name = file_item.get("category") or file_item.get("name")
+                if name:
+                    documents[name] = {
+                        "link": file_item.get("file") or file_item.get("link") or "",
+                        "status": file_item.get("status") or "Pending Verification",
+                        "description": file_item.get("description") or "",
+                    }
+        return documents
+    if operation == "manageStatus":
+        return rows
+    if operation in {"Monthly", "Yearly"}:
+        return rows[0] if rows else {"status": "success", "questions": []}
+    if operation in {"GetMonthlyReport", "GetYearlyReport"}:
+        return {"status": "success", "data": rows}
+    return {"status": "success", "data": rows}
 
 
 @app.post("/evidence-upload")
@@ -3354,6 +3424,13 @@ def get_afe_inventory_summary():
 def ngo_exec_get(request: Request) -> Any:
     params = dict(request.query_params)
     org_filter = params.get("orgName")
+    type_name = params.get("type")
+
+    if type_name in {
+        "manageStatus", "Monthly", "Yearly", "GetMonthlyReport", "GetYearlyReport",
+        "GetMou", "getMonthlyStatusUpdate", "donorQuestion", "question", "yearlyQuestion",
+    }:
+        return _query_ngo_operation(type_name, params)
 
     if params.get("type") == "laptopinfo":
         ngo_id = (params.get("id") or "").strip()
@@ -3463,6 +3540,9 @@ def ngo_exec_get(request: Request) -> Any:
                     row = cur.fetchone()
 
             if not row:
+                stored_documents = _query_ngo_operation("MultipleDocsGet", {"userId": user_id})
+                if stored_documents:
+                    return {"isDataAvailable": True, "User-Id": user_id, **stored_documents}
                 return {"isDataAvailable": False, "User-Id": user_id}
 
             def document(link: Optional[str], status: Optional[str], description: Optional[str]) -> Dict[str, Any]:
@@ -3632,8 +3712,10 @@ def ngo_exec_get(request: Request) -> Any:
             print(f"Error merging ngo_requests drafts: {e}")
         return data_json
     else:
-        if not LEGACY_NGO_API_URL:
-            raise HTTPException(status_code=501, detail="LEGACY_NGO_API_URL is not configured")
+        raise HTTPException(
+            status_code=501,
+            detail=f"NGO operation '{params.get('type') or 'unknown'}' is not implemented in the database backend",
+        )
         
         # Remove orgName from params sent to Google API so we always fetch the FULL list.
         # This is required so we can accurately count len(data) for dynamic ID assignment!
@@ -3797,9 +3879,6 @@ def ngo_exec_get(request: Request) -> Any:
  
 @app.post("/ngo-exec")
 async def ngo_exec_post(request: Request) -> Any:
-    if not LEGACY_NGO_API_URL:
-        raise HTTPException(status_code=501, detail="LEGACY_NGO_API_URL is not configured")
-     
     try:
         payload = await request.json()
         if not isinstance(payload, dict):
@@ -4107,22 +4186,19 @@ async def ngo_exec_post(request: Request) -> Any:
             except Exception as e:
                 print(f"Failed to process status notification details for {status_val}: {e}")
                 
-    params = dict(request.query_params)
-    org_filter = params.get("orgName")
-    
-    # Remove orgName from params sent to Google API so we always fetch the FULL list.
-    # This is required so we can accurately count len(data) for dynamic ID assignment!
-    if "orgName" in params:
-        del params["orgName"]
-        
-    timeout = httpx.Timeout(120.0)
-    with httpx.Client(timeout=timeout, follow_redirects=True) as client:
-        response = client.post(LEGACY_NGO_API_URL, params=params, json=payload)
-        
-    content_type = response.headers.get("content-type", "")
-    if "application/json" in content_type:
-        return response.json()
-    return {"status": "proxied", "raw": response.text}
+    if type_name in {
+        "MultipleDocsUpload", "MultipleDocsUpdate", "NewMultipleDocsUpload", "updateDocStatus",
+        "MouUpload", "question", "UpdateMonthly", "UpdateYearly", "Monthly", "Yearly",
+        "SendMonthlyReport", "SendYearlyReport", "manageStatus", "addManageStatus",
+        "editManageStatus", "deleteManageStatus", "updateStatusHistory", "donorQuestion",
+        "Donor", "GetMou", "getMonthlyStatusUpdate", "yearlyQuestion",
+    }:
+        return _save_ngo_operation(type_name, payload)
+
+    raise HTTPException(
+        status_code=501,
+        detail=f"NGO operation '{type_name or 'unknown'}' is not implemented in the database backend",
+    )
 
 
 @app.get("/exec")
@@ -4160,7 +4236,7 @@ def exec_get(request: Request) -> Any:
     if type_name == "getIssueLogs":
         return _query_issue_logs(request)
 
-    return _proxy_to_legacy("GET", request, None)
+    raise HTTPException(status_code=501, detail=f"Operation '{type_name}' is not implemented in the database backend")
 
 
 @app.post("/exec")
@@ -4182,7 +4258,7 @@ async def exec_post(request: Request, background_tasks: BackgroundTasks) -> Any:
     if type_name in MIGRATED_TYPES:
         return _handle_post_type(type_name, payload)
 
-    return _proxy_to_legacy("POST", request, payload)
+    raise HTTPException(status_code=501, detail=f"Operation '{type_name}' is not implemented in the database backend")
 
 
 @app.get("/user-exec")
@@ -5452,6 +5528,43 @@ async def get_public_impact_stats():
                     })
                     
                 return {"status": "success", "data": stats_by_state}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/public/corporate-impact")
+async def get_public_corporate_impact(doner: str = "Amazon"):
+    """Return the corporate dashboard's nested report data from PostgreSQL."""
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    f"""
+                    SELECT r.ngoid, r.month, r.number_of_teachers_trained,
+                           r.number_of_school_visits, r.number_of_sessions_conducted,
+                           r.number_of_modules_completed, n.operating_state
+                    FROM {DB_SCHEMA}.report r
+                    LEFT JOIN {DB_SCHEMA}.external_registered_ngo n ON n.id = r.ngoid
+                    WHERE (%s = '' OR lower(coalesce(n.doner, '')) = lower(%s))
+                    ORDER BY r.ngoid, r.month
+                    """,
+                    (doner, doner),
+                )
+                result: Dict[str, Any] = {}
+                for row in cur.fetchall():
+                    partner = str(row["ngoid"] or "Unknown")
+                    month = str(row["month"] or "Unknown")
+                    states = [s.strip() for s in str(row["operating_state"] or "Unknown").split(",") if s.strip()]
+                    metrics = {
+                        "Number of Teachers Trained": row["number_of_teachers_trained"] or 0,
+                        "Number of School Visits": row["number_of_school_visits"] or 0,
+                        "Number of Sessions Conducted": row["number_of_sessions_conducted"] or 0,
+                        "Number of Modules Completed": row["number_of_modules_completed"] or 0,
+                    }
+                    result.setdefault(partner, {}).setdefault(month, {})
+                    for state in states:
+                        result[partner][month][state] = metrics
+                return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

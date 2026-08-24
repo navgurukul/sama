@@ -88,6 +88,7 @@ async def sync():
             if isinstance(v, str) and (v.strip() == "" or v.strip() == "-"):
                 item[k] = None
                 
+        item["Date"] = parse_date(item.get("Date"))
         item["Manufacturing Date"] = parse_date(item.get("Manufacturing Date"))
         item["Last Updated On"] = parse_date(item.get("Last Updated On"))
         item["Battery Capacity"] = clean_number(item.get("Battery Capacity"))
@@ -111,6 +112,7 @@ async def sync():
             
         params = {
             "id": item.get("ID") or item.get("id"),
+            "date_committed": item.get("Date"),
             "donor_company_name": item.get("Donor Company Name"),
             "ram": item.get("RAM"),
             "rom": item.get("ROM"),
@@ -138,19 +140,20 @@ async def sync():
         
     query = f"""
         INSERT INTO {DB_SCHEMA}.laptop_labeling (
-            id, donor_id, ram, rom, manufacturer_model,
+              id, date_committed, donor_id, ram, rom, manufacturer_model,
             processor, manufacturing_date, condition_status, major_issues,
             minor_issues, other_issues, inventory_location, laptop_weight,
             mac_address, battery_capacity, comment_for_issues, working,
             status, assigned_to, allocated_to, last_updated_on, last_updated_by, batch
         ) VALUES (
-            %(id)s, (SELECT donor_id FROM {DB_SCHEMA}.donor WHERE donor_company ILIKE %(donor_company_name)s LIMIT 1), %(ram)s, %(rom)s, %(manufacturer_model)s,
+              %(id)s, %(date_committed)s, (SELECT donor_id FROM {DB_SCHEMA}.donor WHERE donor_company ILIKE %(donor_company_name)s LIMIT 1), %(ram)s, %(rom)s, %(manufacturer_model)s,
             %(processor)s, %(manufacturing_date)s, %(condition_status)s, %(major_issues)s,
             %(minor_issues)s, %(other_issues)s, %(inventory_location)s, %(laptop_weight)s,
             %(mac_address)s, %(battery_capacity)s, %(comment_for_issues)s, %(working)s,
             %(status)s, %(assigned_to)s, %(allocated_to)s, %(last_updated_on)s, %(last_updated_by)s, %(batch)s
         )
         ON CONFLICT (id) DO UPDATE SET
+            date_committed = EXCLUDED.date_committed,
             donor_id = EXCLUDED.donor_id,
             ram = EXCLUDED.ram,
             rom = EXCLUDED.rom,
@@ -368,7 +371,7 @@ async def sync_preliminary():
     with psycopg.connect(db_url, row_factory=dict_row) as conn:
         with conn.transaction():
             with conn.cursor() as cur:
-                cur.execute(f"TRUNCATE TABLE {DB_SCHEMA}.preliminary RESTART IDENTITY CASCADE;")
+                cur.execute(f"DELETE FROM {DB_SCHEMA}.preliminary")
                 cur.executemany(query, params_list)
                 
     print("Successfully synced preliminary table!")
@@ -472,6 +475,12 @@ async def sync_external_registered_ngo():
     print("Successfully synced external_registered_ngo table!")
 
 async def main_sync():
+    run_one_time_sheet_sync = os.getenv("RUN_ONE_TIME_SHEET_SYNC", "false").lower() == "true"
+    if not run_one_time_sheet_sync:
+        print("Sheet sync disabled. Set RUN_ONE_TIME_SHEET_SYNC=true for the one-time import.")
+        return
+
+    # Import every sheet-backed dataset in one explicit maintenance run.
     await sync()
     await sync_audit()
     await sync_preliminary()

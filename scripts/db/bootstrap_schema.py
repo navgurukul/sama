@@ -225,6 +225,18 @@ def _base_tables(schema: str) -> List[str]:
           doner text
         );
         """,
+        f"""
+        CREATE TABLE IF NOT EXISTS {s}.ngo_operation_records (
+          record_id bigserial PRIMARY KEY,
+          operation text NOT NULL,
+          ngo_id text,
+          record_key text NOT NULL DEFAULT 'default',
+          payload jsonb NOT NULL,
+          created_at timestamptz NOT NULL DEFAULT now(),
+          updated_at timestamptz NOT NULL DEFAULT now(),
+          UNIQUE (operation, ngo_id, record_key)
+        );
+        """,
     ]
 
 

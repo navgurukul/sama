@@ -27,17 +27,15 @@ const FormSection = () => {
     setLoading(true);
   
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbyY7OyIUye4MaFhlX4Y-Z8tEv69WHzpK1IhWZCEeK1AtQq5ygfTSMqlWi0pwH6UgLwqig/exec', {
+      const response = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=publicInquiry`, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, formType: "callback" })
       });
-  
-      // Since we can't read the response in no-cors mode, 
-      // we'll assume success if the fetch doesn't throw an error
+      if (!response.ok) throw new Error("Callback submission failed");
+
       setSnackbarMessage("Form submitted successfully!");
       setSnackbarSeverity("success");
       // Reset form

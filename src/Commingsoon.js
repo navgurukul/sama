@@ -29,19 +29,19 @@ const ComingSoonPage = () => {
     setError(""); // Clear error message if any
 
     const formData = {
-        email_data,
+        formType: "newsletter",
+        email: email_data.trim().toLowerCase(),
+        email_data: email_data.trim().toLowerCase(),
     };
     try {
-      const url = "https://script.google.com/macros/s/AKfycbxSJYnC5fpyS9ntix5Tj_Y8DFEzQBlP0I8FTsBqA3ux2y6fzKdaaCUc290p_pqdFTqK8A/exec";
-      const response = await fetch(url, {
+      const response = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=publicInquiry`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
-        mode:"no-cors"
+        body: JSON.stringify(formData)
       });
-      console.log("Response from Google Apps Script:", await response.text());
+      if (!response.ok) throw new Error("Newsletter subscription failed");
       setEmail_data("");
       setSubmitted(true);
     } catch (error) {

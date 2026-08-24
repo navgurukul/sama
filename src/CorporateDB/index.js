@@ -26,7 +26,7 @@ const CorporateDb = () => {
         setError(null);
   
         const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbzjIvQJgBpdYwShV6LQOuyNtccmafG3iHFYzmEBQ6FBjiSeT3TuSEyAM46OMYMTsPBC/exec?type=corporatedbStatewise&doner=Amazon"
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi.replace(/\/exec$/, "")}/api/public/corporate-impact?doner=Amazon`
         );
         
         if (!response.ok) {

@@ -75,6 +75,7 @@ function ContactForm() {
     }
 
     const capitalizedData = {
+      formType: "contact",
       firstName: capitalizeFirstLetter(formData.firstName),
       lastName: capitalizeFirstLetter(formData.lastName),
       email: formData.email.toLowerCase(),
@@ -83,17 +84,17 @@ function ContactForm() {
     };
 
     try {
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbz-1unt1cD-8gQFAm8JVUcLblr924i_1fCxZxJpDzy9Xt0dCs3u_Fjx-DK5InIpee-JAw/exec",
+      const response = await fetch(
+        `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=publicInquiry`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(capitalizedData),
-          mode: "no-cors",
         }
       );
+      if (!response.ok) throw new Error("Contact submission failed");
 
       setSuccess(true);
       setFormData({

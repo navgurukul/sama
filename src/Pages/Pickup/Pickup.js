@@ -88,18 +88,17 @@ const Pickup = () => {
     const payload = { ...formData, currentDate: formatDateTime() };
     setLoading(true);
     try {
-        await fetch(
-        //   `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}
-          `https://script.google.com/macros/s/AKfycbxWGV8prp8U6oPvej2Qm6_w3c38qzMmHFidxhDBvMa1Cek5TAn9DHrloIbrx74OfBY2_Q/exec?type=Pickup`,
+        const response = await fetch(
+          `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=pickup`,
           {
             method: "POST",
             body: JSON.stringify(payload),
-            mode: "no-cors",
             headers: {
               "Content-Type": "application/json",
             },
           }
         );
+        if (!response.ok) throw new Error("Pickup request failed");
 
         alert("Data uploaded successfully!"); // Success alert
         setFormData({ ...initialState, currentDate: formatDateTime() });
