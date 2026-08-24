@@ -48,6 +48,10 @@ Migration file for this module:
 - `POST /user-exec` with `type=updateRegistration`
 - `POST /user-exec` with `type=forgotPassword`
 
+Public website forms use `POST /exec` with `type=publicInquiry`. The backend
+saves submissions to `sama_ops.public_inquiries` and forwards the same payload
+to `LEGACY_GET_INVOLVED_FORM` so the database and Google Sheet stay in sync.
+
 All other `type` values on this endpoint are proxied to legacy Apps Script when `LEGACY_LAPTOP_API_URL` is set.
 
 ## Environment variables

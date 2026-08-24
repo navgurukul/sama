@@ -29,19 +29,19 @@ const StayConnected = () => {
 
         try {
             const capitalizedData = {
+                type: "publicInquiry",
                 formType: "email",
                 email: email.trim()
             };
             
             await fetch(
-                `${process.env.REACT_APP_GetInvolvedForm}`,
+                `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(capitalizedData),
-                    mode: "no-cors",
                 }
             );
 

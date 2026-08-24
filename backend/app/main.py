@@ -21,6 +21,7 @@ from .db import DB_SCHEMA, get_conn
 
 LEGACY_LAPTOP_API_URL = os.getenv("LEGACY_LAPTOP_API_URL", "").strip()
 LEGACY_NGO_API_URL = os.getenv("LEGACY_NGO_API_URL", "").strip() or "https://script.google.com/macros/s/AKfycbyCYWNg907Iu9y-ZVn8sWpLdh3NriAbG4D02zTVGHkLVK5WIfDHunknZrKe3fO8DUn9ow/exec"
+LEGACY_GET_INVOLVED_FORM = os.getenv("LEGACY_GET_INVOLVED_FORM", "").strip()
 USER_PROFILE_TABLE_PREFIX = os.getenv("USER_PROFILE_TABLE_PREFIX", "user_profile").strip() or "user_profile"
 USER_REGISTRATION_TABLE = f"{USER_PROFILE_TABLE_PREFIX}_registration"
 USER_ROLE_TABLE = f"{USER_PROFILE_TABLE_PREFIX}_userrole"
@@ -57,6 +58,7 @@ MIGRATED_TYPES = {
     "createIssueLog",
     "resolveIssueLog",
     "email-webhook",
+    "publicInquiry",
 }
 
 
@@ -2869,6 +2871,56 @@ def _proxy_to_legacy(method: str, request: Request, payload: Optional[Dict[str, 
     return {"status": "proxied", "raw": response.text}
 
 
+def _save_public_inquiry(payload: Dict[str, Any]) -> Dict[str, Any]:
+    form_type = str(payload.get("formType") or "").strip().lower()
+    if form_type not in {"email", "community", "corporate", "government"}:
+        raise HTTPException(status_code=400, detail="Unsupported public form type")
+
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"""
+                INSERT INTO {DB_SCHEMA}.public_inquiries
+                (form_type, email, first_name, last_name, company_name, phone,
+                 state, city, message, payload)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb)
+                RETURNING id
+                """,
+                (
+                    form_type,
+                    payload.get("email"),
+                    payload.get("firstName"),
+                    payload.get("lastName"),
+                    payload.get("companyName"),
+                    payload.get("phone"),
+                    payload.get("state"),
+                    payload.get("city"),
+                    payload.get("message"),
+                    json.dumps(payload),
+                ),
+            )
+            inquiry_id = cur.fetchone()["id"]
+            conn.commit()
+
+    if not LEGACY_GET_INVOLVED_FORM:
+        raise HTTPException(
+            status_code=503,
+            detail={"message": "Saved to database, but Sheet destination is not configured", "databaseId": inquiry_id},
+        )
+
+    try:
+        with httpx.Client(timeout=httpx.Timeout(30.0), follow_redirects=True) as client:
+            response = client.post(LEGACY_GET_INVOLVED_FORM, json=payload)
+            response.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise HTTPException(
+            status_code=502,
+            detail={"message": "Saved to database, but Sheet delivery failed", "databaseId": inquiry_id, "error": str(exc)},
+        )
+
+    return {"status": "success", "databaseId": inquiry_id, "sheet": "sent"}
+
+
 @app.post("/evidence-upload")
 async def evidence_upload(file: UploadFile = File(...)) -> Dict[str, Any]:
     if not file or not file.filename:
@@ -4139,6 +4191,9 @@ async def exec_post(request: Request, background_tasks: BackgroundTasks) -> Any:
     type_name = _type_from_request(request, payload)
     if not type_name:
         raise HTTPException(status_code=400, detail="Missing 'type' in query or JSON body")
+
+    if type_name == "publicInquiry":
+        return _save_public_inquiry(payload)
 
     if type_name in MIGRATED_TYPES:
         res = _handle_post_type(type_name, payload)

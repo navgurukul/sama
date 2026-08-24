@@ -148,6 +148,7 @@ DB_SCHEMA=sama_ops
 
 # Legacy Apps Script fallback
 LEGACY_LAPTOP_API_URL=https://script.google.com/macros/s/XXXXXX/exec
+LEGACY_GET_INVOLVED_FORM=https://script.google.com/macros/s/XXXXXX/exec
 
 # Uvicorn settings
 HOST=127.0.0.1
