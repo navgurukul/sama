@@ -29,8 +29,8 @@ const SignupForm = () => {
 
 
   useEffect(() => {
-    // Fetch the registration data from the backend
-    fetch(`${process.env.REACT_APP_UserDetailsApis}?type=getRegistration`) // Replace with your actual Google Apps Script URL
+    // Fetch registration data from the backend database API.
+    fetch(`${process.env.REACT_APP_UserDetailsApis}?type=getRegistration`)
       .then((response) => response.json())
       .then((data) => {
         // Extract email addresses from the response
