@@ -4,14 +4,15 @@ import { Outlet, Navigate } from "react-router-dom";
 const DonorCSRRoute = ({ children }) => {
   const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
   const user = NgoDetails?.[0]; // logged-in user
-  const role = user?.role?.[0]; // "admin" or "doner"
+  const rawRole = user?.role;
+  const role = Array.isArray(rawRole) ? rawRole[0] : rawRole;
 
   if (!role) {
     // not logged in
     return <Navigate to="/login" />;
   }
 
-  if (role === "admin" || role === "doner") {
+  if (role === "admin" || role === "doner" || role === "afe_approver") {
     return children || <Outlet />;
   }
 

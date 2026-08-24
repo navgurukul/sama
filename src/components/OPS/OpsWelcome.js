@@ -29,14 +29,12 @@ const OpsWelcome = () => {
     const formatDate = (dateStr) => {
         if (!dateStr) return "N/A";
         if (dateStr.includes("T")) {
-            const date = new Date(dateStr);
-            const day = date.getDate().toString().padStart(2, "0");
-            const month = (date.getMonth() + 1).toString().padStart(2, "0");
-            const year = date.getFullYear();
-            const hour = date.getHours().toString().padStart(2, "0");
-            const minute = date.getMinutes().toString().padStart(2, "0");
-            const second = date.getSeconds().toString().padStart(2, "0");
-            return `${day}-${month}-${year} ${hour}:${minute}:${second}`;
+            const normalized = String(dateStr).trim();
+            const isoMatch = normalized.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+            if (isoMatch) {
+                const [, year, month, day, hour, minute, second] = isoMatch;
+                return `${day}-${month}-${year} ${hour}:${minute}:${second}`;
+            }
         }
         const [datePart, timePart] = dateStr.split(" ");
         if (!datePart || !timePart) return "N/A";

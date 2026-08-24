@@ -75,10 +75,33 @@ const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
   );
 };
 
+const formfields = [
+  {
+    name: "impactReport",
+    label: "Impact Report",
+    type: "fileUpload",
+    required: true,
+  },
+  { name: "contactNumber", label: "Contact Number", required: true },
+  { name: "email", label: "Email", required: true },
+  { name: "organizationName", label: "Organization Name", required: true },
+  {
+    name: "registrationNumber",
+    label: "Registration Number",
+    required: true,
+  },
+  {
+    name: "primaryContactName",
+    label: "Primary Contact Name ",
+    required: true,
+  },
+];
+
 function RegistrationForm() {
   const navigate = useNavigate();
   const { donorId } = useParams();
   const [formFields, setFormFields] = useState([]);
+  const [fetchingQuestions, setFetchingQuestions] = useState(false);
   const [emailExists, setEmailExists] = useState(false);
   const [contactExists, setContactExists] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
@@ -249,20 +272,23 @@ function RegistrationForm() {
           `${process.env.REACT_APP_NgoInformationApi}?type=donorID`
         );
         const data = await response.json();
-        setCompanies(data);
+        setCompanies(Array.isArray(data) ? data : (data?.data || []));
       } catch (error) {
         console.error("Error fetching company names:", error);
+        setCompanies([]);
       }
     }
     fetchCompanies();
   }, []);
 
-  const donorIDs = companies.find((company) => company.Donner === donorId)?.[
+  const companiesList = Array.isArray(companies) ? companies : (companies?.data || []);
+  const donorIDs = companiesList.find((company) => company.Donner === donorId)?.[
     "Donor id"
   ];
 
   useEffect(() => {
     const fetchFormFields = async () => {
+      setFetchingQuestions(true);
       try {
         const baseURL =
           `${process.env.REACT_APP_NgoInformationApi}?type=donorQuestion`;
@@ -271,9 +297,14 @@ function RegistrationForm() {
 
         const response = await fetch(apiUrl);
         const data = await response.json();
-        setFormFields(data);
+        
+        let fetchedFields = Array.isArray(data) ? data : (data?.data || []);
+        
+        setFormFields(fetchedFields);
       } catch (error) {
         console.error("Error fetching form fields:", error);
+      } finally {
+        setFetchingQuestions(false);
       }
     };
 
@@ -288,11 +319,31 @@ function RegistrationForm() {
 
 
     if (name === "email") {
-      verifyEmail(value);
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (value && !emailPattern.test(value)) {
+        setErrors(prev => ({ ...prev, email: "Invalid email address" }));
+      } else {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors.email;
+          return newErrors;
+        });
+        if (value) verifyEmail(value);
+      }
     }
 
     if (name === "contactNumber") {
-      verifyContactNumber(value);
+      const contactNumberPattern = /^\d{10}$/;
+      if (value && !contactNumberPattern.test(value)) {
+        setErrors(prev => ({ ...prev, contactNumber: "Contact number must be a valid 10-digit number" }));
+      } else {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors.contactNumber;
+          return newErrors;
+        });
+        if (value) verifyContactNumber(value);
+      }
     }
 
     // Validate organization name for new registration
@@ -376,27 +427,6 @@ function RegistrationForm() {
     }
   };
 
-  const formfields = [
-    {
-      name: "impactReport",
-      label: "Impact Report",
-      type: "fileUpload",
-      required: true,
-    },
-    { name: "contactNumber", label: "Contact Number", required: true },
-    { name: "email", label: "Email", required: true },
-    { name: "organizationName", label: "Organization Name", required: true },
-    {
-      name: "registrationNumber",
-      label: "Registration Number",
-      required: true,
-    },
-    {
-      name: "primaryContactName",
-      label: "Primary Contact Name ",
-      required: true,
-    },
-  ];
 
   const validate = () => {
     const newErrors = {};
@@ -412,35 +442,30 @@ function RegistrationForm() {
 
 
       // File validation
-      if (field.name === "impactReport") {
+      if (field === "impactReport") {
         if (!value) {
-          newErrors[field.name] = `Allowed file types: PDF, DOC, DOCX, XLSX (Max size: 50MB)`;
+          newErrors[field] = `Allowed file types: PDF, DOC, DOCX, XLSX (Max size: 50MB)`;
         }
       }
 
       // Contact number validation
-      if (field.name === "contactNumber" && value) {
+      if (field === "contactNumber" && value) {
         const contactNumberPattern = /^\d{10}$/;
         if (!contactNumberPattern.test(value)) {
-          newErrors[field.name] = "Contact number must be a valid 10-digit number";
+          newErrors[field] = "Contact number must be a valid 10-digit number";
         }
       }
 
       // Email validation
-      if (field.name === "email" && value) {
+      if (field === "email" && value) {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(value)) {
-          newErrors[field.name] = "Invalid email address";
+          newErrors[field] = "Invalid email address";
         }
       }
 
       // Organization name validation - only for new registrations
-      if (field.name === "organizationName" && value && requestType === "first-time") {
-        // const textPattern = /^[A-Za-z\s]+$/;
-        // if (!textPattern.test(value)) {
-        //   newErrors[field.name] = "Organization name should contain only letters and spaces";
-        // }
-
+      if (field === "organizationName" && value && requestType === "first-time") {
         // Check if organization already exists
         if (
           existingNgos.some(
@@ -450,22 +475,21 @@ function RegistrationForm() {
           newErrors.organizationName =
             "This organization already exists. Please select 'Additional Request' if this is your organization.";
         }
-
       }
 
       // Registration number validation - only numbers and letters
-      if (field.name === "registrationNumber" && value) {
+      if (field === "registrationNumber" && value) {
         const alphanumericPattern = /^[a-zA-Z0-9]+$/;
         if (!alphanumericPattern.test(value)) {
-          newErrors[field.name] = "Registration number must contain only letters and numbers";
+          newErrors[field] = "Registration number must contain only letters and numbers";
         }
       }
 
       // Primary contact name validation - allow letters
-      if (field.name === "primaryContactName" && value) {
+      if (field === "primaryContactName" && value) {
         const textPattern = /^[A-Za-z\s]+$/;
         if (!textPattern.test(value)) {
-          newErrors[field.name] = "Name should contain only letters";
+          newErrors[field] = "Name should contain only letters";
         }
       }
     });
@@ -494,7 +518,7 @@ function RegistrationForm() {
     if (!showRequestTypeModal) {
       setIsFormValid(validate());
     }
-  }, [formData, formfields, showRequestTypeModal]);
+  }, [formData, showRequestTypeModal]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -535,6 +559,8 @@ function RegistrationForm() {
       orgLaptopRequire: updatedFormData.orgLaptopRequire,
       requestType: requestType,
       organizationName: updatedFormData.organizationName.trim(),
+      status: "Pending Review",
+      partnerType: "AFE Partner"
     };
 
     if (requestType === "subsequent" && selectedExistingNgo) {
@@ -544,7 +570,21 @@ function RegistrationForm() {
         org => org.organizationName.trim() === selectedExistingNgo.trim()
       );
       if (existingOrg) {
-        payload.organizationId = existingOrg.id;
+        payload.organizationId = existingOrg.Id;
+        
+        // Dynamically carry over all parent fields for additional requests
+        payload.location = existingOrg.location || "";
+        payload.primaryUse = existingOrg.primaryUse || "";
+        payload.primaryContactName = existingOrg.primaryContactName || "";
+        payload.contactNumber = existingOrg.contactNumber || "";
+        payload.email = existingOrg.email || "";
+        payload.operatingState = existingOrg.operatingState || "";
+        payload.yearsOperating = existingOrg.yearsOperating || "";
+        payload.focusArea = existingOrg.focusArea || "";
+        payload.infrastructure = existingOrg["Ngo Type"] || "";
+        payload.ageGroup = existingOrg.ageGroup || "";
+        payload.expectedOutcome = existingOrg.expectedOutcome || "";
+        payload.laptopTracking = existingOrg.laptopTracking || "";
       }
     }
 
@@ -746,9 +786,15 @@ function RegistrationForm() {
             </Typography>
           </Box>
 
-          {formFields?.length === 0 ? (
+          {fetchingQuestions ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
               <CircularProgress />
+            </Box>
+          ) : formFields?.length === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography variant="body1" color="textSecondary">
+                No fields available for this registration right now.
+              </Typography>
             </Box>
           ) : (
             <form onSubmit={handleSubmit}>

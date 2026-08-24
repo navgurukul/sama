@@ -1,50 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Select, MenuItem, Checkbox } from '@mui/material';
 
 export const LaptopStatusDropdown = ({ value = '', onChange }) => {
-  let options = [];
-
-  // Get regular flow options based on current status
-  switch (value) {
-    case '':
-      options = ['Pickup Requested', 'In Transit'];  // Updated default options
-      break;
-    case 'Pickup Requested':  // New status
-      options = ['In Transit'];
-      break;
-    case 'In Transit':
-      options = ['Laptop Received'];
-      break;
-    case 'Laptop Received':
-      options = ['Refurbishment Started', 'To Be Dispatch'];  // Added new option
-      break;
-    case 'Refurbishment Started':  // New status
-      options = ['Laptop Refurbished'];
-      break;
-    case 'Laptop Refurbished':
-      options = ['To Be Dispatch'];
-      break;
-    case 'To Be Dispatch':
-      options = ['Allocated'];
-      break;
-    case 'Allocated':
-      options = ['Distributed'];
-      break;
-    case 'Not Working':
-      options = ['Pickup Requested']; // Updated to allow return to start of flow
-      break;
-    case 'Distributed':
-      options = []; // Final status
-      break;
-    default:
-      options = ['In Transit', 'Laptop Received']; // Show initial options if status not recognized
-      break;
-  }
-
-  // Add 'Not Working' option if it's not already the current status
-  if (value !== 'Not Working') {
-    options.push('Not Working');
-  }
+  const options = [
+    'LAPTOP_RECEIVED',
+    'REFURBISHMENT_TESTING',
+    'QC_CHECK',
+    'DISTRIBUTION',
+    'POST_DEPLOYMENT_15D',
+    'MONTHLY_MONITORING',
+  ];
 
   return (
     <Select
@@ -60,7 +25,7 @@ export const LaptopStatusDropdown = ({ value = '', onChange }) => {
       {/* Always show the current value if not empty */}
       {value && <MenuItem value={value}>{value}</MenuItem>}
 
-      {/* Show valid next statuses if any */}
+      {/* Show allowed statuses */}
       {options.map((status) =>
         status !== value ? (
           <MenuItem key={status} value={status}>
@@ -85,7 +50,7 @@ export const AssignedTo = ({ value, onChange }) => {
       <MenuItem value="Rahul">Rahul</MenuItem>
       <MenuItem value="Pradeep">Pradeep</MenuItem>
       <MenuItem value="Nitesh">Nitesh</MenuItem>
-  
+
     </Select>
   );
 };
@@ -104,7 +69,7 @@ export const DonatedTo = ({ value, onChange }) => {
         // Filter only approved NGOs
         const filteredNgos = (responseData.data).filter((ngo) => ngo.Status === "Approved");
 
-        
+
         // Extract names of approved NGOs
         setApprovedNgos(filteredNgos.map((ngo) => ngo.organizationName));
 

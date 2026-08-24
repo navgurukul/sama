@@ -22,3 +22,28 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# python virtual environments
+backend/venv/
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# scratch files
+backend/scratch/
+scratch/
+
+# private documents and operational data
+docs/
+*.doc
+*.docx
+*.pdf
+*.xls
+*.xlsx
+*.csv
+KT_DOCUMENT.md
+Ops_db_schema.md
+Laptop_Refurbishment_Checklists_Detailed.md
+laptop-latency-report.json
+backend/backend/app/ngo_payloads/

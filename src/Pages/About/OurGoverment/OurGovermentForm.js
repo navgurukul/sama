@@ -119,6 +119,7 @@ function OurGovermentForm() {
         }
     
         const capitalizedData = {
+            type: "publicInquiry",
             formType: "government", 
             firstName: capitalizeFirstLetter(formData.firstName),
             lastName: capitalizeFirstLetter(formData.lastName),
@@ -133,14 +134,13 @@ function OurGovermentForm() {
     
         try {
             const response = await fetch(
-                `${process.env.REACT_APP_GetInvolvedForm}`,
+                `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(capitalizedData),
-                    mode: "no-cors",
                 }
             );
     

@@ -142,6 +142,7 @@ function CorporateForm() {
             return;
         }
         const capitalizedData = {
+            type: "publicInquiry",
             formType: "corporate", 
             firstName: capitalizeFirstLetter(formData.firstName),
             lastName: capitalizeFirstLetter(formData.lastName),
@@ -156,14 +157,13 @@ function CorporateForm() {
         };
         try {
             await fetch(
-                `${process.env.REACT_APP_GetInvolvedForm}`,
+                `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(capitalizedData),
-                    mode: "no-cors",
                 }
             );
             setFormData({

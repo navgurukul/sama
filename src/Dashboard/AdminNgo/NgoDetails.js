@@ -19,7 +19,7 @@ const NGODetails = ({ ngo }) => {
   
   // Organization details structure
   const getOrgDetails = (item) => [
-    { label: "NGO ID", value: item.Id },
+    { label: "NGO ID", value: item.displayId || item.Id },
     { label: "Point of Contact", value: item.primaryContactName },
     { label: "Contact Number", value: item.contactNumber },
     { label: "Email", value: item.email },

@@ -1,0 +1,99 @@
+.india-map {
+  position: relative;
+  width: 100%;
+}
+
+.india-map__svg svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.india-map__state {
+  vector-effect: non-scaling-stroke;
+  transition: fill 180ms ease, stroke 180ms ease, stroke-width 180ms ease, filter 180ms ease;
+}
+
+.india-map--light-interactive {
+  width: min(100%, 510px);
+}
+
+.india-map--light-interactive .india-map__state.is-disabled {
+  fill: #e0dcd4; /* --cream-deep */
+  stroke: rgba(69, 55, 34, 0.15);
+  stroke-width: 0.75;
+  pointer-events: none;
+}
+
+.india-map--light-interactive .india-map__state.is-active {
+  fill: #a3b5a1; /* --green-soft */
+  stroke: rgba(245, 242, 237, 0.9);
+  stroke-width: 1;
+  cursor: pointer;
+}
+
+.india-map--light-interactive .india-map__state.is-active:hover,
+.india-map--light-interactive .india-map__state.is-active:focus {
+  fill: #5c785a; /* --green */
+  filter: drop-shadow(0 0 4px rgba(44, 35, 22, 0.35));
+  outline: none;
+}
+
+.india-map--light-interactive .india-map__state.is-selected {
+  fill: #3a5138; /* --green-deep */
+  stroke: #453722; /* --brown */
+  stroke-width: 2.5;
+}
+
+.india-map__tooltip {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  padding: 7px 12px;
+  transform: translate(-50%, 8px);
+  border-radius: 999px;
+  background: #2c2316; /* --brown-deep */
+  color: #f5f2ed; /* --cream */
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  white-space: nowrap;
+}
+
+.india-map__tooltip.is-visible {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.map-legend {
+  display: flex;
+  gap: 16px 24px;
+  margin-top: 28px;
+  color: rgba(69, 55, 34, 0.55); /* --text-muted */
+  flex-wrap: wrap;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-legend__swatch {
+  width: 12px;
+  height: 12px;
+  border: 1px solid rgba(69, 55, 34, 0.1); /* --border-light */
+  border-radius: 3px;
+}
+
+.map-legend__swatch--active {
+  background: #a3b5a1; /* --green-soft */
+}
+
+.map-legend__swatch--inactive {
+  background: #e0dcd4; /* --cream-deep */
+}

@@ -29,9 +29,16 @@ const BeneficiaryData = () => {
         const response = await axios.get(
           `${process.env.REACT_APP_NgoInformationApi}?type=manageStatus`
         );
+        const statuses = Array.isArray(response.data)
+          ? response.data
+          : Array.isArray(response.data?.data)
+            ? response.data.data
+            : [];
         setFilterOptions((prevOptions) => ({
           ...prevOptions,
-          status: response.data.map((status) => status.name),
+          status: statuses
+            .map((status) => status.name)
+            .filter(Boolean),
         }));
       } catch (error) {
         console.error("Error fetching status data:", error);

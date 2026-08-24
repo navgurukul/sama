@@ -83,20 +83,35 @@ const RMSDetails = () => {
     "";
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (retries = 3) => {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch("https://rms-api.thesama.in/api/devices");
-        if (!res.ok) {
-          throw new Error(`Request failed with status ${res.status}`);
+        let res;
+        for (let i = 0; i < retries; i++) {
+          try {
+            res = await fetch("https://rms-api.thesama.in/api/devices");
+            if (!res.ok) {
+              throw new Error(`Request failed with status ${res.status}`);
+            }
+            const json = await res.json();
+            // API could return { data: [...] } or an array directly
+            const rows = Array.isArray(json) ? json : Array.isArray(json?.data) ? json.data : [];
+            setData(rows);
+            return; // Success, exit retry loop
+          } catch (err) {
+            if (i === retries - 1) throw err; // If last retry, bubble the error up
+            // Wait 2 seconds before retrying
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+          }
         }
-        const json = await res.json();
-        // API could return { data: [...] } or an array directly
-        const rows = Array.isArray(json) ? json : Array.isArray(json?.data) ? json.data : [];
-        setData(rows);
       } catch (err) {
-        setError(err.message || "Unable to load RMS details");
+        // Provide a friendly error for incomplete/dropped connections
+        if (err.message && err.message.includes("Content-Length")) {
+          setError("The server disconnected while loading devices. Please try again later.");
+        } else {
+          setError(err.message || "Unable to load RMS details");
+        }
       } finally {
         setLoading(false);
       }
