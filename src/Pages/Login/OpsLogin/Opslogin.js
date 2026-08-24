@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   TextField,
@@ -25,7 +26,6 @@ function Opslogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [data, setData] = useState([]);
   const [documentAvailable, setDocumentAvailable] = useState(false);
   const [loder, setLoder] = useState(false);
   const [failedStatuses, setFailedStatuses] = useState([]);
@@ -39,36 +39,49 @@ function Opslogin() {
 
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.REACT_APP_UserDetailsApis}`,
-          // 'https://script.google.com/macros/s/AKfycbzuFPeG0cosIEGBocwuJ72DWUH6zcg7MtawkOuvOifXqHnm1QlaR7ESxiLKzGua-WQp/exec'
-        );
-        const result = await response.json();
-        setData(result);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
-  }, []);
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (email === '' || password === '') {
+    const form = e.currentTarget;
+    const submittedEmail = form.elements.email?.value.trim() || email.trim();
+    const submittedPassword = form.elements.password?.value ?? password;
+
+    setEmail(submittedEmail);
+    setPassword(submittedPassword);
+
+    if (submittedEmail === '' || submittedPassword === '') {
       setError('Please fill in both Email and password.');
       return;
     }
 
     setLoder(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-    const user = data.find((user) => user.Email === email && user.Password === password);
+    try {
+      const response = await fetch(process.env.REACT_APP_UserDetailsApis, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'login',
+          email: submittedEmail,
+          password: submittedPassword,
+        }),
+        signal: controller.signal,
+      });
 
-    if (user) {
+      let result = {};
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        result = {};
+      }
+
+      if (!response.ok) {
+        throw new Error(result.detail || 'Invalid Email or password.');
+      }
+
+      const user = result.user;
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('role', JSON.stringify(user.Role));
       localStorage.setItem('_AuthSama_', JSON.stringify([{ name: user.Name, email: user.Email, role: user.Role, NgoId: user["Ngo Id"], Type: user.Type, Doner: user.Doner }]));
@@ -91,7 +104,7 @@ function Opslogin() {
               // 'https://script.google.com/macros/s/AKfycbxm2qA0DvzVUNtbwe4tAqd40hO7NpNU-GNXyBq3gHz_q45QIo9iveYOkV0XqyfZw9V7/exec?type=registration'
             );
             const result = await response.json();
-            const finduser = result.data.find(item => item.Id === user["Ngo Id"]);
+            const finduser = result.data.find(item => item.Id === user["Ngo Id"] || item.displayId === user["Ngo Id"]);
 
             if (finduser) {
               try {
@@ -166,12 +179,17 @@ function Opslogin() {
 
               } catch (error) {
                 console.error('Error fetching document data:', error);
+                setError('Error loading document verification status.');
+                setLoder(false);
               }
             } else {
-              console.log("User not found");
+              setError('This login is linked to an NGO ID that is not registered (like SAM-165).');
+              setLoder(false);
             }
           } catch (error) {
             console.error('Error fetching registration data:', error);
+            setError('Error connecting to the NGO registration database.');
+            setLoder(false);
           }
         }
         else if (user?.Role?.includes('ops')) {
@@ -179,10 +197,15 @@ function Opslogin() {
         } else {
           navigate("/");
         }
-    } else {
-      setError('Invalid Email or password.');
+    } catch (error) {
+      console.error('Login failed:', error);
+      setError(error.name === 'AbortError'
+        ? 'Login service timed out. Please try again.'
+        : error.message || 'Unable to connect to the login service.');
+    } finally {
+      clearTimeout(timeoutId);
+      setLoder(false);
     }
-    setLoder(false);
   };
 
   const handleForgotPasswordSubmit = async () => {
@@ -216,13 +239,15 @@ function Opslogin() {
           <img src={login_ngo} alt="Small placeholder" style={{ maxWidth: '100%', borderRadius: '8px' }} />
         </Grid>
         <Grid item xs={12} md={8}>
-          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Typography variant="h5" gutterBottom>Login to Dashboard</Typography>
             {error && (
               <Typography color="error" sx={{ marginBottom: 2 }}>{error}</Typography>
             )}
             <Typography sx={{ color: "dark.main", fontWeight: "bold" }}>User Email</Typography>
             <TextField
+              name="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               variant="outlined"
@@ -233,6 +258,8 @@ function Opslogin() {
               <Typography sx={{ color: "dark.main", fontWeight: "bold" }}>Password</Typography>
             </FormLabel>
             <TextField
+              name="password"
+              autoComplete="current-password"
               type="password"
               variant="outlined"
               fullWidth
@@ -243,12 +270,11 @@ function Opslogin() {
             />
             <Box sx={{ display: 'flex', flexDirection: "row", gap: 2 }}>
               <Button
-                onClick={handleSubmit}
                 type="submit"
                 variant="contained"
                 sx={{ width: 'auto', alignSelf: 'start', mt: 2, borderRadius: "100px" }}
               >
-                 {loder ? <CircularProgress color='white' /> : "Login"} 
+                 {loder ? <CircularProgress color='white' size={24} /> : "Login"} 
                 
               </Button>
               <Button

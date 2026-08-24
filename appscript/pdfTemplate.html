@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial; margin: 2cm; }
+    h1 { color: #202124; border-bottom: 1px solid #ddd; }
+    .summary { background: #f8f9fa; padding: 15px; border-radius: 5px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th { background: #f1f3f4; text-align: left; padding: 8px; border-bottom: 2px solid #ddd; }
+    td { padding: 8px; border-bottom: 1px solid #eee; }
+    .footer { margin-top: 30px; font-size: 0.8em; color: #5f6368; }
+  </style>
+</head>
+<body>
+  <h1>Activity Report - <?= data.laptopId ?></h1>
+  <p>Generated on: <?= Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm") ?></p>
+  
+  <div class="summary">
+    <h2>Summary</h2>
+    <pre><?= data.summary ?></pre>
+  </div>
+
+  <? if (data.activityLog.length > 0) { ?>
+    <h2>Activity Details</h2>
+    <table>
+      <tr>
+        <th>Time</th>
+        <th>App</th>
+        <th>Title</th>
+        <th>Duration</th>
+        <th>Category</th>
+      </tr>
+      <? data.activityLog.forEach(item => { ?>
+        <tr>
+          <td><?= item.time || '-' ?></td>
+          <td><?= item.app || '-' ?></td>
+          <td><?= item.title ? item.title.substring(0, 50) : '-' ?></td>
+          <td><?= item.duration || '-' ?></td>
+          <td><?= item.category || '-' ?></td>
+        </tr>
+      <? }); ?>
+    </table>
+  <? } ?>
+
+  <div class="footer">
+    <p>Generated automatically by ActivityWatch</p>
+  </div>
+</body>
+</html>

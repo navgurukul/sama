@@ -83,7 +83,7 @@ const TabNavigation = () => {
         <Tab key="beneficiary-data" label="Beneficiary Data" sx={tabStyle} />,
         <Tab key="manage-statuses" label="Manage Statuses" sx={tabStyle} />
       );
-    } else if(ngoDetails && ngoDetails[0]?.["Ngo Type"] === "1 to many") {
+    } else {
       tabs.push(
         <Tab
           key="pre-distribution"
@@ -125,7 +125,7 @@ const TabNavigation = () => {
           }
           return <MonthlyReport />; // Fallback if accessed incorrectly
         case 4:
-          if (ngoDetails[0]?.["Ngo Type"] === "1 to many") {
+          if (ngoDetails[0]?.["Ngo Type"] !== "1 to one") {
             return <YearlyNgo />;
           }
 

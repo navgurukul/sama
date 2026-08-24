@@ -11,13 +11,9 @@ import {
 
 const BulkEditPanel = ({
     selectedRows,
-    onBulkUpdate,
-    workingFilter,
-    statusFilter
+    onBulkUpdate
 }) => {
     const [approvedNgos, setApprovedNgos] = useState([]);
-    const [bulkWorking, setBulkWorking] = useState(workingFilter);
-    const [bulkStatus, setBulkStatus] = useState(statusFilter);
     const [bulkAssignedTo, setBulkAssignedTo] = useState('all');
     const [bulkAllocatedTo, setBulkAllocatedTo] = useState('all');
     const [bulkDistributed, setBulkDistributed] = useState('all');
@@ -45,14 +41,6 @@ const BulkEditPanel = ({
     const handleBulkUpdate = () => {
         const updates = [];
 
-        if (bulkWorking !== 'all' && bulkWorking !== workingFilter) {
-            updates.push({ field: 'Working', value: bulkWorking });
-        }
-
-        if (bulkStatus !== 'all' && bulkStatus !== statusFilter) {
-            updates.push({ field: 'Status', value: bulkStatus });
-        }
-
         if (bulkAssignedTo !== 'all') {
             updates.push({ field: 'Assigned To', value: bulkAssignedTo });
         }
@@ -77,48 +65,6 @@ const BulkEditPanel = ({
                     Bulk Edit ({selectedRows.length} selected)
                 </Typography>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} md={3}>
-                        <FormControl fullWidth>
-                            <Typography variant="subtitle2" gutterBottom>
-                                Working Status
-                            </Typography>
-                            <Select
-                                value={bulkWorking}
-                                onChange={(e) => setBulkWorking(e.target.value)}
-                                variant="outlined"
-                                size="small"
-                            >
-                                <MenuItem value="all">No Change</MenuItem>
-                                <MenuItem value="Working">Working</MenuItem>
-                                <MenuItem value="Not Working">Not Working</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                        <FormControl fullWidth>
-                            <Typography variant="subtitle2" gutterBottom>
-                                Status
-                            </Typography>
-                            <Select
-                                value={bulkStatus}
-                                onChange={(e) => setBulkStatus(e.target.value)}
-                                variant="outlined"
-                                size="small"
-                            >
-                                <MenuItem value="all">No Change</MenuItem>
-                                <MenuItem value="Pickup Requested">Pickup Requested</MenuItem>
-                                <MenuItem value="In Transit">In Transit</MenuItem>
-                                <MenuItem value="Laptop Received">Laptop Received</MenuItem>
-                                <MenuItem value="Refurbishment Started">Refurbishment Started</MenuItem>
-                                <MenuItem value="Laptop Refurbished">Laptop Refurbished</MenuItem>
-                                <MenuItem value="To be dispatch">To be dispatch</MenuItem>
-                                <MenuItem value="Allocated">Allocated</MenuItem>
-                                <MenuItem value="Distributed">Distributed</MenuItem>
-                                <MenuItem value="Not Working">Not Working</MenuItem>
-
-                            </Select>
-                        </FormControl>
-                    </Grid>
                     <Grid item xs={12} md={3}>
                         <FormControl fullWidth>
                             <Typography variant="subtitle2" gutterBottom>
@@ -180,12 +126,10 @@ const BulkEditPanel = ({
                             sx={{ mt: 2 }}
                             onClick={handleBulkUpdate}
                             disabled={
-                                (bulkWorking === 'all' || bulkWorking === workingFilter) &&
-                                (bulkStatus === 'all' || bulkStatus === statusFilter) &&
                                 bulkAssignedTo === 'all' &&
                                 bulkAllocatedTo === 'all' &&
                                 bulkDistributed === 'all'
-                                
+
                             }
                         >
                             Apply All Changes

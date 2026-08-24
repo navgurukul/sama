@@ -16,8 +16,25 @@ import {
   Tabs,
   Tab,
   CircularProgress,
+  TextField,
+  Grid,
 } from '@mui/material';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Award, School } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  AreaChart,
+  Area,
+} from 'recharts';
 
 const TableView = ({
   metricType,
@@ -39,13 +56,28 @@ const TableView = ({
   const [preData, setPreData] = useState([]);
   const [userData, setUserData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [learningStartDate, setLearningStartDate] = useState('');
+  const [learningEndDate, setLearningEndDate] = useState('');
+  const [selectedNgoFilter, setSelectedNgoFilter] = useState('');
+  const [selectedStateFilter, setSelectedStateFilter] = useState('');
+  const [selectedPartnerFilter, setSelectedPartnerFilter] = useState('');
   
   // Get user role and donor organization from localStorage
   const authData = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
-  const userRole = authData[0]?.role?.[0];
+  const userRoleRaw = authData[0]?.role || "";
+  const userRole = userRoleRaw.includes("admin") ? "admin" : (userRoleRaw.includes("doner") ? "doner" : userRoleRaw);
   const donorOrgName = authData[0]?.Doner;
 
   const isStandalone = !metricType && !onBack;
+  const displayMetricType = isStandalone ? standaloneMetricType : metricType;
+
+  useEffect(() => {
+    if (displayMetricType === "learningAnalytics") {
+      setRowsPerPage(50);
+    } else {
+      setRowsPerPage(10);
+    }
+  }, [displayMetricType]);
 
   const filterDataByActivity = async (metricType, activity) => {
     setIsLoading(true);
@@ -101,15 +133,25 @@ const TableView = ({
         case "Not Working":
         case "In Transit":
           filteredData = data.filter(laptop => {
-            const matches = laptop.Status === activity.status;
-            return matches;
+            const status = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            const actStatus = (activity.status || "").trim().toLowerCase().replace(/_/g, " ");
+            // Map legacy to new db status for activity
+            if (actStatus === "laptop received" && (status === "laptop received")) return true;
+            if (actStatus === "laptop refurbished" && (status === "laptop refurbished" || status === "qc check")) return true;
+            if (actStatus === "refurbishment started" && (status === "refurbishment started" || status === "refurbishment testing")) return true;
+            if (actStatus === "not working" && (status === "not working")) return true;
+            if (actStatus === "in transit" && (status === "in transit")) return true;
+            if (status === actStatus) return true;
+            return false;
           });
           break;
 
         default:
           filteredData = data.filter(laptop => {
-            const matches = laptop.Status === activity.status;
-            return matches;
+            const status = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            const actStatus = (activity.status || "").trim().toLowerCase().replace(/_/g, " ");
+            if (actStatus === "distributed" && (status === "distributed" || status === "distribution")) return true;
+            return status === actStatus;
           });
       }
 
@@ -189,7 +231,7 @@ const TableView = ({
         fetchStandaloneData(urlMetricType);
       }
     }
-  }, [isStandalone, donorName, location.search]);
+  }, [isStandalone, donorName, location.search, page, rowsPerPage, learningStartDate, learningEndDate]);
 
 
   // for activity clicks
@@ -209,7 +251,7 @@ const TableView = ({
         fetchStandaloneData(urlMetricType);
       }
     }
-  }, [isStandalone, donorName, location.search]);
+  }, [isStandalone, donorName, location.search, page, rowsPerPage, learningStartDate, learningEndDate]);
 
   const fetchBeneficiaryData = async () => {
     setIsLoading(true);
@@ -329,44 +371,45 @@ const TableView = ({
       let filterFunction = null;
 
       switch (metric) {
+        case "learningAnalytics":
+          apiUrl = `https://rms-api.thesama.in/api/afe/details?page=${page + 1}&limit=${rowsPerPage}`;
+          if (learningStartDate) apiUrl += `&startDate=${learningStartDate}`;
+          if (learningEndDate) apiUrl += `&endDate=${learningEndDate}`;
+          break;
         case "totalLaptops":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           break;
         case "refurbished":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "Laptop Refurbished"
-          );
-          break;
-        case "successfullyRefurbished":
-          apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            return laptop.Status === "Laptop Refurbished" ||
-              laptop.Status === "To Be Dispatch" ||
-              laptop.Status === "Allocated" ||
-              laptop.Status === "Distributed";
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "laptop refurbished" || s === "qc check";
           });
           break;
+        case "successfullyRefurbished":
         case "totalProcessed":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            return laptop.Status === "Laptop Refurbished" ||
-              laptop.Status === "To Be Dispatch" ||
-              laptop.Status === "Allocated" ||
-              laptop.Status === "Distributed";
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "laptop refurbished" || s === "qc check" ||
+              s === "to be dispatch" || s === "ready" ||
+              s === "allocated" ||
+              s === "distributed" || s === "distribution" || s === "post deployment 15d" || s === "monthly monitoring";
           });
           break;
         case "pickupRequests":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop => 
-            laptop.Status === "Pickup Requested" || laptop.Status === "Pickup requested"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "pickup requested";
+          });
           break;
         case "inTransit":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "In Transit"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "in transit";
+          });
           break;
         case "received":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
@@ -379,48 +422,59 @@ const TableView = ({
               "to be dispatch",
               "allocated",
               "distributed",
+              "refurbishment testing",
+              "qc check",
+              "distribution",
+              "post deployment 15d",
+              "monthly monitoring",
             ]);
 
             return data.filter(laptop =>
-              statusesAtOrAfterReceived.has((laptop.Status || "").trim().toLowerCase())
+              statusesAtOrAfterReceived.has((laptop.Status || "").trim().toLowerCase().replace(/_/g, " "))
             );
           };
           break;
         case "onlyLaptopReceived":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            ((laptop.Status || "").trim().toLowerCase() === "laptop received")
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "laptop received";
+          });
           break;
         case "refurbishmentStarted":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "Refurbishment Started"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "refurbishment started" || s === "refurbishment testing";
+          });
           break;
         case "notWorking":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            (laptop.Status || "").trim().toLowerCase() === "not working"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "not working";
+          });
           break;
         case "toBeDispatch":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "To Be Dispatch"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "to be dispatch" || s === "ready";
+          });
           break;
         case "allocated":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "Allocated"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "allocated";
+          });
           break;
         case "distributed":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
-          filterFunction = (data) => data.filter(laptop =>
-            laptop.Status === "Distributed"
-          );
+          filterFunction = (data) => data.filter(laptop => {
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "distributed" || s === "distribution";
+          });
           break;
         case "activeUsage":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
@@ -428,21 +482,19 @@ const TableView = ({
             const d = parseDateUniversal(laptop["Date"]);
             if (!d) return false;
             const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
-            return diffDays <= 15;
-            //  && (laptop.Status || "").toLowerCase() === "distributed"; // 
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return diffDays <= 15 && (s === "distributed" || s === "distribution" || s === "post deployment 15d" || s === "monthly monitoring");
           });
           break;
           
       case "successRate":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const status = (laptop.Status || "").toLowerCase();
-            return (
-              status.includes("laptop refurbished") ||
-              status.includes("to be dispatch") ||
-              status.includes("allocated") ||
-              status.includes("distributed")
-            );
+            const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
+            return s === "laptop refurbished" || s === "qc check" ||
+              s === "to be dispatch" || s === "ready" ||
+              s === "allocated" ||
+              s === "distributed" || s === "distribution" || s === "post deployment 15d" || s === "monthly monitoring";
           });
           break;
 
@@ -485,7 +537,7 @@ const TableView = ({
       if (metric === "pickupRequests" && filterFunction) {
         data = filterFunction(data);
       }
-      if (donorName && metric !== "ngoPartners" && metric !== "pickupRequests" && metric !== "ngosServed") {
+      if (donorName && metric !== "ngoPartners" && metric !== "pickupRequests" && metric !== "ngosServed" && metric !== "learningAnalytics") {
         const beforeFilter = data.length;
         data = data.filter(item =>
           String(item["Donor Company Name"] || "").trim().toLowerCase() === donorName.toLowerCase()
@@ -541,8 +593,163 @@ const TableView = ({
   };
 
   const displayData = isStandalone ? standaloneData : data;
-  const displayMetricType = isStandalone ? standaloneMetricType : metricType;
   const displayOrganization = isStandalone ? donorName : selectedOrganization;
+
+  const getFilteredLearningData = () => {
+    if (displayMetricType !== "learningAnalytics" || !displayData) return displayData || [];
+
+    return displayData.filter(item => {
+      const matchNgo = !selectedNgoFilter || item.ngo_name === selectedNgoFilter;
+      const matchState = !selectedStateFilter || item.state === selectedStateFilter;
+      const matchPartner = !selectedPartnerFilter || item.partner_name === selectedPartnerFilter;
+      return matchNgo && matchState && matchPartner;
+    });
+  };
+
+  const filteredLearningData = getFilteredLearningData();
+
+  const uniquePartners = [...new Set((displayData || []).map(item => item.partner_name).filter(Boolean))].sort();
+  const uniqueNgos = [...new Set((displayData || []).map(item => item.ngo_name).filter(Boolean))].sort();
+  const uniqueStates = [...new Set((displayData || []).map(item => item.state).filter(Boolean))].sort();
+
+  const getLearningAnalyticsMetrics = (analyticsData) => {
+    if (!analyticsData || analyticsData.length === 0) {
+      return {
+        totalSessions: 0,
+        avgVideoCompletion: 0,
+        avgQuizAccuracy: 0,
+        uniqueSchools: 0,
+        gradeData: [],
+        ngoPerformance: [],
+        trendsData: []
+      };
+    }
+
+    let totalVideo = 0;
+    let videoCount = 0;
+    let totalQuiz = 0;
+    let quizCount = 0;
+    const schools = new Set();
+    const grades = {};
+    const ngos = {};
+    const dates = {};
+
+    analyticsData.forEach(item => {
+      // Schools
+      if (item.school_name) {
+        schools.add(item.school_name.trim());
+      }
+
+      // Video Completion
+      if (item.video_completion_rate !== undefined && item.video_completion_rate !== null) {
+        const val = parseFloat(String(item.video_completion_rate).replace('%', ''));
+        if (!isNaN(val)) {
+          totalVideo += val;
+          videoCount++;
+        }
+      }
+
+      // Quiz Accuracy
+      if (item.quiz_accuracy_percentage !== undefined && item.quiz_accuracy_percentage !== null) {
+        const val = parseFloat(String(item.quiz_accuracy_percentage).replace('%', ''));
+        if (!isNaN(val)) {
+          totalQuiz += val;
+          quizCount++;
+        }
+      }
+
+      // Grade
+      const grade = item.grade || 'Unknown';
+      grades[grade] = (grades[grade] || 0) + 1;
+
+      // NGO
+      const ngo = item.ngo_name || 'Unknown';
+      if (!ngos[ngo]) {
+        ngos[ngo] = { totalVideo: 0, videoCount: 0, totalQuiz: 0, quizCount: 0, sessionCount: 0 };
+      }
+      ngos[ngo].sessionCount++;
+      if (item.video_completion_rate !== undefined && item.video_completion_rate !== null) {
+        const val = parseFloat(String(item.video_completion_rate).replace('%', ''));
+        if (!isNaN(val)) {
+          ngos[ngo].totalVideo += val;
+          ngos[ngo].videoCount++;
+        }
+      }
+      if (item.quiz_accuracy_percentage !== undefined && item.quiz_accuracy_percentage !== null) {
+        const val = parseFloat(String(item.quiz_accuracy_percentage).replace('%', ''));
+        if (!isNaN(val)) {
+          ngos[ngo].totalQuiz += val;
+          ngos[ngo].quizCount++;
+        }
+      }
+
+      // Dates
+      if (item.session_date) {
+        const d = String(item.session_date).trim();
+        if (!dates[d]) {
+          dates[d] = { count: 0, totalVideo: 0, totalQuiz: 0, quizCount: 0 };
+        }
+        if (item.video_completion_rate !== undefined && item.video_completion_rate !== null) {
+          const val = parseFloat(String(item.video_completion_rate).replace('%', ''));
+          if (!isNaN(val)) {
+            dates[d].totalVideo += val;
+            dates[d].count++;
+          }
+        }
+        if (item.quiz_accuracy_percentage !== undefined && item.quiz_accuracy_percentage !== null) {
+          const val = parseFloat(String(item.quiz_accuracy_percentage).replace('%', ''));
+          if (!isNaN(val)) {
+            dates[d].totalQuiz += val;
+            dates[d].quizCount++;
+          }
+        }
+      }
+    });
+
+    // Format NGO Pie Data
+    const COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#3B82F6', '#14B8A6', '#87A96B'];
+    const ngoPieData = Object.keys(ngos).map((key, idx) => ({
+      name: key,
+      value: ngos[key].sessionCount,
+      color: COLORS[idx % COLORS.length]
+    })).sort((a, b) => b.value - a.value);
+
+    // Format Grade Data
+    const GRADE_COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#3B82F6'];
+    const gradeData = Object.keys(grades).map((key, idx) => ({
+      name: `Grade ${key}`,
+      value: grades[key],
+      color: GRADE_COLORS[idx % GRADE_COLORS.length]
+    })).sort((a, b) => a.name.localeCompare(b.name));
+
+    // Format NGO Data
+    const ngoPerformance = Object.keys(ngos).map(key => ({
+      name: key,
+      sessions: ngos[key].sessionCount,
+      videoCompletion: ngos[key].videoCount > 0 ? Math.round((ngos[key].totalVideo / ngos[key].videoCount) * 10) / 10 : 0,
+      quizAccuracy: ngos[key].quizCount > 0 ? Math.round((ngos[key].totalQuiz / ngos[key].quizCount) * 10) / 10 : 0
+    })).sort((a, b) => b.sessions - a.sessions).slice(0, 8);
+
+    // Format Trends Data
+    const trendsData = Object.keys(dates).map(key => ({
+      date: key,
+      completion: dates[key].count > 0 ? Math.round((dates[key].totalVideo / dates[key].count) * 10) / 10 : 0,
+      quizAccuracy: dates[key].quizCount > 0 ? Math.round((dates[key].totalQuiz / dates[key].quizCount) * 10) / 10 : 0
+    })).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    return {
+      totalSessions: analyticsData.length,
+      avgVideoCompletion: videoCount > 0 ? Math.round((totalVideo / videoCount) * 10) / 10 : 0,
+      avgQuizAccuracy: quizCount > 0 ? Math.round((totalQuiz / quizCount) * 10) / 10 : 0,
+      uniqueSchools: schools.size,
+      ngoPieData,
+      gradeData,
+      ngoPerformance,
+      trendsData
+    };
+  };
+
+  const metrics = getLearningAnalyticsMetrics(filteredLearningData);
 
   if (isLoading) {
     return (
@@ -554,6 +761,20 @@ const TableView = ({
 
   const getTableHeaders = () => {
     switch (displayMetricType) {
+      case "learningAnalytics":
+        return (
+          <>
+            <TableCell sx={{ fontWeight: "bold" }}>Session ID</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Partner Name</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>NGO Name</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Session Date</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>School Name</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>State & District</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Grade</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Video Completion %</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Quiz Accuracy %</TableCell>
+          </>
+        );
       case "activeBeneficiaries":
         return activeTab === 0 ? (
           <>
@@ -698,6 +919,8 @@ const TableView = ({
     }
 
     switch (displayMetricType) {
+      case "learningAnalytics":
+        return "Amazon Learning Analytics Report";
       case "totalLaptops":
         return "All Laptops Data";
       case "activeBeneficiaries":
@@ -762,14 +985,31 @@ const TableView = ({
   };
 
   const renderTableRows = () => {
-
-    let dataToDisplay = displayData;
+    let dataToDisplay = displayMetricType === "learningAnalytics" ? filteredLearningData : displayData;
     
     if (displayMetricType === "activeBeneficiaries") {
       dataToDisplay = activeTab === 0 ? userData : preData;
     }
 
-    const currentData = dataToDisplay ? dataToDisplay.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : [];
+    const currentData = (displayMetricType === "learningAnalytics")
+      ? (dataToDisplay || [])
+      : (dataToDisplay ? dataToDisplay.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : []);
+
+    if (displayMetricType === "learningAnalytics") {
+      return currentData.map((item, index) => (
+        <TableRow key={item.id || index} hover>
+          <TableCell>{item.session_id || "-"}</TableCell>
+          <TableCell>{item.partner_name || "-"}</TableCell>
+          <TableCell>{item.ngo_name || "-"}</TableCell>
+          <TableCell>{item.session_date || "-"}</TableCell>
+          <TableCell>{item.school_name || "-"}</TableCell>
+          <TableCell>{`${item.state || "-"}, ${item.district || "-"}`}</TableCell>
+          <TableCell>{item.grade || "-"}</TableCell>
+          <TableCell>{item.video_completion_rate ? `${item.video_completion_rate}%` : "-"}</TableCell>
+          <TableCell>{item.quiz_accuracy_percentage ? `${item.quiz_accuracy_percentage}%` : "-"}</TableCell>
+        </TableRow>
+      ));
+    }
 
     const laptopMetrics = [
       "totalLaptops", "refurbished", "distributed", "activeUsage",
@@ -946,33 +1186,122 @@ const TableView = ({
   };
   return (
     <Box sx={{ p: 3, pb: 10 }}>
-      {/* Header with Back Button */}
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
-        <Button
-          startIcon={<ArrowLeft size={20} />}
-          onClick={handleBack}
-          variant="outlined"
-          sx={{ textTransform: 'none' }}
-        >
-          Back to Dashboard
-        </Button>
-        <Box>
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
-            {getTableTitle()}
-          </Typography>
-          {displayOrganization && (
-            <Chip
-              label={`Filtered: ${displayOrganization}`}
-              size="small"
-              variant="outlined"
-              sx={{ mt: 1 }}
-            />
-          )}
+      {/* Header with Back Button and Date Filters */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Button
+            startIcon={<ArrowLeft size={20} />}
+            onClick={handleBack}
+            variant="outlined"
+            sx={{ textTransform: 'none' }}
+          >
+            Back to Dashboard
+          </Button>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
+              {getTableTitle()}
+            </Typography>
+            {displayOrganization && (
+              <Chip
+                label={`Filtered: ${displayOrganization}`}
+                size="small"
+                variant="outlined"
+                sx={{ mt: 1 }}
+              />
+            )}
+          </Box>
         </Box>
+
+        {displayMetricType === "learningAnalytics" && (
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+            <TextField
+              label="Start Date"
+              type="date"
+              value={learningStartDate}
+              onChange={(e) => setLearningStartDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              size="small"
+              sx={{ width: 140 }}
+            />
+            <TextField
+              label="End Date"
+              type="date"
+              value={learningEndDate}
+              onChange={(e) => setLearningEndDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              size="small"
+              sx={{ width: 140 }}
+            />
+
+            <TextField
+              select
+              label="Partner"
+              value={selectedPartnerFilter}
+              onChange={(e) => setSelectedPartnerFilter(e.target.value)}
+              size="small"
+              sx={{ minWidth: 120 }}
+              SelectProps={{ native: true }}
+              InputLabelProps={{ shrink: true }}
+            >
+              <option value="">All Partners</option>
+              {uniquePartners.map(p => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </TextField>
+
+            <TextField
+              select
+              label="NGO"
+              value={selectedNgoFilter}
+              onChange={(e) => setSelectedNgoFilter(e.target.value)}
+              size="small"
+              sx={{ minWidth: 120 }}
+              SelectProps={{ native: true }}
+              InputLabelProps={{ shrink: true }}
+            >
+              <option value="">All NGOs</option>
+              {uniqueNgos.map(ngo => (
+                <option key={ngo} value={ngo}>{ngo}</option>
+              ))}
+            </TextField>
+
+            <TextField
+              select
+              label="State"
+              value={selectedStateFilter}
+              onChange={(e) => setSelectedStateFilter(e.target.value)}
+              size="small"
+              sx={{ minWidth: 120 }}
+              SelectProps={{ native: true }}
+              InputLabelProps={{ shrink: true }}
+            >
+              <option value="">All States</option>
+              {uniqueStates.map(state => (
+                <option key={state} value={state}>{state}</option>
+              ))}
+            </TextField>
+
+            <Button
+              variant="contained"
+              onClick={() => {
+                let url = 'https://rms-api.thesama.in/api/afe/export-csv';
+                const params = [];
+                if (learningStartDate) params.push(`startDate=${learningStartDate}`);
+                if (learningEndDate) params.push(`endDate=${learningEndDate}`);
+                if (params.length > 0) url += `?${params.join('&')}`;
+                window.open(url, '_blank');
+              }}
+              size="medium"
+              sx={{ textTransform: 'none' }}
+            >
+              Download CSV
+            </Button>
+          </Box>
+        )}
       </Box>
 
       {/* Data Table */}
-      <Card sx={{ boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e0e0e0' }}>
+      <Card sx={{ boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e0e0e0', mb: 4 }}>
         <CardContent sx={{ p: 3 }}>
           {displayMetricType === "activeBeneficiaries" && (
             <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
@@ -1030,9 +1359,15 @@ const TableView = ({
 
           <TablePagination
             component="div"
-            count={displayMetricType === "activeBeneficiaries" 
-              ? (activeTab === 0 ? userData.length : preData.length)
-              : (displayData?.length || 0)}
+            count={(() => {
+              if (displayMetricType === "activeBeneficiaries") {
+                return activeTab === 0 ? userData.length : preData.length;
+              }
+              if (displayMetricType === "learningAnalytics") {
+                return displayData.length === rowsPerPage ? (page + 2) * rowsPerPage : (page * rowsPerPage) + displayData.length;
+              }
+              return displayData?.length || 0;
+            })()}
             page={page}
             onPageChange={handlePageChange}
             rowsPerPage={rowsPerPage}
@@ -1041,6 +1376,163 @@ const TableView = ({
           />
         </CardContent>
       </Card>
+
+      {displayMetricType === "learningAnalytics" && (
+        <Box sx={{ mt: 4 }}>
+          {/* Charts section */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            {/* Video Completion Trend Over Time */}
+            <Grid item xs={12} md={3}>
+              <Card sx={{ boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e0e0e0', borderRadius: '8px', height: '100%' }}>
+                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: '#333' }}>Video Completion Trend</Typography>
+                  <Box sx={{ flexGrow: 1, width: '100%', height: 260 }}>
+                    <ResponsiveContainer>
+                      <AreaChart data={metrics.trendsData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="colorCompletion" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10B981" stopOpacity={0.2}/>
+                            <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                        <XAxis dataKey="date" stroke="#9CA3AF" fontSize={10} />
+                        <YAxis stroke="#9CA3AF" fontSize={10} domain={['auto', 'auto']} unit="%" />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#1F2937', color: '#fff', borderRadius: '6px', border: 'none' }} 
+                          itemStyle={{ color: '#fff' }} 
+                          labelStyle={{ color: '#fff', fontWeight: 'bold' }}
+                          formatter={(value) => [`${value}%`, 'Avg Completion']} 
+                        />
+                        <Area type="monotone" dataKey="completion" stroke="#10B981" fillOpacity={1} fill="url(#colorCompletion)" strokeWidth={2} name="Avg Video Completion" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Quiz Accuracy Trend Over Time */}
+            <Grid item xs={12} md={3}>
+              <Card sx={{ boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e0e0e0', borderRadius: '8px', height: '100%' }}>
+                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: '#333' }}>Quiz Accuracy Trend</Typography>
+                  <Box sx={{ flexGrow: 1, width: '100%', height: 260 }}>
+                    <ResponsiveContainer>
+                      <AreaChart data={metrics.trendsData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="colorQuizAccuracy" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.2}/>
+                            <stop offset="95%" stopColor="#F59E0B" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                        <XAxis dataKey="date" stroke="#9CA3AF" fontSize={10} />
+                        <YAxis stroke="#9CA3AF" fontSize={10} domain={['auto', 'auto']} unit="%" />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#1F2937', color: '#fff', borderRadius: '6px', border: 'none' }} 
+                          itemStyle={{ color: '#fff' }} 
+                          labelStyle={{ color: '#fff', fontWeight: 'bold' }}
+                          formatter={(value) => [`${value}%`, 'Avg Accuracy']} 
+                        />
+                        <Area type="monotone" dataKey="quizAccuracy" stroke="#F59E0B" fillOpacity={1} fill="url(#colorQuizAccuracy)" strokeWidth={2} name="Avg Quiz Accuracy" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Engagement by NGO (Pie Chart) */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e0e0e0', borderRadius: '8px', height: '100%' }}>
+                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: '#333' }}>Engagement by NGO</Typography>
+                  <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 260 }}>
+                    <ResponsiveContainer width="100%" height={160}>
+                      <PieChart>
+                        <Pie
+                          data={metrics.ngoPieData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={45}
+                          outerRadius={65}
+                          paddingAngle={3}
+                          dataKey="value"
+                        >
+                          {metrics.ngoPieData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#1F2937', color: '#fff', borderRadius: '6px', border: 'none' }} 
+                          itemStyle={{ color: '#fff' }} 
+                          labelStyle={{ color: '#fff', fontWeight: 'bold' }} 
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    {/* Legend */}
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mt: 2, maxHeight: 80, overflowY: 'auto' }}>
+                      {metrics.ngoPieData.map((entry, index) => (
+                        <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: entry.color }} />
+                          <Typography variant="caption" sx={{ color: '#4B5563', fontSize: '10px' }}>
+                            {entry.name} ({entry.value})
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Engagement by Grade (Pie Chart) */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e0e0e0', borderRadius: '8px', height: '100%' }}>
+                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: '#333' }}>Engagement by Grade</Typography>
+                  <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 260 }}>
+                    <ResponsiveContainer width="100%" height={160}>
+                      <PieChart>
+                        <Pie
+                          data={metrics.gradeData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={45}
+                          outerRadius={65}
+                          paddingAngle={3}
+                          dataKey="value"
+                        >
+                          {metrics.gradeData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#1F2937', color: '#fff', borderRadius: '6px', border: 'none' }} 
+                          itemStyle={{ color: '#fff' }} 
+                          labelStyle={{ color: '#fff', fontWeight: 'bold' }} 
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    {/* Legend */}
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mt: 2, maxHeight: 80, overflowY: 'auto' }}>
+                      {metrics.gradeData.map((entry, index) => (
+                        <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: entry.color }} />
+                          <Typography variant="caption" sx={{ color: '#4B5563', fontSize: '10px' }}>
+                            {entry.name} ({entry.value})
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Box>
+      )}
     </Box>
   );
 };

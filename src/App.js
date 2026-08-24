@@ -59,6 +59,7 @@ import CorporatePartner from './Pages/About/CorporatePartner/CorporatePartner';
 import OpsWelcome from './components/OPS/OpsWelcome';
 import Audit from './components/OPS/LaptopAudit';
 import LaptopDetails from "./Pages/LaptopTagging/LaptopDetails";
+import LaptopStageDetails from './Pages/LaptopTagging/LaptopStageDetails';
 import SignupForm from './Pages/Login/OpsLogin/SignupForm';
 import Registration from './components/Header/Registration';
 import Sidebar from './Pages/DonerCSR/SideBar';
@@ -70,7 +71,7 @@ import Ngopartner from './Pages/DonerCSR/Ngopartner';
 import Pickup from './Pages/Pickup/Pickup';
 import DonorCSRRoute from './Pages/DonerCSR/DonorCSRRoute';
 import PickupRequestByDoner from './Pages/Pickup/PickupRequestByDoner';
-import TableView from './Pages/DonerCSR/TableView'; 
+import TableView from './Pages/DonerCSR/TableView';
 import RMSDetails from './Pages/DonerCSR/RMSDetails';
 import RMSControlPanel from './Pages/DonerCSR/RMSControlPanel';
 import RMSDonorDetailsNGOs from './Pages/DonerCSR/RMSDonorDetailsNGOs';
@@ -138,7 +139,7 @@ function App() {
                 <Route path="/donorcsr/:donorName/impact-analytics" element={<LaptopTracking />} />
               </Route>
              */}
-             
+
               <Route
                 path="/donorcsr/table-view"
                 element={
@@ -316,6 +317,14 @@ function App() {
                 element={
                   <PrivateRoute reqired={'ops'}>
                     <MacRearch />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/laptop-stage/:id"
+                element={
+                  <PrivateRoute reqired={'ops'}>
+                    <LaptopStageDetails />
                   </PrivateRoute>
                 }
               />

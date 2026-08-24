@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Button,
   Container,
@@ -20,6 +21,7 @@ import ExportTools from '../../components/OPS/LaptopTable/ExportTools';
 import EditButton from './EditButton';
 import { getTableColumns } from '../../components/OPS/LaptopTable/LaptopTable';
 import BulkEditPanel from './BulkEditPanel';
+import StageRunModal from './StageRunModal';
 
 const formatDateForSort = (dateStr) => {
   if (!dateStr) return new Date(0); // Return epoch time for null dates
@@ -44,13 +46,64 @@ const formatDateForSort = (dateStr) => {
   }
 };
 
+const normalizeValue = (value) => (value ?? '').toString().trim().toLowerCase();
+
+const parseIssues = (value) => {
+  if (Array.isArray(value)) return value.map((item) => normalizeValue(item));
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((item) => normalizeValue(item))
+      .filter(Boolean);
+  }
+  return [];
+};
+
+const hasIssue = (laptop, issueKey, filterValue) => {
+  const issues = parseIssues(laptop[issueKey]);
+  if (filterValue === 'yes') return issues.length > 0;
+  if (filterValue === 'no') return issues.length === 0;
+  return issues.includes(normalizeValue(filterValue));
+};
+
+const applyClientFilters = (rows, {
+  idQuery,
+  macQuery,
+  workingFilter,
+  statusFilter,
+  majorIssueFilter,
+  minorIssueFilter,
+  allocatedToFilter,
+}) => {
+  const idNeedle = normalizeValue(idQuery);
+  const macNeedle = normalizeValue(macQuery);
+  const workingNeedle = normalizeValue(workingFilter);
+  const statusNeedle = normalizeValue(statusFilter);
+  const allocatedNeedle = normalizeValue(allocatedToFilter);
+
+  return rows.filter((laptop) => {
+    if (idNeedle && !normalizeValue(laptop.ID).includes(idNeedle)) return false;
+    if (macNeedle && !normalizeValue(laptop['Mac address']).includes(macNeedle)) return false;
+    if (workingNeedle !== 'all' && normalizeValue(laptop.Working) !== workingNeedle) return false;
+    if (statusNeedle !== 'all' && normalizeValue(laptop.Status) !== statusNeedle) return false;
+    if (allocatedNeedle && normalizeValue(laptop['Allocated To']) !== allocatedNeedle) return false;
+    if (majorIssueFilter !== 'all' && !hasIssue(laptop, 'Major Issues', majorIssueFilter)) return false;
+    if (minorIssueFilter !== 'all' && !hasIssue(laptop, 'Minor Issues', minorIssueFilter)) return false;
+    return true;
+  });
+};
+
+
 function LaptopTagging() {
+  const navigate = useNavigate();
   // States
-  const [allData, setAllData] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [idQuery, setIdQuery] = useState('');
   const [macQuery, setMacQuery] = useState('');
+  const [appliedIdQuery, setAppliedIdQuery] = useState('');
+  const [appliedMacQuery, setAppliedMacQuery] = useState('');
+  const [totalCount, setTotalCount] = useState(0);
   const [taggedLaptops, setTaggedLaptops] = useState({});
   const [open, setOpen] = useState(false);
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
@@ -66,12 +119,15 @@ function LaptopTagging() {
   const [updateValue, setUpdateValue] = useState(null);
   const [allocatedToFilter, setAllocatedToFilter] = useState('');
   const [pendingChange, setPendingChange] = useState(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
 
   const printRef = useRef();
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [isProcessingSelection, setIsProcessingSelection] = useState(false);
+  const [stageModalOpen, setStageModalOpen] = useState(false);
 
   // Sort configuration state
   const [sortConfig, setSortConfig] = useState({
@@ -104,10 +160,7 @@ function LaptopTagging() {
 
     setSortConfig({ field, direction });
 
-    if (direction === "none") {
-      applyFilters(); // This reloads the default reversed data
-      return;
-    }
+    if (direction === "none") return;
 
     // Apply sorting
     const sortedData = [...data].sort((a, b) => {
@@ -138,39 +191,55 @@ function LaptopTagging() {
   const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
     if (isProcessingSelection) return;
 
-    const currentlyVisibleSelectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
-    const currentlyVisibleIds = data.map(item => item.ID);
-    const hiddenSelectedIds = selectedRows.filter(id => !currentlyVisibleIds.includes(id));
-    const newSelectedIds = [...hiddenSelectedIds, ...currentlyVisibleSelectedIds];
-    const uniqueSelectedIds = [...new Set(newSelectedIds)];
-    setSelectedRows(uniqueSelectedIds);
+    const selectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
+    setSelectedRows([...new Set(selectedIds)]);
   };
 
-  // Fetch data on component mount and when refresh state changes
+  // Server-side pagination: fetch only the visible page with active filters.
   useEffect(() => {
-    const loadData = async () => {
+    const loadPageData = async () => {
       setLoading(true);
       try {
-        const result = await fetchLaptopData();
-        // Reverse the data to show the most recent entries first
-        const reversedData = [...result].reverse();
+        const result = await fetchLaptopData({
+          includeBarcode: false,
+          includeMeta: true,
+          page: page + 1,
+          limit: rowsPerPage,
+          idQuery: appliedIdQuery || undefined,
+          macQuery: appliedMacQuery || undefined,
+          workingFilter: workingFilter !== 'all' ? workingFilter : undefined,
+          statusFilter: statusFilter !== 'all' ? statusFilter : undefined,
+          majorIssueFilter: majorIssueFilter !== 'all' ? majorIssueFilter : undefined,
+          minorIssueFilter: minorIssueFilter !== 'all' ? minorIssueFilter : undefined,
+          allocatedToFilter: allocatedToFilter || undefined,
+          noCache: true,
+        });
+        const rows = Array.isArray(result?.data)
+          ? result.data
+          : (Array.isArray(result) ? result : []);
 
-        setAllData(reversedData);
-        setData(reversedData);
+        setData(rows);
+        setTotalCount(result?.meta?.total ?? rows.length);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching paginated laptop data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadData();
-  }, [refresh]);
-
-  // Apply filters when filter values change
-  useEffect(() => {
-    applyFilters();
-  }, [workingFilter, statusFilter, majorIssueFilter, minorIssueFilter, allocatedToFilter, allData]);
+    loadPageData();
+  }, [
+    refresh,
+    page,
+    rowsPerPage,
+    appliedIdQuery,
+    appliedMacQuery,
+    workingFilter,
+    statusFilter,
+    majorIssueFilter,
+    minorIssueFilter,
+    allocatedToFilter,
+  ]);
 
 
   useEffect(() => {
@@ -180,167 +249,12 @@ function LaptopTagging() {
       setIsProcessingSelection(false);
     }
   }, [selectedRows, isProcessingSelection]);
-  // Filter application logic
-  const applyFilters = () => {
-    let filteredData = applyAdditionalFilters(allData);
 
-    // Apply working filter
-    if (workingFilter !== 'all') {
-      filteredData = filteredData.filter(laptop =>
-        laptop.Working === workingFilter
-      );
-    }
-
-    // Apply status filter
-    if (statusFilter !== 'all') {
-      filteredData = filteredData.filter(laptop =>
-        laptop.Status === statusFilter
-      );
-    }
-    if (allocatedToFilter) {
-      filteredData = filteredData.filter(laptop =>
-        laptop["Allocated To"] === allocatedToFilter
-      );
-    }
-
-    // Apply major issue filter
-    if (majorIssueFilter !== 'all') {
-      if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
-        // General yes/no filter
-        filteredData = filteredData.filter(laptop => {
-          const hasMajorIssue = laptop.MajorIssue === true || laptop.MajorIssue === "Yes";
-          return majorIssueFilter === 'yes' ? hasMajorIssue : !hasMajorIssue;
-        });
-      }
-      else {
-        // Specific issue filter - check if the specific issue exists in the MajorIssueDetails field
-        filteredData = filteredData.filter(laptop => {
-          // Assuming MajorIssueDetails is either an array or a comma-separated string
-          const issueDetails = typeof laptop["Major Issues"] === 'string'
-            ? laptop["Major Issues"].split(',').map(issue => issue.trim())
-            : Array.isArray(laptop["Major Issues"])
-              ? laptop["Major Issues"]
-              : [];
-
-          return issueDetails.includes(majorIssueFilter);
-        });
-      }
-    }
-
-    // Apply minor issue filter
-    if (minorIssueFilter !== 'all') {
-      if (minorIssueFilter === 'yes' || minorIssueFilter === 'no') {
-        // General yes/no filter
-        filteredData = filteredData.filter(laptop => {
-          const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
-          return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
-        });
-      }
-      if (allocatedToFilter) {
-        filteredData = filteredData.filter(laptop =>
-          laptop["Allocated To"] === allocatedToFilter
-        );
-      } else {
-        // Specific issue filter - check if the specific issue exists in the MinorIssueDetails field
-        filteredData = filteredData.filter(laptop => {
-          // Assuming MinorIssueDetails is either an array or a comma-separated string
-          const issueDetails = typeof laptop["Minor Issues"] === 'string'
-            ? laptop["Minor Issues"].split(',').map(issue => issue.trim())
-            : Array.isArray(laptop["Minor Issues"])
-              ? laptop["Minor Issues"]
-              : [];
-
-          return issueDetails.includes(minorIssueFilter);
-        });
-      }
-    }
-
-    // Don't reset selections during filtering
-    if (idQuery || macQuery) {
-      handleSearch(filteredData);
-    } else {
-      setData(filteredData);
-    }
-  };
-
-  // Modified to accept pre-filtered data and maintain selections
-  const handleSearch = (preFilteredData = null) => {
-    const dataToFilter = preFilteredData || allData;
-
-    if (!idQuery && !macQuery) {
-      let filtered = applyAdditionalFilters(dataToFilter);
-      setData(dataToFilter);
-      return;
-    }
-
-    // Filter by ID/MAC query
-    let filtered = dataToFilter.filter(laptop => {
-      if (idQuery) return String(laptop.ID).toUpperCase().includes(idQuery.toUpperCase());
-      if (macQuery) return String(laptop['Mac address']).toUpperCase().includes(macQuery.toUpperCase());
-      return false;
-    });
-    filtered = applyAdditionalFilters(filtered);
-    // Important: Don't modify the selectedRows here
-    // Just update the displayed data
-    setData(filtered);
-  };
-
-  // Helper function to apply additional filters to already filtered data
-  const applyAdditionalFilters = (dataToFilter) => {
-    let filtered = [...dataToFilter];
-
-    if (workingFilter !== 'all') {
-      filtered = filtered.filter(laptop => laptop.Working === workingFilter);
-    }
-
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(laptop => laptop.Status === statusFilter);
-    }
-    if (allocatedToFilter) {
-      filtered = filtered.filter(laptop =>
-        laptop["Allocated To"] === allocatedToFilter
-      );
-    }
-
-    if (majorIssueFilter !== 'all') {
-      if (majorIssueFilter === 'yes' || majorIssueFilter === 'no') {
-        filtered = filtered.filter(laptop => {
-          const hasMajorIssue = laptop.MajorIssue === true || laptop.MajorIssue === "Yes";
-          return majorIssueFilter === 'yes' ? hasMajorIssue : !hasMajorIssue;
-        });
-      } else {
-        filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop["Major Issues"] === 'string'
-            ? laptop["Major Issues"].split(',').map(issue => issue.trim())
-            : Array.isArray(laptop["Major Issues"])
-              ? laptop["Major Issues"]
-              : [];
-          return issueDetails.includes(majorIssueFilter);
-        });
-      }
-    }
-
-    if (minorIssueFilter !== 'all') {
-      if (minorIssueFilter === 'yes' || minorIssueFilter === 'no') {
-        filtered = filtered.filter(laptop => {
-          const hasMinorIssue = laptop.MinorIssue === true || laptop.MinorIssue === "Yes";
-          return minorIssueFilter === 'yes' ? hasMinorIssue : !hasMinorIssue;
-        });
-      }
-      else {
-        filtered = filtered.filter(laptop => {
-          const issueDetails = typeof laptop["Minor Issues"] === 'string'
-            ? laptop["Minor Issues"].split(',').map(issue => issue.trim())
-            : Array.isArray(laptop["Minor Issues"])
-              ? laptop["Minor Issues"]
-              : [];
-
-          return issueDetails.includes(minorIssueFilter);
-        });
-      }
-    }
-
-    return filtered;
+  const handleSearch = () => {
+    setAppliedIdQuery(idQuery.trim());
+    setAppliedMacQuery(macQuery.trim());
+    setPage(0);
+    setSelectedRows([]);
   };
 
   // Reset filters but keep search terms
@@ -350,26 +264,25 @@ function LaptopTagging() {
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
     setAllocatedToFilter('');
-    if (idQuery || macQuery) {
-      handleSearch();
-    } else {
-      setData(allData);
-    }
+    setPage(0);
+    setSelectedRows([]);
   };
 
   // Reset all filters and search terms
   const handleReset = () => {
     setIdQuery('');
     setMacQuery('');
+    setAppliedIdQuery('');
+    setAppliedMacQuery('');
     setTaggedLaptops({});
     setWorkingFilter('all');
     setStatusFilter('all');
     setMajorIssueFilter('all');
     setMinorIssueFilter('all');
     setAllocatedToFilter('');
+    setPage(0);
     setSelectedRows([]); // Clear selections on full reset
     setSortConfig({ field: null, direction: 'asc' }); // Reset sort config
-    setData(allData);
   };
 
   const handleWorkingToggle = (event, rowIndex) => {
@@ -492,7 +405,7 @@ function LaptopTagging() {
         const updates = Array.isArray(updateValue) ? updateValue : [{ field: updateField, value: updateValue }];
 
         for (const laptopId of selectedRows) {
-          const laptopData = allData.find(laptop => laptop.ID === laptopId);
+          const laptopData = data.find(laptop => laptop.ID === laptopId);
           if (!laptopData) continue;
 
           const payload = {
@@ -629,20 +542,19 @@ function LaptopTagging() {
     setOpen(true);
   };
 
-  const visibleSelections = data
-    .filter(item => selectedRows.includes(item.ID))
-    .map(item => data.findIndex(d => d.ID === item.ID))
-    .filter(index => index !== -1);
-
+  const handleOpenStageDetails = (laptopId) => {
+    if (!laptopId) return;
+    navigate(`/laptop-stage/${laptopId}`);
+  };
 
   // Define table columns
   const columns = getTableColumns(
     data,
     taggedLaptops,
     handleWorkingToggle,
-    handleStatusChange,
     handleAssignedToChange,
     handleDonatedToChange,
+    handleOpenStageDetails,
     (props) => (
       <EditButton
         {...props}
@@ -656,7 +568,8 @@ function LaptopTagging() {
     handleSort   // Pass handleSort
   );
 
-  const hiddenSelectionsCount = selectedRows.length - visibleSelections.length;
+  const selectedLaptopId = selectedRows.length === 1 ? selectedRows[0] : null;
+  const selectedLaptop = selectedLaptopId ? data.find((row) => row.ID === selectedLaptopId) : null;
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
@@ -690,13 +603,33 @@ function LaptopTagging() {
         <BulkEditPanel
           selectedRows={selectedRows}
           onBulkUpdate={handleBulkUpdate}
-          workingFilter={workingFilter}
-          statusFilter={statusFilter}
         />
       )}
 
       {selectedRows.length > 0 && (
         <Grid container spacing={2} sx={{ mb: 2 }}>
+          {selectedRows.length === 1 && (
+            <Grid item>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => handleOpenStageDetails(selectedRows[0])}
+              >
+                Open Stage Details
+              </Button>
+            </Grid>
+          )}
+          {selectedRows.length === 1 && (
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setStageModalOpen(true)}
+              >
+                Run Stage Checklist
+              </Button>
+            </Grid>
+          )}
           <Grid item>
             <Button
               variant="outlined"
@@ -706,14 +639,6 @@ function LaptopTagging() {
               Clear Selection ({selectedRows.length} selected)
             </Button>
           </Grid>
-
-          {hiddenSelectionsCount > 0 && (
-            <Grid item>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                Note: {hiddenSelectionsCount} selected item(s) not shown in current view
-              </Typography>
-            </Grid>
-          )}
         </Grid>
       )}
 
@@ -723,10 +648,15 @@ function LaptopTagging() {
         ) : (
           <MUIDataTable
             elevation={0}
-            title={`Laptop Data (${data.length} records)`}
+            title={`Laptop Data (${totalCount} records)`}
             data={data}
             columns={columns}
             options={{
+              serverSide: true,
+              count: totalCount,
+              page,
+              rowsPerPage,
+              rowsPerPageOptions: [10, 25, 50, 100],
               responsive: 'scrollMinHeight',
               customToolbar: () => <ExportTools data={data} />,
               filterType: 'checkbox',
@@ -741,6 +671,24 @@ function LaptopTagging() {
               print: false,
               sort: true,
               viewColumns: true,
+              onTableChange: (action, tableState) => {
+                if (action === 'changePage') {
+                  setPage(tableState.page);
+                  setSelectedRows([]);
+                }
+                if (action === 'changeRowsPerPage') {
+                  setRowsPerPage(tableState.rowsPerPage);
+                  setPage(0);
+                  setSelectedRows([]);
+                }
+                if (action === 'search') {
+                  const searchText = (tableState.searchText || '').trim();
+                  setIdQuery(searchText);
+                  setAppliedIdQuery(searchText);
+                  setPage(0);
+                  setSelectedRows([]);
+                }
+              },
               sortOrder: {
                 name: sortConfig.field || '',
                 direction: sortConfig.direction
@@ -778,6 +726,14 @@ function LaptopTagging() {
 
       {/* Hidden div for printing */}
       <div ref={printRef} style={{ display: 'none' }}></div>
+
+      <StageRunModal
+        open={stageModalOpen}
+        onClose={() => setStageModalOpen(false)}
+        laptopId={selectedLaptop?.ID || ''}
+        currentStatus={selectedLaptop?.Status || ''}
+        onCompleted={() => setRefresh(!refresh)}
+      />
     </Container>
 
   );

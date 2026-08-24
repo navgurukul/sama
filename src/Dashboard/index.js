@@ -1,29 +1,23 @@
 import React, { useState,useEffect } from "react";
-import { Grid, Tabs, Tab, Typography, Box } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import SocialImpactPage from "./SocialImpact";
-import EnvironmentalImpact from "./EnvironmentalImpact";
 import {
   DigitalHardwareText,
-  StyledButton,
-  TypographyButton,
-  styles,
 } from "./style";
 import { Container } from "@mui/system";
-function DashboardPage() {
-  const [activeTab, setActiveTab] = useState(0);
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
 
+function DashboardPage() {
   const [data, setData] = useState();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await 
-                fetch(
-                  `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`);
-                  // 'https://script.google.com/macros/s/AKfycbzWkc8lDkTquwsjj_--B4Qj2GHA_gc_L4ev8uxBsmlWha2vE62hTLNMRaHFbsw7bKzYlg/exec');
+                // Use local backend if no valid backend URL is explicitly provided
+                let baseUrl = 'http://localhost:8000';
+                if (process.env.REACT_APP_NgoInformationApi && !process.env.REACT_APP_NgoInformationApi.includes('script.google.com')) {
+                    baseUrl = process.env.REACT_APP_NgoInformationApi.replace('/ngo-exec', '');
+                }
+                const response = await fetch(`${baseUrl}/api/public/social-impact-stats`);
                 const result = await response.json();
                 setData(result);
             } catch (error) {
@@ -33,16 +27,16 @@ function DashboardPage() {
 
         fetchData();
     }, []);
-  return (
 
-    <Container maxWidth="xl" sx={{mb:"40px"}}>
+  return (
+    <Container maxWidth="xl" sx={{mb:"20px"}}>
       <Grid
         container
         spacing={2}
-        sx={{ mt: 1 }}
+        sx={{ mt: 0 }}
       >
-        <Grid item xs={12} md={6} sm={12} sx={{ml:{lg:3,sm:0,md:3,sm:0}}}>
-          <DigitalHardwareText mt={4}>
+        <Grid item xs={12} md={6} sm={12} sx={{ml:{lg:3,sm:0,md:3}}}>
+          <DigitalHardwareText mt={2}>
             Digital Hardware Tracker
           </DigitalHardwareText>
           <Typography
@@ -52,50 +46,8 @@ function DashboardPage() {
           </Typography>
         </Grid>
       </Grid>
-      <Grid
-        container
-        spacing={2}
-        sx={{ mt: 1 ,ml:{lg:1,sm:0,md:1,sm:0}}}
-      >
-        <Grid item xs={12}>
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            indicatorColor="none"
-          >
-            <Tab
-              label={
-                activeTab === 0 ? (
-                  <StyledButton>
-                    <TypographyButton variant="contained">
-                      Environmental Impact
-                    </TypographyButton>
-                  </StyledButton>
-                ) : (
-                  <Typography className="body1">
-                    Environmental Impact
-                  </Typography>
-                )
-              }
-            />
-            <Tab
-              label={
-                activeTab === 1 ? (
-                  <StyledButton>
-                    <TypographyButton variant="contained">Social Impact</TypographyButton>
-                  </StyledButton>
-                ) : (
-                  <Typography className="body1">Social Impact</Typography>
-                )
-              }
-            />
-          </Tabs>
-        </Grid>
-      </Grid>
 
-
-      {activeTab === 0 ? <EnvironmentalImpact data={data} /> : <SocialImpactPage data={data} />}
-
+      <SocialImpactPage data={data} />
     </Container>
   );
 }

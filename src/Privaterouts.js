@@ -4,8 +4,8 @@ import { Navigate } from 'react-router-dom';
 function PrivateRoute({ children, reqired, ngoType }) {
   const isLoggedIn = localStorage.getItem('isLoggedIn');
   const roles = JSON.parse(localStorage.getItem('role')); // Retrieve the role array
-  const NgoDetails = JSON.parse(localStorage.getItem('_AuthSama_'));
-  const userNgoType = NgoDetails[0].Type;
+  const NgoDetails = JSON.parse(localStorage.getItem('_AuthSama_')) || [];
+  const userNgoType = NgoDetails.length > 0 ? NgoDetails[0].Type : null;
   
   if (!isLoggedIn) {
     return <Navigate to="/login" />;

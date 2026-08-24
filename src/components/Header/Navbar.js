@@ -78,6 +78,7 @@ const Navbar = () => {
     "(max-width:" + breakpoints.values.md + "px)"
   );
   const registrationActive = location.pathname === "/registration";
+  const activeOpsTabValue = opsTabs.some((tab) => tab.path === activeTab) ? activeTab : false;
 
   const routePatterns = [
     "/user-details",
@@ -272,10 +273,10 @@ const Navbar = () => {
           )}
 
           <Box
-            sx={{ display: "flex", alignItems: "center", ml: "auto", mr: 3 }}
+            sx={{ display: "flex", alignItems: "center", mx: "auto" }}
           >
             <Tabs
-              value={activeTab}
+              value={activeOpsTabValue}
               onChange={(e, newValue) => setActiveTab(newValue)}
               sx={{
                 minHeight: "unset",
@@ -341,6 +342,21 @@ const Navbar = () => {
         </Box>
       );
     }
+  };
+
+  const renderAfeHeader = () => {
+    return (
+      <Box sx={{ display: "flex", alignContent: "right", width: "50%" }}>
+        <Box
+          component="img"
+          src={logo}
+          alt="Logo"
+          className="header-logo"
+          sx={{ cursor: "pointer", height: 40 }}
+          onClick={() => navigate("/donorcsr/overview")}
+        />
+      </Box>
+    );
   };
 
   const renderAdminHeader = () => {
@@ -458,6 +474,7 @@ const Navbar = () => {
           />
         )}
 
+        <Box sx={{ display: "flex", alignItems: "center", mx: "auto", gap: 1 }}>
         {isLoggedIn && role.includes("admin") && (
           <>
             <Button
@@ -469,7 +486,6 @@ const Navbar = () => {
                 minHeight: "unset",
                 px: 2,
                 py: 1,
-                ml: 2,
                 color:
                   location.pathname === "/pickup-request-by-donor"
                     ? "common.white"
@@ -503,7 +519,6 @@ const Navbar = () => {
                 minHeight: "unset",
                 px: 2,
                 py: 1,
-                ml: 2,
                 color: registrationActive ? "common.white" : "text.primary",
                 // fontWeight: 'medium',
                 backgroundColor: registrationActive
@@ -523,9 +538,8 @@ const Navbar = () => {
             </Button>
           </>
         )}
-        <Box sx={{ display: "flex", alignItems: "center", ml: "auto", ml: 0 }}>
           <Tabs
-            value={activeTab}
+            value={activeOpsTabValue}
             onChange={(e, newValue) => {
               setActiveTab(newValue);
               navigate(newValue);
@@ -586,6 +600,8 @@ const Navbar = () => {
             height: 40,
             cursor: "pointer",
             "&:hover": { opacity: 0.8 },
+            ml: "auto",
+            mr: 3
           }}
           onClick={handleProfileClick}
         />
@@ -628,6 +644,8 @@ const Navbar = () => {
                 renderAdminHeader()
               ) : isLoggedIn && role.includes("ops") ? (
                 renderOpsHeader()
+              ) : isLoggedIn && (role.includes("doner") || role.includes("afe_approver")) && location.pathname.startsWith("/donorcsr") ? (
+                renderAfeHeader()
               ) : isLoggedIn && role.includes("ngo") ? (
                 <Box sx={{ display: "flex", alignContent: "right", width: "50%" }}>
                   <Box
@@ -656,7 +674,7 @@ const Navbar = () => {
                         border: "1px solid",
                         position: "relative",
                         left: "10",
-                        borderColor: "primary.main",                        "&:hover": {
+                        borderColor: "primary.main", "&:hover": {
                           backgroundColor: "#FFFFFF",
                         },
                       }}
@@ -669,7 +687,7 @@ const Navbar = () => {
                 </Box>
               ) : (
                 <>
-                  {!isLoggedIn && (
+                  {(!isLoggedIn || (isLoggedIn && (role.includes("doner") || role.includes("afe_approver")))) && (
                     <Box
                       component="img"
                       src={logo}
@@ -681,7 +699,7 @@ const Navbar = () => {
                           localStorage.getItem("role") || "[]"
                         );
                         if (role.includes("ops")) {
-                          navigate("/ops");
+                           navigate("/ops");
                         } else if (role.includes("admin")) {
                           navigate("/ngo");
                         } else {
@@ -695,7 +713,7 @@ const Navbar = () => {
             </>
           )}
 
-          {!isLoggedIn && (
+          {(!isLoggedIn || (isLoggedIn && (role.includes("doner") || role.includes("afe_approver")) && !location.pathname.startsWith("/donorcsr"))) && (
             <Box className={`nav-links ${menuVisible ? "visible" : ""}`}>
               <DropdownMenu title="Discover Us" menuItems={discoverUsItems} />
               <DropdownMenu title="Get Involved" menuItems={getInvolvedItems} />
@@ -735,7 +753,7 @@ const Navbar = () => {
           )}
 
           {isLoggedIn && !role.includes("admin") && !role.includes("ops") && (
-            <Box className="drop">
+            <Box className="drop" sx={{ ml: "auto", mr: 3 }}>
               <Avatar
                 alt="Profile"
                 src={ProfileImg}
@@ -744,7 +762,6 @@ const Navbar = () => {
                   height: 40,
                   cursor: "pointer",
                   "&:hover": { opacity: 0.8 },
-                  ml: "auto",
                 }}
                 onClick={handleProfileClick}
               />
@@ -752,7 +769,34 @@ const Navbar = () => {
           )}
 
           {/* Dashboard Login and Submit Requirements Buttons */}
-          <Box sx={{ marginLeft: "auto" }}>
+          <Box sx={{ marginLeft: "auto", display: "flex", gap: 1, alignItems: "center" }}>
+            {isLoggedIn && (role.includes("doner") || role.includes("afe_approver")) && !location.pathname.startsWith("/donorcsr") && (
+              <MuiLink
+                sx={{
+                  margin: 1,
+                  textDecoration: "none",
+                }}
+                component={Link}
+                to="/donorcsr/overview"
+              >
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    fontWeight: "bold",
+                    borderRadius: "100px",
+                    color: "#ffffff",
+                    textTransform: "none",
+                    px: 3,
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  <Typography variant="subtitle1" sx={{ color: "#ffffff", fontWeight: 600, whiteSpace: "nowrap" }}>
+                    Dashboard
+                  </Typography>
+                </Button>
+              </MuiLink>
+            )}
             {!isLoggedIn && !isActive && (
               <>
                 <MuiLink
@@ -929,7 +973,7 @@ const Navbar = () => {
           },
         }}
       >
-        {role.includes("admin") || role.includes("ops") || role.includes("doner")? (
+        {role.includes("admin") || role.includes("ops") || role.includes("doner") ? (
           <MenuItem onClick={handleLogout} sx={{ color: "red" }}>
             <Typography variant="body1">Logout</Typography>
           </MenuItem>

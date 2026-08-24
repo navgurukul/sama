@@ -80,61 +80,68 @@ const Upload = () => {
         col.trim().toLowerCase()
       );
 
-      // Check if the uploaded file has the same columns as the expected ones
-      const isValid = normalizedExpectedColumns.every(
-        (col, index) => col === fileColumns[index]
-      );
+      // Check if all expected columns (or their acceptable aliases) are present in the uploaded file
+      const isValid = normalizedExpectedColumns.every((col) => {
+        if (col === "manufacturing date(if available)") {
+          return fileColumns.includes("manufacturing date(if available)") || fileColumns.includes("manufacturing date");
+        }
+        return fileColumns.includes(col);
+      });
 
       if (!isValid) {
         setError(
-          "The uploaded file does not match the expected format. Please upload a valid file."
+          "The uploaded file does not match the expected format. Please make sure all required columns are present."
         );
         setLoading(false);
         return;
       }
 
-      // ✅ Convert the sheet to JSON format with headers
-    const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+        // ✅ Convert the sheet to JSON format with headers
+      const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-    // ✅ Validation: check Inventory Location for each row
-    const allowedLocations = [
-      "Sarjapur Campus Bangalore",
-      "Anish Jadhav Memorial Foundation Navgurukul Campus Pune",
-    ];
+      const validRows = [];
+      const invalidRows = [];
 
-    const invalidRows = jsonData.filter((row) => {
-      const inventoryValid = allowedLocations.some(
-        (loc) => loc.toLowerCase() === String(row["Inventory Location"]).toLowerCase()
-      );
-    
-      const idValid = row["ID"] && String(row["ID"]).trim() !== "";
-      const donorValid = row["Donor Company Name"] && String(row["Donor Company Name"]).trim() !== "";
-    
-      return !inventoryValid || !idValid || !donorValid;
-    });
+      jsonData.forEach((row, index) => {
+        // Skip completely empty rows
+        const isEmpty = !Object.values(row).some(
+          (val) => val !== null && String(val).trim() !== ""
+        );
+        if (isEmpty) return;
 
-    
-    // const invalidRows = jsonData.filter(
-    //   (row) =>
-    //     !allowedLocations.some(
-    //       (loc) => loc.toLowerCase() === String(row["Inventory Location"]).toLowerCase()
-    //     )
-    // );
-    
+        const hasId = row["ID"] && String(row["ID"]).trim() !== "";
+        const hasDonor = row["Donor Company Name"] && String(row["Donor Company Name"]).trim() !== "";
+        const hasLocation = row["Inventory Location"] && String(row["Inventory Location"]).trim() !== "";
 
-    if (invalidRows.length > 0) {
-      setError(
-        "Please enter valid Inventory Location as mentioned in the template and ensure ID and Donor Company Name are not empty."
-      );
-      setLoading(false);
-      return;
-    }
+        // If the row has ID, Donor, and Location, it is a valid row
+        if (hasId && hasDonor && hasLocation) {
+          validRows.push(row);
+        } else if (hasId && (!hasDonor || !hasLocation)) {
+          // Skip incomplete test rows silently so they don't block the upload
+          return;
+        } else {
+          // Row is missing required fields
+          invalidRows.push(`Row ${index + 2}: Missing ID or Donor Company Name`);
+        }
+      });
 
-    // ✅ Proceed only if validation passed
-    const dataToSend = {
-      type: "bulkupload",
-      data: jsonData,
-    };
+      if (invalidRows.length > 0) {
+        setError(`Please fix validation errors: ${invalidRows.slice(0, 3).join(", ")}${invalidRows.length > 3 ? "..." : ""}`);
+        setLoading(false);
+        return;
+      }
+
+      if (validRows.length === 0) {
+        setError("No valid laptop records with complete ID, Donor, and Location were found in the file.");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Proceed only if validation passed
+      const dataToSend = {
+        type: "bulkupload",
+        data: validRows,
+      };
 
       // If valid, proceed with the upload
       // const dataToSend = {
@@ -142,25 +149,27 @@ const Upload = () => {
       //   data: XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]), // Convert sheet to JSON
       // };
 
-      // Post data to Google Apps Script
       try {
-        await fetch(
+        const response = await fetch(
           `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
-          // "https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec",
           {
             method: "POST",
             body: JSON.stringify(dataToSend),
-            mode: "no-cors",
             headers: {
               "Content-Type": "application/json",
             },
           }
         );
 
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.detail || "Server error occurred during upload.");
+        }
+
         alert("Data uploaded successfully!"); // Success alert
       } catch (error) {
         console.error("Error uploading data:", error); // Log the error
-        alert("Failed to upload data. Please try again."); // Error alert
+        alert(`Failed to upload data: ${error.message}`); // Error alert
       }
 
       setLoading(false); // Hide loader after completion
