@@ -2902,23 +2902,7 @@ def _save_public_inquiry(payload: Dict[str, Any]) -> Dict[str, Any]:
             inquiry_id = cur.fetchone()["id"]
             conn.commit()
 
-    if not LEGACY_GET_INVOLVED_FORM:
-        raise HTTPException(
-            status_code=503,
-            detail={"message": "Saved to database, but Sheet destination is not configured", "databaseId": inquiry_id},
-        )
-
-    try:
-        with httpx.Client(timeout=httpx.Timeout(30.0), follow_redirects=True) as client:
-            response = client.post(LEGACY_GET_INVOLVED_FORM, json=payload)
-            response.raise_for_status()
-    except httpx.HTTPError as exc:
-        raise HTTPException(
-            status_code=502,
-            detail={"message": "Saved to database, but Sheet delivery failed", "databaseId": inquiry_id, "error": str(exc)},
-        )
-
-    return {"status": "success", "databaseId": inquiry_id, "sheet": "sent"}
+    return {"status": "success", "databaseId": inquiry_id}
 
 
 @app.post("/evidence-upload")
@@ -4196,9 +4180,7 @@ async def exec_post(request: Request, background_tasks: BackgroundTasks) -> Any:
         return _save_public_inquiry(payload)
 
     if type_name in MIGRATED_TYPES:
-        res = _handle_post_type(type_name, payload)
-        background_tasks.add_task(_proxy_to_legacy, "POST", request, payload)
-        return res
+        return _handle_post_type(type_name, payload)
 
     return _proxy_to_legacy("POST", request, payload)
 
