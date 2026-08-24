@@ -61,9 +61,18 @@ Create `backend/.env`:
 ```env
 DATABASE_URL=postgresql://postgres@localhost:5432/sama
 DB_SCHEMA=sama_ops
-LEGACY_LAPTOP_API_URL=https://script.google.com/macros/s/AKfycbxvffwR4e0bI_N4ra0MT5Ogd5FzGAuW7_lweuyiUN6t_luumX07PfwvNy_ztSFmjlHw/exec
 PORT=8000
 ```
+
+The backend is database-only. Apps Script is not used at runtime. To perform
+the one-time migration of all supported sheet data (laptops, audit, preliminary
+requests, and NGO registrations), run:
+
+```bash
+RUN_ONE_TIME_SHEET_SYNC=true python backend/sync.py
+```
+
+Leave `RUN_ONE_TIME_SHEET_SYNC` unset or set to `false` after the migration.
 
 ## Run locally
 
