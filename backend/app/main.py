@@ -1806,6 +1806,7 @@ def _handle_user_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                 user = cur.fetchone()
                 if not user:
                     raise HTTPException(status_code=401, detail="Invalid Email or password.")
+                conn.rollback()
                 return {"status": "success", "user": _normalize_rows([user])[0]}
 
             if type_name == "addRegistration":
