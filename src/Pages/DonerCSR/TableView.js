@@ -765,6 +765,7 @@ const TableView = ({
         return (
           <>
             <TableCell sx={{ fontWeight: "bold" }}>Session ID</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Avatar Name</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Partner Name</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>NGO Name</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Session Date</TableCell>
@@ -773,6 +774,8 @@ const TableView = ({
             <TableCell sx={{ fontWeight: "bold" }}>Grade</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Video Completion %</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Quiz Accuracy %</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Questions Attempted</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
           </>
         );
       case "activeBeneficiaries":
@@ -999,6 +1002,7 @@ const TableView = ({
       return currentData.map((item, index) => (
         <TableRow key={item.id || index} hover>
           <TableCell>{item.session_id || "-"}</TableCell>
+          <TableCell>{item.avatar_name || "-"}</TableCell>
           <TableCell>{item.partner_name || "-"}</TableCell>
           <TableCell>{item.ngo_name || "-"}</TableCell>
           <TableCell>{item.session_date || "-"}</TableCell>
@@ -1007,6 +1011,8 @@ const TableView = ({
           <TableCell>{item.grade || "-"}</TableCell>
           <TableCell>{item.video_completion_rate ? `${item.video_completion_rate}%` : "-"}</TableCell>
           <TableCell>{item.quiz_accuracy_percentage ? `${item.quiz_accuracy_percentage}%` : "-"}</TableCell>
+          <TableCell>{(item.correct_answers_count !== null && item.correct_answers_count !== undefined) ? `${item.correct_answers_count}/${item.total_questions_answered}` : "-"}</TableCell>
+          <TableCell>{item.session_completed_flag ? 'Completed' : 'In Progress'}</TableCell>
         </TableRow>
       ));
     }
