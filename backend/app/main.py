@@ -5,13 +5,15 @@ import json
 import os
 import re
 import uuid
+import traceback
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import boto3
 import httpx
 from botocore.exceptions import ClientError
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile, BackgroundTasks, Response
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile, BackgroundTasks, Response, Depends
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -2943,16 +2945,69 @@ def _query_ngo_operation(operation: str, params: Dict[str, Any]) -> Any:
     )
     with get_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute(
-                f"""
-                SELECT payload
-                FROM {DB_SCHEMA}.ngo_operation_records
-                WHERE {operation_filter} AND (%s IS NULL OR ngo_id = %s)
-                ORDER BY updated_at DESC, record_id DESC
-                """,
-                ((operation,) if operation != "MultipleDocsGet" else ())
-                + (str(ngo_id) if ngo_id else None, str(ngo_id) if ngo_id else None),
-            )
+            try:
+                cur.execute(
+                    f"""
+                    SELECT payload
+                    FROM {DB_SCHEMA}.ngo_operation_records
+                    WHERE {operation_filter} AND (%s IS NULL OR ngo_id = %s)
+                    ORDER BY updated_at DESC, record_id DESC
+                    """,
+                    ((operation,) if operation != "MultipleDocsGet" else ())
+                    + (str(ngo_id) if ngo_id else None, str(ngo_id) if ngo_id else None),
+                )
+            except Exception as exc:
+                # If the table is missing, create it and retry the query.
+                # Support both psycopg and psycopg2 error types, and fallback to message check.
+                try:
+                    from psycopg.errors import UndefinedTable as _UndefinedTable  # type: ignore
+                except Exception:
+                    try:
+                        from psycopg2 import errors as _pg_errors  # type: ignore
+                        _UndefinedTable = getattr(_pg_errors, "UndefinedTable", None)
+                    except Exception:
+                        _UndefinedTable = None
+
+                is_undefined_table = False
+                if _UndefinedTable is not None and isinstance(exc, _UndefinedTable):
+                    is_undefined_table = True
+                elif "does not exist" in str(exc).lower():
+                    is_undefined_table = True
+
+                if is_undefined_table:
+                    # Create the required table and index if they don't exist, then retry.
+                    cur.execute(
+                        f"""
+                        CREATE TABLE IF NOT EXISTS {DB_SCHEMA}.ngo_operation_records (
+                            record_id BIGSERIAL PRIMARY KEY,
+                            operation TEXT NOT NULL,
+                            ngo_id TEXT,
+                            record_key TEXT NOT NULL DEFAULT 'default',
+                            payload JSONB NOT NULL,
+                            created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+                            updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+                            UNIQUE (operation, ngo_id, record_key)
+                        );
+                        CREATE INDEX IF NOT EXISTS idx_ngo_operation_records_lookup
+                            ON {DB_SCHEMA}.ngo_operation_records (operation, ngo_id, updated_at DESC);
+                        """
+                    )
+                    conn.commit()
+                    # Retry the original select
+                    cur.execute(
+                        f"""
+                        SELECT payload
+                        FROM {DB_SCHEMA}.ngo_operation_records
+                        WHERE {operation_filter} AND (%s IS NULL OR ngo_id = %s)
+                        ORDER BY updated_at DESC, record_id DESC
+                        """,
+                        ((operation,) if operation != "MultipleDocsGet" else ())
+                        + (str(ngo_id) if ngo_id else None, str(ngo_id) if ngo_id else None),
+                    )
+                else:
+                    # Unknown error - re-raise
+                    raise
+
             rows = [row["payload"] for row in cur.fetchall()]
     if operation == "MultipleDocsGet":
         documents: Dict[str, Any] = {}
@@ -3428,9 +3483,51 @@ def ngo_exec_get(request: Request) -> Any:
 
     if type_name in {
         "manageStatus", "Monthly", "Yearly", "GetMonthlyReport", "GetYearlyReport",
-        "GetMou", "getMonthlyStatusUpdate", "donorQuestion", "question", "yearlyQuestion",
+        "GetMou", "getMonthlyStatusUpdate"
     }:
         return _query_ngo_operation(type_name, params)
+
+    if type_name in ("donorQuestion", "question", "monthlyquestion", "yearlyQuestion", "donorID"):
+        try:
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    if type_name == "donorID":
+                        cur.execute(f"SELECT donor_id, questions_list_id, donner FROM {DB_SCHEMA}.ngo_data_doner")
+                        rows = cur.fetchall()
+                        data = []
+                        for r in rows:
+                            data.append({
+                                "Donor id": r["donor_id"],
+                                "Questions List ID": r["questions_list_id"],
+                                "Donner": r["donner"]
+                            })
+                        return {"status": "success", "data": data}
+                    elif type_name in ("donorQuestion", "question"):
+                        cur.execute(f"SELECT questions_id, questions, options, type, name FROM {DB_SCHEMA}.ngo_data_questions ORDER BY cast(questions_id as float)")
+                        rows = cur.fetchall()
+                        data = []
+                        for r in rows:
+                            opts = None
+                            if r["options"]:
+                                opts = [opt.strip() for opt in str(r["options"]).split(";") if opt.strip()]
+                            data.append({
+                                "id": r["questions_id"],
+                                "question": r["questions"],
+                                "options": opts,
+                                "type": r["type"],
+                                "name": r["name"]
+                            })
+                        return {"status": "success", "data": data}
+                    elif type_name == "monthlyquestion":
+                        cur.execute(f"SELECT ngoid, question, type FROM {DB_SCHEMA}.ngo_data_monthlyquestion")
+                        rows = cur.fetchall()
+                        return {"status": "success", "data": rows}
+                    elif type_name == "yearlyQuestion":
+                        cur.execute(f"SELECT ngoid, question, type FROM {DB_SCHEMA}.ngo_data_yearlyquestion")
+                        rows = cur.fetchall()
+                        return {"status": "success", "data": rows}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
 
     if params.get("type") == "laptopinfo":
         ngo_id = (params.get("id") or "").strip()
@@ -3590,12 +3687,12 @@ def ngo_exec_get(request: Request) -> Any:
                     for r in rows:
                         data_list.append({
                             "Id": r["id"],
-                            "organizationName": r["organization_name"],
-                            "registrationNumber": r["registration_number"],
-                            "primaryContactName": r["primary_contact_name"],
-                            "contactNumber": r["contact_number"],
-                            "email": r["email"],
-                            "operatingState": r["operating_state"],
+                            "organizationName": r["organization_name"] or "",
+                            "registrationNumber": r["registration_number"] or "",
+                            "primaryContactName": r["primary_contact_name"] or "",
+                            "contactNumber": r["contact_number"] or "",
+                            "email": r["email"] or "",
+                            "operatingState": r["operating_state"] or "",
                             "location": r["location"],
                             "yearsOperating": r["years_operating"],
                             "focusArea": r["focus_area"],
