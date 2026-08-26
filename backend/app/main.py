@@ -5206,12 +5206,26 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
                     """, (ngo_name_str,))
                     last_del = cur.fetchone()["max"]
 
+                    cur.execute(f"""
+                        SELECT id AS "ID", 
+                               COALESCE(donor_company_name, '') AS "Donor Company Name",
+                               manufacturer_model AS "Manufacturer Model",
+                               status AS "Status",
+                               working AS "Working"
+                        FROM {DB_SCHEMA}.laptop_labeling
+                        WHERE LOWER(TRIM(allocated_to)) = LOWER(TRIM(%s))
+                          AND (is_deleted_from_sheet = FALSE OR is_deleted_from_sheet IS NULL)
+                          {date_filter_sql.replace("ll.last_updated_on", "last_updated_on")}
+                    """, [ngo_name_str] + date_params)
+                    laptop_details = [dict(r) for r in cur.fetchall()]
+
                     ngo_partners.append({
                         "id": ngo_id_str,
                         "name": ngo_name_str,
                         "status": ngo["status"],
                         "location": ngo["location"] or "Unknown",
                         "laptops": ngo_laptops,
+                        "laptopDetails": laptop_details,
                         "beneficiaries": total_ngo_beneficiaries,
                         "lastDelivery": last_del.strftime("%d/%m/%Y") if last_del else "N/A",
                         "Doner": ngo["donor"]

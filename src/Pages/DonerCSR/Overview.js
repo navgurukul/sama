@@ -137,6 +137,7 @@ const Overview = () => {
   const [activeType, setActiveType] = useState(null);
   const [page, setPage] = useState(0);
   const [showNgoDetails, setShowNgoDetails] = useState(false);
+  const [ngoSearchTerm, setNgoSearchTerm] = useState("");
   const rowsPerPage = 5;
   const handleToggle = (id, type) => {
     if (expandedCard === id && activeType === type) {
@@ -375,26 +376,38 @@ const Overview = () => {
 
 
   const getFilteredNgoPartners = () => {
-    if (!selectedOrganization) return ngoPartner;
+    let result = ngoPartner;
 
-    const selOrg = selectedOrganization.trim().toLowerCase();
+    if (selectedOrganization) {
+      const selOrg = selectedOrganization.trim().toLowerCase();
+      result = result.filter(partner => {
+        // Check if NGO's donor field matches
+        const donorName = (partner.Doner || partner.Donor || "").trim().toLowerCase();
+        if (donorName === selOrg) return true;
 
-    return ngoPartner.filter(partner => {
-      // Check if NGO's donor field matches
-      const donorName = (partner.Doner || partner.Donor || "").trim().toLowerCase();
-      if (donorName === selOrg) return true;
+        // Also check if any laptops allocated to this NGO have matching donor company name
+        if (partner.laptopDetails && partner.laptopDetails.length > 0) {
+          const hasMatchingLaptop = partner.laptopDetails.some(laptop => {
+            const laptopDonor = String(laptop["Donor Company Name"] || "").trim().toLowerCase();
+            return laptopDonor === selOrg;
+          });
+          return hasMatchingLaptop;
+        }
 
-      // Also check if any laptops allocated to this NGO have matching donor company name
-      if (partner.laptopDetails && partner.laptopDetails.length > 0) {
-        const hasMatchingLaptop = partner.laptopDetails.some(laptop => {
-          const laptopDonor = String(laptop["Donor Company Name"] || "").trim().toLowerCase();
-          return laptopDonor === selOrg;
-        });
-        return hasMatchingLaptop;
-      }
+        return false;
+      });
+    }
 
-      return false;
-    });
+    if (ngoSearchTerm) {
+      const searchLower = ngoSearchTerm.toLowerCase();
+      result = result.filter(partner => {
+        if (partner.name && partner.name.toLowerCase().includes(searchLower)) return true;
+        if (partner.laptopDetails && partner.laptopDetails.some(l => String(l.ID).toLowerCase().includes(searchLower))) return true;
+        return false;
+      });
+    }
+
+    return result;
   };
 
 
@@ -1271,17 +1284,29 @@ const Overview = () => {
                   onClick={() => setShowNgoDetails(!showNgoDetails)}
                 >
                   <CardContent>
-                    <Box display="flex" alignItems="center" mb={1}>
-                      <Building size={20} style={{ marginRight: 8, color: "#555" }} />
-                      <Typography variant="h6" fontWeight={600}>
-                        NGO Partners
-                        <Chip
-                          label={`${ngosServedCount} NGOs`}
+                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                      <Box display="flex" alignItems="center">
+                        <Building size={20} style={{ marginRight: 8, color: "#555" }} />
+                        <Typography variant="h6" fontWeight={600}>
+                          NGO Partners
+                          <Chip
+                            label={`${ngosServedCount} NGOs`}
+                            size="small"
+                            variant="outlined"
+                            sx={{ ml: 2 }}
+                          />
+                        </Typography>
+                      </Box>
+                      {showNgoDetails && (
+                        <TextField
                           size="small"
-                          variant="outlined"
-                          sx={{ ml: 2 }}
+                          placeholder="Search NGO or Laptop ID..."
+                          value={ngoSearchTerm}
+                          onChange={(e) => setNgoSearchTerm(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          sx={{ width: 300 }}
                         />
-                      </Typography>
+                      )}
                     </Box>
                     <Typography variant="body2" color="text.secondary" mb={3}>
                       {selectedOrganization
