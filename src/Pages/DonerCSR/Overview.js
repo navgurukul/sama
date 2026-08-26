@@ -59,7 +59,21 @@ const Overview = () => {
   const navigate = useNavigate();
   const [pickups, setPickups] = useState([]);
   const [totalLaptopss, setTotalLaptopss] = useState(0);
-  const [selectedOrganization, setSelectedOrganization] = useState(donorName || null);
+
+  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const roles = JSON.parse(localStorage.getItem("role") || "[]");
+  const fallbackRole = NgoDetails?.[0]?.role || "";
+  const donorOrgName = NgoDetails?.[0]?.Doner || null;
+  const isAdmin = roles.includes("admin") || fallbackRole.includes("admin");
+  const isDoner = roles.includes("doner") || fallbackRole.includes("doner");
+  const isAmazonOnly = (name) => Boolean(name && name.toLowerCase().includes("amazon") && !name.toLowerCase().includes("- ng") && !name.toLowerCase().includes("-ng"));
+  
+  // Note: Since donorName comes from URL and donorOrgName from auth, we check both.
+  const tempOrg = donorName || donorOrgName;
+  const isAfeApprover = roles.includes("afe_approver") || fallbackRole.includes("afe_approver") || (isAdmin && isAmazonOnly(tempOrg)) || (isDoner && isAmazonOnly(donorOrgName));
+
+  const initialOrg = donorName || ((isDoner || isAfeApprover) ? donorOrgName : null);
+  const [selectedOrganization, setSelectedOrganization] = useState(initialOrg);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [appliedStartDate, setAppliedStartDate] = useState('');
@@ -161,14 +175,8 @@ const Overview = () => {
     }
   };
 
-  const NgoDetails = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
-  const roles = JSON.parse(localStorage.getItem("role") || "[]");
-  const fallbackRole = NgoDetails?.[0]?.role || "";
-  const donorOrgName = NgoDetails?.[0]?.Doner || null;
-  const isAdmin = roles.includes("admin") || fallbackRole.includes("admin");
-  const isDoner = roles.includes("doner") || fallbackRole.includes("doner");
-  const isAmazonOnly = (name) => Boolean(name && name.toLowerCase().includes("amazon") && !name.toLowerCase().includes("- ng") && !name.toLowerCase().includes("-ng"));
-  const isAfeApprover = roles.includes("afe_approver") || fallbackRole.includes("afe_approver") || (isAdmin && isAmazonOnly(selectedOrganization)) || (isDoner && isAmazonOnly(donorOrgName));
+  // Auth variables (NgoDetails, roles, etc.) have been moved to the top of the component
+  // to properly initialize selectedOrganization and avoid race conditions.
 
   useEffect(() => {
     if (isDoner) {
@@ -205,6 +213,8 @@ const Overview = () => {
   });
 
   useEffect(() => {
+    let isActive = true; // Added to prevent race conditions from multiple rapid requests
+
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -226,36 +236,44 @@ const Overview = () => {
         const res = await fetch(`${apiBase}/api/public/donor-stats?${params.toString()}`);
         const data = await res.json();
 
-        setStats({
-          totalLaptops: data.totalLaptops || 0,
-          refurbishedCount: data.refurbishedCount || 0,
-          activeBeneficiaries: data.activeBeneficiaries || 0,
-          pipeline: data.pipeline || {
-            pickupRequested: 0,
-            inTransit: 0,
-            received: 0,
-            onlyLaptopReceived: 0,
-            notWorking: 0,
-            refurbishmentStarted: 0,
-            refurbished: 0,
-            distributed: 0,
-            activeUsage: 0
-          },
-          recentActivities: data.recentActivities || []
-        });
+        if (isActive) {
+          setStats({
+            totalLaptops: data.totalLaptops || 0,
+            refurbishedCount: data.refurbishedCount || 0,
+            activeBeneficiaries: data.activeBeneficiaries || 0,
+            pipeline: data.pipeline || {
+              pickupRequested: 0,
+              inTransit: 0,
+              received: 0,
+              onlyLaptopReceived: 0,
+              notWorking: 0,
+              refurbishmentStarted: 0,
+              refurbished: 0,
+              distributed: 0,
+              activeUsage: 0
+            },
+            recentActivities: data.recentActivities || []
+          });
 
-        setNgoPartner(data.ngoPartners || []);
-        setApprovedCount((data.ngoPartners || []).length);
-        setUniqueOrgs(data.uniqueOrganizations || []);
+          setNgoPartner(data.ngoPartners || []);
+          setApprovedCount((data.ngoPartners || []).length);
+          setUniqueOrgs(data.uniqueOrganizations || []);
+        }
 
       } catch (err) {
         console.error("Error fetching overview data:", err);
       } finally {
-        setIsLoading(false);
+        if (isActive) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchData();
+
+    return () => {
+      isActive = false; // Cleanup function invalidates the request if dependencies change
+    };
   }, [selectedOrganization, appliedStartDate, appliedEndDate]);
 
 
