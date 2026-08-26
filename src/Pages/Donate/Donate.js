@@ -126,7 +126,7 @@ function Donation() {
       try {
         const apiBase = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
           ? "http://localhost:8000"
-          : window.location.origin;
+          : "https://sama-api.thesama.in";
 
         const response = await fetch(
           `${apiBase}/api/public/donate`,

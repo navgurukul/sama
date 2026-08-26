@@ -168,44 +168,7 @@ else
     log_info "backend/.env already exists. Skipping (using existing credentials)."
 fi
 
-# =============================================
-# STEP 5: Frontend .env setup
-# =============================================
-log_step "STEP 5: Frontend environment (.env)"
-
-# API calls go through nginx on same domain, so use relative paths won't work
-# with CRA - we use the full URL pointing to this server
-FRONTEND_ENV="$APP_DIR/.env"
-
-if [ -f "$FRONTEND_ENV" ]; then
-    # Backup existing
-    cp "$FRONTEND_ENV" "${FRONTEND_ENV}.bak"
-    log_info "Backed up existing .env to .env.bak"
-fi
-
-log_info "Writing frontend .env with server address: $SERVER_ADDR"
-
-# Preserve all existing vars but override the API URLs
-EXISTING_VARS=""
-if [ -f "${FRONTEND_ENV}.bak" ]; then
-    EXISTING_VARS=$(grep -v "REACT_APP_LaptopAndBeneficiaryDetailsApi\|REACT_APP_UserDetailsApis\|REACT_APP_NgoInformationApi" "${FRONTEND_ENV}.bak" 2>/dev/null || true)
-fi
-
-cat > "$FRONTEND_ENV" << EOF
-# API endpoints pointing to nginx proxy on this server
-REACT_APP_LaptopAndBeneficiaryDetailsApi=http://${SERVER_ADDR}/exec
-REACT_APP_UserDetailsApis=http://${SERVER_ADDR}/user-exec
-REACT_APP_NgoInformationApi=http://${SERVER_ADDR}/ngo-exec
-
-# --- Restore other env vars below (Firebase, etc.) ---
-${EXISTING_VARS}
-EOF
-
-log_warn "Review $APP_DIR/.env — make sure Firebase keys are present!"
-echo "--- Current .env ---"
-cat "$FRONTEND_ENV"
-echo "--------------------"
-read -p "Press Enter to continue (or Ctrl+C to edit it first)..."
+# Removed Frontend environment step
 
 # =============================================
 # STEP 6: Install backend dependencies
@@ -224,20 +187,7 @@ pip install -r backend/requirements.txt -q
 deactivate
 log_info "Backend dependencies installed in backend/venv."
 
-# =============================================
-# STEP 7: Build frontend
-# =============================================
-log_step "STEP 7: Frontend — npm install & build"
-
-cd "$APP_DIR"
-
-if [ -d "$APP_DIR/build" ]; then
-    log_info "Build folder already exists. Skipping npm install & build."
-else
-    npm install --legacy-peer-deps
-    NODE_OPTIONS=--max-old-space-size=1536 npm run build
-    log_info "React build complete. Static files in $APP_DIR/build/"
-fi
+# Removed Frontend build step
 
 # =============================================
 # STEP 8: Create systemd service for backend
@@ -292,16 +242,30 @@ server {
     listen 80;
     server_name ${SERVER_ADDR} _;
 
-    # Serve React static build
-    root ${APP_DIR}/build;
-    index index.html;
-
-    # React Router support — all unknown paths serve index.html
+    # Route ALL traffic directly to the Python Backend
     location / {
-        try_files \$uri \$uri/ /index.html;
+        proxy_pass         http://127.0.0.1:${BACKEND_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header   Host \$host;
+        proxy_set_header   X-Real-IP \$remote_addr;
+        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
+        proxy_read_timeout 120s;
+        client_max_body_size 50M;
     }
 
     # ---- FastAPI proxy endpoints ----
+
+    location /api {
+        proxy_pass         http://127.0.0.1:${BACKEND_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header   Host \$host;
+        proxy_set_header   X-Real-IP \$remote_addr;
+        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
+        proxy_read_timeout 120s;
+        client_max_body_size 50M;
+    }
 
     location /exec {
         proxy_pass         http://127.0.0.1:${BACKEND_PORT};
@@ -377,8 +341,7 @@ log_step "STEP 10: Verification"
 
 sleep 2
 
-BACKEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:${BACKEND_PORT}/health 2>/dev/null || echo "000")
-FRONTEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/ 2>/dev/null || echo "000")
+BACKEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/health 2>/dev/null || echo "000")
 
 if [ "$BACKEND_STATUS" = "200" ]; then
     log_info "Backend /health: HTTP $BACKEND_STATUS - OK"
@@ -386,21 +349,15 @@ else
     log_warn "Backend /health returned HTTP $BACKEND_STATUS"
 fi
 
-if [ "$FRONTEND_STATUS" = "200" ]; then
-    log_info "Frontend (nginx): HTTP $FRONTEND_STATUS - OK"
-else
-    log_warn "Frontend returned HTTP $FRONTEND_STATUS"
-fi
-
 echo ""
 echo -e "${GREEN}=============================================${NC}"
-echo -e "${GREEN}          DEPLOYMENT COMPLETE!              ${NC}"
+echo -e "${GREEN}     BACKEND DEPLOYMENT COMPLETE!           ${NC}"
 echo -e "${GREEN}=============================================${NC}"
 echo ""
-echo -e "  Frontend:  ${BLUE}http://${SERVER_ADDR}${NC}"
-echo -e "  Backend:   ${BLUE}http://${SERVER_ADDR}/exec${NC}"
-echo -e "  Health:    ${BLUE}http://${SERVER_ADDR}/health${NC}"
-echo -e "  API Docs:  ${BLUE}http://${SERVER_ADDR}/docs${NC}"
+echo -e "  Backend Base URL:  ${BLUE}http://${SERVER_ADDR}${NC}"
+echo -e "  Legacy Exec:       ${BLUE}http://${SERVER_ADDR}/exec${NC}"
+echo -e "  Health Check:      ${BLUE}http://${SERVER_ADDR}/health${NC}"
+echo -e "  API Docs:          ${BLUE}http://${SERVER_ADDR}/docs${NC}"
 echo ""
 echo "Useful commands:"
 echo "  sudo systemctl status sama-backend        # Backend status"
