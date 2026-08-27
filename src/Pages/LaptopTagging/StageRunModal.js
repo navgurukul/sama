@@ -610,7 +610,7 @@ const StageRunModal = ({
                                   />
                                 }
                                 label={<Typography variant="body2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>Select All</Typography>}
-                                sx={{ mb: 1, ml: 0 }}
+                                sx={{ mb: 1, display: 'block' }}
                               />
                               {subList.map((text, index) => (
                                 <FormControlLabel
