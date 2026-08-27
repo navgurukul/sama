@@ -69,7 +69,7 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>Take Photo</DialogTitle>
       <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {error && <Typography color="error">{error}</Typography>}
