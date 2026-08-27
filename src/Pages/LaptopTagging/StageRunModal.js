@@ -17,6 +17,7 @@ import {
   Select,
   TextField,
   Typography,
+  Menu,
 } from '@mui/material';
 import {
   completeStageRun,
@@ -54,6 +55,7 @@ const StageRunModal = ({
   const [expandedItems, setExpandedItems] = useState({});
   const [subChecks, setSubChecks] = useState({});
   const [uploadingItems, setUploadingItems] = useState({});
+  const [uploadAnchor, setUploadAnchor] = useState({ element: null, itemId: null });
 
   const selectedStage = useMemo(
     () => (template.stages || []).find((stage) => Number(stage.stageId) === Number(stageId)) || null,
@@ -281,6 +283,14 @@ const StageRunModal = ({
     }));
   };
 
+  const handleSelectAllSubChecklist = (itemId, subList) => {
+    setSubChecks((prev) => {
+      const next = { ...prev };
+      next[itemId] = subList.map(() => true);
+      return next;
+    });
+  };
+
   const handleSubCheckToggle = (itemId, index, checked, subList) => {
     setSubChecks((prev) => {
       const next = { ...prev };
@@ -490,13 +500,24 @@ const StageRunModal = ({
                           {item.itemText} {item.isMandatory ? '*' : ''}
                         </Typography>
                         {subList && (
-                          <Button
-                            size="small"
-                            onClick={() => handleToggleSubChecklist(item.itemId)}
-                            sx={{ mt: 0.5, textTransform: 'none' }}
-                          >
-                            {expandedItems[item.itemId] ? 'Hide checklist' : 'Show checklist'}
-                          </Button>
+                          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 0.5 }}>
+                            <Button
+                              size="small"
+                              onClick={() => handleToggleSubChecklist(item.itemId)}
+                              sx={{ textTransform: 'none' }}
+                            >
+                              {expandedItems[item.itemId] ? 'Hide checklist' : 'Show checklist'}
+                            </Button>
+                            {expandedItems[item.itemId] && (
+                              <Button
+                                size="small"
+                                onClick={() => handleSelectAllSubChecklist(item.itemId, subList)}
+                                sx={{ textTransform: 'none' }}
+                              >
+                                Select All
+                              </Button>
+                            )}
+                          </Box>
                         )}
                       </Grid>
                       <Grid item xs={12} md={2}>
@@ -530,21 +551,46 @@ const StageRunModal = ({
                           <Button
                             variant="outlined"
                             size="small"
-                            component="label"
                             disabled={Boolean(uploadingItems[item.itemId])}
+                            onClick={(e) => setUploadAnchor({ element: e.currentTarget, itemId: item.itemId })}
                           >
                             {uploadingItems[item.itemId] ? 'Uploading...' : 'Upload'}
-                            <input
-                              type="file"
-                              hidden
-                              multiple
-                              onChange={(event) => {
-                                const nextFiles = event.target.files;
-                                handleEvidenceUpload(item.itemId, nextFiles);
-                                event.target.value = '';
-                              }}
-                            />
                           </Button>
+                          <Menu
+                            anchorEl={uploadAnchor.element}
+                            open={uploadAnchor.itemId === item.itemId}
+                            onClose={() => setUploadAnchor({ element: null, itemId: null })}
+                          >
+                            <MenuItem component="label" sx={{ fontSize: '0.875rem' }}>
+                              📷 Open Camera
+                              <input
+                                type="file"
+                                hidden
+                                accept="image/*"
+                                capture="environment"
+                                onChange={(event) => {
+                                  const nextFiles = event.target.files;
+                                  handleEvidenceUpload(item.itemId, nextFiles);
+                                  event.target.value = '';
+                                  setUploadAnchor({ element: null, itemId: null });
+                                }}
+                              />
+                            </MenuItem>
+                            <MenuItem component="label" sx={{ fontSize: '0.875rem' }}>
+                              📁 Upload from Device
+                              <input
+                                type="file"
+                                hidden
+                                multiple
+                                onChange={(event) => {
+                                  const nextFiles = event.target.files;
+                                  handleEvidenceUpload(item.itemId, nextFiles);
+                                  event.target.value = '';
+                                  setUploadAnchor({ element: null, itemId: null });
+                                }}
+                              />
+                            </MenuItem>
+                          </Menu>
                           {(responses[item.itemId]?.evidenceFiles || []).map((file, index) => (
                             <Button
                               key={`${item.itemId}-file-${index}`}
