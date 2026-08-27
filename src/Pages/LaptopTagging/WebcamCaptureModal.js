@@ -103,18 +103,17 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
         {error && <Typography color="error" sx={{ p: 2 }}>{error}</Typography>}
         {loading && <CircularProgress sx={{ my: 4, color: 'white' }} />}
         <Box sx={{ width: '100%', height: '100%', display: (error || loading) ? 'none' : 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          {previewUrl ? (
+          <video
+            ref={videoRef}
+            style={{ width: '100%', height: '100%', objectFit: 'contain', display: previewUrl ? 'none' : 'block' }}
+            playsInline
+            muted
+          />
+          {previewUrl && (
             <img 
               src={previewUrl} 
               alt="Preview" 
               style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-            />
-          ) : (
-            <video
-              ref={videoRef}
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              playsInline
-              muted
             />
           )}
         </Box>
