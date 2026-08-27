@@ -5122,7 +5122,12 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
                     "onlyLaptopReceived": pipeline.get("LAPTOP_RECEIVED", 0),
                     "notWorking": pipeline.get("NOT_WORKING", 0),
                     "refurbishmentStarted": pipeline.get("REFURBISHMENT_TESTING", 0) + pipeline.get("REFURBISHMENT_STARTED", 0),
-                    "refurbished": pipeline.get("LAPTOP_REFURBISHED", 0) + pipeline.get("QC_CHECK", 0),
+                    "refurbished": (
+                        pipeline.get("LAPTOP_REFURBISHED", 0) + 
+                        pipeline.get("QC_CHECK", 0) + 
+                        pipeline.get("TO_BE_DISPATCH", 0) + 
+                        pipeline.get("ALLOCATED", 0)
+                    ),
                     "distributed": (
                         pipeline.get("DISTRIBUTED", 0) + 
                         pipeline.get("POST_DEPLOYMENT_15D", 0) + 
