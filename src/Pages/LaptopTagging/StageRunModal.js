@@ -29,6 +29,7 @@ import {
   submitChecklistResponses,
   uploadEvidenceFile,
 } from '../../components/OPS/LaptopTable/api';
+import WebcamCaptureModal from './WebcamCaptureModal';
 
 const toInt = (value) => {
   const parsed = Number.parseInt(String(value), 10);
@@ -56,6 +57,7 @@ const StageRunModal = ({
   const [subChecks, setSubChecks] = useState({});
   const [uploadingItems, setUploadingItems] = useState({});
   const [uploadAnchor, setUploadAnchor] = useState({ element: null, itemId: null });
+  const [webcamOpenItemId, setWebcamOpenItemId] = useState(null);
 
   const selectedStage = useMemo(
     () => (template.stages || []).find((stage) => Number(stage.stageId) === Number(stageId)) || null,
@@ -508,15 +510,6 @@ const StageRunModal = ({
                             >
                               {expandedItems[item.itemId] ? 'Hide checklist' : 'Show checklist'}
                             </Button>
-                            {expandedItems[item.itemId] && (
-                              <Button
-                                size="small"
-                                onClick={() => handleSelectAllSubChecklist(item.itemId, subList)}
-                                sx={{ textTransform: 'none' }}
-                              >
-                                Select All
-                              </Button>
-                            )}
                           </Box>
                         )}
                       </Grid>
@@ -561,20 +554,14 @@ const StageRunModal = ({
                             open={uploadAnchor.itemId === item.itemId}
                             onClose={() => setUploadAnchor({ element: null, itemId: null })}
                           >
-                            <MenuItem component="label" sx={{ fontSize: '0.875rem' }}>
+                            <MenuItem 
+                              onClick={() => {
+                                setWebcamOpenItemId(item.itemId);
+                                setUploadAnchor({ element: null, itemId: null });
+                              }} 
+                              sx={{ fontSize: '0.875rem' }}
+                            >
                               📷 Open Camera
-                              <input
-                                type="file"
-                                hidden
-                                accept="image/*"
-                                capture="environment"
-                                onChange={(event) => {
-                                  const nextFiles = event.target.files;
-                                  handleEvidenceUpload(item.itemId, nextFiles);
-                                  event.target.value = '';
-                                  setUploadAnchor({ element: null, itemId: null });
-                                }}
-                              />
                             </MenuItem>
                             <MenuItem component="label" sx={{ fontSize: '0.875rem' }}>
                               📁 Upload from Device
@@ -603,12 +590,25 @@ const StageRunModal = ({
                               {isImageEvidence(file.contentType, file.url) ? 'Preview' : 'Download'}
                             </Button>
                           ))}
+                          <WebcamCaptureModal
+                            open={webcamOpenItemId === item.itemId}
+                            onClose={() => setWebcamOpenItemId(null)}
+                            onCapture={(files) => handleEvidenceUpload(item.itemId, files)}
+                          />
                         </Box>
                       </Grid>
                       {subList && (
                         <Grid item xs={12} sx={{ mt: 1 }}>
                           <Collapse in={Boolean(expandedItems[item.itemId])} timeout="auto" unmountOnExit>
                             <Box sx={{ pl: 2, pr: 1, pb: 1 }}>
+                              <Button
+                                size="small"
+                                onClick={() => handleSelectAllSubChecklist(item.itemId, subList)}
+                                sx={{ textTransform: 'none', mb: 1, fontWeight: 'bold' }}
+                                color="primary"
+                              >
+                                Select All
+                              </Button>
                               {subList.map((text, index) => (
                                 <FormControlLabel
                                   key={`${item.itemId}-${index}`}
