@@ -69,15 +69,15 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+    <Dialog open={open} onClose={onClose} fullScreen>
       <DialogTitle>Take Photo</DialogTitle>
-      <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {error && <Typography color="error">{error}</Typography>}
-        {loading && <CircularProgress sx={{ my: 4 }} />}
-        <Box sx={{ width: '100%', maxWidth: 500, backgroundColor: '#000', borderRadius: 2, overflow: 'hidden', display: (error || loading) ? 'none' : 'block' }}>
+      <DialogContent sx={{ p: 0, backgroundColor: '#000', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        {error && <Typography color="error" sx={{ p: 2 }}>{error}</Typography>}
+        {loading && <CircularProgress sx={{ my: 4, color: 'white' }} />}
+        <Box sx={{ width: '100%', height: '100%', display: (error || loading) ? 'none' : 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <video
             ref={videoRef}
-            style={{ width: '100%', height: 'auto', display: 'block' }}
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             playsInline
             muted
           />
