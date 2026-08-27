@@ -285,13 +285,7 @@ const StageRunModal = ({
     }));
   };
 
-  const handleSelectAllSubChecklist = (itemId, subList) => {
-    setSubChecks((prev) => {
-      const next = { ...prev };
-      next[itemId] = subList.map(() => true);
-      return next;
-    });
-  };
+
 
   const handleSubCheckToggle = (itemId, index, checked, subList) => {
     setSubChecks((prev) => {
@@ -601,14 +595,23 @@ const StageRunModal = ({
                         <Grid item xs={12} sx={{ mt: 1 }}>
                           <Collapse in={Boolean(expandedItems[item.itemId])} timeout="auto" unmountOnExit>
                             <Box sx={{ pl: 2, pr: 1, pb: 1 }}>
-                              <Button
-                                size="small"
-                                onClick={() => handleSelectAllSubChecklist(item.itemId, subList)}
-                                sx={{ textTransform: 'none', mb: 1, fontWeight: 'bold' }}
-                                color="primary"
-                              >
-                                Select All
-                              </Button>
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    size="small"
+                                    checked={subList.every((_, idx) => Boolean(subChecks[item.itemId]?.[idx]))}
+                                    onChange={(e) => {
+                                      const isChecked = e.target.checked;
+                                      setSubChecks((prev) => ({
+                                        ...prev,
+                                        [item.itemId]: subList.map(() => isChecked)
+                                      }));
+                                    }}
+                                  />
+                                }
+                                label={<Typography variant="body2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>Select All</Typography>}
+                                sx={{ mb: 1, ml: 0 }}
+                              />
                               {subList.map((text, index) => (
                                 <FormControlLabel
                                   key={`${item.itemId}-${index}`}
