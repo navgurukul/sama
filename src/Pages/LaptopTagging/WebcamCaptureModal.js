@@ -15,6 +15,8 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
   const streamRef = useRef(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [capturedFile, setCapturedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const stopMediaTracks = useCallback(() => {
     if (streamRef.current) {
@@ -27,6 +29,8 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
     if (open) {
       setError('');
       setLoading(true);
+      setCapturedFile(null);
+      setPreviewUrl(null);
       navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
         .then((stream) => {
           streamRef.current = stream;
@@ -62,32 +66,75 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
     canvas.toBlob((blob) => {
       if (blob) {
         const file = new File([blob], `capture-${Date.now()}.jpg`, { type: 'image/jpeg' });
-        onCapture([file]); // Pass as array to match existing fileList signature
-        onClose();
+        setCapturedFile(file);
+        setPreviewUrl(URL.createObjectURL(blob));
       }
     }, 'image/jpeg', 0.9);
   };
 
+  const handleRetake = () => {
+    setCapturedFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(null);
+  };
+
+  const handleConfirm = () => {
+    if (capturedFile) {
+      onCapture([capturedFile]);
+      handleClose();
+    }
+  };
+
+  const handleClose = () => {
+    setCapturedFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(null);
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} fullScreen>
-      <DialogTitle>Take Photo</DialogTitle>
+    <Dialog open={open} onClose={handleClose} fullScreen>
+      <DialogTitle>{previewUrl ? 'Review Photo' : 'Take Photo'}</DialogTitle>
       <DialogContent sx={{ p: 0, backgroundColor: '#000', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         {error && <Typography color="error" sx={{ p: 2 }}>{error}</Typography>}
         {loading && <CircularProgress sx={{ my: 4, color: 'white' }} />}
         <Box sx={{ width: '100%', height: '100%', display: (error || loading) ? 'none' : 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <video
-            ref={videoRef}
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-            playsInline
-            muted
-          />
+          {previewUrl ? (
+            <img 
+              src={previewUrl} 
+              alt="Preview" 
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+            />
+          ) : (
+            <video
+              ref={videoRef}
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              playsInline
+              muted
+            />
+          )}
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">Cancel</Button>
-        <Button variant="contained" onClick={handleCapture} disabled={!!error || loading}>
-          Take Photo
-        </Button>
+        {previewUrl ? (
+          <>
+            <Button onClick={handleRetake} color="secondary">Retake</Button>
+            <Button variant="contained" onClick={handleConfirm} color="primary">
+              Confirm & Upload
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button onClick={handleClose} color="secondary">Cancel</Button>
+            <Button variant="contained" onClick={handleCapture} disabled={!!error || loading}>
+              Snap Photo
+            </Button>
+          </>
+        )}
       </DialogActions>
     </Dialog>
   );

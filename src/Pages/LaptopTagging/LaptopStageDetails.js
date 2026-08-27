@@ -13,6 +13,7 @@ import {
   FormControlLabel,
   Stack,
   Table,
+  TableContainer,
   TableBody,
   TableCell,
   TableHead,
@@ -212,7 +213,8 @@ const LaptopStageDetails = () => {
 
           <Paper sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>Stage Run Timeline</Typography>
-            <Table size="small">
+            <TableContainer sx={{ overflowX: 'auto', width: '100%' }}>
+              <Table size="small">
               <TableHead>
                 <TableRow>
                   <TableCell>Run ID</TableCell>
@@ -284,6 +286,7 @@ const LaptopStageDetails = () => {
                 })}
               </TableBody>
             </Table>
+            </TableContainer>
           </Paper>
 
           <Paper sx={{ p: 3, mb: 3 }}>
@@ -351,7 +354,8 @@ const LaptopStageDetails = () => {
             <Typography variant="h6" sx={{ mb: 2 }}>
               {selectedRun ? `Checklist Responses (Run ${selectedRun.runId})` : 'Checklist Responses'}
             </Typography>
-            <Table size="small">
+            <TableContainer sx={{ overflowX: 'auto', width: '100%' }}>
+              <Table size="small">
               <TableHead>
                 <TableRow>
                   <TableCell>Item</TableCell>
@@ -452,6 +456,7 @@ const LaptopStageDetails = () => {
                 })}
               </TableBody>
             </Table>
+            </TableContainer>
           </Paper>
         </>
       )}

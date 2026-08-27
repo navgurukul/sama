@@ -595,6 +595,7 @@ const StageRunModal = ({
                         <Grid item xs={12} sx={{ mt: 1 }}>
                           <Collapse in={Boolean(expandedItems[item.itemId])} timeout="auto" unmountOnExit>
                             <Box sx={{ pl: 2, pr: 1, pb: 1 }}>
+                              <Box sx={{ mb: 1 }}>
                               <FormControlLabel
                                 control={
                                   <Checkbox
@@ -610,8 +611,8 @@ const StageRunModal = ({
                                   />
                                 }
                                 label={<Typography variant="body2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>Select All</Typography>}
-                                sx={{ mb: 1, display: 'block' }}
                               />
+                              </Box>
                               {subList.map((text, index) => (
                                 <FormControlLabel
                                   key={`${item.itemId}-${index}`}

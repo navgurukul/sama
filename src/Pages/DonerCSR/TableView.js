@@ -6,6 +6,7 @@ import {
   CardContent,
   Typography,
   Table,
+  TableContainer,
   TableHead,
   TableBody,
   TableRow,
@@ -774,8 +775,8 @@ const TableView = ({
             <TableCell sx={{ fontWeight: "bold" }}>Grade</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Video Completion %</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Quiz Accuracy %</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Questions Attempted</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Device ID</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Session Duration (Mins)</TableCell>
           </>
         );
       case "activeBeneficiaries":
@@ -1011,8 +1012,8 @@ const TableView = ({
           <TableCell>{item.grade || "-"}</TableCell>
           <TableCell>{item.video_completion_rate ? `${item.video_completion_rate}%` : "-"}</TableCell>
           <TableCell>{item.quiz_accuracy_percentage ? `${item.quiz_accuracy_percentage}%` : "-"}</TableCell>
-          <TableCell>{(item.correct_answers_count !== null && item.correct_answers_count !== undefined) ? `${item.correct_answers_count}/${item.total_questions_answered}` : "-"}</TableCell>
-          <TableCell>{item.session_completed_flag ? 'Completed' : 'In Progress'}</TableCell>
+          <TableCell>{item.device_id || "-"}</TableCell>
+          <TableCell>{item.session_duration_minutes || item.time_spent || "-"}</TableCell>
         </TableRow>
       ));
     }
@@ -1337,6 +1338,7 @@ const TableView = ({
             </Typography>
           </Box>
 
+          <TableContainer sx={{ overflowX: 'auto', width: '100%' }}>
           <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
@@ -1362,6 +1364,7 @@ const TableView = ({
               )}
             </TableBody>
           </Table>
+          </TableContainer>
 
           <TablePagination
             component="div"
