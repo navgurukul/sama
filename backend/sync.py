@@ -482,7 +482,7 @@ async def main_sync():
 
     # Import every sheet-backed dataset in one explicit maintenance run.
     await sync()
-    await sync_audit()
+    # await sync_audit()  -- Disabled: Audit logs are now handled via live DB trigger
     await sync_preliminary()
     await sync_external_registered_ngo()
 
