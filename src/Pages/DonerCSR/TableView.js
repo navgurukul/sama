@@ -480,7 +480,7 @@ const TableView = ({
         case "activeUsage":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const d = parseDateUniversal(laptop["Date"]);
+            const d = parseDateUniversal(laptop["Last Updated On"] || laptop["Date"]);
             if (!d) return false;
             const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
             const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
