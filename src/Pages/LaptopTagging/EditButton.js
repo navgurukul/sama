@@ -258,7 +258,7 @@ const EditButton = ({
                                     onChange={handleEditChange}
                                     label="Processor"
                                 >
-                                    {["i3", "i5", "i7", "Ryzen 3", "Ryzen 5", "Ryzen 7"].map((option) => (
+                                    {["i3", "i5", "i7", "Ryzen 3", "Ryzen 5", "Ryzen 7", "MacBook processor"].map((option) => (
                                         <MenuItem key={option} value={option}>
                                             {option}
                                         </MenuItem>
@@ -295,6 +295,23 @@ const EditButton = ({
                                 fullWidth
                                 margin="normal"
                             />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel>Working Status</InputLabel>
+                                <Select
+                                    name="working"
+                                    value={editData?.working || ""}
+                                    onChange={handleEditChange}
+                                    label="Working Status"
+                                >
+                                    {["Working", "Not Working"].map((option) => (
+                                        <MenuItem key={option} value={option}>
+                                            {option}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item xs={12}>
                             <TextField

@@ -832,39 +832,7 @@ const TableView = ({
             <TableCell sx={{ fontWeight: "bold" }}>Phone</TableCell>
           </>
         );
-      case "pickupRequests":
-        return (
-          <>
-            <TableCell sx={{ fontWeight: "bold" }}>Pickup ID</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Number of Laptops</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Date & Time</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Contact Person</TableCell>
-          </>
-        );
-      case "distributed":
-        return (
-          <>
-            <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Allocated To</TableCell>
-          </>
-        );
-      case "activeUsage":
-        return (
-          <>
-            <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Allocated To</TableCell>
-          </>
-        );
+
       case "ngosServed":
         return (
           <>
