@@ -3775,7 +3775,7 @@ def ngo_exec_get(request: Request) -> Any:
                             "registrationNumber": "",
                             "contactNumber": "",
                             "operatingState": r["operating_state"] or "",
-                            "yearsOperating": r["operating_state"] or "",
+                            "yearsOperating": r["years_operating"] or "",
                             "focusArea": r["focus_area"] or "",
                             "worksWithWomen": "",
                             "infrastructure": r["infrastructure"] or "",
