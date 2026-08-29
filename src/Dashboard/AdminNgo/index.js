@@ -466,10 +466,10 @@ const AdminNgo = () => {
                         </Box>
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
-                        {ngo.primaryContactName}
+                        {(ngo.primaryContactName || "").split(" | ")[0]}
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
-                        {ngo.contactNumber}
+                        {ngo.contactNumber || (ngo.primaryContactName || "").split(" | ")[1] || ""}
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
                         {ngo["Laptop require"]}

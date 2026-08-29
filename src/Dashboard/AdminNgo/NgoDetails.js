@@ -18,16 +18,21 @@ const DetailField = ({ label, value, color = "#4A4A4A" }) => (
 const NGODetails = ({ ngo }) => {
   
   // Organization details structure
-  const getOrgDetails = (item) => [
-    { label: "NGO ID", value: item.displayId || item.Id },
-    { label: "Point of Contact", value: item.primaryContactName },
-    { label: "Contact Number", value: item.contactNumber },
-    { label: "Email", value: item.email },
-    { label: "State of Operation", value: item.operatingState },
-    // { label: "Operation Type", value: item.operatingState },
-    { label: "Years of Operation", value: item.yearsOperating },
-    { label: "Focus Area", value: item.focusArea },
-  ];
+  const getOrgDetails = (item) => {
+    const contactParts = (item.primaryContactName || "").split(" | ");
+    const name = contactParts[0];
+    const number = item.contactNumber || contactParts[1] || "";
+    
+    return [
+      { label: "NGO ID", value: item.displayId || item.Id },
+      { label: "Point of Contact", value: name },
+      { label: "Contact Number", value: number },
+      { label: "Email", value: item.email },
+      { label: "State of Operation", value: item.operatingState },
+      { label: "Years of Operation", value: item.yearsOperating },
+      { label: "Focus Area", value: item.focusArea },
+    ];
+  };
 
   // Laptop plan details structure
   const getLaptopPlanDetails = (item) => [
@@ -46,63 +51,65 @@ const NGODetails = ({ ngo }) => {
     { label: "Number of Beneficiaries to Serve", value: item.beneficiariesCount },
   ];
 
+  if (!ngo || ngo.length === 0) return null;
+  const primaryNgo = ngo[0];
+  const additionalRequests = Array.isArray(primaryNgo.NGORequests) ? primaryNgo.NGORequests : [];
+
   return (
     <Container maxWidth="lg" sx={{ padding: "24px" }}>
       <Grid container spacing={4} mt={5}>
-        {ngo.map((item, index) => (
-          <React.Fragment key={item.Id}>
-            {index === 0 ? (
-              // First request - show all details
-              <>
-                <Grid item xs={12} sm={6} md={6}>
-                  <Paper
-                    elevation={2}
-                    sx={{
-                      padding: "20px",
-                      marginBottom: "20px",
-                      backgroundColor: "primary.light",
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ margin: "32px 0px", color: "#5C785A" }}>
-                      {item.organizationName}
-                    </Typography>
-                    {getOrgDetails(item).map((field, i) => (
-                      <DetailField key={i} {...field} />
-                    ))}
-                  </Paper>
-                </Grid>
-                <Grid item xs={12} sm={6} md={6}>
-                  <Paper
-                    elevation={2}
-                    sx={{ padding: "20px", marginBottom: "20px" }}
-                  >
-                    <Typography variant="h6" sx={{ margin: "32px 0px", color: "#5C785A" }}>
-                      Laptop Acquisition Plan
-                    </Typography>
-                    {getLaptopPlanDetails(item).map((field, i) => (
-                      <DetailField key={i} {...field} color="#3A3D5B" />
-                    ))}
-                  </Paper>
-                </Grid>
-              </>
-            ) : (
-              // Subsequent requests - show only essential details
-              <Grid item xs={12} sm={6} md={6}>
-                <Paper
-                  elevation={2}
-                  sx={{ padding: "20px", marginBottom: "20px" }}
-                >
-                  <Typography variant="h6" sx={{ margin: "32px 0px", color: "#5C785A" }}>
-                    Request #{index + 1}
-                  </Typography>
-                  {getEssentialDetails(item).map((field, i) => (
-                    <DetailField key={i} {...field} color="#3A3D5B" />
-                  ))}
-                </Paper>
-              </Grid>
-            )}
-          </React.Fragment>
-        ))}
+        <React.Fragment key={primaryNgo.Id}>
+          {/* Main request - show all details */}
+          <>
+            <Grid item xs={12} sm={6} md={6}>
+              <Paper
+                elevation={2}
+                sx={{
+                  padding: "20px",
+                  marginBottom: "20px",
+                  backgroundColor: "primary.light",
+                }}
+              >
+                <Typography variant="h6" sx={{ margin: "32px 0px", color: "#5C785A" }}>
+                  {primaryNgo.organizationName}
+                </Typography>
+                {getOrgDetails(primaryNgo).map((field, i) => (
+                  <DetailField key={i} {...field} />
+                ))}
+              </Paper>
+            </Grid>
+            <Grid item xs={12} sm={6} md={6}>
+              <Paper
+                elevation={2}
+                sx={{ padding: "20px", marginBottom: "20px" }}
+              >
+                <Typography variant="h6" sx={{ margin: "32px 0px", color: "#5C785A" }}>
+                  Laptop Acquisition Plan
+                </Typography>
+                {getLaptopPlanDetails(primaryNgo).map((field, i) => (
+                  <DetailField key={i} {...field} color="#3A3D5B" />
+                ))}
+              </Paper>
+            </Grid>
+          </>
+
+          {/* Subsequent requests from NGORequests array */}
+          {additionalRequests.map((reqItem, index) => (
+            <Grid item xs={12} sm={6} md={6} key={`add-req-${index}`}>
+              <Paper
+                elevation={2}
+                sx={{ padding: "20px", marginBottom: "20px" }}
+              >
+                <Typography variant="h6" sx={{ margin: "32px 0px", color: "#5C785A" }}>
+                  Request #{index + 2}
+                </Typography>
+                {getEssentialDetails(reqItem).map((field, i) => (
+                  <DetailField key={i} {...field} color="#3A3D5B" />
+                ))}
+              </Paper>
+            </Grid>
+          ))}
+        </React.Fragment>
       </Grid>
     </Container>
   );

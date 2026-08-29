@@ -2952,7 +2952,7 @@ def _query_ngo_operation(operation: str, params: Dict[str, Any]) -> Any:
                     f"""
                     SELECT payload
                     FROM {DB_SCHEMA}.ngo_operation_records
-                    WHERE {operation_filter} AND (%s IS NULL OR ngo_id = %s)
+                    WHERE {operation_filter} AND (%s::TEXT IS NULL OR ngo_id = %s)
                     ORDER BY updated_at DESC, record_id DESC
                     """,
                     ((operation,) if operation != "MultipleDocsGet" else ())
@@ -3000,7 +3000,7 @@ def _query_ngo_operation(operation: str, params: Dict[str, Any]) -> Any:
                         f"""
                         SELECT payload
                         FROM {DB_SCHEMA}.ngo_operation_records
-                        WHERE {operation_filter} AND (%s IS NULL OR ngo_id = %s)
+                        WHERE {operation_filter} AND (%s::TEXT IS NULL OR ngo_id = %s)
                         ORDER BY updated_at DESC, record_id DESC
                         """,
                         ((operation,) if operation != "MultipleDocsGet" else ())
@@ -3673,17 +3673,22 @@ def ngo_exec_get(request: Request) -> Any:
         try:
             with get_conn() as conn:
                 with conn.cursor() as cur:
-                    cur.execute(
-                        f"""
+                    org_name = params.get("orgName")
+                    query = f"""
                         SELECT id, organization_name, registration_number, primary_contact_name, contact_number,
                                email, operating_state, location, years_operating, focus_area, works_with_women,
                                infrastructure, beneficiary_selection, beneficiaries_count, age_group, primary_use,
                                expected_outcome, laptop_tracking, jobs_created, previous_projects, sufficient_staff,
                                impact_report, status, ngo_type, laptop_require, doner, request_type, ngo_requests
                         FROM {DB_SCHEMA}.external_registered_ngo
-                        ORDER BY id ASC
-                        """
-                    )
+                    """
+                    query_params = []
+                    if org_name:
+                        query += " WHERE id = %s"
+                        query_params.append(org_name)
+                    
+                    query += " ORDER BY id ASC"
+                    cur.execute(query, query_params)
                     rows = cur.fetchall()
                     data_list = []
                     for r in rows:
