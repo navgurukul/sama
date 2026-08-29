@@ -9,14 +9,19 @@ import {
   Typography,
   CircularProgress
 } from '@mui/material';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
+  const imgRef = useRef(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [capturedFile, setCapturedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [crop, setCrop] = useState();
+  const [completedCrop, setCompletedCrop] = useState(null);
 
   const stopMediaTracks = useCallback(() => {
     if (streamRef.current) {
@@ -31,6 +36,8 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
       setLoading(true);
       setCapturedFile(null);
       setPreviewUrl(null);
+      setCrop(undefined);
+      setCompletedCrop(null);
       navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
         .then((stream) => {
           streamRef.current = stream;
@@ -74,6 +81,8 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
 
   const handleRetake = () => {
     setCapturedFile(null);
+    setCrop(undefined);
+    setCompletedCrop(null);
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
     }
@@ -81,14 +90,49 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
   };
 
   const handleConfirm = () => {
-    if (capturedFile) {
-      onCapture([capturedFile]);
-      handleClose();
+    if (!completedCrop || !completedCrop.width || !completedCrop.height) {
+      if (capturedFile) {
+        onCapture([capturedFile]);
+        handleClose();
+      }
+      return;
     }
+
+    const image = imgRef.current;
+    if (!image) return;
+
+    const canvas = document.createElement('canvas');
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    canvas.width = completedCrop.width * scaleX;
+    canvas.height = completedCrop.height * scaleY;
+    const ctx = canvas.getContext('2d');
+
+    ctx.drawImage(
+      image,
+      completedCrop.x * scaleX,
+      completedCrop.y * scaleY,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY,
+      0,
+      0,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY
+    );
+
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const file = new File([blob], `cropped-${Date.now()}.jpg`, { type: 'image/jpeg' });
+        onCapture([file]);
+        handleClose();
+      }
+    }, 'image/jpeg', 0.9);
   };
 
   const handleClose = () => {
     setCapturedFile(null);
+    setCrop(undefined);
+    setCompletedCrop(null);
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
     }
@@ -98,7 +142,7 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
 
   return (
     <Dialog open={open} onClose={handleClose} fullScreen>
-      <DialogTitle>{previewUrl ? 'Review Photo' : 'Take Photo'}</DialogTitle>
+      <DialogTitle>{previewUrl ? 'Review & Crop Photo' : 'Take Photo'}</DialogTitle>
       <DialogContent sx={{ p: 0, backgroundColor: '#000', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         {error && <Typography color="error" sx={{ p: 2 }}>{error}</Typography>}
         {loading && <CircularProgress sx={{ my: 4, color: 'white' }} />}
@@ -110,11 +154,20 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
             muted
           />
           {previewUrl && (
-            <img 
-              src={previewUrl} 
-              alt="Preview" 
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-            />
+            <ReactCrop 
+              crop={crop} 
+              onChange={c => setCrop(c)} 
+              onComplete={c => setCompletedCrop(c)}
+              style={{ maxHeight: '100%' }}
+            >
+              <img 
+                ref={imgRef}
+                src={previewUrl} 
+                alt="Preview" 
+                style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain' }} 
+                onLoad={() => setCrop({ unit: '%', width: 80, height: 80, x: 10, y: 10 })}
+              />
+            </ReactCrop>
           )}
         </Box>
       </DialogContent>

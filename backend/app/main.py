@@ -1326,7 +1326,25 @@ def _evaluate_stage2_pass_required(cur, run_id: int, item_code: str) -> Dict[str
             if index < len(sub_checks) and bool(sub_checks[index])
         )
 
-    passed = result == "PASS" and sub_checks_complete
+    is_macbook_skipped = False
+    if item_code == STAGE2_RMS_ITEM_CODE and result in ("SKIP", "SKIPPED", "SKIPPED_MAC"):
+        cur.execute(f"""
+            SELECT l.manufacturer_model
+            FROM {DB_SCHEMA}.laptop_labeling_run r
+            JOIN {DB_SCHEMA}.laptop_labeling l ON l.id = r.laptop_id
+            WHERE r.id = %s
+        """, (run_id,))
+        row = cur.fetchone()
+        if row:
+            model = str(row.get("manufacturer_model") or "").lower()
+            if "mac" in model or "apple" in model:
+                is_macbook_skipped = True
+
+    if is_macbook_skipped:
+        passed = True
+    else:
+        passed = result == "PASS" and sub_checks_complete
+
     return {
         "passed": passed,
         "details": {
