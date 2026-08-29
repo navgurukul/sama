@@ -258,7 +258,7 @@ const EditButton = ({
                                     onChange={handleEditChange}
                                     label="Processor"
                                 >
-                                    {["i3", "i5", "i7", "Ryzen 3", "Ryzen 5", "Ryzen 7", "MacBook processor"].map((option) => (
+                                    {["i3", "i5", "i7", "Ryzen 3", "Ryzen 5", "Ryzen 7", "M1", "M1 Pro", "M1 Max", "M2", "M2 Pro", "M2 Max"].map((option) => (
                                         <MenuItem key={option} value={option}>
                                             {option}
                                         </MenuItem>
