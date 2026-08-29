@@ -1,5 +1,6 @@
 import React from "react";
-import { Typography, Paper, Grid } from "@mui/material";
+import { Typography, Paper, Grid, Button } from "@mui/material";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import "./style.css";
 import { Container } from "@mui/system";
 
@@ -50,9 +51,25 @@ const NGODetails = ({ ngo }) => {
       { 
         label: "Impact Report / Document", 
         value: impactUrl ? (
-          <a href={impactUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#1976d2", textDecoration: "underline" }}>
-            View Document
-          </a>
+          <Button
+            variant="text"
+            href={impactUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            startIcon={<VisibilityIcon />}
+            sx={{
+              color: "#5C785A",
+              textTransform: "none",
+              fontWeight: 600,
+              padding: 0,
+              "&:hover": {
+                backgroundColor: "transparent",
+                textDecoration: "underline",
+              }
+            }}
+          >
+            Preview
+          </Button>
         ) : "N/A"
       },
     ];

@@ -158,13 +158,13 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
               crop={crop} 
               onChange={c => setCrop(c)} 
               onComplete={c => setCompletedCrop(c)}
-              style={{ maxHeight: '100%' }}
+              style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
             >
               <img 
                 ref={imgRef}
                 src={previewUrl} 
                 alt="Preview" 
-                style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain' }} 
+                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} 
                 onLoad={() => setCrop({ unit: '%', width: 80, height: 80, x: 10, y: 10 })}
               />
             </ReactCrop>
