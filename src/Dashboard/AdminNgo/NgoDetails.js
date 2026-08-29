@@ -65,6 +65,7 @@ const NGODetails = ({ ngo }) => {
               "&:hover": {
                 backgroundColor: "transparent",
                 textDecoration: "underline",
+                color: "#5C785A",
               }
             }}
           >

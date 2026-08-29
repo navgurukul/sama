@@ -164,7 +164,7 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
                 ref={imgRef}
                 src={previewUrl} 
                 alt="Preview" 
-                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} 
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
                 onLoad={() => setCrop({ unit: '%', width: 80, height: 80, x: 10, y: 10 })}
               />
             </ReactCrop>
