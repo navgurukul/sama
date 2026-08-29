@@ -3789,7 +3789,7 @@ def ngo_exec_get(request: Request) -> Any:
                             "primaryUse": use_case_val,
                             "primaryContactName": contact_name_val,
                             "email": email_val,
-                            "Status": status_val,
+                            "Status": status_val.capitalize() if status_val == "draft" else status_val,
                             "registrationNumber": "",
                             "contactNumber": "",
                             "operatingState": r["operating_state"] or "",
@@ -4054,17 +4054,46 @@ async def ngo_exec_post(request: Request) -> Any:
         expected_outcome = str(payload.get("expectedOutcome") or "").strip()
         laptop_tracking = str(payload.get("laptopTracking") or "").strip()
         
+        import base64, uuid, io
+        from datetime import datetime
+        
+        attached_email_link = ""
+        base64_file = str(payload.get("file") or "").strip()
+        file_name = str(payload.get("fileName") or "impact_report.pdf").strip()
+        mime_type = str(payload.get("mimeType") or "application/pdf").strip()
+        
+        if base64_file:
+            try:
+                raw_data = base64.b64decode(base64_file)
+                settings = _get_s3_settings()
+                client = _get_s3_client()
+                
+                _, ext = os.path.splitext(file_name)
+                key = f"{settings['prefix']}ngo_impact_reports/{datetime.utcnow().strftime('%Y%m%d')}/{uuid.uuid4().hex}{ext.lower()}"
+                
+                extra_args = {}
+                if mime_type:
+                    extra_args["ContentType"] = mime_type
+                    
+                client.upload_fileobj(io.BytesIO(raw_data), settings["bucket"], key, ExtraArgs=extra_args or None)
+                
+                region = os.getenv("AWS_REGION") or os.getenv("AWS_DEFAULT_REGION", "ap-south-1")
+                bucket = settings["bucket"]
+                attached_email_link = f"https://{bucket}.s3.{region}.amazonaws.com/{key}"
+            except Exception as e:
+                print(f"Error uploading NGO impact report to S3: {e}")
+        
         with get_conn() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     f"""
                     INSERT INTO {DB_SCHEMA}.ngo_requests
                     (ngo_name, laptop_quantity, location, use_case, contact_name, email, status, partner_type, date_received,
-                     operating_state, years_operating, focus_area, infrastructure, beneficiaries_count, age_group, expected_outcome, laptop_tracking)
-                    VALUES (%s, %s, %s, %s, %s, %s, 'draft', %s, CURRENT_DATE, %s, %s, %s, %s, %s, %s, %s, %s)
+                     operating_state, years_operating, focus_area, infrastructure, beneficiaries_count, age_group, expected_outcome, laptop_tracking, attached_email_link)
+                    VALUES (%s, %s, %s, %s, %s, %s, 'draft', %s, CURRENT_DATE, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     RETURNING id
                     """,
-                    (org_name, qty_int, location, use_case, contact_name, email, partner_type, op_state, years_operating, focus_area, infrastructure, beneficiaries_count, age_group, expected_outcome, laptop_tracking)
+                    (org_name, qty_int, location, use_case, contact_name, email, partner_type, op_state, years_operating, focus_area, infrastructure, beneficiaries_count, age_group, expected_outcome, laptop_tracking, attached_email_link)
                 )
                 new_id = cur.fetchone()["id"]
                 conn.commit()
