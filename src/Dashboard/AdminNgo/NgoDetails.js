@@ -35,15 +35,28 @@ const NGODetails = ({ ngo }) => {
   };
 
   // Laptop plan details structure
-  const getLaptopPlanDetails = (item) => [
-    { label: "Type of Infrastructure", value: item.infrastructure },
-    // { label: "Selection Criteria", value: item.beneficiarySelection },
-    { label: "Number of Required Laptops", value: item["Laptop require"] },
-    { label: "Number of Beneficiaries to Serve", value: item.beneficiariesCount },
-    { label: "Age Group of Beneficiaries", value: item.ageGroup },
-    { label: "Expected Outcome", value: item.expectedOutcome },
-    { label: "Strategy for Usage Tracking", value: item.laptopTracking },
-  ];
+  const getLaptopPlanDetails = (item) => {
+    // Collect the impact report url, either from impactReport or attached_email_link
+    const impactUrl = item.impactReport || item.attached_email_link;
+    
+    return [
+      { label: "Type of Infrastructure", value: item.infrastructure },
+      // { label: "Selection Criteria", value: item.beneficiarySelection },
+      { label: "Number of Required Laptops", value: item["Laptop require"] },
+      { label: "Number of Beneficiaries to Serve", value: item.beneficiariesCount },
+      { label: "Age Group of Beneficiaries", value: item.ageGroup },
+      { label: "Expected Outcome", value: item.expectedOutcome },
+      { label: "Strategy for Usage Tracking", value: item.laptopTracking },
+      { 
+        label: "Impact Report / Document", 
+        value: impactUrl ? (
+          <a href={impactUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#1976d2", textDecoration: "underline" }}>
+            View Document
+          </a>
+        ) : "N/A"
+      },
+    ];
+  };
 
   // Essential details for subsequent requests
   const getEssentialDetails = (item) => [

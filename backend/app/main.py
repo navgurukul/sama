@@ -1326,7 +1326,25 @@ def _evaluate_stage2_pass_required(cur, run_id: int, item_code: str) -> Dict[str
             if index < len(sub_checks) and bool(sub_checks[index])
         )
 
-    passed = result == "PASS" and sub_checks_complete
+    is_macbook_skipped = False
+    if item_code == STAGE2_RMS_ITEM_CODE and result in ("SKIP", "SKIPPED", "SKIPPED_MAC"):
+        cur.execute(f"""
+            SELECT l.manufacturer_model
+            FROM {DB_SCHEMA}.laptop_labeling_run r
+            JOIN {DB_SCHEMA}.laptop_labeling l ON l.id = r.laptop_id
+            WHERE r.id = %s
+        """, (run_id,))
+        row = cur.fetchone()
+        if row:
+            model = str(row.get("manufacturer_model") or "").lower()
+            if "mac" in model or "apple" in model:
+                is_macbook_skipped = True
+
+    if is_macbook_skipped:
+        passed = True
+    else:
+        passed = result == "PASS" and sub_checks_complete
+
     return {
         "passed": passed,
         "details": {
@@ -3673,7 +3691,6 @@ def ngo_exec_get(request: Request) -> Any:
         try:
             with get_conn() as conn:
                 with conn.cursor() as cur:
-                    org_name = params.get("orgName")
                     query = f"""
                         SELECT id, organization_name, registration_number, primary_contact_name, contact_number,
                                email, operating_state, location, years_operating, focus_area, works_with_women,
@@ -3681,14 +3698,9 @@ def ngo_exec_get(request: Request) -> Any:
                                expected_outcome, laptop_tracking, jobs_created, previous_projects, sufficient_staff,
                                impact_report, status, ngo_type, laptop_require, doner, request_type, ngo_requests
                         FROM {DB_SCHEMA}.external_registered_ngo
+                        ORDER BY id ASC
                     """
-                    query_params = []
-                    if org_name:
-                        query += " WHERE id = %s"
-                        query_params.append(org_name)
-                    
-                    query += " ORDER BY id ASC"
-                    cur.execute(query, query_params)
+                    cur.execute(query)
                     rows = cur.fetchall()
                     data_list = []
                     for r in rows:
@@ -3781,7 +3793,7 @@ def ngo_exec_get(request: Request) -> Any:
                             "registrationNumber": "",
                             "contactNumber": "",
                             "operatingState": r["operating_state"] or "",
-                            "yearsOperating": r["operating_state"] or "",
+                            "yearsOperating": r["years_operating"] or "",
                             "focusArea": r["focus_area"] or "",
                             "worksWithWomen": "",
                             "infrastructure": r["infrastructure"] or "",
@@ -3802,16 +3814,13 @@ def ngo_exec_get(request: Request) -> Any:
                             "last_impact_report_date": str(r["last_impact_report_date"]) if r["last_impact_report_date"] else None,
                         })
                     
+                    draft_list.reverse()
+                    all_data = draft_list + data_json.get("data", [])
+                    
                     if org_filter:
-                        # Filter the legacy data to only include the requested orgName
-                        filtered_legacy = [x for x in data_json.get("data", []) if str(x.get("Id", "")) == org_filter or str(x.get("displayId", "")) == org_filter]
-                        
-                        # For detail page, maintain chronological order (oldest/main first) and append after legacy data
-                        data_json["data"] = filtered_legacy + draft_list
+                        data_json["data"] = [x for x in all_data if str(x.get("Id", "")) == org_filter or str(x.get("displayId", "")) == org_filter]
                     else:
-                        # For dashboard, reverse so newest appears first
-                        draft_list.reverse()
-                        data_json["data"] = draft_list + data_json["data"]
+                        data_json["data"] = all_data
         except Exception as e:
             print(f"Error merging ngo_requests drafts: {e}")
         return data_json
