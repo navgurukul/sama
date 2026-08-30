@@ -350,11 +350,13 @@ const StageRunModal = ({
 
       const saved = JSON.parse(localStorage.getItem('_AuthSama_') || '[]');
       const email = saved?.[0]?.email || 'system';
-      await submitChecklistResponses({
-        runId,
-        responses: payloadResponses,
-        respondedBy: email,
-      });
+      if (payloadResponses.length > 0) {
+        await submitChecklistResponses({
+          runId,
+          responses: payloadResponses,
+          respondedBy: email,
+        });
+      }
       setSuccessText('Checklist responses saved.');
       await loadModalData();
     } catch (error) {
@@ -401,11 +403,13 @@ const StageRunModal = ({
 
       const saved = JSON.parse(localStorage.getItem('_AuthSama_') || '[]');
       const email = saved?.[0]?.email || 'system';
-      await submitChecklistResponses({
-        runId,
-        responses: payloadResponses,
-        respondedBy: email,
-      });
+      if (payloadResponses.length > 0) {
+        await submitChecklistResponses({
+          runId,
+          responses: payloadResponses,
+          respondedBy: email,
+        });
+      }
 
       const evaluationResult = await evaluateStageRun(runId);
       const evalPayload = evaluationResult?.evaluation || null;

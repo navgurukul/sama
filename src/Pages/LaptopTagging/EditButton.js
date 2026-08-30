@@ -94,8 +94,14 @@ const EditButton = ({
     };
 
     const handleSaveEdit = async () => {
+        let currentStatus = editData.status || laptopData.Status;
+        if (currentStatus === "NOT_WORKING" || currentStatus === "#7 - NOT_WORKING") {
+            currentStatus = "REFURBISHMENT_TESTING";
+        }
+
         const dataToSend = {
             ...editData,
+            status: currentStatus,
             allocatedTo: editData.allocatedTo || laptopData["Allocated To"],
             type: "laptopLabeling",
         };
