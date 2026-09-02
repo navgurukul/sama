@@ -520,8 +520,8 @@ const TableView = ({
       let data = await res.json();
 
       if (metric === "learningAnalytics") {
-        if (data.totalCount !== undefined) {
-          setTotalLearningRecords(data.totalCount);
+        if (data.pagination && data.pagination.total !== undefined) {
+          setTotalLearningRecords(data.pagination.total);
         }
         data = data.data || data;
       }
