@@ -6,7 +6,6 @@ import {
   CardContent,
   Typography,
   Table,
-  TableContainer,
   TableHead,
   TableBody,
   TableRow,
@@ -62,6 +61,9 @@ const TableView = ({
   const [selectedNgoFilter, setSelectedNgoFilter] = useState('');
   const [selectedStateFilter, setSelectedStateFilter] = useState('');
   const [selectedPartnerFilter, setSelectedPartnerFilter] = useState('');
+  const [totalLearningRecords, setTotalLearningRecords] = useState(0);
+  const [sortBy, setSortBy] = useState('');
+  const [sortOrder, setSortOrder] = useState('DESC');
   
   // Get user role and donor organization from localStorage
   const authData = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
@@ -373,9 +375,13 @@ const TableView = ({
 
       switch (metric) {
         case "learningAnalytics":
-          apiUrl = `https://rms-api.thesama.in/api/afe/details?page=${page + 1}&limit=${rowsPerPage}`;
+          apiUrl = `https://rms-api.thesama.in/api/afe/details?includeMeta=true&page=${page + 1}&limit=${rowsPerPage}`;
           if (learningStartDate) apiUrl += `&startDate=${learningStartDate}`;
           if (learningEndDate) apiUrl += `&endDate=${learningEndDate}`;
+          if (sortBy) apiUrl += `&sortBy=${sortBy}&sortOrder=${sortOrder}`;
+          // Note: Mukul's cURL used 'ngoId'. If selectedNgoFilter contains the NGO name, 
+          // we might need to map it to an ID first, or the backend needs to support 'ngoName'.
+          if (selectedNgoFilter) apiUrl += `&ngoId=${encodeURIComponent(selectedNgoFilter)}`;
           break;
         case "totalLaptops":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
@@ -480,7 +486,7 @@ const TableView = ({
         case "activeUsage":
           apiUrl = `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`;
           filterFunction = (data) => data.filter(laptop => {
-            const d = parseDateUniversal(laptop["Last Updated On"] || laptop["Date"]);
+            const d = parseDateUniversal(laptop["Date"]);
             if (!d) return false;
             const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
             const s = (laptop.Status || "").trim().toLowerCase().replace(/_/g, " ");
@@ -512,6 +518,13 @@ const TableView = ({
 
       const res = await fetch(apiUrl);
       let data = await res.json();
+
+      if (metric === "learningAnalytics") {
+        if (data.totalCount !== undefined) {
+          setTotalLearningRecords(data.totalCount);
+        }
+        data = data.data || data;
+      }
 
       if (metric === "ngoPartners" || metric === "ngosServed") {
         data = data.data || data;
@@ -775,8 +788,8 @@ const TableView = ({
             <TableCell sx={{ fontWeight: "bold" }}>Grade</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Video Completion %</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Quiz Accuracy %</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Device ID</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Session Duration (Mins)</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Questions Attempted</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
           </>
         );
       case "activeBeneficiaries":
@@ -832,7 +845,39 @@ const TableView = ({
             <TableCell sx={{ fontWeight: "bold" }}>Phone</TableCell>
           </>
         );
-
+      case "pickupRequests":
+        return (
+          <>
+            <TableCell sx={{ fontWeight: "bold" }}>Pickup ID</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Number of Laptops</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Date & Time</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Contact Person</TableCell>
+          </>
+        );
+      case "distributed":
+        return (
+          <>
+            <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Allocated To</TableCell>
+          </>
+        );
+      case "activeUsage":
+        return (
+          <>
+            <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Allocated To</TableCell>
+          </>
+        );
       case "ngosServed":
         return (
           <>
@@ -980,8 +1025,8 @@ const TableView = ({
           <TableCell>{item.grade || "-"}</TableCell>
           <TableCell>{item.video_completion_rate ? `${item.video_completion_rate}%` : "-"}</TableCell>
           <TableCell>{item.quiz_accuracy_percentage ? `${item.quiz_accuracy_percentage}%` : "-"}</TableCell>
-          <TableCell>{item.device_id || "-"}</TableCell>
-          <TableCell>{item.session_duration_minutes || item.time_spent || "-"}</TableCell>
+          <TableCell>{(item.correct_answers_count !== null && item.correct_answers_count !== undefined) ? `${item.correct_answers_count}/${item.total_questions_answered}` : "-"}</TableCell>
+          <TableCell>{item.session_completed_flag ? 'Completed' : 'In Progress'}</TableCell>
         </TableRow>
       ));
     }
@@ -1306,7 +1351,6 @@ const TableView = ({
             </Typography>
           </Box>
 
-          <TableContainer sx={{ overflowX: 'auto', width: '100%' }}>
           <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
@@ -1332,7 +1376,6 @@ const TableView = ({
               )}
             </TableBody>
           </Table>
-          </TableContainer>
 
           <TablePagination
             component="div"
@@ -1341,7 +1384,7 @@ const TableView = ({
                 return activeTab === 0 ? userData.length : preData.length;
               }
               if (displayMetricType === "learningAnalytics") {
-                return displayData.length === rowsPerPage ? (page + 2) * rowsPerPage : (page * rowsPerPage) + displayData.length;
+                return totalLearningRecords || 0;
               }
               return displayData?.length || 0;
             })()}
