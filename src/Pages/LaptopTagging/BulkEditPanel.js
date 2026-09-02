@@ -78,7 +78,10 @@ const BulkEditPanel = ({
                             >
                                 <MenuItem value="all">No Change</MenuItem>
                                 <MenuItem value="Shweta Deshmukh">Shweta Deshmukh</MenuItem>
-                                <MenuItem value="Rahul">Rahul</MenuItem>
+                                <MenuItem value="Vishwanath">Vishwanath</MenuItem>
+                                <MenuItem value="Bhavesh">Bhavesh</MenuItem>
+                                <MenuItem value="Rinki">Rinki</MenuItem>
+                                <MenuItem value="Anumita">Anumita</MenuItem>
                                 <MenuItem value="Pradeep">Pradeep</MenuItem>
                                 <MenuItem value="Nitesh">Nitesh</MenuItem>
                             </Select>
