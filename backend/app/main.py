@@ -4832,6 +4832,105 @@ async def send_quarterly_impact_reminders():
                         print(f"Sent quarterly reminder to {req.get('ngo_name')}")
     except Exception as e:
         print(f"Failed to send quarterly reminders: {e}")
+# --- Schools API ---
+
+@app.get("/api/schools")
+def get_schools(ngo_id: Optional[str] = None):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        # Ensure table exists
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS sama.schools (
+                id SERIAL PRIMARY KEY,
+                school_id VARCHAR(100) UNIQUE,
+                name VARCHAR(255),
+                city VARCHAR(100),
+                partner_name VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+
+        query = "SELECT * FROM sama.schools"
+        params = []
+        if ngo_id:
+            query += " WHERE partner_name = %s"
+            params.append(ngo_id)
+        
+        query += " ORDER BY id DESC"
+        cur.execute(query, params)
+        rows = cur.fetchall()
+        return {"status": "success", "data": [dict(r) for r in rows]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        if 'cur' in locals(): cur.close()
+        if 'conn' in locals(): conn.close()
+
+@app.post("/api/schools")
+async def create_school(request: Request):
+    try:
+        data = await request.json()
+        school_id = data.get("school_id")
+        name = data.get("name")
+        city = data.get("city")
+        partner_name = data.get("partner_name")
+
+        if not school_id or not name:
+            return {"status": "error", "message": "school_id and name are required"}
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        # Ensure table exists
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS sama.schools (
+                id SERIAL PRIMARY KEY,
+                school_id VARCHAR(100) UNIQUE,
+                name VARCHAR(255),
+                city VARCHAR(100),
+                partner_name VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        cur.execute("""
+            INSERT INTO sama.schools (school_id, name, city, partner_name)
+            VALUES (%s, %s, %s, %s)
+            ON CONFLICT (school_id) DO UPDATE SET
+                name = EXCLUDED.name,
+                city = EXCLUDED.city,
+                partner_name = EXCLUDED.partner_name
+            RETURNING *
+        """, (school_id, name, city, partner_name))
+        conn.commit()
+        
+        return {"status": "success", "message": "School added/updated successfully"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        if 'cur' in locals(): cur.close()
+        if 'conn' in locals(): conn.close()
+
+@app.get("/api/schools/{school_id}")
+def get_school_details(school_id: str):
+    # This route is used by RMS Server. We can add API Key validation later if needed.
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("SELECT * FROM sama.schools WHERE school_id = %s", (school_id,))
+        row = cur.fetchone()
+        if not row:
+            return {"status": "error", "message": "School not found"}
+            
+        return {"status": "success", "data": dict(row)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        if 'cur' in locals(): cur.close()
+        if 'conn' in locals(): conn.close()
+
+# --- End Schools API ---
 
 @app.post("/api/rms-webhook")
 async def rms_webhook(request: Request):
@@ -5220,17 +5319,26 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
 
                 ngos = []
                 cur.execute(f"""
-                    SELECT id, organization_name AS ngo_name, status, location, doner AS donor
+                    SELECT id, organization_name AS ngo_name, status, location, doner AS donor,
+                           beneficiaries_count, laptop_require
                     FROM {DB_SCHEMA}.external_registered_ngo
                     WHERE status = 'Approved'
                 """)
                 for r in cur.fetchall():
+                    target_b = 0
+                    try:
+                        target_b = r["beneficiaries_count"] or (r["laptop_require"] or 0) * 13
+                        target_b = int(target_b) if target_b else 0
+                    except (ValueError, TypeError):
+                        target_b = 0
+
                     ngos.append({
                         "id": str(r["id"]),
                         "ngo_name": r["ngo_name"],
                         "status": r["status"],
                         "location": r["location"] or "Unknown",
-                        "donor": r["donor"]
+                        "donor": r["donor"],
+                        "targetBeneficiaries": target_b
                     })
 
                 ngo_partners = []
@@ -5296,6 +5404,7 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
                         "laptops": ngo_laptops,
                         "laptopDetails": laptop_details,
                         "beneficiaries": total_ngo_beneficiaries,
+                        "targetBeneficiaries": ngo["targetBeneficiaries"],
                         "lastDelivery": last_del.strftime("%d/%m/%Y") if last_del else "N/A",
                         "Doner": ngo["donor"]
                     })

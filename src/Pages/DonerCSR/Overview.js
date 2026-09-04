@@ -1366,18 +1366,14 @@ const Overview = () => {
                                 </Box>
 
                                 <Box textAlign="center">
-                                  <Box display="flex" alignItems="center" gap={0.5}>
-                                    <Users size={16} color="#555" />
-                                    <Typography
-                                      variant="subtitle1"
-                                      fontWeight={600}
-                                      color="success.main"
-                                    >
-                                      {partner.beneficiaries}
+                                  <Box display="flex" alignItems="center" gap={2}>
+                                    <Users size={16} color="#666" />
+                                    <Typography variant="h5" fontWeight={600} color="success.main">
+                                      {partner.targetBeneficiaries || partner.beneficiaries || 0}
                                     </Typography>
                                   </Box>
                                   <Typography variant="caption" color="text.secondary">
-                                    Beneficiaries
+                                    Target Beneficiaries
                                   </Typography>
                                 </Box>
                               </Box>

@@ -23,6 +23,7 @@ import CompanySelection from './Pages/NGORegistration/CompanySelection';
 import DonorManager from './Pages/NGORegistration/DonorManager';
 import Ngodashboard from './components/NgoDashboard/ngodashboard';
 import Admin from './components/adminDashboard/Admin';
+import SchoolManagement from './components/OPS/SchoolManagement';
 import AdminNgo from './Dashboard/AdminNgo';
 // import NgoDetails from './Dashboard/AdminNgo/NgoDetails';
 import TabNavigation from './Dashboard/AdminNgo/TabNavigation';
@@ -129,6 +130,7 @@ function App() {
                 <Route path="rms-control-panel" element={<RMSControlPanel />} />
                 <Route path="rms-donor-details-ngos" element={<RMSDonorDetailsNGOs />} />
                 <Route path="rms-donor-details-donors" element={<RMSDonorDetailsDonors />} />
+                <Route path="school-management" element={<SchoolManagement />} />
               </Route>
 
               {/* <Route path="/donorcsr/:donorName" element={<Sidebar />}>
