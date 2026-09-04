@@ -62,6 +62,7 @@ const TableView = ({
   const [selectedStateFilter, setSelectedStateFilter] = useState('');
   const [selectedPartnerFilter, setSelectedPartnerFilter] = useState('');
   const [totalLearningRecords, setTotalLearningRecords] = useState(0);
+  const [fullLearningData, setFullLearningData] = useState([]);
   const [sortBy, setSortBy] = useState('');
   const [sortOrder, setSortOrder] = useState('DESC');
   
@@ -237,8 +238,27 @@ const TableView = ({
   }, [isStandalone, donorName, location.search, page, rowsPerPage, learningStartDate, learningEndDate]);
 
 
+  useEffect(() => {
+    if (displayMetricType === "learningAnalytics") {
+      const fetchFull = async () => {
+        try {
+          let fullUrl = `https://rms-api.thesama.in/api/afe/details?includeMeta=true&page=1&limit=100000`;
+          if (learningStartDate) fullUrl += `&startDate=${learningStartDate}`;
+          if (learningEndDate) fullUrl += `&endDate=${learningEndDate}`;
+          if (selectedNgoFilter) fullUrl += `&ngoId=${encodeURIComponent(selectedNgoFilter)}`;
+          const fullRes = await fetch(fullUrl);
+          const fullJson = await fullRes.json();
+          setFullLearningData(fullJson.data || fullJson);
+        } catch(e) {
+          console.error("Error fetching full analytics data", e);
+        }
+      };
+      fetchFull();
+    }
+  }, [displayMetricType, learningStartDate, learningEndDate, selectedNgoFilter]);
+
   // for activity clicks
-    useEffect(() => {
+  useEffect(() => {
     if (isStandalone) {
       const searchParams = new URLSearchParams(location.search);
       const urlMetricType = searchParams.get('metric') || 'totalLaptops';
@@ -763,7 +783,9 @@ const TableView = ({
     };
   };
 
-  const metrics = getLearningAnalyticsMetrics(filteredLearningData);
+  // Use fullLearningData for charts if available, otherwise fallback to the paginated filteredLearningData
+  const metricsDataToUse = (fullLearningData && fullLearningData.length > 0) ? fullLearningData : filteredLearningData;
+  const metrics = getLearningAnalyticsMetrics(metricsDataToUse);
 
   if (isLoading) {
     return (
@@ -778,7 +800,8 @@ const TableView = ({
       case "learningAnalytics":
         return (
           <>
-            <TableCell sx={{ fontWeight: "bold" }}>Session ID</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Tour ID</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Device ID</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Avatar Name</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Partner Name</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>NGO Name</TableCell>
@@ -1015,7 +1038,8 @@ const TableView = ({
     if (displayMetricType === "learningAnalytics") {
       return currentData.map((item, index) => (
         <TableRow key={item.id || index} hover>
-          <TableCell>{item.session_id || "-"}</TableCell>
+          <TableCell>{item.tour_id || item.session_id || "-"}</TableCell>
+          <TableCell>{item.device_id || "-"}</TableCell>
           <TableCell>{item.avatar_name || "-"}</TableCell>
           <TableCell>{item.partner_name || "-"}</TableCell>
           <TableCell>{item.ngo_name || "-"}</TableCell>

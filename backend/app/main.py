@@ -2029,6 +2029,25 @@ def _upsert_laptop_row(cur, item: Dict[str, Any], last_updated_by: str) -> None:
     status_value = _payload_get(item, "status", "Status") or "LAPTOP_RECEIVED"
     condition_status_value = _normalize_condition_status(_payload_get(item, "conditionStatus", "Condition Status"))
     donor_id = _get_or_create_donor_id(cur, donor_name_input)
+    
+    # Intercept "Not Working" -> "Working" change to automatically route back to "Laptop Received"
+    cur.execute(f"SELECT working FROM {DB_SCHEMA}.laptop_labeling WHERE id = %s", (laptop_id,))
+    existing_row = cur.fetchone()
+    
+    def is_truthy(val):
+        return str(val).lower() in ("true", "1", "yes", "y", "working")
+        
+    def is_falsy(val):
+        return str(val).lower() in ("false", "0", "no", "n", "not working")
+        
+    if existing_row:
+        old_working = existing_row["working"]
+        new_working_raw = _payload_get(item, "working", "Working")
+        
+        # If it was marked as NOT working previously, but is being marked AS working now
+        if is_falsy(old_working) and is_truthy(new_working_raw):
+            status_value = "Laptop Received"
+            item["status"] = "Laptop Received" # Update item dictionary so it persists if used later
 
     cur.execute(
         f"""
@@ -5320,7 +5339,7 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
                     updated_by = rl["last_updated_by"] or "System"
                     last_updated = rl["last_updated_on"]
 
-                    key = f"{status_normalized}-{allocated_to}" if status_normalized in ("Allocated", "Distributed") else status_normalized
+                    key = f"{status_normalized}-{updated_by}-{allocated_to}" if status_normalized in ("Allocated", "Distributed") else f"{status_normalized}-{updated_by}"
                     
                     if key not in activities_map:
                         activities_map[key] = {
