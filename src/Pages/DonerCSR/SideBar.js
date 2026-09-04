@@ -51,13 +51,28 @@ const Sidebar = () => {
   const { donorName } = useParams();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const authData = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
+  const userRoleRaw = authData[0]?.role || "";
+  const userRole = userRoleRaw.includes("admin") ? "admin" : (userRoleRaw.includes("doner") ? "doner" : userRoleRaw);
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const dynamicNavItems = navItems.map(group => {
+    if (group.section === "Main Navigation") {
+      let items = [...group.items];
+      if (userRole === "admin") {
+        items.push({ label: "School Management", icon: <Building size={20} />, path: "school-management" });
+      }
+      return { ...group, items };
+    }
+    return group;
+  });
+
   const sidebarContent = (
     <>
-      {navItems.map((group, idx) => (
+      {dynamicNavItems.map((group, idx) => (
         <Box key={idx} sx={{ mb: 3 }}>
           <Typography
             variant="caption"
