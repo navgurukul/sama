@@ -240,16 +240,16 @@ export default function SchoolManagement() {
           <Table>
             <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
               <TableRow>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>Partner Name</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight={600}>School ID</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>School Name</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight={600}>Partner Name</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>UDISE Code</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>City</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>State</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>District</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight={600}>Dist. Code</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight={600}>Zipcode</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>Host ID</Typography></TableCell>
-                <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>Laptops</Typography></TableCell>
-                <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>Verified</Typography></TableCell>
-                <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>Status</Typography></TableCell>
                 <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>Actions</Typography></TableCell>
               </TableRow>
             </TableHead>
@@ -266,34 +266,20 @@ export default function SchoolManagement() {
                   
                   return (
                     <TableRow key={school.id} hover>
-                      <TableCell>{school.partner_name}</TableCell>
-                      <TableCell color="text.secondary">{school.name}</TableCell>
                       <TableCell>
-                        <Chip label={school.udise || school.school_id} size="small" variant="outlined" />
+                        <Typography variant="body2" fontWeight={500}>{school.school_id}</Typography>
+                      </TableCell>
+                      <TableCell color="text.secondary">{school.name}</TableCell>
+                      <TableCell>{school.partner_name}</TableCell>
+                      <TableCell>
+                        <Chip label={school.udise || '-'} size="small" variant="outlined" />
                       </TableCell>
                       <TableCell color="text.secondary">{school.city}</TableCell>
                       <TableCell color="text.secondary">{school.state}</TableCell>
                       <TableCell color="text.secondary">{school.district}</TableCell>
+                      <TableCell color="text.secondary">{school.district_code}</TableCell>
+                      <TableCell color="text.secondary">{school.zipcode}</TableCell>
                       <TableCell color="text.secondary">{school.distribution_host_id}</TableCell>
-                      <TableCell align="center">
-                        <Typography fontWeight={600}>{school.laptops_assigned || 0}</Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Typography fontWeight={600} color={isFullyVerified ? "success.main" : "warning.main"}>
-                          {school.rms_installed || 0} / {school.laptops_assigned || 0}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        {school.status ? (
-                          <Chip label={school.status} size="small" variant="outlined" />
-                        ) : (
-                           isFullyVerified ? (
-                            <Chip label="Verified" size="small" color="success" variant="outlined" sx={{ bgcolor: "#e8f5e9" }} />
-                          ) : (
-                            <Chip label="Pending" size="small" color="warning" variant="outlined" sx={{ bgcolor: "#fff8e1" }} />
-                          )
-                        )}
-                      </TableCell>
                       <TableCell align="center">
                         <IconButton size="small" onClick={() => handleOpenModal(school)}>
                           <Edit2 size={16} color="#4caf50" />
