@@ -4855,7 +4855,6 @@ def get_schools(ngo_id: Optional[str] = None):
                         district VARCHAR(100),
                         district_code VARCHAR(100),
                         status VARCHAR(100),
-                        laptops_assigned INTEGER DEFAULT 0,
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
                 """)
@@ -4867,8 +4866,7 @@ def get_schools(ngo_id: Optional[str] = None):
                     "state": "VARCHAR(100)",
                     "district": "VARCHAR(100)",
                     "district_code": "VARCHAR(100)",
-                    "status": "VARCHAR(100)",
-                    "laptops_assigned": "INTEGER DEFAULT 0"
+                    "status": "VARCHAR(100)"
                 }
                 # In psycopg3, a failed execute ruins the transaction. We must use a savepoint.
                 # Since we don't have savepoints easily here, let's just query information_schema.
@@ -4877,6 +4875,17 @@ def get_schools(ngo_id: Optional[str] = None):
                 for col, col_type in new_cols.items():
                     if col not in existing_cols:
                         cur.execute(f"ALTER TABLE {DB_SCHEMA}.schools ADD COLUMN {col} {col_type}")
+                
+                # Also ensure laptop_labeling has the rms columns since we query them here
+                cur.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name='laptop_labeling' AND table_schema='{DB_SCHEMA}'")
+                ll_cols = {row['column_name'] for row in cur.fetchall()}
+                if "rms_status" not in ll_cols:
+                    cur.execute(f"ALTER TABLE {DB_SCHEMA}.laptop_labeling ADD COLUMN rms_status VARCHAR(50)")
+                if "last_active_date" not in ll_cols:
+                    cur.execute(f"ALTER TABLE {DB_SCHEMA}.laptop_labeling ADD COLUMN last_active_date TIMESTAMP")
+                    
+                cur.execute(f"ALTER TABLE {DB_SCHEMA}.schools DROP COLUMN IF EXISTS laptops_assigned")
+                
                 conn.commit()
                 
                 query = f"SELECT * FROM {DB_SCHEMA}.schools"
@@ -4932,8 +4941,7 @@ async def create_school(request: Request):
         state = data.get("state")
         district = data.get("district")
         district_code = data.get("district_code")
-        status = data.get("status")
-        laptops_assigned = data.get("laptops_assigned", 0)
+        status = data.get("status") or "ACTIVE"
 
         if not name:
             return {"status": "error", "message": "School name is required"}
@@ -4943,9 +4951,9 @@ async def create_school(request: Request):
                 cur.execute(f"""
                     INSERT INTO {DB_SCHEMA}.schools (
                         school_id, udise, name, city, partner_name, 
-                        distribution_host_id, zipcode, state, district, district_code, status, laptops_assigned
+                        distribution_host_id, zipcode, state, district, district_code, status
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (school_id) DO UPDATE SET
                         udise = EXCLUDED.udise,
                         name = EXCLUDED.name,
@@ -4956,10 +4964,9 @@ async def create_school(request: Request):
                         state = EXCLUDED.state,
                         district = EXCLUDED.district,
                         district_code = EXCLUDED.district_code,
-                        status = EXCLUDED.status,
-                        laptops_assigned = EXCLUDED.laptops_assigned
+                        status = EXCLUDED.status
                     RETURNING *
-                """, (school_id, udise, name, city, partner_name, distribution_host_id, zipcode, state, district, district_code, status, laptops_assigned))
+                """, (school_id, udise, name, city, partner_name, distribution_host_id, zipcode, state, district, district_code, status))
                 conn.commit()
                 return {"status": "success", "message": "School added/updated successfully"}
     except Exception as e:
@@ -4982,8 +4989,7 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
                     state = row.get("state")
                     district = row.get("district")
                     district_code = row.get("district_code")
-                    status = row.get("status")
-                    laptops_assigned = row.get("laptops_assigned", 0)
+                    status = row.get("status") or "ACTIVE"
                     
                     if not name:
                         continue
@@ -4991,9 +4997,9 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
                     cur.execute(f"""
                         INSERT INTO {DB_SCHEMA}.schools (
                             school_id, udise, name, city, partner_name, 
-                            distribution_host_id, zipcode, state, district, district_code, status, laptops_assigned
+                            distribution_host_id, zipcode, state, district, district_code, status
                         )
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT (school_id) DO UPDATE SET 
                             udise = EXCLUDED.udise,
                             name = EXCLUDED.name, 
@@ -5004,9 +5010,8 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
                             state = EXCLUDED.state,
                             district = EXCLUDED.district,
                             district_code = EXCLUDED.district_code,
-                            status = EXCLUDED.status,
-                            laptops_assigned = EXCLUDED.laptops_assigned
-                    """, (school_id, udise, name, city, partner_name, distribution_host_id, zipcode, state, district, district_code, status, laptops_assigned))
+                            status = EXCLUDED.status
+                    """, (school_id, udise, name, city, partner_name, distribution_host_id, zipcode, state, district, district_code, status))
                     
                 conn.commit()
                 return {"status": "success", "message": "Bulk upload successful"}
@@ -6032,3 +6037,19 @@ async def jotform_webhook(request: Request):
             conn.commit()
             
     return {"status": "success"}
+
+@app.get("/api/ngos")
+def get_approved_ngos():
+    try:
+        with get_conn() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                cur.execute(f"""
+                    SELECT id, organization_name 
+                    FROM {DB_SCHEMA}.external_registered_ngo 
+                    WHERE UPPER(status) IN ('APPROVED', 'DISPATCHED', 'DELIVERED')
+                    ORDER BY organization_name
+                """)
+                rows = cur.fetchall()
+                return {"status": "success", "data": rows}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

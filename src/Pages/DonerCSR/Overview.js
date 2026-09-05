@@ -1344,7 +1344,7 @@ const Overview = () => {
                                   >
                                     <Laptop size={16} color="#555" />
                                     <Typography
-                                      variant="h5"
+                                      variant="h6"
                                       fontWeight={600}
                                       color={expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "success.main"}
                                     >
@@ -1368,7 +1368,7 @@ const Overview = () => {
                                 <Box textAlign="center">
                                   <Box display="flex" alignItems="center" gap={1} mb={0.5}>
                                     <Users size={16} color="#666" />
-                                    <Typography variant="h5" fontWeight={600} color="success.main">
+                                    <Typography variant="h6" fontWeight={600} color="success.main">
                                       {partner.targetBeneficiaries || partner.beneficiaries || 0}
                                     </Typography>
                                   </Box>
