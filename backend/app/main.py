@@ -12,7 +12,8 @@ from typing import Any, Dict, List, Optional
 import boto3
 import httpx
 from botocore.exceptions import ClientError
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile, BackgroundTasks, Response, Depends
+from psycopg.rows import dict_row
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile, BackgroundTasks, Response, Depends, Body
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -4837,180 +4838,195 @@ async def send_quarterly_impact_reminders():
 @app.get("/api/schools")
 def get_schools(ngo_id: Optional[str] = None):
     try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        # Ensure table exists
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS sama.schools (
-                id SERIAL PRIMARY KEY,
-                school_id VARCHAR(100) UNIQUE,
-                name VARCHAR(255),
-                city VARCHAR(100),
-                partner_name VARCHAR(255),
-                laptops_assigned INTEGER DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        # Add laptops_assigned column if it doesn't exist
-        cur.execute("""
-            ALTER TABLE sama.schools ADD COLUMN IF NOT EXISTS laptops_assigned INTEGER DEFAULT 0;
-        """)
-        conn.commit()
+        with get_conn() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                # Ensure table exists
+                cur.execute(f"""
+                    CREATE TABLE IF NOT EXISTS {DB_SCHEMA}.schools (
+                        id SERIAL PRIMARY KEY,
+                        school_id VARCHAR(100) UNIQUE,
+                        udise VARCHAR(100) UNIQUE,
+                        name VARCHAR(255),
+                        city VARCHAR(100),
+                        partner_name VARCHAR(255),
+                        distribution_host_id VARCHAR(255),
+                        zipcode VARCHAR(20),
+                        state VARCHAR(100),
+                        district VARCHAR(100),
+                        district_code VARCHAR(100),
+                        status VARCHAR(100),
+                        laptops_assigned INTEGER DEFAULT 0,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                # Safe migration for new columns
+                new_cols = {
+                    "udise": "VARCHAR(100) UNIQUE",
+                    "distribution_host_id": "VARCHAR(255)",
+                    "zipcode": "VARCHAR(20)",
+                    "state": "VARCHAR(100)",
+                    "district": "VARCHAR(100)",
+                    "district_code": "VARCHAR(100)",
+                    "status": "VARCHAR(100)",
+                    "laptops_assigned": "INTEGER DEFAULT 0"
+                }
+                # In psycopg3, a failed execute ruins the transaction. We must use a savepoint.
+                # Since we don't have savepoints easily here, let's just query information_schema.
+                cur.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name='schools' AND table_schema='{DB_SCHEMA}'")
+                existing_cols = {row['column_name'] for row in cur.fetchall()}
+                for col, col_type in new_cols.items():
+                    if col not in existing_cols:
+                        cur.execute(f"ALTER TABLE {DB_SCHEMA}.schools ADD COLUMN {col} {col_type}")
+                conn.commit()
+                
+                query = f"SELECT * FROM {DB_SCHEMA}.schools"
+                params = []
+                if ngo_id:
+                    query += " WHERE partner_name = %s"
+                    params.append(ngo_id)
+                
+                query += " ORDER BY id DESC"
+                cur.execute(query, params)
+                rows = cur.fetchall()
 
-        query = "SELECT * FROM sama.schools"
-        params = []
-        if ngo_id:
-            query += " WHERE partner_name = %s"
-            params.append(ngo_id)
-        
-        query += " ORDER BY id DESC"
-        cur.execute(query, params)
-        rows = cur.fetchall()
+                # Calculate analytics
+                total_schools = len(rows)
+                unique_ngos = len(set([r["partner_name"] for r in rows if r["partner_name"]]))
+                total_laptops_verified = 0
 
-        # Calculate analytics
-        total_schools = len(rows)
-        unique_ngos = len(set([r["partner_name"] for r in rows if r["partner_name"]]))
-        total_laptops_verified = 0
+                data = []
+                for r in rows:
+                    school_dict = dict(r)
+                    cur.execute(f"""
+                        SELECT COUNT(*) as count FROM {DB_SCHEMA}.laptop_labeling 
+                        WHERE (LOWER(assigned_to) = LOWER(%s) OR LOWER(assigned_to) = LOWER(%s) OR LOWER(assigned_to) = LOWER(%s))
+                          AND rms_status = 'ACTIVE'
+                    """, (school_dict.get("name", ""), school_dict.get("school_id", ""), school_dict.get("udise", "")))
+                    rms_count = cur.fetchone()["count"]
+                    school_dict["rms_installed"] = rms_count
+                    total_laptops_verified += rms_count
+                    data.append(school_dict)
 
-        data = []
-        for r in rows:
-            school_dict = dict(r)
-            cur.execute("""
-                SELECT COUNT(*) FROM sama.laptop_labeling 
-                WHERE (LOWER(assigned_to) = LOWER(%s) OR LOWER(assigned_to) = LOWER(%s))
-                  AND rms_status = 'ACTIVE'
-            """, (school_dict["name"], school_dict["school_id"]))
-            rms_count = cur.fetchone()["count"]
-            school_dict["rms_installed"] = rms_count
-            total_laptops_verified += rms_count
-            data.append(school_dict)
+                analytics = {
+                    "total_schools": total_schools,
+                    "ngos_with_schools": unique_ngos,
+                    "laptops_verified": total_laptops_verified
+                }
 
-        analytics = {
-            "total_schools": total_schools,
-            "ngos_with_schools": unique_ngos,
-            "laptops_verified": total_laptops_verified
-        }
-
-        return {"status": "success", "analytics": analytics, "data": data}
+                return {"status": "success", "analytics": analytics, "data": data}
     except Exception as e:
         return {"status": "error", "message": str(e)}
-    finally:
-        if 'cur' in locals(): cur.close()
-        if 'conn' in locals(): conn.close()
 
 @app.post("/api/schools")
 async def create_school(request: Request):
     try:
+        import uuid
         data = await request.json()
-        school_id = data.get("school_id")
+        school_id = data.get("school_id") or f"SCH-{uuid.uuid4().hex[:8].upper()}"
+        udise = data.get("udise")
         name = data.get("name")
         city = data.get("city")
         partner_name = data.get("partner_name")
+        distribution_host_id = data.get("distribution_host_id")
+        zipcode = data.get("zipcode")
+        state = data.get("state")
+        district = data.get("district")
+        district_code = data.get("district_code")
+        status = data.get("status")
         laptops_assigned = data.get("laptops_assigned", 0)
 
-        if not school_id or not name:
-            return {"status": "error", "message": "school_id and name are required"}
+        if not name:
+            return {"status": "error", "message": "School name is required"}
 
-        conn = get_db_connection()
-        cur = conn.cursor()
-        # Ensure table exists
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS sama.schools (
-                id SERIAL PRIMARY KEY,
-                school_id VARCHAR(100) UNIQUE,
-                name VARCHAR(255),
-                city VARCHAR(100),
-                partner_name VARCHAR(255),
-                laptops_assigned INTEGER DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        cur.execute("""
-            ALTER TABLE sama.schools ADD COLUMN IF NOT EXISTS laptops_assigned INTEGER DEFAULT 0;
-        """)
-        
-        cur.execute("""
-            INSERT INTO sama.schools (school_id, name, city, partner_name, laptops_assigned)
-            VALUES (%s, %s, %s, %s, %s)
-            ON CONFLICT (school_id) DO UPDATE SET
-                name = EXCLUDED.name,
-                city = EXCLUDED.city,
-                partner_name = EXCLUDED.partner_name,
-                laptops_assigned = EXCLUDED.laptops_assigned
-            RETURNING *
-        """, (school_id, name, city, partner_name, laptops_assigned))
-        conn.commit()
-        
-        return {"status": "success", "message": "School added/updated successfully"}
+        with get_conn() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                cur.execute(f"""
+                    INSERT INTO {DB_SCHEMA}.schools (
+                        school_id, udise, name, city, partner_name, 
+                        distribution_host_id, zipcode, state, district, district_code, status, laptops_assigned
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (school_id) DO UPDATE SET
+                        udise = EXCLUDED.udise,
+                        name = EXCLUDED.name,
+                        city = EXCLUDED.city,
+                        partner_name = EXCLUDED.partner_name,
+                        distribution_host_id = EXCLUDED.distribution_host_id,
+                        zipcode = EXCLUDED.zipcode,
+                        state = EXCLUDED.state,
+                        district = EXCLUDED.district,
+                        district_code = EXCLUDED.district_code,
+                        status = EXCLUDED.status,
+                        laptops_assigned = EXCLUDED.laptops_assigned
+                    RETURNING *
+                """, (school_id, udise, name, city, partner_name, distribution_host_id, zipcode, state, district, district_code, status, laptops_assigned))
+                conn.commit()
+                return {"status": "success", "message": "School added/updated successfully"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
-    finally:
-        if 'cur' in locals(): cur.close()
-        if 'conn' in locals(): conn.close()
 
 @app.post("/api/schools/bulk")
 def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        # Ensure table exists
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS sama.schools (
-                id SERIAL PRIMARY KEY,
-                school_id VARCHAR(100) UNIQUE,
-                name VARCHAR(255),
-                city VARCHAR(100),
-                partner_name VARCHAR(255),
-                laptops_assigned INTEGER DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        cur.execute("""
-            ALTER TABLE sama.schools ADD COLUMN IF NOT EXISTS laptops_assigned INTEGER DEFAULT 0;
-        """)
-        
-        for row in data:
-            school_id = row.get("school_id")
-            name = row.get("name")
-            city = row.get("city")
-            partner_name = row.get("partner_name")
-            laptops_assigned = row.get("laptops_assigned", 0)
-            
-            if not school_id or not name:
-                continue
-                
-            cur.execute("""
-                INSERT INTO sama.schools (school_id, name, city, partner_name, laptops_assigned)
-                VALUES (%s, %s, %s, %s, %s)
-                ON CONFLICT (school_id) DO UPDATE 
-                SET name = EXCLUDED.name, city = EXCLUDED.city, partner_name = EXCLUDED.partner_name, laptops_assigned = EXCLUDED.laptops_assigned
-            """, (school_id, name, city, partner_name, laptops_assigned))
-            
-        conn.commit()
-        return {"status": "success", "message": "Bulk upload successful"}
+        import uuid
+        with get_conn() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                for row in data:
+                    school_id = row.get("school_id") or f"SCH-{uuid.uuid4().hex[:8].upper()}"
+                    udise = row.get("udise")
+                    name = row.get("name")
+                    city = row.get("city")
+                    partner_name = row.get("partner_name")
+                    distribution_host_id = row.get("distribution_host_id")
+                    zipcode = row.get("zipcode")
+                    state = row.get("state")
+                    district = row.get("district")
+                    district_code = row.get("district_code")
+                    status = row.get("status")
+                    laptops_assigned = row.get("laptops_assigned", 0)
+                    
+                    if not name:
+                        continue
+                        
+                    cur.execute(f"""
+                        INSERT INTO {DB_SCHEMA}.schools (
+                            school_id, udise, name, city, partner_name, 
+                            distribution_host_id, zipcode, state, district, district_code, status, laptops_assigned
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (school_id) DO UPDATE SET 
+                            udise = EXCLUDED.udise,
+                            name = EXCLUDED.name, 
+                            city = EXCLUDED.city, 
+                            partner_name = EXCLUDED.partner_name,
+                            distribution_host_id = EXCLUDED.distribution_host_id,
+                            zipcode = EXCLUDED.zipcode,
+                            state = EXCLUDED.state,
+                            district = EXCLUDED.district,
+                            district_code = EXCLUDED.district_code,
+                            status = EXCLUDED.status,
+                            laptops_assigned = EXCLUDED.laptops_assigned
+                    """, (school_id, udise, name, city, partner_name, distribution_host_id, zipcode, state, district, district_code, status, laptops_assigned))
+                    
+                conn.commit()
+                return {"status": "success", "message": "Bulk upload successful"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
-    finally:
-        if 'cur' in locals(): cur.close()
-        if 'conn' in locals(): conn.close()
 
 @app.get("/api/schools/{school_id}")
 def get_school_details(school_id: str):
     # This route is used by RMS Server. We can add API Key validation later if needed.
     try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute("SELECT * FROM sama.schools WHERE school_id = %s", (school_id,))
-        row = cur.fetchone()
-        if not row:
-            return {"status": "error", "message": "School not found"}
-            
-        return {"status": "success", "data": dict(row)}
+        with get_conn() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                cur.execute(f"SELECT * FROM {DB_SCHEMA}.schools WHERE school_id = %s", (school_id,))
+                row = cur.fetchone()
+                if not row:
+                    return {"status": "error", "message": "School not found"}
+                    
+                return {"status": "success", "data": dict(row)}
     except Exception as e:
         return {"status": "error", "message": str(e)}
-    finally:
-        if 'cur' in locals(): cur.close()
-        if 'conn' in locals(): conn.close()
 
 # --- End Schools API ---
 

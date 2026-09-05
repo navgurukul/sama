@@ -1344,9 +1344,9 @@ const Overview = () => {
                                   >
                                     <Laptop size={16} color="#555" />
                                     <Typography
-                                      variant="subtitle1"
+                                      variant="h5"
                                       fontWeight={600}
-                                      color={expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "primary"}
+                                      color={expandedCard === partner.id && activeType === "laptops" ? "primary.main" : "success.main"}
                                     >
                                       {
                                         // show only laptops whose Donor Company Name matches selectedOrganization (case-insensitive)
@@ -1366,7 +1366,7 @@ const Overview = () => {
                                 </Box>
 
                                 <Box textAlign="center">
-                                  <Box display="flex" alignItems="center" gap={2}>
+                                  <Box display="flex" alignItems="center" gap={1} mb={0.5}>
                                     <Users size={16} color="#666" />
                                     <Typography variant="h5" fontWeight={600} color="success.main">
                                       {partner.targetBeneficiaries || partner.beneficiaries || 0}
