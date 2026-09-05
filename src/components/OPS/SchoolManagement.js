@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Box, Typography, TextField, Button, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Paper, IconButton, Chip, Modal, MenuItem, Select, FormControl, InputLabel
+  TableContainer, TableHead, TableRow, Paper, IconButton, Chip, Modal, MenuItem, Select, FormControl, InputLabel, Autocomplete
 } from '@mui/material';
 import { Edit2, Upload, Plus } from 'lucide-react';
+
+const INDIAN_STATES = [
+  "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh",
+  "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa", "Gujarat", "Haryana",
+  "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep",
+  "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry",
+  "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+];
 
 export default function SchoolManagement() {
   const [schools, setSchools] = useState([]);
   const [ngos, setNgos] = useState([]);
+  const [filterNgos, setFilterNgos] = useState([]);
+  const [loadingNgos, setLoadingNgos] = useState(false);
   const [analytics, setAnalytics] = useState({ total_schools: 0, ngos_with_schools: 0, laptops_verified: 0 });
   const [openModal, setOpenModal] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState("All");
@@ -24,8 +34,7 @@ export default function SchoolManagement() {
     state: '',
     district: '',
     district_code: '',
-    status: '',
-    laptops_assigned: 0
+    status: ''
   });
 
   const apiBase = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
@@ -47,6 +56,10 @@ export default function SchoolManagement() {
       if (data.status === 'success') {
         setSchools(data.data || []);
         if (data.analytics) setAnalytics(data.analytics);
+        if (selectedPartner === "All") {
+          const uniquePartners = [...new Set((data.data || []).map(s => s.partner_name).filter(Boolean))];
+          setFilterNgos(uniquePartners);
+        }
       }
     } catch (err) {
       console.error("Error fetching schools", err);
@@ -54,15 +67,21 @@ export default function SchoolManagement() {
   };
 
   const fetchNgos = async () => {
+    setLoadingNgos(true);
     try {
-      const res = await fetch(`${apiBase}/api/public/donor-stats`);
+      const ngoApiBase = process.env.REACT_APP_NgoInformationApi || `${apiBase}/ngo-exec`;
+      const res = await fetch(`${ngoApiBase}?type=registration`);
       const data = await res.json();
-      if (data.status === 'success') {
-        const uniqueNgos = data.data.ngoPartners.map(n => n.name);
+      console.log("Fetched NGOs from ngo-exec:", data);
+      if (data.status === 'success' && Array.isArray(data.data)) {
+        const uniqueNgos = data.data.map(n => n.organizationName).filter(Boolean);
         setNgos([...new Set(uniqueNgos)]);
+        console.log("Populated ngos state:", uniqueNgos);
       }
     } catch (err) {
       console.error("Error fetching NGOs", err);
+    } finally {
+      setLoadingNgos(false);
     }
   };
 
@@ -73,7 +92,7 @@ export default function SchoolManagement() {
     } else {
       setFormData({ 
         id: null, school_id: '', udise: '', name: '', city: '', partner_name: '', 
-        distribution_host_id: '', zipcode: '', state: '', district: '', district_code: '', status: '', laptops_assigned: 0 
+        distribution_host_id: '', zipcode: '', state: '', district: '', district_code: '', status: ''
       });
       setIsEditing(false);
     }
@@ -138,7 +157,6 @@ export default function SchoolManagement() {
           if (h === 'district') obj.district = row[idx]?.trim();
           if (h.includes('district code')) obj.district_code = row[idx]?.trim();
           if (h === 'status') obj.status = row[idx]?.trim();
-          if (h.includes('laptops') || h.includes('assigned')) obj.laptops_assigned = parseInt(row[idx]?.trim() || 0);
         });
         
         if (obj.name) {
@@ -231,7 +249,7 @@ export default function SchoolManagement() {
               onChange={(e) => setSelectedPartner(e.target.value)}
             >
               <MenuItem value="All">All</MenuItem>
-              {ngos.map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
+              {filterNgos.map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
             </Select>
           </FormControl>
         </Box>
@@ -262,8 +280,6 @@ export default function SchoolManagement() {
                 </TableRow>
               ) : (
                 schools.map((school) => {
-                  const isFullyVerified = school.rms_installed >= school.laptops_assigned && school.laptops_assigned > 0;
-                  
                   return (
                     <TableRow key={school.id} hover>
                       <TableCell>
@@ -298,31 +314,54 @@ export default function SchoolManagement() {
       <Modal open={openModal} onClose={handleCloseModal}>
         <Box sx={{
           position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          width: 600, maxHeight: '90vh', overflowY: 'auto', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 24, p: 4
+          width: 800, minHeight: 400, maxHeight: '90vh', overflowY: 'auto', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 24, p: 4
         }}>
           <Typography variant="h6" mb={3}>{isEditing ? "Edit School" : "Add New School"}</Typography>
           
-          <Box display="flex" flexDirection="column" gap={2}>
+          <Box display="flex" flexDirection="column" gap={3}>
             <Box display="flex" gap={2}>
               <TextField label="School Name" name="name" value={formData.name} onChange={handleChange} fullWidth size="small" />
               <TextField label="UDISE Code" name="udise" value={formData.udise} onChange={handleChange} fullWidth size="small" />
             </Box>
             <Box display="flex" gap={2}>
-              <TextField label="NGO / Partner Name" name="partner_name" value={formData.partner_name} onChange={handleChange} fullWidth size="small" />
+              <Autocomplete
+                freeSolo
+                options={ngos}
+                loading={loadingNgos}
+                value={formData.partner_name || ''}
+                onChange={(event, newValue) => {
+                  setFormData(prev => ({ ...prev, partner_name: newValue || '' }));
+                }}
+                onInputChange={(event, newInputValue) => {
+                  setFormData(prev => ({ ...prev, partner_name: newInputValue || '' }));
+                }}
+                slotProps={{ popper: { sx: { zIndex: 1500 } } }}
+                renderInput={(params) => <TextField {...params} label="NGO / Partner Name" name="partner_name" size="small" />}
+                fullWidth
+              />
               <TextField label="Distribution Host ID" name="distribution_host_id" value={formData.distribution_host_id} onChange={handleChange} fullWidth size="small" />
             </Box>
             <Box display="flex" gap={2}>
-              <TextField label="State" name="state" value={formData.state} onChange={handleChange} fullWidth size="small" />
+              <Autocomplete
+                freeSolo
+                options={INDIAN_STATES}
+                value={formData.state || ''}
+                onChange={(event, newValue) => {
+                  setFormData(prev => ({ ...prev, state: newValue || '' }));
+                }}
+                onInputChange={(event, newInputValue) => {
+                  setFormData(prev => ({ ...prev, state: newInputValue || '' }));
+                }}
+                slotProps={{ popper: { sx: { zIndex: 1500 } } }}
+                renderInput={(params) => <TextField {...params} label="State" name="state" size="small" />}
+                fullWidth
+              />
               <TextField label="District" name="district" value={formData.district} onChange={handleChange} fullWidth size="small" />
               <TextField label="District Code" name="district_code" value={formData.district_code} onChange={handleChange} fullWidth size="small" />
             </Box>
             <Box display="flex" gap={2}>
               <TextField label="City" name="city" value={formData.city} onChange={handleChange} fullWidth size="small" />
               <TextField label="Zipcode" name="zipcode" value={formData.zipcode} onChange={handleChange} fullWidth size="small" />
-            </Box>
-            <Box display="flex" gap={2}>
-              <TextField label="Status" name="status" value={formData.status} onChange={handleChange} fullWidth size="small" />
-              <TextField label="Laptops Assigned" name="laptops_assigned" type="number" value={formData.laptops_assigned} onChange={handleChange} fullWidth size="small" />
             </Box>
             
             <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
