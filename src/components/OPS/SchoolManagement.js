@@ -74,8 +74,15 @@ export default function SchoolManagement() {
       const data = await res.json();
       console.log("Fetched NGOs from ngo-exec:", data);
       if (data.status === 'success' && Array.isArray(data.data)) {
-        const uniqueNgos = data.data.map(n => n.organizationName).filter(Boolean);
-        setNgos([...new Set(uniqueNgos)]);
+        const uniqueNgosMap = new Map();
+        data.data.forEach(n => {
+          // Only include NGOs that are explicitly marked as "Approved"
+          if (n.organizationName && n.Status === "Approved") {
+            uniqueNgosMap.set(n.organizationName, { name: n.organizationName, id: n.Id || n.displayId || '' });
+          }
+        });
+        const uniqueNgos = Array.from(uniqueNgosMap.values());
+        setNgos(uniqueNgos);
         console.log("Populated ngos state:", uniqueNgos);
       }
     } catch (err) {
@@ -328,12 +335,16 @@ export default function SchoolManagement() {
                 freeSolo
                 options={ngos}
                 loading={loadingNgos}
-                value={formData.partner_name || ''}
+                getOptionLabel={(option) => typeof option === 'string' ? option : (option.name ? `${option.name}${option.id ? ` (${option.id})` : ''}` : '')}
+                value={ngos.find(n => n.name === formData.partner_name) || { name: formData.partner_name }}
                 onChange={(event, newValue) => {
-                  setFormData(prev => ({ ...prev, partner_name: newValue || '' }));
+                  setFormData(prev => ({ ...prev, partner_name: typeof newValue === 'string' ? newValue : (newValue ? newValue.name : '') }));
                 }}
                 onInputChange={(event, newInputValue) => {
-                  setFormData(prev => ({ ...prev, partner_name: newInputValue || '' }));
+                  // Only handle raw string input if they type something not in the list
+                  if (event && event.type === 'change') {
+                     setFormData(prev => ({ ...prev, partner_name: newInputValue || '' }));
+                  }
                 }}
                 slotProps={{ popper: { sx: { zIndex: 1500 } } }}
                 renderInput={(params) => <TextField {...params} label="NGO / Partner Name" name="partner_name" size="small" />}
