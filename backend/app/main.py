@@ -4912,7 +4912,6 @@ def get_schools(ngo_id: Optional[str] = None):
                           AND rms_status = 'ACTIVE'
                     """, (school_dict.get("name", ""), school_dict.get("school_id", ""), school_dict.get("udise", "")))
                     rms_count = cur.fetchone()["count"]
-                    school_dict["rms_installed"] = rms_count
                     total_laptops_verified += rms_count
                     data.append(school_dict)
 
