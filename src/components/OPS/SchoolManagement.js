@@ -15,9 +15,16 @@ export default function SchoolManagement() {
   const [formData, setFormData] = useState({
     id: null,
     school_id: '',
+    udise: '',
     name: '',
     city: '',
     partner_name: '',
+    distribution_host_id: '',
+    zipcode: '',
+    state: '',
+    district: '',
+    district_code: '',
+    status: '',
     laptops_assigned: 0
   });
 
@@ -26,6 +33,7 @@ export default function SchoolManagement() {
   useEffect(() => {
     fetchSchools();
     fetchNgos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPartner]);
 
   const fetchSchools = async () => {
@@ -63,7 +71,10 @@ export default function SchoolManagement() {
       setFormData(school);
       setIsEditing(true);
     } else {
-      setFormData({ id: null, school_id: '', name: '', city: '', partner_name: '', laptops_assigned: 0 });
+      setFormData({ 
+        id: null, school_id: '', udise: '', name: '', city: '', partner_name: '', 
+        distribution_host_id: '', zipcode: '', state: '', district: '', district_code: '', status: '', laptops_assigned: 0 
+      });
       setIsEditing(false);
     }
     setOpenModal(true);
@@ -117,14 +128,20 @@ export default function SchoolManagement() {
         const obj = {};
         
         headers.forEach((h, idx) => {
-          if (h.includes('udise') || h.includes('school_id') || h.includes('school id')) obj.school_id = row[idx]?.trim();
+          if (h.includes('udise') || h === 'school udise') obj.udise = row[idx]?.trim();
           if (h.includes('school name') || h === 'name') obj.name = row[idx]?.trim();
           if (h.includes('city') || h.includes('location')) obj.city = row[idx]?.trim();
           if (h.includes('ngo') || h.includes('partner')) obj.partner_name = row[idx]?.trim();
+          if (h.includes('host id') || h === 'distribution host id') obj.distribution_host_id = row[idx]?.trim();
+          if (h.includes('zip') || h.includes('pin')) obj.zipcode = row[idx]?.trim();
+          if (h === 'state') obj.state = row[idx]?.trim();
+          if (h === 'district') obj.district = row[idx]?.trim();
+          if (h.includes('district code')) obj.district_code = row[idx]?.trim();
+          if (h === 'status') obj.status = row[idx]?.trim();
           if (h.includes('laptops') || h.includes('assigned')) obj.laptops_assigned = parseInt(row[idx]?.trim() || 0);
         });
         
-        if (obj.school_id && obj.name) {
+        if (obj.name) {
           parsedData.push(obj);
         }
       }
@@ -223,12 +240,15 @@ export default function SchoolManagement() {
           <Table>
             <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
               <TableRow>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>NGO Name</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight={600}>Partner Name</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>School Name</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>UDISE Code</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>Location</Typography></TableCell>
-                <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>Laptops Assigned</Typography></TableCell>
-                <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>RMS/AFE Installed</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight={600}>City</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight={600}>State</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight={600}>District</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight={600}>Host ID</Typography></TableCell>
+                <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>Laptops</Typography></TableCell>
+                <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>Verified</Typography></TableCell>
                 <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>Status</Typography></TableCell>
                 <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>Actions</Typography></TableCell>
               </TableRow>
@@ -236,7 +256,7 @@ export default function SchoolManagement() {
             <TableBody>
               {schools.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
+                  <TableCell colSpan={11} align="center" sx={{ py: 3 }}>
                     <Typography color="text.secondary">No schools found.</Typography>
                   </TableCell>
                 </TableRow>
@@ -249,9 +269,12 @@ export default function SchoolManagement() {
                       <TableCell>{school.partner_name}</TableCell>
                       <TableCell color="text.secondary">{school.name}</TableCell>
                       <TableCell>
-                        <Chip label={school.school_id} size="small" variant="outlined" />
+                        <Chip label={school.udise || school.school_id} size="small" variant="outlined" />
                       </TableCell>
                       <TableCell color="text.secondary">{school.city}</TableCell>
+                      <TableCell color="text.secondary">{school.state}</TableCell>
+                      <TableCell color="text.secondary">{school.district}</TableCell>
+                      <TableCell color="text.secondary">{school.distribution_host_id}</TableCell>
                       <TableCell align="center">
                         <Typography fontWeight={600}>{school.laptops_assigned || 0}</Typography>
                       </TableCell>
@@ -261,10 +284,14 @@ export default function SchoolManagement() {
                         </Typography>
                       </TableCell>
                       <TableCell align="center">
-                        {isFullyVerified ? (
-                          <Chip label="Verified" size="small" color="success" variant="outlined" sx={{ bgcolor: "#e8f5e9" }} />
+                        {school.status ? (
+                          <Chip label={school.status} size="small" variant="outlined" />
                         ) : (
-                          <Chip label="Pending Verification" size="small" color="warning" variant="outlined" sx={{ bgcolor: "#fff8e1" }} />
+                           isFullyVerified ? (
+                            <Chip label="Verified" size="small" color="success" variant="outlined" sx={{ bgcolor: "#e8f5e9" }} />
+                          ) : (
+                            <Chip label="Pending" size="small" color="warning" variant="outlined" sx={{ bgcolor: "#fff8e1" }} />
+                          )
                         )}
                       </TableCell>
                       <TableCell align="center">
@@ -285,16 +312,32 @@ export default function SchoolManagement() {
       <Modal open={openModal} onClose={handleCloseModal}>
         <Box sx={{
           position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          width: 400, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 24, p: 4
+          width: 600, maxHeight: '90vh', overflowY: 'auto', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 24, p: 4
         }}>
           <Typography variant="h6" mb={3}>{isEditing ? "Edit School" : "Add New School"}</Typography>
           
           <Box display="flex" flexDirection="column" gap={2}>
-            <TextField label="NGO / Partner Name" name="partner_name" value={formData.partner_name} onChange={handleChange} fullWidth size="small" />
-            <TextField label="School Name" name="name" value={formData.name} onChange={handleChange} fullWidth size="small" />
-            <TextField label="UDISE Code (School ID)" name="school_id" value={formData.school_id} onChange={handleChange} fullWidth size="small" />
-            <TextField label="City / Location" name="city" value={formData.city} onChange={handleChange} fullWidth size="small" />
-            <TextField label="Laptops Assigned" name="laptops_assigned" type="number" value={formData.laptops_assigned} onChange={handleChange} fullWidth size="small" />
+            <Box display="flex" gap={2}>
+              <TextField label="School Name" name="name" value={formData.name} onChange={handleChange} fullWidth size="small" />
+              <TextField label="UDISE Code" name="udise" value={formData.udise} onChange={handleChange} fullWidth size="small" />
+            </Box>
+            <Box display="flex" gap={2}>
+              <TextField label="NGO / Partner Name" name="partner_name" value={formData.partner_name} onChange={handleChange} fullWidth size="small" />
+              <TextField label="Distribution Host ID" name="distribution_host_id" value={formData.distribution_host_id} onChange={handleChange} fullWidth size="small" />
+            </Box>
+            <Box display="flex" gap={2}>
+              <TextField label="State" name="state" value={formData.state} onChange={handleChange} fullWidth size="small" />
+              <TextField label="District" name="district" value={formData.district} onChange={handleChange} fullWidth size="small" />
+              <TextField label="District Code" name="district_code" value={formData.district_code} onChange={handleChange} fullWidth size="small" />
+            </Box>
+            <Box display="flex" gap={2}>
+              <TextField label="City" name="city" value={formData.city} onChange={handleChange} fullWidth size="small" />
+              <TextField label="Zipcode" name="zipcode" value={formData.zipcode} onChange={handleChange} fullWidth size="small" />
+            </Box>
+            <Box display="flex" gap={2}>
+              <TextField label="Status" name="status" value={formData.status} onChange={handleChange} fullWidth size="small" />
+              <TextField label="Laptops Assigned" name="laptops_assigned" type="number" value={formData.laptops_assigned} onChange={handleChange} fullWidth size="small" />
+            </Box>
             
             <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
               <Button onClick={handleCloseModal} color="inherit">Cancel</Button>
