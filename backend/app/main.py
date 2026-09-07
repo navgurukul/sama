@@ -6073,7 +6073,7 @@ def get_approved_ngos():
                 ngos = cur.fetchall()
                 
                 cur.execute(f"""
-                    SELECT school_id, udise, name, city, partner_name, ngo_id
+                    SELECT school_id, udise, name, city, partner_name, ngo_id, distribution_host_id, zipcode, state, district, district_code
                     FROM {DB_SCHEMA}.schools
                     WHERE ngo_id IS NOT NULL
                 """)
