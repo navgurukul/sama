@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, Box, Chip, Button, Tooltip } from '@mui/material';
 import { AssignedTo, DonatedTo } from './LaptopStatus';
 
-export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleAssignedToChange, handleDonatedToChange, handleOpenStageDetails, EditButton, refresh, setRefresh, sortConfig, handleSort) => {
+export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handleAssignedToChange, handleDonatedToChange, handleOpenStageDetails, EditButton, refresh, setRefresh, sortConfig, handleSort, handleOpenLaptopDetails) => {
   // Helper function to check if laptop has battery issues
   const hasBatteryIssue = (laptop) => {
     const minorIssues = laptop["Minor Issues"]?.toLowerCase() || "";
@@ -54,7 +54,12 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
 
           return (
             <Box>
-              <Typography variant="body2">
+              <Typography 
+                variant="body2" 
+                color="primary" 
+                sx={{ cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => handleOpenLaptopDetails && handleOpenLaptopDetails(laptop)}
+              >
                 {laptop.ID}
               </Typography>
               {hasBatteryProblem && (

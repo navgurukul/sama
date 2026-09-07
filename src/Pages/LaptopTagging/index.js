@@ -22,6 +22,7 @@ import EditButton from './EditButton';
 import { getTableColumns } from '../../components/OPS/LaptopTable/LaptopTable';
 import BulkEditPanel from './BulkEditPanel';
 import StageRunModal from './StageRunModal';
+import LaptopDetailsModal from '../../components/OPS/LaptopTable/LaptopDetailsModal';
 
 const formatDateForSort = (dateStr) => {
   if (!dateStr) return new Date(0); // Return epoch time for null dates
@@ -127,9 +128,12 @@ function LaptopTagging() {
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [isProcessingSelection, setIsProcessingSelection] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedLaptopDetails, setSelectedLaptopDetails] = useState(null);
+
   const [stageModalOpen, setStageModalOpen] = useState(false);
 
-  // Sort configuration state
+  // Sorting stateconfiguration state
   const [sortConfig, setSortConfig] = useState({
     field: null,
     direction: 'asc'
@@ -566,7 +570,8 @@ function LaptopTagging() {
     refresh,
     setRefresh,
     sortConfig,  // Pass sortConfig
-    handleSort   // Pass handleSort
+    handleSort,   // Pass handleSort
+    (laptop) => setSelectedLaptopDetails(laptop) // handleOpenLaptopDetails
   );
 
   const selectedLaptopId = selectedRows.length === 1 ? selectedRows[0] : null;
@@ -735,6 +740,12 @@ function LaptopTagging() {
         laptopModel={selectedLaptop?.['Manufacturer Model'] || selectedLaptop?.manufacturerModel || ''}
         currentStatus={selectedLaptop?.Status || ''}
         onCompleted={() => setRefresh(!refresh)}
+      />
+
+      <LaptopDetailsModal
+        open={!!selectedLaptopDetails}
+        onClose={() => setSelectedLaptopDetails(null)}
+        laptop={selectedLaptopDetails}
       />
     </Container>
 
