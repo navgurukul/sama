@@ -29,6 +29,7 @@ export default function SchoolManagement() {
     name: '',
     city: '',
     partner_name: '',
+    ngo_id: '',
     distribution_host_id: '',
     zipcode: '',
     state: '',
@@ -94,11 +95,11 @@ export default function SchoolManagement() {
 
   const handleOpenModal = (school = null) => {
     if (school) {
-      setFormData(school);
+      setFormData({ ...school, ngo_id: school.ngo_id || '' });
       setIsEditing(true);
     } else {
       setFormData({ 
-        id: null, school_id: '', udise: '', name: '', city: '', partner_name: '', 
+        id: null, school_id: '', udise: '', name: '', city: '', partner_name: '', ngo_id: '',
         distribution_host_id: '', zipcode: '', state: '', district: '', district_code: '', status: ''
       });
       setIsEditing(false);
@@ -335,21 +336,25 @@ export default function SchoolManagement() {
                 freeSolo
                 options={ngos}
                 loading={loadingNgos}
-                getOptionLabel={(option) => typeof option === 'string' ? option : (option.name ? `${option.name}${option.id ? ` (${option.id})` : ''}` : '')}
+                getOptionLabel={(option) => typeof option === 'string' ? option : (option.name || '')}
                 value={ngos.find(n => n.name === formData.partner_name) || { name: formData.partner_name }}
                 onChange={(event, newValue) => {
-                  setFormData(prev => ({ ...prev, partner_name: typeof newValue === 'string' ? newValue : (newValue ? newValue.name : '') }));
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    partner_name: typeof newValue === 'string' ? newValue : (newValue ? newValue.name : ''),
+                    ngo_id: (newValue && typeof newValue !== 'string') ? newValue.id : prev.ngo_id
+                  }));
                 }}
                 onInputChange={(event, newInputValue) => {
-                  // Only handle raw string input if they type something not in the list
                   if (event && event.type === 'change') {
-                     setFormData(prev => ({ ...prev, partner_name: newInputValue || '' }));
+                     setFormData(prev => ({ ...prev, partner_name: newInputValue || '', ngo_id: '' }));
                   }
                 }}
                 slotProps={{ popper: { sx: { zIndex: 1500 } } }}
                 renderInput={(params) => <TextField {...params} label="NGO / Partner Name" name="partner_name" size="small" />}
                 fullWidth
               />
+              <TextField label="NGO ID" name="ngo_id" value={formData.ngo_id || ''} InputProps={{ readOnly: true }} fullWidth size="small" sx={{ bgcolor: '#f5f5f5' }} />
               <TextField label="Distribution Host ID" name="distribution_host_id" value={formData.distribution_host_id} onChange={handleChange} fullWidth size="small" />
             </Box>
             <Box display="flex" gap={2}>
