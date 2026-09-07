@@ -4865,6 +4865,7 @@ def get_schools(ngo_id: Optional[str] = None):
                         name VARCHAR(255),
                         city VARCHAR(100),
                         partner_name VARCHAR(255),
+                        ngo_id VARCHAR(100),
                         distribution_host_id VARCHAR(255),
                         zipcode VARCHAR(20),
                         state VARCHAR(100),
@@ -4877,6 +4878,7 @@ def get_schools(ngo_id: Optional[str] = None):
                 # Safe migration for new columns
                 new_cols = {
                     "udise": "VARCHAR(100) UNIQUE",
+                    "ngo_id": "VARCHAR(100)",
                     "distribution_host_id": "VARCHAR(255)",
                     "zipcode": "VARCHAR(20)",
                     "state": "VARCHAR(100)",
@@ -4907,7 +4909,7 @@ def get_schools(ngo_id: Optional[str] = None):
                 query = f"SELECT * FROM {DB_SCHEMA}.schools"
                 params = []
                 if ngo_id:
-                    query += " WHERE partner_name = %s"
+                    query += " WHERE ngo_id = %s"
                     params.append(ngo_id)
                 
                 query += " ORDER BY id DESC"
@@ -4951,6 +4953,7 @@ async def create_school(request: Request):
         name = data.get("name")
         city = data.get("city")
         partner_name = data.get("partner_name")
+        ngo_id = data.get("ngo_id")
         distribution_host_id = data.get("distribution_host_id")
         zipcode = data.get("zipcode")
         state = data.get("state")
@@ -4965,15 +4968,16 @@ async def create_school(request: Request):
             with conn.cursor(row_factory=dict_row) as cur:
                 cur.execute(f"""
                     INSERT INTO {DB_SCHEMA}.schools (
-                        school_id, udise, name, city, partner_name, 
+                        school_id, udise, name, city, partner_name, ngo_id,
                         distribution_host_id, zipcode, state, district, district_code, status
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (school_id) DO UPDATE SET
                         udise = EXCLUDED.udise,
                         name = EXCLUDED.name,
                         city = EXCLUDED.city,
                         partner_name = EXCLUDED.partner_name,
+                        ngo_id = EXCLUDED.ngo_id,
                         distribution_host_id = EXCLUDED.distribution_host_id,
                         zipcode = EXCLUDED.zipcode,
                         state = EXCLUDED.state,
@@ -4981,7 +4985,7 @@ async def create_school(request: Request):
                         district_code = EXCLUDED.district_code,
                         status = EXCLUDED.status
                     RETURNING *
-                """, (school_id, udise, name, city, partner_name, distribution_host_id, zipcode, state, district, district_code, status))
+                """, (school_id, udise, name, city, partner_name, ngo_id, distribution_host_id, zipcode, state, district, district_code, status))
                 conn.commit()
                 return {"status": "success", "message": "School added/updated successfully"}
     except Exception as e:
@@ -4999,6 +5003,7 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
                     name = row.get("name")
                     city = row.get("city")
                     partner_name = row.get("partner_name")
+                    ngo_id = row.get("ngo_id")
                     distribution_host_id = row.get("distribution_host_id")
                     zipcode = row.get("zipcode")
                     state = row.get("state")
@@ -5011,22 +5016,23 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
                         
                     cur.execute(f"""
                         INSERT INTO {DB_SCHEMA}.schools (
-                            school_id, udise, name, city, partner_name, 
+                            school_id, udise, name, city, partner_name, ngo_id,
                             distribution_host_id, zipcode, state, district, district_code, status
                         )
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT (school_id) DO UPDATE SET 
                             udise = EXCLUDED.udise,
                             name = EXCLUDED.name, 
                             city = EXCLUDED.city, 
                             partner_name = EXCLUDED.partner_name,
+                            ngo_id = EXCLUDED.ngo_id,
                             distribution_host_id = EXCLUDED.distribution_host_id,
                             zipcode = EXCLUDED.zipcode,
                             state = EXCLUDED.state,
                             district = EXCLUDED.district,
                             district_code = EXCLUDED.district_code,
                             status = EXCLUDED.status
-                    """, (school_id, udise, name, city, partner_name, distribution_host_id, zipcode, state, district, district_code, status))
+                    """, (school_id, udise, name, city, partner_name, ngo_id, distribution_host_id, zipcode, state, district, district_code, status))
                     
                 conn.commit()
                 return {"status": "success", "message": "Bulk upload successful"}
@@ -6064,7 +6070,25 @@ def get_approved_ngos():
                     WHERE UPPER(status) IN ('APPROVED', 'DISPATCHED', 'DELIVERED')
                     ORDER BY organization_name
                 """)
-                rows = cur.fetchall()
-                return {"status": "success", "data": rows}
+                ngos = cur.fetchall()
+                
+                cur.execute(f"""
+                    SELECT school_id, udise, name, city, partner_name, ngo_id
+                    FROM {DB_SCHEMA}.schools
+                    WHERE ngo_id IS NOT NULL
+                """)
+                schools = cur.fetchall()
+                
+                schools_by_ngo = {}
+                for s in schools:
+                    nid = s["ngo_id"]
+                    if nid not in schools_by_ngo:
+                        schools_by_ngo[nid] = []
+                    schools_by_ngo[nid].append(s)
+                
+                for ngo in ngos:
+                    ngo["schools"] = schools_by_ngo.get(ngo["id"], [])
+                    
+                return {"status": "success", "data": ngos}
     except Exception as e:
         return {"status": "error", "message": str(e)}
