@@ -1015,6 +1015,22 @@ def _query_stage_run_responses(request: Request) -> List[Dict[str, Any]]:
 
 
 def _evaluate_run_mandatory_gate(cur, run_id: int) -> Dict[str, Any]:
+    # Check if this laptop is a macbook
+    cur.execute(
+        f"""
+        SELECT l.manufacturer_model
+        FROM {DB_SCHEMA}.laptop_stage_run r
+        JOIN {DB_SCHEMA}.laptop_labeling l ON l.id = r.laptop_id
+        WHERE r.run_id = %s
+        """,
+        (run_id,)
+    )
+    model_row = cur.fetchone()
+    is_macbook = False
+    if model_row and model_row.get("manufacturer_model"):
+        model = str(model_row.get("manufacturer_model")).lower()
+        is_macbook = "macbook" in model or "apple" in model
+
     cur.execute(
         f"""
         SELECT
@@ -1022,10 +1038,10 @@ def _evaluate_run_mandatory_gate(cur, run_id: int) -> Dict[str, Any]:
             r.stage_id,
             r.stage_code,
             r.laptop_id,
-            count(*) FILTER (WHERE i.is_mandatory) AS mandatory_total,
-            count(*) FILTER (WHERE i.is_mandatory AND resp.result = 'PASS') AS mandatory_passed,
-            count(*) FILTER (WHERE i.is_mandatory AND resp.result = 'FAIL') AS mandatory_failed,
-            count(*) FILTER (WHERE i.is_mandatory AND (resp.response_id IS NULL OR resp.result = 'NA')) AS mandatory_missing
+            count(*) FILTER (WHERE i.is_mandatory AND NOT (%(is_macbook)s = TRUE AND (i.item_text ILIKE '%%RMS%%' OR i.item_text ILIKE '%%HDMI%%'))) AS mandatory_total,
+            count(*) FILTER (WHERE i.is_mandatory AND NOT (%(is_macbook)s = TRUE AND (i.item_text ILIKE '%%RMS%%' OR i.item_text ILIKE '%%HDMI%%')) AND resp.result = 'PASS') AS mandatory_passed,
+            count(*) FILTER (WHERE i.is_mandatory AND NOT (%(is_macbook)s = TRUE AND (i.item_text ILIKE '%%RMS%%' OR i.item_text ILIKE '%%HDMI%%')) AND resp.result = 'FAIL') AS mandatory_failed,
+            count(*) FILTER (WHERE i.is_mandatory AND NOT (%(is_macbook)s = TRUE AND (i.item_text ILIKE '%%RMS%%' OR i.item_text ILIKE '%%HDMI%%')) AND (resp.response_id IS NULL OR resp.result = 'NA')) AS mandatory_missing
         FROM {DB_SCHEMA}.laptop_stage_run r
         LEFT JOIN {DB_SCHEMA}.checklist_section s
                     ON s.stage_id = r.stage_id
@@ -1036,10 +1052,10 @@ def _evaluate_run_mandatory_gate(cur, run_id: int) -> Dict[str, Any]:
         LEFT JOIN {DB_SCHEMA}.checklist_response resp
           ON resp.run_id = r.run_id
          AND resp.item_id = i.item_id
-        WHERE r.run_id = %s
+        WHERE r.run_id = %(run_id)s
         GROUP BY r.run_id, r.stage_id, r.stage_code, r.laptop_id
         """,
-        (run_id,),
+        {"run_id": run_id, "is_macbook": is_macbook}
     )
     row = cur.fetchone()
     if not row:

@@ -191,7 +191,8 @@ function LaptopTagging() {
   const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
     if (isProcessingSelection) return;
 
-    const selectedIds = rowsSelected.map(index => data[index]?.ID).filter(Boolean);
+    // allRowsSelected contains { index, dataIndex }. Use dataIndex to correctly map to the data array.
+    const selectedIds = allRowsSelected.map(row => data[row.dataIndex]?.ID).filter(Boolean);
     setSelectedRows([...new Set(selectedIds)]);
   };
 
@@ -731,6 +732,7 @@ function LaptopTagging() {
         open={stageModalOpen}
         onClose={() => setStageModalOpen(false)}
         laptopId={selectedLaptop?.ID || ''}
+        laptopModel={selectedLaptop?.['Manufacturer Model'] || selectedLaptop?.manufacturerModel || ''}
         currentStatus={selectedLaptop?.Status || ''}
         onCompleted={() => setRefresh(!refresh)}
       />
