@@ -67,8 +67,14 @@ const StageRunModal = ({
   );
 
   const stageItems = useMemo(() => {
-    return (template.items || []).filter((item) => Number(item.stageId) === Number(stageId));
-  }, [template.items, stageId]);
+    const isMacBook = laptopModel && (laptopModel.toLowerCase().includes('mac') || laptopModel.toLowerCase().includes('apple'));
+    return (template.items || []).filter((item) => Number(item.stageId) === Number(stageId)).map((item) => {
+      if (isMacBook && item.itemText && (item.itemText.toLowerCase().includes('rms') || item.itemText.toLowerCase().includes('port'))) {
+        return { ...item, isMandatory: false };
+      }
+      return item;
+    });
+  }, [template.items, stageId, laptopModel]);
 
   const stageSections = useMemo(() => {
     return (template.sections || []).filter((section) => Number(section.stageId) === Number(stageId));
@@ -390,11 +396,19 @@ const StageRunModal = ({
           const itemStageId = toInt(item.stageId);
           if (!itemId) return null;
 
+          let itemResult = responses[itemId]?.result || 'NA';
+          const isMacBook = laptopModel && (laptopModel.toLowerCase().includes('mac') || laptopModel.toLowerCase().includes('apple'));
+          if (isMacBook && item.itemText && (item.itemText.toLowerCase().includes('rms') || item.itemText.toLowerCase().includes('port'))) {
+             if (itemResult === 'NA' || itemResult === '') {
+                 itemResult = 'SKIP';
+             }
+          }
+
           return {
             itemId,
             sectionId,
             stageId: itemStageId,
-            result: responses[itemId]?.result || 'NA',
+            result: itemResult,
             remark: responses[itemId]?.remark || '',
             evidenceUrl: buildEvidencePayload(responses[itemId]?.evidenceFiles)
               || responses[itemId]?.evidenceKey
