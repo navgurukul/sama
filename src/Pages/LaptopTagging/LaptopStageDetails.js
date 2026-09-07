@@ -59,6 +59,7 @@ const LaptopStageDetails = () => {
   const [responses, setResponses] = useState([]);
   const [gateLogs, setGateLogs] = useState([]);
   const [stageModalOpen, setStageModalOpen] = useState(false);
+  const [editRunId, setEditRunId] = useState(null);
   const [expandedResponseId, setExpandedResponseId] = useState(null);
 
   const gateLogsByRun = useMemo(() => {
@@ -152,7 +153,10 @@ const LaptopStageDetails = () => {
         </Button>
         <Button
           variant="contained"
-          onClick={() => setStageModalOpen(true)}
+          onClick={() => {
+            setEditRunId(null);
+            setStageModalOpen(true);
+          }}
           disabled={!laptop}
         >
           Run Stage Checklist
@@ -351,9 +355,23 @@ const LaptopStageDetails = () => {
           </Paper>
 
           <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              {selectedRun ? `Checklist Responses (Run ${selectedRun.runId})` : 'Checklist Responses'}
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h6">
+                {selectedRun ? `Checklist Responses (Run ${selectedRun.runId})` : 'Checklist Responses'}
+              </Typography>
+              {selectedRun && (
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  onClick={() => {
+                    setEditRunId(selectedRun.runId);
+                    setStageModalOpen(true);
+                  }}
+                >
+                  Edit Checklist
+                </Button>
+              )}
+            </Box>
             <TableContainer sx={{ overflowX: 'auto', width: '100%' }}>
               <Table size="small">
               <TableHead>
@@ -463,11 +481,17 @@ const LaptopStageDetails = () => {
 
       <StageRunModal
         open={stageModalOpen}
-        onClose={() => setStageModalOpen(false)}
+        onClose={() => {
+          setStageModalOpen(false);
+          setEditRunId(null);
+        }}
         laptopId={laptop?.ID || id || ''}
+        laptopModel={laptop?.['Manufacturer Model'] || laptop?.manufacturerModel || laptop?.manufacturer_model || ''}
         currentStatus={laptop?.Status || ''}
+        editRunId={editRunId}
         onCompleted={() => {
           setStageModalOpen(false);
+          setEditRunId(null);
           loadAll();
         }}
       />

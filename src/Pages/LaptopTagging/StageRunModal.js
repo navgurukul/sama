@@ -40,7 +40,9 @@ const StageRunModal = ({
   open,
   onClose,
   laptopId,
+  laptopModel,
   currentStatus,
+  editRunId,
   onCompleted,
 }) => {
   const [loading, setLoading] = useState(false);
@@ -146,9 +148,12 @@ const StageRunModal = ({
         || null;
       const defaultStageId = defaultStage ? toInt(defaultStage.stageId) : null;
       setStageId(defaultStageId);
-      const currentRun = stageRuns.find(
-        (run) => Number(run.stageId) === Number(defaultStageId) && run.outcome === 'IN_PROGRESS'
-      );
+      const currentRun = editRunId
+        ? stageRuns.find((run) => Number(run.runId) === Number(editRunId))
+        : stageRuns.find((run) => Number(run.stageId) === Number(defaultStageId) && run.outcome === 'IN_PROGRESS');
+
+      const runStageId = currentRun ? toInt(currentRun.stageId) : defaultStageId;
+      setStageId(runStageId);
 
       if (currentRun?.runId) {
         setActiveRunId(currentRun.runId);
@@ -156,7 +161,7 @@ const StageRunModal = ({
         const responseMap = {};
         const subCheckMap = {};
         const stageItemsForRun = (Array.isArray(items) ? items : [])
-          .filter((item) => Number(item.stageId) === Number(defaultStageId));
+          .filter((item) => Number(item.stageId) === Number(runStageId));
         const subChecklistByItemId = new Map(
           stageItemsForRun.map((item) => [
             Number(item.itemId),
@@ -205,7 +210,7 @@ const StageRunModal = ({
   useEffect(() => {
     loadModalData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, laptopId]);
+  }, [open, laptopId, editRunId]);
 
   const ensureActiveRun = async () => {
     if (activeRunId) return activeRunId;
