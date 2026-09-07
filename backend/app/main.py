@@ -103,7 +103,7 @@ STAGE2_DASHBOARD_ITEM_CODE = "TEST_RESULTS_DASHBOARD_UPDATED"
 # Any missing PASS transition falls back to next active stage by display_order.
 STAGE_TRANSITIONS: Dict[str, Dict[str, str]] = {
     "LAPTOP_RECEIVED": {"pass": "REFURBISHMENT_TESTING", "fail": "NOT_WORKING", "fast_pass": "QC_CHECK"},
-    "REFURBISHMENT_TESTING": {"pass": "QC_CHECK", "fail": "LAPTOP_RECEIVED"},
+    "REFURBISHMENT_TESTING": {"pass": "QC_CHECK", "fail": "NOT_WORKING"},
     "QC_CHECK": {"pass": "DISTRIBUTION", "fail": "NOT_WORKING"},
     "DISTRIBUTION": {"pass": "POST_DEPLOYMENT_15D", "fail": "DISTRIBUTION"},
     "POST_DEPLOYMENT_15D": {"pass": "MONTHLY_MONITORING", "fail": "POST_DEPLOYMENT_15D"},
