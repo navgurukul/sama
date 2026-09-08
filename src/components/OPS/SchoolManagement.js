@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Box, Typography, TextField, Button, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Paper, IconButton, Chip, Modal, MenuItem, Select, FormControl, InputLabel, Autocomplete
+  TableContainer, TableHead, TableRow, Paper, IconButton, Chip, Modal, MenuItem, Select, FormControl, InputLabel, Autocomplete,
+  Dialog, DialogTitle, DialogContent, DialogActions, Grid, Alert, Link
 } from '@mui/material';
 import { Edit2, Upload, Plus } from 'lucide-react';
 
@@ -35,8 +36,12 @@ export default function SchoolManagement() {
     state: '',
     district: '',
     district_code: '',
+    district_code: '',
     status: ''
   });
+  
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const apiBase = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
 
@@ -135,44 +140,52 @@ export default function SchoolManagement() {
     }
   };
 
-  const handleFileUpload = (e) => {
+  const handleFileSelect = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (file) {
+      setSelectedFile(file);
+    }
+    e.target.value = null;
+  };
 
+  const processFileUpload = async () => {
+    if (!selectedFile) {
+      alert("Please select a file first.");
+      return;
+    }
     const reader = new FileReader();
     reader.onload = async (event) => {
-      const text = event.target.result;
-      const rows = text.split('\n');
-      const headers = rows[0].split(',').map(h => h.trim().toLowerCase());
-      
-      const parsedData = [];
-      for (let i = 1; i < rows.length; i++) {
-        const rowText = rows[i].trim();
-        if (!rowText) continue;
-        
-        // Handle basic CSV splitting
-        const row = rowText.split(',');
-        const obj = {};
-        
-        headers.forEach((h, idx) => {
-          if (h.includes('udise') || h === 'school udise') obj.udise = row[idx]?.trim();
-          if (h.includes('school name') || h === 'name') obj.name = row[idx]?.trim();
-          if (h.includes('city') || h.includes('location')) obj.city = row[idx]?.trim();
-          if (h.includes('ngo') || h.includes('partner')) obj.partner_name = row[idx]?.trim();
-          if (h.includes('host id') || h === 'distribution host id') obj.distribution_host_id = row[idx]?.trim();
-          if (h.includes('zip') || h.includes('pin')) obj.zipcode = row[idx]?.trim();
-          if (h === 'state') obj.state = row[idx]?.trim();
-          if (h === 'district') obj.district = row[idx]?.trim();
-          if (h.includes('district code')) obj.district_code = row[idx]?.trim();
-          if (h === 'status') obj.status = row[idx]?.trim();
-        });
-        
-        if (obj.name) {
-          parsedData.push(obj);
-        }
-      }
-
       try {
+        const text = event.target.result;
+        const rows = text.split('\n');
+        const headers = rows[0].split(',').map(h => h.trim().toLowerCase());
+        
+        const parsedData = [];
+        for (let i = 1; i < rows.length; i++) {
+          const rowText = rows[i].trim();
+          if (!rowText) continue;
+          
+          const row = rowText.split(',');
+          const obj = {};
+          
+          headers.forEach((h, idx) => {
+            if (h.includes('udise') || h === 'school udise') obj.udise = row[idx]?.trim();
+            if (h.includes('school name') || h === 'name') obj.name = row[idx]?.trim();
+            if (h.includes('city') || h.includes('location')) obj.city = row[idx]?.trim();
+            if (h.includes('ngo') && !h.includes('id') || h.includes('partner')) obj.partner_name = row[idx]?.trim();
+            if (h === 'ngo id' || h === 'ngo_id') obj.ngo_id = row[idx]?.trim();
+            if (h.includes('host id') || h === 'distribution host id') obj.distribution_host_id = row[idx]?.trim();
+            if (h.includes('zip') || h.includes('pin')) obj.zipcode = row[idx]?.trim();
+            if (h === 'state') obj.state = row[idx]?.trim();
+            if (h === 'district') obj.district = row[idx]?.trim();
+            if (h.includes('district code')) obj.district_code = row[idx]?.trim();
+          });
+          
+          if (obj.name) {
+            parsedData.push(obj);
+          }
+        }
+
         const res = await fetch(`${apiBase}/api/schools/bulk`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -182,6 +195,8 @@ export default function SchoolManagement() {
         if (data.status === 'success') {
           alert(`Successfully uploaded ${parsedData.length} schools.`);
           fetchSchools();
+          setIsUploadModalOpen(false);
+          setSelectedFile(null);
         } else {
           alert("Error uploading: " + data.message);
         }
@@ -190,9 +205,20 @@ export default function SchoolManagement() {
         alert("Failed to upload CSV.");
       }
     };
-    reader.readAsText(file);
-    // Reset file input
-    e.target.value = null;
+    reader.readAsText(selectedFile);
+  };
+
+  const handleDownloadSample = () => {
+    const headers = "School UDISE,School Name,City,Partner Name,NGO ID,Distribution Host ID,Zipcode,State,District,District Code\n";
+    const blob = new Blob([headers], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'school_upload_template.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   return (
@@ -214,10 +240,9 @@ export default function SchoolManagement() {
             variant="contained" 
             color="success" 
             startIcon={<Upload size={18} />}
-            component="label"
+            onClick={() => setIsUploadModalOpen(true)}
           >
             Upload School Details CSV
-            <input type="file" hidden accept=".csv" onChange={handleFileUpload} />
           </Button>
           <Button 
             variant="outlined" 
@@ -387,6 +412,74 @@ export default function SchoolManagement() {
           </Box>
         </Box>
       </Modal>
+
+      {/* Bulk Upload Modal */}
+      <Dialog open={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ fontWeight: 'bold', pb: 1 }}>School Data Upload Form</DialogTitle>
+        <DialogContent dividers sx={{ backgroundColor: '#fafafa', p: 4 }}>
+          
+          <Paper elevation={0} sx={{ p: 3, mb: 4, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight="bold" mb={2} color="text.primary">Guide</Typography>
+            <Typography variant="body1" color="text.secondary" mb={2}>
+              Before uploading the sheet, please ensure the following required columns are present in your CSV:
+            </Typography>
+            <Box component="ul" sx={{ color: 'text.secondary', pl: 3, mb: 0 }}>
+              <li><Typography variant="body2"><b>School Name</b>: Full name of the school.</Typography></li>
+              <li><Typography variant="body2"><b>NGO ID</b>: Exact NGO ID format (e.g., SAM-XXX).</Typography></li>
+              <li><Typography variant="body2"><b>Partner Name</b>: Name of the associated partner/NGO.</Typography></li>
+              <li><Typography variant="body2"><b>City, State, District</b>: Complete location details.</Typography></li>
+            </Box>
+            <Typography variant="body2" color="primary" mt={2}>
+              <i>Note: school_id is auto-generated by the system and should not be included.</i>
+            </Typography>
+          </Paper>
+
+          <Paper elevation={0} sx={{ p: 4, textAlign: 'center', border: '1px solid #e0e0e0', borderRadius: 2, backgroundColor: '#ffffff' }}>
+            <Typography variant="h5" fontWeight="bold" mb={3}>Bulk Data Upload</Typography>
+            
+            <Alert severity="info" sx={{ mb: 3, textAlign: 'left' }}>
+              Please upload a CSV file (.csv format). You can download the sample file to understand the required format.
+            </Alert>
+            
+            <Link 
+              component="button" 
+              variant="body1" 
+              onClick={handleDownloadSample}
+              sx={{ display: 'block', mb: 4, color: '#2e7d32', textDecoration: 'underline', fontWeight: 500 }}
+            >
+              Download Sample File
+            </Link>
+            
+            <Box display="flex" justifyContent="center" alignItems="center" gap={2}>
+              <Button 
+                variant="contained" 
+                component="label" 
+                sx={{ bgcolor: '#757575', '&:hover': { bgcolor: '#616161' }, borderRadius: 6, px: 3, textTransform: 'none' }}
+              >
+                Choose File
+                <input type="file" hidden accept=".csv" onChange={handleFileSelect} />
+              </Button>
+              {selectedFile && (
+                <Typography variant="body2" color="text.secondary">
+                  {selectedFile.name}
+                </Typography>
+              )}
+              <Button 
+                variant="contained" 
+                onClick={processFileUpload}
+                disabled={!selectedFile}
+                sx={{ bgcolor: '#e0e0e0', color: '#000', '&:hover': { bgcolor: '#d5d5d5' }, borderRadius: 6, px: 4, textTransform: 'none' }}
+              >
+                Upload
+              </Button>
+            </Box>
+          </Paper>
+
+        </DialogContent>
+        <DialogActions sx={{ p: 2, backgroundColor: '#fafafa' }}>
+          <Button onClick={() => setIsUploadModalOpen(false)} color="inherit" sx={{ fontWeight: 500 }}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
