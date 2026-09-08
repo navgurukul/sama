@@ -183,28 +183,17 @@ const execPost = async (payload) => {
 };
 
 const buildEvidenceUploadUrl = () => {
-  const pythonBaseApi = process.env.REACT_APP_UserDetailsApis;
-  
-  if (pythonBaseApi) {
-    // REACT_APP_UserDetailsApis is usually e.g., http://localhost:8000/user-exec
-    if (pythonBaseApi.endsWith('/user-exec')) {
-      return pythonBaseApi.replace(/\/user-exec$/, '/evidence-upload');
-    }
-    return `${pythonBaseApi.replace(/\/$/, '')}/evidence-upload`;
+  // Always force evidence upload to the Python backend!
+  // If running locally, route to localhost:8000
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:8000/evidence-upload';
   }
-
-  // Fallback if pythonBaseApi is missing but we're on the legacy Google script URL
-  if (API_BASE_URL && API_BASE_URL.includes('script.google.com')) {
-    return 'https://api.thesama.in/evidence-upload';
+  // If running on a local network (e.g. mobile testing), route to that IP's port 8000
+  if (window.location.hostname.match(/^192\.168\./) || window.location.hostname.match(/^10\./)) {
+    return `http://${window.location.hostname}:8000/evidence-upload`;
   }
-
-  if (!API_BASE_URL) {
-    throw new Error('API base URL is not configured');
-  }
-  if (API_BASE_URL.endsWith('/exec')) {
-    return API_BASE_URL.replace(/\/exec$/, '/evidence-upload');
-  }
-  return `${API_BASE_URL.replace(/\/$/, '')}/evidence-upload`;
+  // In production, unconditionally route to the Python API
+  return 'https://sama-api.thesama.in/evidence-upload';
 };
 
 export const fetchStageTemplate = async ({ stageId = null, stageCode = null } = {}) => {
