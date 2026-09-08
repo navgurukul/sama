@@ -183,6 +183,21 @@ const execPost = async (payload) => {
 };
 
 const buildEvidenceUploadUrl = () => {
+  const pythonBaseApi = process.env.REACT_APP_UserDetailsApis;
+  
+  if (pythonBaseApi) {
+    // REACT_APP_UserDetailsApis is usually e.g., http://localhost:8000/user-exec
+    if (pythonBaseApi.endsWith('/user-exec')) {
+      return pythonBaseApi.replace(/\/user-exec$/, '/evidence-upload');
+    }
+    return `${pythonBaseApi.replace(/\/$/, '')}/evidence-upload`;
+  }
+
+  // Fallback if pythonBaseApi is missing but we're on the legacy Google script URL
+  if (API_BASE_URL && API_BASE_URL.includes('script.google.com')) {
+    return 'https://api.thesama.in/evidence-upload';
+  }
+
   if (!API_BASE_URL) {
     throw new Error('API base URL is not configured');
   }
