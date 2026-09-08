@@ -15,15 +15,15 @@ export const getTableColumns = (data, taggedLaptops, handleWorkingToggle, handle
     if (!dateString) return "Not Updated";
 
     try {
-      // Preserve wall-clock display for backend ISO strings to match production semantics.
-      const normalized = String(dateString).trim().replace(' ', 'T');
-      const isoMatch = normalized.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
-      if (isoMatch) {
-        const [, year, month, day, hours, minutes, seconds] = isoMatch;
-        return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+      let normalized = String(dateString).trim().replace(' ', 'T');
+      
+      // If the backend returns a date-time without timezone info (e.g. missing 'Z' or '+00:00'),
+      // we append 'Z' to explicitly tell JavaScript this is a UTC time.
+      if (normalized.includes('T') && !normalized.endsWith('Z') && !normalized.match(/[+-]\d{2}:\d{2}$/)) {
+        normalized += 'Z';
       }
 
-      const date = new Date(dateString);
+      const date = new Date(normalized);
       if (isNaN(date.getTime())) return dateString;
 
       const day = String(date.getDate()).padStart(2, '0');
