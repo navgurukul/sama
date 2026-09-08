@@ -195,9 +195,19 @@ function LaptopTagging() {
   const handleRowSelection = (currentRowsSelected, allRowsSelected, rowsSelected) => {
     if (isProcessingSelection) return;
 
-    // allRowsSelected contains { index, dataIndex }. Use dataIndex to correctly map to the data array.
-    const selectedIds = allRowsSelected.map(row => data[row.dataIndex]?.ID).filter(Boolean);
-    setSelectedRows([...new Set(selectedIds)]);
+    // Get IDs of all rows on the CURRENT page
+    const currentPageIds = data.map(row => row.ID).filter(Boolean);
+    
+    // Find which IDs on the current page are considered selected by mui-datatables
+    const selectedIdsOnCurrentPage = allRowsSelected.map(row => data[row.dataIndex]?.ID).filter(Boolean);
+
+    setSelectedRows(prevSelected => {
+      // Keep selections that are NOT on the current page (preserve them)
+      const selectionsFromOtherPages = prevSelected.filter(id => !currentPageIds.includes(id));
+      
+      // Add the new selections from the current page
+      return [...new Set([...selectionsFromOtherPages, ...selectedIdsOnCurrentPage])];
+    });
   };
 
   // Server-side pagination: fetch only the visible page with active filters.
@@ -259,10 +269,8 @@ function LaptopTagging() {
     setAppliedIdQuery(idQuery.trim());
     setAppliedMacQuery(macQuery.trim());
     setPage(0);
-    setSelectedRows([]);
   };
 
-  // Reset filters but keep search terms
   const handleResetFilters = () => {
     setWorkingFilter('all');
     setStatusFilter('all');
@@ -270,7 +278,6 @@ function LaptopTagging() {
     setMinorIssueFilter('all');
     setAllocatedToFilter('');
     setPage(0);
-    setSelectedRows([]);
   };
 
   // Reset all filters and search terms
@@ -680,19 +687,16 @@ function LaptopTagging() {
               onTableChange: (action, tableState) => {
                 if (action === 'changePage') {
                   setPage(tableState.page);
-                  setSelectedRows([]);
                 }
                 if (action === 'changeRowsPerPage') {
                   setRowsPerPage(tableState.rowsPerPage);
                   setPage(0);
-                  setSelectedRows([]);
                 }
                 if (action === 'search') {
                   const searchText = (tableState.searchText || '').trim();
                   setIdQuery(searchText);
                   setAppliedIdQuery(searchText);
                   setPage(0);
-                  setSelectedRows([]);
                 }
               },
               sortOrder: {

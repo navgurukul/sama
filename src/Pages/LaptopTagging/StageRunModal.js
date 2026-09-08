@@ -464,7 +464,7 @@ const StageRunModal = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>Stage Checklist Run</DialogTitle>
+      <DialogTitle>{editRunId ? 'Edit Stage Checklist Run' : 'Stage Checklist Run'}</DialogTitle>
       <DialogContent dividers>
         {loading ? (
           <Box sx={{ py: 3, display: 'flex', justifyContent: 'center' }}>
@@ -690,7 +690,7 @@ const StageRunModal = ({
           Save
         </Button>
         <Button variant="contained" onClick={handleRunStage} disabled={saving || loading}>
-          Run Stage
+          {editRunId ? 'Update Run' : 'Run Stage'}
         </Button>
       </DialogActions>
     </Dialog>

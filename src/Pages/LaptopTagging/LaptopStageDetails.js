@@ -281,9 +281,30 @@ const LaptopStageDetails = () => {
                       <TableCell>{formatDateTime(run.startedAt)}</TableCell>
                       <TableCell>{formatDateTime(run.completedAt)}</TableCell>
                       <TableCell align="right">
-                        <Button size="small" onClick={() => setSelectedRun(run)}>
-                          View Checklist
-                        </Button>
+                        <Stack direction="row" spacing={1} justifyContent="flex-end">
+                          <Button 
+                            size="small" 
+                            onClick={() => {
+                              setSelectedRun(run);
+                              setTimeout(() => {
+                                document.getElementById('checklist-responses-section')?.scrollIntoView({ behavior: 'smooth' });
+                              }, 100);
+                            }}
+                          >
+                            View Checklist
+                          </Button>
+                          <Button 
+                            variant="outlined" 
+                            size="small" 
+                            onClick={() => {
+                              setSelectedRun(run);
+                              setEditRunId(run.runId);
+                              setStageModalOpen(true);
+                            }}
+                          >
+                            Edit
+                          </Button>
+                        </Stack>
                       </TableCell>
                     </TableRow>
                   );
@@ -354,7 +375,7 @@ const LaptopStageDetails = () => {
             })}
           </Paper>
 
-          <Paper sx={{ p: 3 }}>
+          <Paper sx={{ p: 3 }} id="checklist-responses-section">
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="h6">
                 {selectedRun ? `Checklist Responses (Run ${selectedRun.runId})` : 'Checklist Responses'}
