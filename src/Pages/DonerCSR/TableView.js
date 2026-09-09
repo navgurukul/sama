@@ -51,7 +51,9 @@ const TableView = ({
   const [standaloneData, setStandaloneData] = useState([]);
   const [standaloneMetricType, setStandaloneMetricType] = useState(null);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(
+    new URLSearchParams(location.search).get('metric') === "learningAnalytics" ? 50 : 10
+  );
   const [activeTab, setActiveTab] = useState(0);
   const [preData, setPreData] = useState([]);
   const [userData, setUserData] = useState([]);
@@ -227,16 +229,20 @@ const TableView = ({
     if (isStandalone) {
       const searchParams = new URLSearchParams(location.search);
       const urlMetricType = searchParams.get('metric') || 'totalLaptops';
+      const activityParam = searchParams.get('activity');
+
       setStandaloneMetricType(urlMetricType);
 
-      if (urlMetricType === "activeBeneficiaries") {
+      if (activityParam) {
+        const activity = JSON.parse(decodeURIComponent(activityParam));
+        filterDataByActivity(urlMetricType, activity);
+      } else if (urlMetricType === "activeBeneficiaries") {
         fetchBeneficiaryData();
       } else {
         fetchStandaloneData(urlMetricType);
       }
     }
   }, [isStandalone, donorName, location.search, page, rowsPerPage, learningStartDate, learningEndDate]);
-
 
   useEffect(() => {
     if (displayMetricType === "learningAnalytics") {
@@ -256,25 +262,6 @@ const TableView = ({
       fetchFull();
     }
   }, [displayMetricType, learningStartDate, learningEndDate, selectedNgoFilter]);
-
-  // for activity clicks
-  useEffect(() => {
-    if (isStandalone) {
-      const searchParams = new URLSearchParams(location.search);
-      const urlMetricType = searchParams.get('metric') || 'totalLaptops';
-      const activityParam = searchParams.get('activity');
-
-      setStandaloneMetricType(urlMetricType);
-
-      if (activityParam) {
-        const activity = JSON.parse(decodeURIComponent(activityParam));
-        filterDataByActivity(urlMetricType, activity);
-      } else {
-        // console.log('📊 No activity param, fetching standalone data for metric:', urlMetricType);
-        fetchStandaloneData(urlMetricType);
-      }
-    }
-  }, [isStandalone, donorName, location.search, page, rowsPerPage, learningStartDate, learningEndDate]);
 
   const fetchBeneficiaryData = async () => {
     setIsLoading(true);
@@ -1370,7 +1357,9 @@ const TableView = ({
               Total Records: {
                 displayMetricType === "activeBeneficiaries" 
                   ? (activeTab === 0 ? userData.length : preData.length)
-                  : displayData.length
+                  : displayMetricType === "learningAnalytics"
+                    ? totalLearningRecords
+                    : displayData.length
               }
             </Typography>
           </Box>

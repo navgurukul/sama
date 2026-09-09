@@ -1347,9 +1347,9 @@ def _evaluate_stage2_pass_required(cur, run_id: int, item_code: str) -> Dict[str
     if item_code in (STAGE2_RMS_ITEM_CODE, "PORT_TEST_DONE") and result in ("SKIP", "SKIPPED", "SKIPPED_MAC"):
         cur.execute(f"""
             SELECT l.manufacturer_model
-            FROM {DB_SCHEMA}.laptop_labeling_run r
+            FROM {DB_SCHEMA}.laptop_stage_run r
             JOIN {DB_SCHEMA}.laptop_labeling l ON l.id = r.laptop_id
-            WHERE r.id = %s
+            WHERE r.run_id = %s
         """, (run_id,))
         row = cur.fetchone()
         if row:

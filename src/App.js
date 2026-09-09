@@ -59,6 +59,7 @@ import CommunityPartners from './Pages/About/CommunityPartners/CommunityPartners
 import CorporatePartner from './Pages/About/CorporatePartner/CorporatePartner';
 import OpsWelcome from './components/OPS/OpsWelcome';
 import Audit from './components/OPS/LaptopAudit';
+import LearningAnalytics from './components/OPS/LearningAnalytics';
 import LaptopDetails from "./Pages/LaptopTagging/LaptopDetails";
 import LaptopStageDetails from './Pages/LaptopTagging/LaptopStageDetails';
 import SignupForm from './Pages/Login/OpsLogin/SignupForm';
@@ -216,6 +217,7 @@ function App() {
               <Route path="/edit-form/:id" element={<MonthlyEditForm />} />
               <Route path="/laptop-with-issues" element={<OpsWelcome />} />
               <Route path="/audit" element={<Audit />} />
+              <Route path="/afe" element={<LearningAnalytics />} />
 
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
