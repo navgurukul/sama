@@ -2206,8 +2206,8 @@ def _handle_post_type(type_name: str, payload: Dict[str, Any]) -> Dict[str, Any]
                         continue
                     item_id = _parse_int(response.get("itemId"), "itemId")
                     result = str(response.get("result") or "").strip().upper()
-                    if result not in {"PASS", "FAIL", "NA"}:
-                        raise HTTPException(status_code=400, detail="result must be PASS, FAIL, or NA")
+                    if result not in {"PASS", "FAIL", "NA", "SKIP"}:
+                        raise HTTPException(status_code=400, detail="result must be PASS, FAIL, NA, or SKIP")
 
                     remark = response.get("remark")
                     evidence_url = response.get("evidenceUrl")
