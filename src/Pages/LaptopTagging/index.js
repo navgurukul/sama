@@ -451,16 +451,23 @@ function LaptopTagging() {
           updates.forEach(update => {
             switch (update.field) {
               case 'working':
+              case 'Working':
                 payload.working = update.value;
                 break;
               case 'status':
+              case 'Status':
                 payload.status = update.value;
                 break;
               case 'assignedTo':
+              case 'Assigned To':
                 payload.assignedTo = update.value;
                 break;
               case 'donatedTo':
+              case 'Allocated To':
                 payload.donatedTo = update.value;
+                break;
+              case 'Distributed':
+                payload.distributed = update.value;
                 break;
             }
           });
