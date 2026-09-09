@@ -22,6 +22,7 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [crop, setCrop] = useState();
   const [completedCrop, setCompletedCrop] = useState(null);
+  const [pendingFiles, setPendingFiles] = useState([]);
 
   const stopMediaTracks = useCallback(() => {
     if (streamRef.current) {
@@ -38,6 +39,7 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
       setPreviewUrl(null);
       setCrop(undefined);
       setCompletedCrop(null);
+      setPendingFiles([]);
       navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
         .then((stream) => {
           streamRef.current = stream;
@@ -89,11 +91,17 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
     setPreviewUrl(null);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = (closeAfter = true) => {
     if (!completedCrop || !completedCrop.width || !completedCrop.height) {
       if (capturedFile) {
-        onCapture([capturedFile]);
-        handleClose();
+        const allFiles = [...pendingFiles, capturedFile];
+        if (closeAfter) {
+          onCapture(allFiles);
+          handleClose();
+        } else {
+          setPendingFiles(allFiles);
+          handleRetake();
+        }
       }
       return;
     }
@@ -123,8 +131,14 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
     canvas.toBlob((blob) => {
       if (blob) {
         const file = new File([blob], `cropped-${Date.now()}.jpg`, { type: 'image/jpeg' });
-        onCapture([file]);
-        handleClose();
+        const allFiles = [...pendingFiles, file];
+        if (closeAfter) {
+          onCapture(allFiles);
+          handleClose();
+        } else {
+          setPendingFiles(allFiles);
+          handleRetake();
+        }
       }
     }, 'image/jpeg', 0.9);
   };
@@ -133,6 +147,7 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
     setCapturedFile(null);
     setCrop(undefined);
     setCompletedCrop(null);
+    setPendingFiles([]);
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
     }
@@ -142,7 +157,14 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
 
   return (
     <Dialog open={open} onClose={handleClose} fullScreen>
-      <DialogTitle>{previewUrl ? 'Review & Crop Photo' : 'Take Photo'}</DialogTitle>
+      <DialogTitle>
+        {previewUrl ? 'Review & Crop Photo' : 'Take Photo'}
+        {pendingFiles.length > 0 && !previewUrl && (
+          <Typography variant="subtitle2" color="success.main" sx={{ mt: 1 }}>
+            {pendingFiles.length} photo(s) captured and ready to upload.
+          </Typography>
+        )}
+      </DialogTitle>
       <DialogContent sx={{ p: 0, backgroundColor: '#000', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         {error && <Typography color="error" sx={{ p: 2 }}>{error}</Typography>}
         {loading && <CircularProgress sx={{ my: 4, color: 'white' }} />}
@@ -174,8 +196,11 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
         {previewUrl ? (
           <>
             <Button onClick={handleRetake} color="secondary">Retake</Button>
-            <Button variant="contained" onClick={handleConfirm} color="primary">
-              Confirm & Upload
+            <Button variant="outlined" onClick={() => handleConfirm(false)} color="primary">
+              Confirm & Add Another
+            </Button>
+            <Button variant="contained" onClick={() => handleConfirm(true)} color="primary">
+              Confirm & Upload {pendingFiles.length > 0 ? `(${pendingFiles.length + 1})` : ''}
             </Button>
           </>
         ) : (
@@ -184,6 +209,11 @@ const WebcamCaptureModal = ({ open, onClose, onCapture }) => {
             <Button variant="contained" onClick={handleCapture} disabled={!!error || loading}>
               Snap Photo
             </Button>
+            {pendingFiles.length > 0 && (
+              <Button variant="contained" color="success" onClick={() => { onCapture(pendingFiles); handleClose(); }}>
+                Upload {pendingFiles.length} Photos
+              </Button>
+            )}
           </>
         )}
       </DialogActions>
