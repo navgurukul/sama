@@ -800,7 +800,7 @@ const TableView = ({
       case "learningAnalytics":
         return (
           <>
-            <TableCell sx={{ fontWeight: "bold" }}>Session ID</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Tour ID</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Device ID</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Avatar Name</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Partner Name</TableCell>
@@ -1038,7 +1038,7 @@ const TableView = ({
     if (displayMetricType === "learningAnalytics") {
       return currentData.map((item, index) => (
         <TableRow key={item.id || index} hover>
-          <TableCell>{item.session_id || item.tour_id || "-"}</TableCell>
+          <TableCell>{item.tour_id || "-"}</TableCell>
           <TableCell>{item.device_id || "-"}</TableCell>
           <TableCell>{item.avatar_name || "-"}</TableCell>
           <TableCell>{item.partner_name || "-"}</TableCell>
