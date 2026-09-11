@@ -178,14 +178,14 @@ const SocialImpactPage = ({data}) => {
         setIsScrolling(true);
     };
     const stats = {
-        laptopsDistributed: data?.laptopsDistributed || 16302,
+        laptopsReceived: data?.laptopsReceived || 16302,
         beneficiariesImpacted: data?.beneficiariesImpacted || 396176,
         femalesReached: data?.femalesReached || 204932,
         schoolsReached: data?.schoolsReached || 3124
     };
 
     const dynamicCards = [
-        { title: "LAPTOPS DISTRIBUTED", number: stats.laptopsDistributed.toLocaleString() },
+        { title: "LAPTOPS RECEIVED", number: stats.laptopsReceived.toLocaleString() },
         { title: "BENEFICIARIES IMPACTED", number: stats.beneficiariesImpacted.toLocaleString() },
         { title: "FEMALES REACHED", number: stats.femalesReached.toLocaleString() },
         { title: "SCHOOLS REACHED", number: stats.schoolsReached.toLocaleString() }
