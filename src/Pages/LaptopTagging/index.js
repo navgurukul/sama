@@ -468,6 +468,11 @@ function LaptopTagging() {
                 break;
               case 'Distributed':
                 payload.distributed = update.value;
+                if (update.value === 'Yes') {
+                  payload.status = 'DISTRIBUTION';
+                } else if (update.value === 'No' && payload.donatedTo && payload.donatedTo !== 'all' && payload.donatedTo !== 'No Change') {
+                  payload.status = 'ALLOCATED';
+                }
                 break;
             }
           });
