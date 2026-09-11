@@ -127,6 +127,7 @@ function LaptopTagging() {
   const printRef = useRef();
 
   const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedLaptopsData, setSelectedLaptopsData] = useState({});
   const [isProcessingSelection, setIsProcessingSelection] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedLaptopDetails, setSelectedLaptopDetails] = useState(null);
@@ -206,7 +207,31 @@ function LaptopTagging() {
       const selectionsFromOtherPages = prevSelected.filter(id => !currentPageIds.includes(id));
       
       // Add the new selections from the current page
-      return [...new Set([...selectionsFromOtherPages, ...selectedIdsOnCurrentPage])];
+      const newSelectionModel = [...new Set([...selectionsFromOtherPages, ...selectedIdsOnCurrentPage])];
+
+      // Safely update the cache
+      setSelectedLaptopsData(prevCache => {
+        const newCache = { ...prevCache };
+        
+        // Add currently visible laptops that are selected
+        newSelectionModel.forEach(id => {
+          const visibleLaptop = data.find(row => row.ID === id);
+          if (visibleLaptop) {
+            newCache[id] = visibleLaptop;
+          }
+        });
+        
+        // Remove laptops that are no longer selected
+        Object.keys(newCache).forEach(id => {
+          if (!newSelectionModel.includes(id)) {
+            delete newCache[id];
+          }
+        });
+        
+        return newCache;
+      });
+
+      return newSelectionModel;
     });
   };
 
@@ -419,7 +444,7 @@ function LaptopTagging() {
         const dataList = [];
 
         for (const laptopId of selectedRows) {
-          const laptopData = data.find(laptop => laptop.ID === laptopId);
+          const laptopData = selectedLaptopsData[laptopId] || data.find(laptop => laptop.ID === laptopId);
           if (!laptopData) continue;
 
           const payload = {
