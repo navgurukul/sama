@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Papa from 'papaparse';
 import { 
   Box, Typography, TextField, Button, Table, TableBody, TableCell, 
   TableContainer, TableHead, TableRow, Paper, IconButton, Chip, Modal, MenuItem, Select, FormControl, InputLabel, Autocomplete,
@@ -153,59 +154,61 @@ export default function SchoolManagement() {
       alert("Please select a file first.");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      try {
-        const text = event.target.result;
-        const rows = text.split('\n');
-        const headers = rows[0].split(',').map(h => h.trim().toLowerCase());
-        
-        const parsedData = [];
-        for (let i = 1; i < rows.length; i++) {
-          const rowText = rows[i].trim();
-          if (!rowText) continue;
+    Papa.parse(selectedFile, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        try {
+          const parsedData = [];
           
-          const row = rowText.split(',');
-          const obj = {};
-          
-          headers.forEach((h, idx) => {
-            if (h.includes('udise') || h === 'school udise') obj.udise = row[idx]?.trim();
-            if (h.includes('school name') || h === 'name') obj.name = row[idx]?.trim();
-            if (h.includes('city') || h.includes('location')) obj.city = row[idx]?.trim();
-            if (h.includes('ngo') && !h.includes('id') || h.includes('partner')) obj.partner_name = row[idx]?.trim();
-            if (h === 'ngo id' || h === 'ngo_id') obj.ngo_id = row[idx]?.trim();
-            if (h.includes('host id') || h === 'distribution host id') obj.distribution_host_id = row[idx]?.trim();
-            if (h.includes('zip') || h.includes('pin')) obj.zipcode = row[idx]?.trim();
-            if (h === 'state') obj.state = row[idx]?.trim();
-            if (h === 'district') obj.district = row[idx]?.trim();
-            if (h.includes('district code')) obj.district_code = row[idx]?.trim();
+          results.data.forEach(row => {
+            const obj = {};
+            
+            Object.keys(row).forEach(key => {
+              const h = key.trim().toLowerCase();
+              const val = row[key]?.trim();
+              
+              if (h.includes('udise') || h === 'school udise') obj.udise = val;
+              if (h.includes('school name') || h === 'name') obj.name = val;
+              if (h.includes('city') || h.includes('location')) obj.city = val;
+              if ((h.includes('ngo') && !h.includes('id')) || h.includes('partner')) obj.partner_name = val;
+              if (h === 'ngo id' || h === 'ngo_id') obj.ngo_id = val;
+              if (h.includes('host id') || h === 'distribution host id') obj.distribution_host_id = val;
+              if (h.includes('zip') || h.includes('pin')) obj.zipcode = val;
+              if (h === 'state') obj.state = val;
+              if (h === 'district') obj.district = val;
+              if (h.includes('district code')) obj.district_code = val;
+            });
+            
+            if (obj.name) {
+              parsedData.push(obj);
+            }
           });
-          
-          if (obj.name) {
-            parsedData.push(obj);
-          }
-        }
 
-        const res = await fetch(`${apiBase}/api/schools/bulk`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(parsedData)
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          alert(`Successfully uploaded ${parsedData.length} schools.`);
-          fetchSchools();
-          setIsUploadModalOpen(false);
-          setSelectedFile(null);
-        } else {
-          alert("Error uploading: " + data.message);
+          const res = await fetch(`${apiBase}/api/schools/bulk`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(parsedData)
+          });
+          const data = await res.json();
+          if (data.status === 'success') {
+            alert(`Successfully uploaded ${parsedData.length} schools.`);
+            fetchSchools();
+            setIsUploadModalOpen(false);
+            setSelectedFile(null);
+          } else {
+            alert(`Error uploading schools: ${data.message}`);
+          }
+        } catch (err) {
+          console.error("Error parsing/uploading CSV:", err);
+          alert("Failed to process file.");
         }
-      } catch (err) {
-        console.error(err);
-        alert("Failed to upload CSV.");
+      },
+      error: (err) => {
+        console.error("Error reading file with PapaParse:", err);
+        alert("Failed to read file.");
       }
-    };
-    reader.readAsText(selectedFile);
+    });
   };
 
   const handleDownloadSample = () => {
