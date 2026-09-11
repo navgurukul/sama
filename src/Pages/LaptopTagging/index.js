@@ -416,12 +416,13 @@ function LaptopTagging() {
         // Handle both single and multiple updates
         const updates = Array.isArray(updateValue) ? updateValue : [{ field: updateField, value: updateValue }];
 
+        const dataList = [];
+
         for (const laptopId of selectedRows) {
           const laptopData = data.find(laptop => laptop.ID === laptopId);
           if (!laptopData) continue;
 
           const payload = {
-            type: "laptopLabeling",
             id: laptopId,
             donorCompanyName: laptopData["Donor Company Name"],
             ram: laptopData.RAM,
@@ -430,8 +431,8 @@ function LaptopTagging() {
             processor: laptopData.Processor,
             manufacturingDate: laptopData["Manufacturing Date"],
             conditionStatus: laptopData["Condition Status"],
-            majorIssues: laptopData["Major Issues"] ? laptopData["Major Issues"].split(",") : [],
-            minorIssues: laptopData["Minor Issues"] ? laptopData["Minor Issues"].split(",") : [],
+            majorIssues: Array.isArray(laptopData["Major Issues"]) ? laptopData["Major Issues"] : (laptopData["Major Issues"] ? laptopData["Major Issues"].split(",") : []),
+            minorIssues: Array.isArray(laptopData["Minor Issues"]) ? laptopData["Minor Issues"] : (laptopData["Minor Issues"] ? laptopData["Minor Issues"].split(",") : []),
             otherIssues: laptopData["Other Issues"],
             inventoryLocation: laptopData["Inventory Location"],
             laptopWeight: laptopData["laptop weight"],
@@ -477,7 +478,15 @@ function LaptopTagging() {
             }
           });
 
-          await updateLaptopData(payload);
+          dataList.push(payload);
+        }
+
+        if (dataList.length > 0) {
+          await updateLaptopData({
+            type: "bulkupload",
+            data: dataList,
+            lastUpdatedBy: lastUpdatedBy
+          });
         }
 
         setRefresh(!refresh);
