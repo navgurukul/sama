@@ -5259,6 +5259,14 @@ async def get_social_impact_stats():
                 """)
                 laptops_distributed = cur.fetchone()["count"]
 
+                # Laptops Received (all active laptops in system)
+                cur.execute(f"""
+                    SELECT COUNT(*) 
+                    FROM {DB_SCHEMA}.laptop_labeling
+                    WHERE (is_deleted_from_sheet = FALSE OR is_deleted_from_sheet IS NULL)
+                """)
+                laptops_received = cur.fetchone()["count"]
+
                 # Beneficiaries Impacted (from userdetails)
                 cur.execute(f"SELECT COUNT(*) as total FROM {DB_SCHEMA}.userdetails")
                 beneficiaries_from_users = cur.fetchone()["total"]
@@ -5313,6 +5321,7 @@ async def get_social_impact_stats():
 
         return {
             "laptopsDistributed": laptops_distributed,
+            "laptopsReceived": laptops_received,
             "beneficiariesImpacted": beneficiaries_impacted,
             "femalesReached": preliminary_stats["females_reached"],
             "schoolsReached": preliminary_stats["schools_reached"],
