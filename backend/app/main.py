@@ -5487,6 +5487,10 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
                 user_student_count = cur.fetchone()["count"]
 
                 active_beneficiaries = prelim_student_count + user_student_count
+                
+                # Hardcode EATON beneficiaries
+                if orgName and orgName.strip().lower() == "eaton":
+                    active_beneficiaries = 3150
 
                 ngos = []
                 cur.execute(f"""
