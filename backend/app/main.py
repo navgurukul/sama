@@ -104,7 +104,7 @@ STAGE2_DASHBOARD_ITEM_CODE = "TEST_RESULTS_DASHBOARD_UPDATED"
 STAGE_TRANSITIONS: Dict[str, Dict[str, str]] = {
     "LAPTOP_RECEIVED": {"pass": "REFURBISHMENT_TESTING", "fail": "NOT_WORKING", "fast_pass": "QC_CHECK"},
     "REFURBISHMENT_TESTING": {"pass": "QC_CHECK", "fail": "NOT_WORKING"},
-    "QC_CHECK": {"pass": "DISTRIBUTION", "fail": "NOT_WORKING"},
+    "QC_CHECK": {"pass": "DISTRIBUTION", "fail": "QC_CHECK"},
     "DISTRIBUTION": {"pass": "POST_DEPLOYMENT_15D", "fail": "DISTRIBUTION"},
     "POST_DEPLOYMENT_15D": {"pass": "MONTHLY_MONITORING", "fail": "POST_DEPLOYMENT_15D"},
     "MONTHLY_MONITORING": {"fail": "MONTHLY_MONITORING"},
@@ -326,6 +326,35 @@ def _evaluate_requires_different_actor_gate(
     completed_actor = str(completed_by or row.get("completed_by") or "").strip()
     verifier_actor = str(verifier_name or row.get("verifier_name") or "").strip()
 
+    violations: List[str] = []
+
+    if requires_different_actor:
+        # Enforce rule: If this specific stage failed previously, the person who failed it CANNOT run it again.
+        cur.execute(
+            f"""
+            SELECT COALESCE(r.completed_by, r.started_by) AS actor
+            FROM {DB_SCHEMA}.laptop_stage_run r
+            WHERE r.laptop_id = %s
+              AND r.stage_id = %s
+              AND r.outcome = 'FAIL'
+            ORDER BY r.run_id DESC
+            LIMIT 1
+            """,
+            (laptop_id, row["stage_id"]),
+        )
+        last_failed_run = cur.fetchone()
+        if last_failed_run:
+            failed_actor = str(last_failed_run.get("actor") or "").strip()
+            if failed_actor:
+                if completed_actor and completed_actor.lower() == failed_actor.lower():
+                    violations.append(
+                        f"completedBy ({completed_actor}) must differ from the person who previously failed this stage ({failed_actor})"
+                    )
+                if verifier_actor and verifier_actor.lower() == failed_actor.lower():
+                    violations.append(
+                        f"verifierName ({verifier_actor}) must differ from the person who previously failed this stage ({failed_actor})"
+                    )
+
     # Find the most recent PASS run from the previous stage for this laptop.
     # The SOP rule is: QC actor must differ from the Stage 2 refurbisher,
     # not that two different people must work within Stage 3 itself.
@@ -352,7 +381,6 @@ def _evaluate_requires_different_actor_gate(
         if prior_row:
             prior_actor = str(prior_row.get("actor") or "").strip()
 
-    violations: List[str] = []
     if requires_different_actor and prior_actor:
         if completed_actor and completed_actor.lower() == prior_actor.lower():
             violations.append(
