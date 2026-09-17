@@ -2093,6 +2093,16 @@ def _upsert_laptop_row(cur, item: Dict[str, Any], last_updated_by: str) -> None:
         if is_falsy(old_working) and is_truthy(new_working_raw):
             status_value = "Laptop Received"
             item["status"] = "Laptop Received" # Update item dictionary so it persists if used later
+        # If it was NOT marked as "Not Working" previously (e.g. Working or blank), and is now "Not Working"
+        elif not is_falsy(old_working) and is_falsy(new_working_raw):
+            status_value = "NOT_WORKING"
+            item["status"] = "NOT_WORKING"
+    else:
+        # If it is a brand new laptop (no existing row) and it is marked as "Not Working"
+        new_working_raw = _payload_get(item, "working", "Working")
+        if is_falsy(new_working_raw):
+            status_value = "NOT_WORKING"
+            item["status"] = "NOT_WORKING"
 
     cur.execute(
         f"""
