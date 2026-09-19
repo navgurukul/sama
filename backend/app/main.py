@@ -2091,8 +2091,8 @@ def _upsert_laptop_row(cur, item: Dict[str, Any], last_updated_by: str) -> None:
         
         # If it was marked as NOT working previously, but is being marked AS working now
         if is_falsy(old_working) and is_truthy(new_working_raw):
-            status_value = "Laptop Received"
-            item["status"] = "Laptop Received" # Update item dictionary so it persists if used later
+            status_value = "LAPTOP_RECEIVED"
+            item["status"] = "LAPTOP_RECEIVED" # Update item dictionary so it persists if used later
         # If it was NOT marked as "Not Working" previously (e.g. Working or blank), and is now "Not Working"
         elif not is_falsy(old_working) and is_falsy(new_working_raw):
             status_value = "NOT_WORKING"
@@ -5035,9 +5035,31 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
         import uuid
         with get_conn() as conn:
             with conn.cursor(row_factory=dict_row) as cur:
+                # Group by NGO ID to fetch counts efficiently
+                ngo_counts = {}
                 for row in data:
-                    school_id = row.get("school_id") or f"SCH-{uuid.uuid4().hex[:8].upper()}"
+                    ngo_id = row.get("ngo_id")
+                    if ngo_id and ngo_id not in ngo_counts:
+                        cur.execute(f"SELECT COUNT(*) as count FROM {DB_SCHEMA}.schools WHERE ngo_id = %s", (ngo_id,))
+                        res = cur.fetchone()
+                        ngo_counts[ngo_id] = res['count'] if res else 0
+
+                for row in data:
                     udise = row.get("udise")
+                    ngo_id = row.get("ngo_id")
+                    
+                    if ngo_id:
+                        # Extract numeric part from NGO ID (e.g. SAM-130 -> 130)
+                        import re
+                        nums = re.findall(r'\d+', ngo_id)
+                        ngo_prefix = nums[0] if nums else "00"
+                        ngo_counts[ngo_id] += 1
+                        default_school_id = f"SCH-{ngo_prefix}{ngo_counts[ngo_id]}"
+                    else:
+                        import random
+                        default_school_id = f"SCH-{random.randint(10000, 99999)}"
+                        
+                    school_id = row.get("school_id") or default_school_id
                     name = row.get("name")
                     city = row.get("city")
                     partner_name = row.get("partner_name")
@@ -5058,8 +5080,7 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
                             distribution_host_id, zipcode, state, district, district_code, status
                         )
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (school_id) DO UPDATE SET 
-                            udise = EXCLUDED.udise,
+                        ON CONFLICT (udise) DO UPDATE SET 
                             name = EXCLUDED.name, 
                             city = EXCLUDED.city, 
                             partner_name = EXCLUDED.partner_name,
@@ -5487,6 +5508,10 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
                 user_student_count = cur.fetchone()["count"]
 
                 active_beneficiaries = prelim_student_count + user_student_count
+                
+                # Hardcode EATON beneficiaries
+                if orgName and orgName.strip().lower() == "eaton":
+                    active_beneficiaries = 3150
 
                 ngos = []
                 cur.execute(f"""

@@ -43,6 +43,7 @@ export default function SchoolManagement() {
   
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadSelectedNgo, setUploadSelectedNgo] = useState(null);
 
   const apiBase = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
 
@@ -150,6 +151,10 @@ export default function SchoolManagement() {
   };
 
   const processFileUpload = async () => {
+    if (!uploadSelectedNgo) {
+      alert("Please select an NGO Partner first.");
+      return;
+    }
     if (!selectedFile) {
       alert("Please select a file first.");
       return;
@@ -162,7 +167,10 @@ export default function SchoolManagement() {
           const parsedData = [];
           
           results.data.forEach(row => {
-            const obj = {};
+            const obj = {
+              partner_name: uploadSelectedNgo.name,
+              ngo_id: uploadSelectedNgo.id
+            };
             
             Object.keys(row).forEach(key => {
               const h = key.trim().toLowerCase();
@@ -171,8 +179,6 @@ export default function SchoolManagement() {
               if (h.includes('udise') || h === 'school udise') obj.udise = val;
               if (h.includes('school name') || h === 'name') obj.name = val;
               if (h.includes('city') || h.includes('location')) obj.city = val;
-              if ((h.includes('ngo') && !h.includes('id')) || h.includes('partner')) obj.partner_name = val;
-              if (h === 'ngo id' || h === 'ngo_id') obj.ngo_id = val;
               if (h.includes('host id') || h === 'distribution host id') obj.distribution_host_id = val;
               if (h.includes('zip') || h.includes('pin')) obj.zipcode = val;
               if (h === 'state') obj.state = val;
@@ -212,7 +218,7 @@ export default function SchoolManagement() {
   };
 
   const handleDownloadSample = () => {
-    const headers = "School UDISE,School Name,City,Partner Name,NGO ID,Distribution Host ID,Zipcode,State,District,District Code\n";
+    const headers = "School UDISE,School Name,City,Distribution Host ID,Zipcode,State,District,District Code\n";
     const blob = new Blob([headers], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -428,8 +434,6 @@ export default function SchoolManagement() {
             </Typography>
             <Box component="ul" sx={{ color: 'text.secondary', pl: 3, mb: 0 }}>
               <li><Typography variant="body2"><b>School Name</b>: Full name of the school.</Typography></li>
-              <li><Typography variant="body2"><b>NGO ID</b>: Exact NGO ID format (e.g., SAM-XXX).</Typography></li>
-              <li><Typography variant="body2"><b>Partner Name</b>: Name of the associated partner/NGO.</Typography></li>
               <li><Typography variant="body2"><b>City, State, District</b>: Complete location details.</Typography></li>
             </Box>
             <Typography variant="body2" color="primary" mt={2}>
@@ -448,10 +452,35 @@ export default function SchoolManagement() {
               component="button" 
               variant="body1" 
               onClick={handleDownloadSample}
-              sx={{ display: 'block', mb: 4, color: '#2e7d32', textDecoration: 'underline', fontWeight: 500 }}
+              sx={{ display: 'block', mb: 4, color: '#2e7d32', textDecoration: 'underline', fontWeight: 500, textAlign: 'left' }}
             >
               Download Sample File
             </Link>
+            
+            <Box mb={4} textAlign="left">
+              <Typography variant="subtitle2" mb={1} fontWeight="bold">1. Select NGO Partner</Typography>
+              <Box display="flex" gap={2}>
+                <Autocomplete
+                  options={ngos}
+                  loading={loadingNgos}
+                  getOptionLabel={(option) => option.name || ''}
+                  value={uploadSelectedNgo}
+                  onChange={(event, newValue) => setUploadSelectedNgo(newValue)}
+                  renderInput={(params) => <TextField {...params} label="NGO / Partner Name" size="small" />}
+                  fullWidth
+                />
+                <TextField 
+                  label="NGO ID" 
+                  value={uploadSelectedNgo ? uploadSelectedNgo.id : ''} 
+                  InputProps={{ readOnly: true }} 
+                  fullWidth 
+                  size="small" 
+                  sx={{ bgcolor: '#f5f5f5' }} 
+                />
+              </Box>
+            </Box>
+            
+            <Typography variant="subtitle2" mb={1} fontWeight="bold" textAlign="left">2. Upload CSV File</Typography>
             
             <Box display="flex" justifyContent="center" alignItems="center" gap={2}>
               <Button 
