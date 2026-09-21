@@ -616,10 +616,13 @@ const TableView = ({
   const displayData = isStandalone ? standaloneData : data;
   const displayOrganization = isStandalone ? donorName : selectedOrganization;
 
-  const getFilteredLearningData = () => {
-    if (displayMetricType !== "learningAnalytics" || !fullLearningData) return displayData || [];
+  const safeFullLearningData = Array.isArray(fullLearningData) ? fullLearningData : [];
+  const safeDisplayData = Array.isArray(displayData) ? displayData : [];
 
-    return fullLearningData.filter(item => {
+  const getFilteredLearningData = () => {
+    if (displayMetricType !== "learningAnalytics" || safeFullLearningData.length === 0) return safeDisplayData;
+
+    return safeFullLearningData.filter(item => {
       const matchNgo = !selectedNgoFilter || item.ngo_name === selectedNgoFilter;
       const matchState = !selectedStateFilter || item.state === selectedStateFilter;
       const matchPartner = !selectedPartnerFilter || item.partner_name === selectedPartnerFilter;
@@ -629,9 +632,10 @@ const TableView = ({
 
   const filteredLearningData = getFilteredLearningData();
 
-  const uniquePartners = [...new Set(((displayMetricType === "learningAnalytics" ? fullLearningData : displayData) || []).map(item => item.partner_name).filter(Boolean))].sort();
-  const uniqueNgos = [...new Set(((displayMetricType === "learningAnalytics" ? fullLearningData : displayData) || []).map(item => item.ngo_name).filter(Boolean))].sort();
-  const uniqueStates = [...new Set(((displayMetricType === "learningAnalytics" ? fullLearningData : displayData) || []).map(item => item.state).filter(Boolean))].sort();
+  const activeSourceData = displayMetricType === "learningAnalytics" ? safeFullLearningData : safeDisplayData;
+  const uniquePartners = [...new Set(activeSourceData.map(item => item?.partner_name).filter(Boolean))].sort();
+  const uniqueNgos = [...new Set(activeSourceData.map(item => item?.ngo_name).filter(Boolean))].sort();
+  const uniqueStates = [...new Set(activeSourceData.map(item => item?.state).filter(Boolean))].sort();
 
   const getLearningAnalyticsMetrics = (analyticsData) => {
     if (!analyticsData || analyticsData.length === 0) {
@@ -771,7 +775,7 @@ const TableView = ({
   };
 
   // Use filteredLearningData for charts so local filters correctly apply
-  const metricsDataToUse = (displayMetricType === "learningAnalytics") ? filteredLearningData : displayData;
+  const metricsDataToUse = (displayMetricType === "learningAnalytics") ? filteredLearningData : safeDisplayData;
   const metrics = getLearningAnalyticsMetrics(metricsDataToUse);
 
   if (isLoading) {
@@ -1012,10 +1016,10 @@ const TableView = ({
   };
 
   const renderTableRows = () => {
-    let dataToDisplay = displayMetricType === "learningAnalytics" ? filteredLearningData : displayData;
+    let dataToDisplay = displayMetricType === "learningAnalytics" ? filteredLearningData : safeDisplayData;
     
     if (displayMetricType === "activeBeneficiaries") {
-      dataToDisplay = activeTab === 0 ? userData : preData;
+      dataToDisplay = activeTab === 0 ? (Array.isArray(userData) ? userData : []) : (Array.isArray(preData) ? preData : []);
     }
 
     const currentData = (dataToDisplay || []).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -1370,8 +1374,8 @@ const TableView = ({
             </TableHead>
             <TableBody>
               {(displayMetricType === "activeBeneficiaries" ? 
-                (activeTab === 0 ? userData.length : preData.length) : 
-                 (displayMetricType === "learningAnalytics" ? filteredLearningData.length : (displayData?.length || 0))) > 0 ? (
+                (activeTab === 0 ? (Array.isArray(userData) ? userData.length : 0) : (Array.isArray(preData) ? preData.length : 0)) : 
+                 (displayMetricType === "learningAnalytics" ? filteredLearningData.length : safeDisplayData.length)) > 0 ? (
                 renderTableRows()
               ) : (
                 <TableRow>
@@ -1393,12 +1397,12 @@ const TableView = ({
             component="div"
             count={(() => {
               if (displayMetricType === "activeBeneficiaries") {
-                return activeTab === 0 ? userData.length : preData.length;
+                return activeTab === 0 ? (Array.isArray(userData) ? userData.length : 0) : (Array.isArray(preData) ? preData.length : 0);
               }
               if (displayMetricType === "learningAnalytics") {
-                return filteredLearningData.length || 0;
+                return filteredLearningData.length;
               }
-              return displayData?.length || 0;
+              return safeDisplayData.length;
             })()}
             page={page}
             onPageChange={handlePageChange}
