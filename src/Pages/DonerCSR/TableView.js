@@ -617,9 +617,9 @@ const TableView = ({
   const displayOrganization = isStandalone ? donorName : selectedOrganization;
 
   const getFilteredLearningData = () => {
-    if (displayMetricType !== "learningAnalytics" || !displayData) return displayData || [];
+    if (displayMetricType !== "learningAnalytics" || !fullLearningData) return displayData || [];
 
-    return displayData.filter(item => {
+    return fullLearningData.filter(item => {
       const matchNgo = !selectedNgoFilter || item.ngo_name === selectedNgoFilter;
       const matchState = !selectedStateFilter || item.state === selectedStateFilter;
       const matchPartner = !selectedPartnerFilter || item.partner_name === selectedPartnerFilter;
@@ -629,9 +629,9 @@ const TableView = ({
 
   const filteredLearningData = getFilteredLearningData();
 
-  const uniquePartners = [...new Set((displayData || []).map(item => item.partner_name).filter(Boolean))].sort();
-  const uniqueNgos = [...new Set((displayData || []).map(item => item.ngo_name).filter(Boolean))].sort();
-  const uniqueStates = [...new Set((displayData || []).map(item => item.state).filter(Boolean))].sort();
+  const uniquePartners = [...new Set(((displayMetricType === "learningAnalytics" ? fullLearningData : displayData) || []).map(item => item.partner_name).filter(Boolean))].sort();
+  const uniqueNgos = [...new Set(((displayMetricType === "learningAnalytics" ? fullLearningData : displayData) || []).map(item => item.ngo_name).filter(Boolean))].sort();
+  const uniqueStates = [...new Set(((displayMetricType === "learningAnalytics" ? fullLearningData : displayData) || []).map(item => item.state).filter(Boolean))].sort();
 
   const getLearningAnalyticsMetrics = (analyticsData) => {
     if (!analyticsData || analyticsData.length === 0) {
@@ -770,8 +770,8 @@ const TableView = ({
     };
   };
 
-  // Use fullLearningData for charts if available, otherwise fallback to the paginated filteredLearningData
-  const metricsDataToUse = (fullLearningData && fullLearningData.length > 0) ? fullLearningData : filteredLearningData;
+  // Use filteredLearningData for charts so local filters correctly apply
+  const metricsDataToUse = (displayMetricType === "learningAnalytics") ? filteredLearningData : displayData;
   const metrics = getLearningAnalyticsMetrics(metricsDataToUse);
 
   if (isLoading) {
@@ -1018,9 +1018,7 @@ const TableView = ({
       dataToDisplay = activeTab === 0 ? userData : preData;
     }
 
-    const currentData = (displayMetricType === "learningAnalytics")
-      ? (dataToDisplay || [])
-      : (dataToDisplay ? dataToDisplay.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : []);
+    const currentData = (dataToDisplay || []).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     if (displayMetricType === "learningAnalytics") {
       return currentData.map((item, index) => (
@@ -1358,8 +1356,8 @@ const TableView = ({
                 displayMetricType === "activeBeneficiaries" 
                   ? (activeTab === 0 ? userData.length : preData.length)
                   : displayMetricType === "learningAnalytics"
-                    ? totalLearningRecords
-                    : displayData.length
+                    ? filteredLearningData.length
+                    : displayData?.length || 0
               }
             </Typography>
           </Box>
@@ -1372,7 +1370,8 @@ const TableView = ({
             </TableHead>
             <TableBody>
               {(displayMetricType === "activeBeneficiaries" ? 
-                (activeTab === 0 ? userData.length : preData.length) : displayData.length) > 0 ? (
+                (activeTab === 0 ? userData.length : preData.length) : 
+                 (displayMetricType === "learningAnalytics" ? filteredLearningData.length : (displayData?.length || 0))) > 0 ? (
                 renderTableRows()
               ) : (
                 <TableRow>
@@ -1397,7 +1396,7 @@ const TableView = ({
                 return activeTab === 0 ? userData.length : preData.length;
               }
               if (displayMetricType === "learningAnalytics") {
-                return totalLearningRecords || 0;
+                return filteredLearningData.length || 0;
               }
               return displayData?.length || 0;
             })()}
