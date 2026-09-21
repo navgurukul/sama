@@ -32,7 +32,6 @@ export default function SchoolManagement() {
     city: '',
     partner_name: '',
     ngo_id: '',
-    distribution_host_id: '',
     zipcode: '',
     state: '',
     district: '',
@@ -107,7 +106,7 @@ export default function SchoolManagement() {
     } else {
       setFormData({ 
         id: null, school_id: '', udise: '', name: '', city: '', partner_name: '', ngo_id: '',
-        distribution_host_id: '', zipcode: '', state: '', district: '', district_code: '', status: ''
+        zipcode: '', state: '', district: '', district_code: '', status: ''
       });
       setIsEditing(false);
     }
@@ -179,7 +178,6 @@ export default function SchoolManagement() {
               if (h.includes('udise') || h === 'school udise') obj.udise = val;
               if (h.includes('school name') || h === 'name') obj.name = val;
               if (h.includes('city') || h.includes('location')) obj.city = val;
-              if (h.includes('host id') || h === 'distribution host id') obj.distribution_host_id = val;
               if (h.includes('zip') || h.includes('pin')) obj.zipcode = val;
               if (h === 'state') obj.state = val;
               if (h === 'district') obj.district = val;
@@ -218,7 +216,7 @@ export default function SchoolManagement() {
   };
 
   const handleDownloadSample = () => {
-    const headers = "School UDISE,School Name,City,Distribution Host ID,Zipcode,State,District,District Code\n";
+    const headers = "School UDISE,School Name,City,Zipcode,State,District,District Code\n";
     const blob = new Blob([headers], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -309,7 +307,6 @@ export default function SchoolManagement() {
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>District</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>Dist. Code</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>Zipcode</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>Host ID</Typography></TableCell>
                 <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>Actions</Typography></TableCell>
               </TableRow>
             </TableHead>
@@ -337,7 +334,6 @@ export default function SchoolManagement() {
                       <TableCell color="text.secondary">{school.district}</TableCell>
                       <TableCell color="text.secondary">{school.district_code}</TableCell>
                       <TableCell color="text.secondary">{school.zipcode}</TableCell>
-                      <TableCell color="text.secondary">{school.distribution_host_id}</TableCell>
                       <TableCell align="center">
                         <IconButton size="small" onClick={() => handleOpenModal(school)}>
                           <Edit2 size={16} color="#4caf50" />
@@ -389,7 +385,6 @@ export default function SchoolManagement() {
                 fullWidth
               />
               <TextField label="NGO ID" name="ngo_id" value={formData.ngo_id || ''} InputProps={{ readOnly: true }} fullWidth size="small" sx={{ bgcolor: '#f5f5f5' }} />
-              <TextField label="Distribution Host ID" name="distribution_host_id" value={formData.distribution_host_id} onChange={handleChange} fullWidth size="small" />
             </Box>
             <Box display="flex" gap={2}>
               <Autocomplete

@@ -4992,7 +4992,7 @@ async def create_school(request: Request):
         city = data.get("city")
         partner_name = data.get("partner_name")
         ngo_id = data.get("ngo_id")
-        distribution_host_id = data.get("distribution_host_id")
+        distribution_host_id = "Sama Platform"
         zipcode = data.get("zipcode")
         state = data.get("state")
         district = data.get("district")
@@ -5064,7 +5064,7 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
                     city = row.get("city")
                     partner_name = row.get("partner_name")
                     ngo_id = row.get("ngo_id")
-                    distribution_host_id = row.get("distribution_host_id")
+                    distribution_host_id = "Sama Platform"
                     zipcode = row.get("zipcode")
                     state = row.get("state")
                     district = row.get("district")
