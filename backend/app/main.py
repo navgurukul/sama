@@ -4947,8 +4947,8 @@ def get_schools(ngo_id: Optional[str] = None):
                 query = f"SELECT * FROM {DB_SCHEMA}.schools"
                 params = []
                 if ngo_id:
-                    query += " WHERE ngo_id = %s"
-                    params.append(ngo_id)
+                    query += " WHERE ngo_id = %s OR partner_name = %s"
+                    params.extend([ngo_id, ngo_id])
                 
                 query += " ORDER BY id DESC"
                 cur.execute(query, params)
