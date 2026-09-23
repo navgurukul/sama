@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi;
+const apiBase = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
+  ? "http://localhost:8000"
+  : "https://sama-api.thesama.in";
+const API_BASE_URL = `${apiBase}/exec`;
 const MEMORY_CACHE = new Map();
 const IN_FLIGHT_REQUESTS = new Map();
 const CACHE_PREFIX = 'laptopApiCache:';
@@ -134,7 +137,6 @@ export const updateLaptopData = async (payload) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
-      mode: 'no-cors'
     });
     clearLaptopClientCache();
     return true;
