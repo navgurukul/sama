@@ -60,7 +60,7 @@ const EditButton = ({
             processor: laptopData.Processor || "",
             macAddress: laptopData["Mac address"] || "",
             status: laptopData.Status || "",
-            working: laptopData.Working || "",
+            working: laptopData.Status === "NOT_WORKING" ? "Not Working" : (laptopData.Working || ""),
             batteryCapacity: laptopData["Battery Capacity"] || "",
             inventoryLocation: laptopData["Inventory Location"] || "",
             laptopWeight: laptopData["laptop weight"] || "",
