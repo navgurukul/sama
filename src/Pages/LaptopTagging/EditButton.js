@@ -103,10 +103,15 @@ const EditButton = ({
             type: "laptopLabeling",
         };
 
+        const apiBase = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
+            ? "http://localhost:8000"
+            : "https://sama-api.thesama.in";
+        const apiUrl = `${apiBase}/exec`;
+
         try {
 
             await fetch(
-                `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`,
+                apiUrl,
                 {
                     method: "POST",
                     headers: {
