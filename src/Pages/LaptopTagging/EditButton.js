@@ -99,7 +99,8 @@ const EditButton = ({
         const dataToSend = {
             ...editData,
             status: currentStatus,
-            allocatedTo: editData.allocatedTo || laptopData["Allocated To"],
+            allocatedTo: currentStatus === "NOT_WORKING" ? "" : (editData.allocatedTo || laptopData["Allocated To"]),
+            assignedTo: currentStatus === "NOT_WORKING" ? "" : (editData.assignedTo || laptopData["Assigned To"]),
             type: "laptopLabeling",
         };
 
