@@ -6164,10 +6164,7 @@ def get_approved_ngos(filter: str = None):
                 if filter == "schools":
                     filtered_ngos = []
                     for ngo in ngos:
-                        has_school_name = "school" in str(ngo.get("organization_name", "")).lower()
-                        has_linked_schools = len(ngo["schools"]) > 0
-                        
-                        if has_school_name or has_linked_schools:
+                        if len(ngo["schools"]) > 0:
                             filtered_ngos.append(ngo)
                     return {"status": "success", "data": filtered_ngos}
                     
