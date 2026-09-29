@@ -6132,7 +6132,7 @@ async def jotform_webhook(request: Request):
     return {"status": "success"}
 
 @app.get("/api/ngos")
-def get_approved_ngos():
+def get_approved_ngos(filter: str = None):
     try:
         with get_conn() as conn:
             with conn.cursor(row_factory=dict_row) as cur:
@@ -6160,6 +6160,16 @@ def get_approved_ngos():
                 
                 for ngo in ngos:
                     ngo["schools"] = schools_by_ngo.get(ngo["id"], [])
+                    
+                if filter == "schools":
+                    filtered_ngos = []
+                    for ngo in ngos:
+                        has_school_name = "school" in str(ngo.get("organization_name", "")).lower()
+                        has_linked_schools = len(ngo["schools"]) > 0
+                        
+                        if has_school_name or has_linked_schools:
+                            filtered_ngos.append(ngo)
+                    return {"status": "success", "data": filtered_ngos}
                     
                 return {"status": "success", "data": ngos}
     except Exception as e:
