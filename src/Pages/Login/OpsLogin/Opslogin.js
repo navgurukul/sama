@@ -84,7 +84,7 @@ function Opslogin() {
       const user = result.user;
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('role', JSON.stringify(user.Role));
-      localStorage.setItem('_AuthSama_', JSON.stringify([{ name: user.Name, email: user.Email, role: user.Role, NgoId: user["Ngo Id"], Type: user.Type, Doner: user.Doner }]));
+      localStorage.setItem('_AuthSama_', JSON.stringify([{ name: user.Name, email: user.Email, role: user.Role, NgoId: user["Ngo Id"], Type: user.Type, Doner: user.Doner, Udise: user.Udise }]));
       setError('');
 
       // Redirect based on role
@@ -93,6 +93,9 @@ function Opslogin() {
       }
       else if (user?.Role?.includes('doner')) {
         navigate('/donorcsr');
+      }
+      else if (user?.Role?.includes('school')) {
+        navigate('/afe');
       }
       else
         if (user?.Role?.includes('ngo')) {

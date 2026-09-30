@@ -1872,6 +1872,32 @@ def _handle_user_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                 )
                 matching_users = cur.fetchall()
                 if not matching_users:
+                    # --- CHECK FOR SCHOOL LOGIN ---
+                    # Check if the user is trying to log in as a school (Email = school_id, Password = udise)
+                    cur.execute(
+                        f"SELECT name, school_id, udise, partner_name, ngo_id FROM {DB_SCHEMA}.schools WHERE school_id = %s AND udise = %s",
+                        (email, password)
+                    )
+                    school = cur.fetchone()
+                    
+                    if school:
+                        # Ensure we roll back the failed transaction from the first query if needed, or just commit/rollback
+                        conn.rollback()
+                        
+                        # Return the user object in the exact format the frontend expects
+                        user = {
+                            "Name": school[0],           # name
+                            "Email": school[1],          # school_id
+                            "Udise": school[2],          # custom field to store udise for filtering
+                            "Role": "school",
+                            "Ngo Id": school[4],         # ngo_id
+                            "Type": "school",
+                            "Doner": school[3]           # partner_name
+                        }
+                        
+                        return {"status": "success", "user": user}
+                    
+                    # If neither standard user nor school found, raise error
                     raise HTTPException(status_code=401, detail="Invalid Email or password.")
 
                 user = dict(matching_users[0])

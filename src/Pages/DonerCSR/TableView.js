@@ -254,7 +254,16 @@ const TableView = ({
           if (selectedNgoFilter) fullUrl += `&ngoId=${encodeURIComponent(selectedNgoFilter)}`;
           const fullRes = await fetch(fullUrl);
           const fullJson = await fullRes.json();
-          setFullLearningData(fullJson.data || fullJson);
+          let data = fullJson.data || fullJson;
+          
+          if (userRole === "school") {
+            const myUdiseCode = authData[0]?.Udise;
+            if (myUdiseCode) {
+              data = data.filter(item => String(item.udise) === String(myUdiseCode));
+            }
+          }
+          
+          setFullLearningData(data);
         } catch(e) {
           console.error("Error fetching full analytics data", e);
         }
