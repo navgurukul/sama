@@ -5127,6 +5127,25 @@ def get_school_by_udise(udise: str):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+@app.get("/api/schools/udise-map")
+def get_schools_udise_map():
+    try:
+        with get_conn() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                # Get ALL columns for ALL schools
+                cur.execute(f"SELECT * FROM {DB_SCHEMA}.schools WHERE udise IS NOT NULL")
+                schools = cur.fetchall()
+                
+                # Organize them into a dictionary by UDISE code
+                udise_map = {}
+                for school in schools:
+                    udise_map[school["udise"]] = school
+                    
+                return {"status": "success", "data": udise_map}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
 # --- End Schools API ---
 
 @app.post("/api/rms-webhook")
