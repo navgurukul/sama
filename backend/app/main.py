@@ -5113,6 +5113,20 @@ def get_school_details(school_id: str):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+@app.get("/api/schools/udise/{udise}")
+def get_school_by_udise(udise: str):
+    try:
+        with get_conn() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                cur.execute(f"SELECT * FROM {DB_SCHEMA}.schools WHERE udise = %s", (udise,))
+                row = cur.fetchone()
+                if not row:
+                    return {"status": "error", "message": "School with this UDISE code not found"}
+                    
+                return {"status": "success", "data": dict(row)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 # --- End Schools API ---
 
 @app.post("/api/rms-webhook")
