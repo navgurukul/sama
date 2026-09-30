@@ -1872,6 +1872,32 @@ def _handle_user_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                 )
                 matching_users = cur.fetchall()
                 if not matching_users:
+                    # --- CHECK FOR SCHOOL LOGIN ---
+                    # Check if the user is trying to log in as a school (Email = school_id, Password = udise)
+                    cur.execute(
+                        f"SELECT name, school_id, udise, partner_name, ngo_id FROM {DB_SCHEMA}.schools WHERE school_id = %s AND udise = %s",
+                        (email, password)
+                    )
+                    school = cur.fetchone()
+                    
+                    if school:
+                        # Ensure we roll back the failed transaction from the first query if needed, or just commit/rollback
+                        conn.rollback()
+                        
+                        # Return the user object in the exact format the frontend expects
+                        user = {
+                            "Name": school["name"],           # name
+                            "Email": school["school_id"],     # school_id
+                            "Udise": school["udise"],         # custom field to store udise for filtering
+                            "Role": "school",
+                            "Ngo Id": school["ngo_id"],       # ngo_id
+                            "Type": "school",
+                            "Doner": school["partner_name"]   # partner_name
+                        }
+                        
+                        return {"status": "success", "user": user}
+                    
+                    # If neither standard user nor school found, raise error
                     raise HTTPException(status_code=401, detail="Invalid Email or password.")
 
                 user = dict(matching_users[0])
@@ -5098,6 +5124,38 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+@app.get("/api/schools/udise-map")
+def get_schools_udise_map():
+    try:
+        with get_conn() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                # Get ALL columns for ALL schools
+                cur.execute(f"SELECT * FROM {DB_SCHEMA}.schools WHERE udise IS NOT NULL")
+                schools = cur.fetchall()
+                
+                # Organize them into a dictionary by UDISE code
+                udise_map = {}
+                for school in schools:
+                    udise_map[school["udise"]] = school
+                    
+                return {"status": "success", "data": udise_map}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@app.get("/api/schools/udise-map/{udise}")
+def get_school_by_udise(udise: str):
+    try:
+        with get_conn() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                cur.execute(f"SELECT * FROM {DB_SCHEMA}.schools WHERE udise = %s", (udise,))
+                row = cur.fetchone()
+                if not row:
+                    return {"status": "error", "message": "School with this UDISE code not found"}
+                    
+                return {"status": "Ok", "data": dict(row)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 @app.get("/api/schools/{school_id}")
 def get_school_details(school_id: str):
     # This route is used by RMS Server. We can add API Key validation later if needed.
@@ -5112,6 +5170,8 @@ def get_school_details(school_id: str):
                 return {"status": "success", "data": dict(row)}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
 
 # --- End Schools API ---
 
@@ -6164,10 +6224,7 @@ def get_approved_ngos(filter: str = None):
                 if filter == "schools":
                     filtered_ngos = []
                     for ngo in ngos:
-                        has_school_name = "school" in str(ngo.get("organization_name", "")).lower()
-                        has_linked_schools = len(ngo["schools"]) > 0
-                        
-                        if has_school_name or has_linked_schools:
+                        if len(ngo["schools"]) > 0:
                             filtered_ngos.append(ngo)
                     return {"status": "success", "data": filtered_ngos}
                     

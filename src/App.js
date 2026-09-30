@@ -217,7 +217,11 @@ function App() {
               <Route path="/edit-form/:id" element={<MonthlyEditForm />} />
               <Route path="/laptop-with-issues" element={<OpsWelcome />} />
               <Route path="/audit" element={<Audit />} />
-              <Route path="/afe" element={<LearningAnalytics />} />
+              <Route path="/afe" element={
+                <PrivateRoute reqired={'school'}>
+                  <LearningAnalytics />
+                </PrivateRoute>
+              } />
 
               {/* <Route path="/allngo/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}

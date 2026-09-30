@@ -254,7 +254,27 @@ const TableView = ({
           if (selectedNgoFilter) fullUrl += `&ngoId=${encodeURIComponent(selectedNgoFilter)}`;
           const fullRes = await fetch(fullUrl);
           const fullJson = await fullRes.json();
-          setFullLearningData(fullJson.data || fullJson);
+          let data = fullJson.data || fullJson;
+          
+          if (userRole === "school") {
+            const myUdiseCode = authData[0]?.Udise;
+            const mySchoolName = authData[0]?.name;
+            const myPartnerName = authData[0]?.Doner;
+            
+            // Helper function to normalize strings: lowercase, trim, and collapse multiple spaces into one
+            const normalizeStr = (str) => String(str || "").trim().toLowerCase().replace(/\s+/g, ' ');
+            
+            data = data.filter(item => {
+              const udiseMatch = myUdiseCode && String(item.school_udise) === String(myUdiseCode);
+              const namePartnerMatch = mySchoolName && myPartnerName && 
+                                       normalizeStr(item.school_name) === normalizeStr(mySchoolName) && 
+                                       normalizeStr(item.partner_name) === normalizeStr(myPartnerName);
+              
+              return udiseMatch || namePartnerMatch;
+            });
+          }
+          
+          setFullLearningData(data);
         } catch(e) {
           console.error("Error fetching full analytics data", e);
         }
@@ -620,7 +640,8 @@ const TableView = ({
   const safeDisplayData = Array.isArray(displayData) ? displayData : [];
 
   const getFilteredLearningData = () => {
-    if (displayMetricType !== "learningAnalytics" || safeFullLearningData.length === 0) return safeDisplayData;
+    if (displayMetricType !== "learningAnalytics") return safeDisplayData;
+    if (userRole !== "school" && safeFullLearningData.length === 0) return safeDisplayData;
 
     return safeFullLearningData.filter(item => {
       const matchNgo = !selectedNgoFilter || item.ngo_name === selectedNgoFilter;
@@ -1025,7 +1046,7 @@ const TableView = ({
     const currentData = (dataToDisplay || []).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     if (displayMetricType === "learningAnalytics") {
-      return currentData.map((item, index) => (
+      return (currentData || []).map((item, index) => (
         <TableRow key={item.id || index} hover>
           <TableCell>{item.tour_id || "-"}</TableCell>
           <TableCell>{item.device_id || "-"}</TableCell>
@@ -1496,7 +1517,7 @@ const TableView = ({
                           paddingAngle={3}
                           dataKey="value"
                         >
-                          {metrics.ngoPieData.map((entry, index) => (
+                          {(metrics.ngoPieData || []).map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
@@ -1509,7 +1530,7 @@ const TableView = ({
                     </ResponsiveContainer>
                     {/* Legend */}
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mt: 2, maxHeight: 80, overflowY: 'auto' }}>
-                      {metrics.ngoPieData.map((entry, index) => (
+                      {(metrics.ngoPieData || []).map((entry, index) => (
                         <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: entry.color }} />
                           <Typography variant="caption" sx={{ color: '#4B5563', fontSize: '10px' }}>
@@ -1540,7 +1561,7 @@ const TableView = ({
                           paddingAngle={3}
                           dataKey="value"
                         >
-                          {metrics.gradeData.map((entry, index) => (
+                          {(metrics.gradeData || []).map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
@@ -1553,7 +1574,7 @@ const TableView = ({
                     </ResponsiveContainer>
                     {/* Legend */}
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mt: 2, maxHeight: 80, overflowY: 'auto' }}>
-                      {metrics.gradeData.map((entry, index) => (
+                      {(metrics.gradeData || []).map((entry, index) => (
                         <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: entry.color }} />
                           <Typography variant="caption" sx={{ color: '#4B5563', fontSize: '10px' }}>
