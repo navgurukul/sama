@@ -5116,7 +5116,7 @@ def get_schools_udise_map():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-@app.get("/api/schools/udise/{udise}")
+@app.get("/api/schools/udise-map/{udise}")
 def get_school_by_udise(udise: str):
     try:
         with get_conn() as conn:
@@ -5126,7 +5126,7 @@ def get_school_by_udise(udise: str):
                 if not row:
                     return {"status": "error", "message": "School with this UDISE code not found"}
                     
-                return {"status": "success", "data": dict(row)}
+                return {"status": "Ok", "data": dict(row)}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
