@@ -1886,13 +1886,13 @@ def _handle_user_post_type(payload: Dict[str, Any]) -> Dict[str, Any]:
                         
                         # Return the user object in the exact format the frontend expects
                         user = {
-                            "Name": school[0],           # name
-                            "Email": school[1],          # school_id
-                            "Udise": school[2],          # custom field to store udise for filtering
+                            "Name": school["name"],           # name
+                            "Email": school["school_id"],     # school_id
+                            "Udise": school["udise"],         # custom field to store udise for filtering
                             "Role": "school",
-                            "Ngo Id": school[4],         # ngo_id
+                            "Ngo Id": school["ngo_id"],       # ngo_id
                             "Type": "school",
-                            "Doner": school[3]           # partner_name
+                            "Doner": school["partner_name"]   # partner_name
                         }
                         
                         return {"status": "success", "user": user}
