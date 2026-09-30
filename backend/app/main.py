@@ -5098,35 +5098,6 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-@app.get("/api/schools/{school_id}")
-def get_school_details(school_id: str):
-    # This route is used by RMS Server. We can add API Key validation later if needed.
-    try:
-        with get_conn() as conn:
-            with conn.cursor(row_factory=dict_row) as cur:
-                cur.execute(f"SELECT * FROM {DB_SCHEMA}.schools WHERE school_id = %s", (school_id,))
-                row = cur.fetchone()
-                if not row:
-                    return {"status": "error", "message": "School not found"}
-                    
-                return {"status": "success", "data": dict(row)}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-@app.get("/api/schools/udise/{udise}")
-def get_school_by_udise(udise: str):
-    try:
-        with get_conn() as conn:
-            with conn.cursor(row_factory=dict_row) as cur:
-                cur.execute(f"SELECT * FROM {DB_SCHEMA}.schools WHERE udise = %s", (udise,))
-                row = cur.fetchone()
-                if not row:
-                    return {"status": "error", "message": "School with this UDISE code not found"}
-                    
-                return {"status": "success", "data": dict(row)}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
 @app.get("/api/schools/udise-map")
 def get_schools_udise_map():
     try:
@@ -5144,6 +5115,36 @@ def get_schools_udise_map():
                 return {"status": "success", "data": udise_map}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+@app.get("/api/schools/udise/{udise}")
+def get_school_by_udise(udise: str):
+    try:
+        with get_conn() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                cur.execute(f"SELECT * FROM {DB_SCHEMA}.schools WHERE udise = %s", (udise,))
+                row = cur.fetchone()
+                if not row:
+                    return {"status": "error", "message": "School with this UDISE code not found"}
+                    
+                return {"status": "success", "data": dict(row)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@app.get("/api/schools/{school_id}")
+def get_school_details(school_id: str):
+    # This route is used by RMS Server. We can add API Key validation later if needed.
+    try:
+        with get_conn() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                cur.execute(f"SELECT * FROM {DB_SCHEMA}.schools WHERE school_id = %s", (school_id,))
+                row = cur.fetchone()
+                if not row:
+                    return {"status": "error", "message": "School not found"}
+                    
+                return {"status": "success", "data": dict(row)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 
 
 # --- End Schools API ---
