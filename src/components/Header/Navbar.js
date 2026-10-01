@@ -973,7 +973,7 @@ const Navbar = () => {
           },
         }}
       >
-        {role.includes("admin") || role.includes("ops") || role.includes("doner") ? (
+        {role.includes("admin") || role.includes("ops") || role.includes("doner") || role.includes("school") ? (
           <MenuItem onClick={handleLogout} sx={{ color: "red" }}>
             <Typography variant="body1">Logout</Typography>
           </MenuItem>
