@@ -2102,25 +2102,26 @@ def _upsert_laptop_row(cur, item: Dict[str, Any], last_updated_by: str) -> None:
     donor_id = _get_or_create_donor_id(cur, donor_name_input)
     
     # Intercept "Not Working" -> "Working" change to automatically route back to "Laptop Received"
-    cur.execute(f"SELECT working FROM {DB_SCHEMA}.laptop_labeling WHERE id = %s", (laptop_id,))
+    cur.execute(f"SELECT working, status FROM {DB_SCHEMA}.laptop_labeling WHERE id = %s", (laptop_id,))
     existing_row = cur.fetchone()
     
     def is_truthy(val):
         return str(val).lower() in ("true", "1", "yes", "y", "working")
         
     def is_falsy(val):
-        return str(val).lower() in ("false", "0", "no", "n", "not working")
+        return str(val).lower() in ("false", "0", "no", "n", "not working", "none", "null", "")
         
     if existing_row:
         old_working = existing_row["working"]
+        old_status = existing_row["status"]
         new_working_raw = _payload_get(item, "working", "Working")
         
-        # If it was marked as NOT working previously, but is being marked AS working now
-        if is_falsy(old_working) and is_truthy(new_working_raw):
+        # If it was marked as NOT working previously (by working field or status), but is being marked AS working now
+        if (is_falsy(old_working) or old_status == "NOT_WORKING") and is_truthy(new_working_raw):
             status_value = "LAPTOP_RECEIVED"
             item["status"] = "LAPTOP_RECEIVED" # Update item dictionary so it persists if used later
-        # If it was NOT marked as "Not Working" previously (e.g. Working or blank), and is now "Not Working"
-        elif not is_falsy(old_working) and is_falsy(new_working_raw):
+        # If it was NOT marked as "Not Working" previously, and is now "Not Working"
+        elif not (is_falsy(old_working) or old_status == "NOT_WORKING") and is_falsy(new_working_raw):
             status_value = "NOT_WORKING"
             item["status"] = "NOT_WORKING"
     else:
