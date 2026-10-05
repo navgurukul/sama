@@ -402,7 +402,7 @@ const EditButton = ({
                             Cancel
                         </Button>
                     </Box>
-                </Box>w
+                </Box>
             </Modal>
         </>
     );
