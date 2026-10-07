@@ -3850,7 +3850,7 @@ def ngo_exec_get(request: Request) -> Any:
                                dispatch_location, expected_delivery_days, dispatch_date, delivery_date, last_impact_report_date,
                                operating_state, years_operating, focus_area, infrastructure, beneficiaries_count, age_group, expected_outcome, laptop_tracking
                         FROM {DB_SCHEMA}.ngo_requests
-                        ORDER BY id DESC
+                        ORDER BY id ASC
                         """
                     )
                     draft_rows = cur.fetchall()
