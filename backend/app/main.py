@@ -2106,28 +2106,32 @@ def _upsert_laptop_row(cur, item: Dict[str, Any], last_updated_by: str) -> None:
     existing_row = cur.fetchone()
     
     def is_truthy(val):
-        return str(val).lower() in ("true", "1", "yes", "y", "working")
+        if val is None:
+            return False
+        return str(val).strip().lower() in ("true", "1", "yes", "y", "working")
         
-    def is_falsy(val):
-        return str(val).lower() in ("false", "0", "no", "n", "not working", "none", "null", "")
+    def is_explicit_not_working(val):
+        if val is None:
+            return False
+        return str(val).strip().lower() in ("false", "0", "no", "n", "not working", "not_working")
         
+    new_working_raw = _payload_get(item, "working", "Working")
+
     if existing_row:
         old_working = existing_row["working"]
         old_status = existing_row["status"]
-        new_working_raw = _payload_get(item, "working", "Working")
         
         # If it was marked as NOT working previously (by working field or status), but is being marked AS working now
-        if (is_falsy(old_working) or old_status == "NOT_WORKING") and is_truthy(new_working_raw):
+        if (is_explicit_not_working(old_working) or old_status == "NOT_WORKING") and is_truthy(new_working_raw):
             status_value = "LAPTOP_RECEIVED"
             item["status"] = "LAPTOP_RECEIVED" # Update item dictionary so it persists if used later
-        # If it was NOT marked as "Not Working" previously, and is now "Not Working"
-        elif not (is_falsy(old_working) or old_status == "NOT_WORKING") and is_falsy(new_working_raw):
+        # If it is being explicitly marked as "Not Working"
+        elif is_explicit_not_working(new_working_raw):
             status_value = "NOT_WORKING"
             item["status"] = "NOT_WORKING"
     else:
-        # If it is a brand new laptop (no existing row) and it is marked as "Not Working"
-        new_working_raw = _payload_get(item, "working", "Working")
-        if is_falsy(new_working_raw):
+        # If it is a brand new laptop (no existing row) and it is explicitly marked as "Not Working"
+        if is_explicit_not_working(new_working_raw):
             status_value = "NOT_WORKING"
             item["status"] = "NOT_WORKING"
 
