@@ -15,6 +15,16 @@ const INDIAN_STATES = [
   "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
 ];
 
+export const SCHOOL_TYPES = [
+  { id: 1, name: "Government School" },
+  { id: 2, name: "Government Aided School" },
+  { id: 3, name: "Private School" },
+  { id: 4, name: "Central Government School (KV/JNV)" },
+  { id: 5, name: "EMRS / Tribal School" },
+  { id: 6, name: "KGBV" },
+  { id: 7, name: "Other" },
+];
+
 export default function SchoolManagement() {
   const [schools, setSchools] = useState([]);
   const [ngos, setNgos] = useState([]);
@@ -36,8 +46,9 @@ export default function SchoolManagement() {
     state: '',
     district: '',
     district_code: '',
-    district_code: '',
-    status: ''
+    status: '',
+    school_type: 'Government School',
+    school_type_id: 1
   });
   
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -101,12 +112,18 @@ export default function SchoolManagement() {
 
   const handleOpenModal = (school = null) => {
     if (school) {
-      setFormData({ ...school, ngo_id: school.ngo_id || '' });
+      setFormData({ 
+        ...school, 
+        ngo_id: school.ngo_id || '',
+        school_type: school.school_type || 'Government School',
+        school_type_id: school.school_type_id || 1
+      });
       setIsEditing(true);
     } else {
       setFormData({ 
         id: null, school_id: '', udise: '', name: '', city: '', partner_name: '', ngo_id: '',
-        zipcode: '', state: '', district: '', district_code: '', status: ''
+        zipcode: '', state: '', district: '', district_code: '', status: '',
+        school_type: 'Government School', school_type_id: 1
       });
       setIsEditing(false);
     }
@@ -181,8 +198,40 @@ export default function SchoolManagement() {
               if (h.includes('zip') || h.includes('pin')) obj.zipcode = val;
               if (h === 'state') obj.state = val;
               if (h === 'district') obj.district = val;
-              if (h.includes('district code')) obj.district_code = val;
+              if (h.includes('district code') || h === 'dist. code' || h === 'dist code') obj.district_code = val;
+
+              // Dynamic School Type & School Type ID resolution
+              if (h.includes('type') && val) {
+                // If it's a numeric ID like '1' or '2'
+                const rawNum = parseInt(val.replace(/\D/g, ''), 10);
+                
+                // Match by exact or partial name in SCHOOL_TYPES
+                const cleanVal = val.toLowerCase().replace(/^[0-9]+[\.\-\s]*/, '').trim();
+                const matchedByName = SCHOOL_TYPES.find(t => 
+                  t.name.toLowerCase() === cleanVal || 
+                  cleanVal.includes(t.name.toLowerCase()) || 
+                  t.name.toLowerCase().includes(cleanVal)
+                );
+                const matchedById = SCHOOL_TYPES.find(t => t.id === rawNum);
+
+                if (matchedByName) {
+                  obj.school_type = matchedByName.name;
+                  obj.school_type_id = matchedByName.id;
+                } else if (matchedById) {
+                  obj.school_type = matchedById.name;
+                  obj.school_type_id = matchedById.id;
+                } else {
+                  obj.school_type = val;
+                  obj.school_type_id = 7; // Other
+                }
+              }
             });
+            
+            // Dynamic default if not present in CSV
+            if (!obj.school_type) {
+              obj.school_type = "Government School";
+              obj.school_type_id = 1;
+            }
             
             if (obj.name) {
               parsedData.push(obj);
@@ -216,7 +265,7 @@ export default function SchoolManagement() {
   };
 
   const handleDownloadSample = () => {
-    const headers = "School UDISE,School Name,City,Zipcode,State,District,District Code\n";
+    const headers = "School UDISE,School Name,Type of School,City,Zipcode,State,District,District Code\n36290401402,Example School,Government School,Nalgonda,508210,Telangana,Nalgonda,3629\n";
     const blob = new Blob([headers], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -300,6 +349,8 @@ export default function SchoolManagement() {
               <TableRow>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>School ID</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>School Name</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight={600}>School Type</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight={600}>School Type ID</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>Partner Name</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>UDISE Code</Typography></TableCell>
                 <TableCell><Typography variant="subtitle2" fontWeight={600}>City</Typography></TableCell>
@@ -313,7 +364,7 @@ export default function SchoolManagement() {
             <TableBody>
               {schools.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={11} align="center" sx={{ py: 3 }}>
+                  <TableCell colSpan={13} align="center" sx={{ py: 3 }}>
                     <Typography color="text.secondary">No schools found.</Typography>
                   </TableCell>
                 </TableRow>
@@ -325,6 +376,19 @@ export default function SchoolManagement() {
                         <Typography variant="body2" fontWeight={500}>{school.school_id}</Typography>
                       </TableCell>
                       <TableCell color="text.secondary">{school.name}</TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={school.school_type || 'Government School'} 
+                          size="small" 
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography variant="body2" fontWeight={600}>
+                          {school.school_type_id || 1}
+                        </Typography>
+                      </TableCell>
                       <TableCell>{school.partner_name}</TableCell>
                       <TableCell>
                         <Chip label={school.udise || '-'} size="small" variant="outlined" />
@@ -361,6 +425,41 @@ export default function SchoolManagement() {
               <TextField label="School Name" name="name" value={formData.name} onChange={handleChange} fullWidth size="small" />
               <TextField label="UDISE Code" name="udise" value={formData.udise} onChange={handleChange} fullWidth size="small" />
             </Box>
+
+            <Box display="flex" gap={2}>
+              <FormControl fullWidth size="small">
+                <InputLabel id="school-type-label">Type of School *</InputLabel>
+                <Select
+                  labelId="school-type-label"
+                  label="Type of School *"
+                  value={formData.school_type_id || 1}
+                  onChange={(e) => {
+                    const selectedId = Number(e.target.value);
+                    const selectedObj = SCHOOL_TYPES.find(t => t.id === selectedId);
+                    setFormData(prev => ({
+                      ...prev,
+                      school_type_id: selectedId,
+                      school_type: selectedObj ? selectedObj.name : "Government School"
+                    }));
+                  }}
+                >
+                  {SCHOOL_TYPES.map(type => (
+                    <MenuItem key={type.id} value={type.id}>
+                      {type.id}. {type.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField 
+                label="School Type ID" 
+                value={formData.school_type_id || 1} 
+                InputProps={{ readOnly: true }} 
+                fullWidth 
+                size="small" 
+                sx={{ bgcolor: '#f5f5f5' }} 
+              />
+            </Box>
+
             <Box display="flex" gap={2}>
               <Autocomplete
                 freeSolo
@@ -429,6 +528,7 @@ export default function SchoolManagement() {
             </Typography>
             <Box component="ul" sx={{ color: 'text.secondary', pl: 3, mb: 0 }}>
               <li><Typography variant="body2"><b>School Name</b>: Full name of the school.</Typography></li>
+              <li><Typography variant="body2"><b>Type of School</b>: e.g. Government School, Private School, etc. (Optional, defaults to Government School).</Typography></li>
               <li><Typography variant="body2"><b>City, State, District</b>: Complete location details.</Typography></li>
             </Box>
             <Typography variant="body2" color="primary" mt={2}>

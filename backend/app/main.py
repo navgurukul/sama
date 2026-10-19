@@ -3905,7 +3905,8 @@ def ngo_exec_get(request: Request) -> Any:
                             "beneficiarySelection": "",
                             "beneficiariesCount": r["beneficiaries_count"] or "",
                             "ageGroup": r["age_group"] or "",
-                            "laptopTracking": r["laptop_tracking"] or "",
+                            "Doner": r["donor"] or "",
+                            "Ngo Type": "",
                             "tentative_refurb_completion": str(r["tentative_refurb_completion"]) if r["tentative_refurb_completion"] else None,
                             "partner_type": r["partner_type"] or "External Partner",
                             "date_received": str(r["date_received"]) if r["date_received"] else None,
@@ -4218,15 +4219,50 @@ async def ngo_exec_post(request: Request) -> Any:
         }
 
 
-    def is_pg_id(nid):
-        if not isinstance(nid, str): return False
-        if nid.startswith("DRAFT-"): return True
-        return False
+    def resolve_draft_id(nid):
+        if not isinstance(nid, str):
+            return None
+        clean = nid.strip()
+        # Direct numeric id or DRAFT-id or SAM-D id
+        if clean.startswith("DRAFT-"):
+            try:
+                return int(clean.replace("DRAFT-", ""))
+            except ValueError:
+                return None
+        if clean.startswith("SAM-D"):
+            try:
+                return int(clean.replace("SAM-D", ""))
+            except ValueError:
+                return None
+        # If it's a dynamic SAM-X generated ID, match it against the sequential serial calculation
+        if clean.startswith("SAM-"):
+            try:
+                target_serial = int(clean.replace("SAM-", ""))
+            except ValueError:
+                return None
 
+            with get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(f"SELECT id FROM {DB_SCHEMA}.external_registered_ngo")
+                    max_serial = 0
+                    for r in cur.fetchall():
+                        s = str(r["id"])
+                        if s.startswith("SAM-"):
+                            try:
+                                max_serial = max(max_serial, int(s.split("-")[-1]))
+                            except ValueError:
+                                pass
 
-    # Intercept status changes, timeline updates, and deletions for drafts
-    if is_pg_id(ngo_id):
-        db_id = int(ngo_id.replace("DRAFT-", "").replace("SAM-D", "").replace("SAM-", ""))
+                    if target_serial > max_serial:
+                        cur.execute(f"SELECT id FROM {DB_SCHEMA}.ngo_requests ORDER BY id ASC")
+                        rows = cur.fetchall()
+                        offset = target_serial - max_serial - 1
+                        if 0 <= offset < len(rows):
+                            return rows[offset]["id"]
+        return None
+
+    db_id = resolve_draft_id(ngo_id)
+    if db_id is not None:
         if type_name == "NGO":
             status_val = payload.get("status")
             approved_qty = payload.get("approved_quantity")
@@ -4377,7 +4413,31 @@ async def ngo_exec_post(request: Request) -> Any:
     if type_name == "NGO":
         status_val = payload.get("status")
         ngo_id = payload.get("id")
+        ngo_type = payload.get("ngoType")
         
+        # Persist status in database for registered NGOs (SAM-...)
+        if ngo_id:
+            try:
+                with get_conn() as conn:
+                    with conn.cursor() as cur:
+                        update_parts = ["status = %s"]
+                        update_args = [status_val]
+                        if ngo_type:
+                            update_parts.append("ngo_type = %s")
+                            update_args.append(ngo_type)
+                        update_args.append(str(ngo_id))
+                        cur.execute(
+                            f"""
+                            UPDATE {DB_SCHEMA}.external_registered_ngo
+                            SET {', '.join(update_parts)}
+                            WHERE id = %s
+                            """,
+                            tuple(update_args)
+                        )
+                        conn.commit()
+            except Exception as update_err:
+                print(f"Failed to update status in external_registered_ngo: {update_err}")
+
         if status_val in {"Approved", "Dispatched", "Delivered"}:
             try:
                 with get_conn() as conn:
@@ -4432,6 +4492,27 @@ async def ngo_exec_post(request: Request) -> Any:
                             print(f"NGO with ID {ngo_id} not found in registration list.")
             except Exception as e:
                 print(f"Failed to process status notification details for {status_val}: {e}")
+        return {"status": "success", "id": ngo_id, "status_updated": status_val}
+
+    elif type_name == "donorUpdate":
+        donor_val = payload.get("donor")
+        ngo_id = payload.get("id")
+        if ngo_id:
+            try:
+                with get_conn() as conn:
+                    with conn.cursor() as cur:
+                        cur.execute(
+                            f"""
+                            UPDATE {DB_SCHEMA}.external_registered_ngo
+                            SET doner = %s
+                            WHERE id = %s
+                            """,
+                            (donor_val, str(ngo_id))
+                        )
+                        conn.commit()
+            except Exception as e:
+                print(f"Failed to update donor in external_registered_ngo: {e}")
+        return {"status": "success", "id": ngo_id, "donor_updated": donor_val}
                 
     if type_name in {
         "MultipleDocsUpload", "MultipleDocsUpdate", "NewMultipleDocsUpload", "updateDocStatus",
@@ -5029,6 +5110,8 @@ async def create_school(request: Request):
         district = data.get("district")
         district_code = data.get("district_code")
         status = data.get("status") or "ACTIVE"
+        school_type = data.get("school_type") or "Government School"
+        school_type_id = data.get("school_type_id") or 1
 
         if not name:
             return {"status": "error", "message": "School name is required"}
@@ -5038,9 +5121,10 @@ async def create_school(request: Request):
                 cur.execute(f"""
                     INSERT INTO {DB_SCHEMA}.schools (
                         school_id, udise, name, city, partner_name, ngo_id,
-                        distribution_host_id, zipcode, state, district, district_code, status
+                        distribution_host_id, zipcode, state, district, district_code, status,
+                        school_type, school_type_id
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (school_id) DO UPDATE SET
                         udise = EXCLUDED.udise,
                         name = EXCLUDED.name,
@@ -5052,9 +5136,11 @@ async def create_school(request: Request):
                         state = EXCLUDED.state,
                         district = EXCLUDED.district,
                         district_code = EXCLUDED.district_code,
-                        status = EXCLUDED.status
+                        status = EXCLUDED.status,
+                        school_type = EXCLUDED.school_type,
+                        school_type_id = EXCLUDED.school_type_id
                     RETURNING *
-                """, (school_id, udise, name, city, partner_name, ngo_id, distribution_host_id, zipcode, state, district, district_code, status))
+                """, (school_id, udise, name, city, partner_name, ngo_id, distribution_host_id, zipcode, state, district, district_code, status, school_type, school_type_id))
                 conn.commit()
                 return {"status": "success", "message": "School added/updated successfully"}
     except Exception as e:
@@ -5101,6 +5187,8 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
                     district = row.get("district")
                     district_code = row.get("district_code")
                     status = row.get("status") or "ACTIVE"
+                    school_type = row.get("school_type") or "Government School"
+                    school_type_id = row.get("school_type_id") or 1
                     
                     if not name:
                         continue
@@ -5108,9 +5196,10 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
                     cur.execute(f"""
                         INSERT INTO {DB_SCHEMA}.schools (
                             school_id, udise, name, city, partner_name, ngo_id,
-                            distribution_host_id, zipcode, state, district, district_code, status
+                            distribution_host_id, zipcode, state, district, district_code, status,
+                            school_type, school_type_id
                         )
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT (udise) DO UPDATE SET 
                             name = EXCLUDED.name, 
                             city = EXCLUDED.city, 
@@ -5121,8 +5210,10 @@ def upload_schools_bulk(data: List[Dict[str, Any]] = Body(...)):
                             state = EXCLUDED.state,
                             district = EXCLUDED.district,
                             district_code = EXCLUDED.district_code,
-                            status = EXCLUDED.status
-                    """, (school_id, udise, name, city, partner_name, ngo_id, distribution_host_id, zipcode, state, district, district_code, status))
+                            status = EXCLUDED.status,
+                            school_type = EXCLUDED.school_type,
+                            school_type_id = EXCLUDED.school_type_id
+                    """, (school_id, udise, name, city, partner_name, ngo_id, distribution_host_id, zipcode, state, district, district_code, status, school_type, school_type_id))
                     
                 conn.commit()
                 return {"status": "success", "message": "Bulk upload successful"}

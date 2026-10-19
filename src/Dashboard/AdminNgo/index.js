@@ -71,7 +71,7 @@ const AdminNgo = () => {
   const [open, setOpen] = useState(false);
   const dialogRef = useRef(null);
   const NgoType = ["1 to one", "1 to many"];
-  const AssociatedDoner = ["Accenture", "Amazon"];
+  const AssociatedDoner = ["Accenture", "Amazon", "Eaton", "S&P Global"];
 
 
   useEffect(() => {
@@ -178,7 +178,6 @@ const AdminNgo = () => {
     setEditStatus(true);
 
     // Call API to save status
-
     try {
       const response = await fetch(
         `${process.env.REACT_APP_NgoInformationApi}?type=NGO`,
@@ -187,7 +186,6 @@ const AdminNgo = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          mode: "no-cors",
           body: JSON.stringify({
             id: ngoIdToChange,
             status: selectedStatus,
@@ -198,6 +196,7 @@ const AdminNgo = () => {
       );
 
       if (response.ok) {
+        setEditStatus(prev => !prev);
       } else {
         console.error("Error updating status:", response.statusText);
       }
@@ -239,39 +238,38 @@ const AdminNgo = () => {
     page * rowsPerPage + rowsPerPage
   );
 
-  const handleDonerChange = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    setDonor(e.target.value);
+  const handleDonerChange = (id, newDonor) => {
+    setDonor(newDonor);
+    setNgoIdToChange(id);
     setOpen(true); // Open confirmation modal
   };
 
   const handleDonerConfirm = async () => {
     if (ngoIdToChange && donor) {
-      setDonor(donor); // Update state
       await sendToBackend(ngoIdToChange, donor); // Send data to backend
       setNgoData((prev) =>
         prev.map((n) => (n.Id === ngoIdToChange ? { ...n, Doner: donor } : n))
       );
       setOpen(false);
+      setEditStatus((prev) => !prev);
     }
   };
 
-  const sendToBackend = async (id, donor) => {
-
+  const sendToBackend = async (id, donorValue) => {
     try {
       const response = await fetch(
         `${process.env.REACT_APP_NgoInformationApi}?type=donorUpdate`,
         {
           method: "POST",
-          mode: "no-cors",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id: id, donor: donor, type: "donorUpdate" }),
-        });
-
-      const result = await response.json();
+          body: JSON.stringify({ id: id, donor: donorValue, type: "donorUpdate" }),
+        }
+      );
+      if (!response.ok) {
+        console.error("Failed to update donor:", response.statusText);
+      }
     } catch (error) {
       console.error("Error:", error);
     }
@@ -599,12 +597,12 @@ const AdminNgo = () => {
                               onChange={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
+                                const val = e.target.value;
                                 setDonorSelections(prev => ({
                                   ...prev,
-                                  [ngo.Id]: e.target.value
+                                  [ngo.Id]: val
                                 }));
-                                handleDonerChange(e);
-                                setNgoIdToChange(ngo.Id);
+                                handleDonerChange(ngo.Id, val);
                               }}
                             >
                               {AssociatedDoner.map((option) => (
