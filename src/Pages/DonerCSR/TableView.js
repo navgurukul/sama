@@ -245,42 +245,68 @@ const TableView = ({
   }, [isStandalone, donorName, location.search, page, rowsPerPage, learningStartDate, learningEndDate]);
 
   useEffect(() => {
+    let isCancelled = false;
     if (displayMetricType === "learningAnalytics") {
       const fetchFull = async () => {
         try {
-          let fullUrl = `https://rms-api.thesama.in/api/afe/details?includeMeta=true&page=1&limit=100000`;
-          if (learningStartDate) fullUrl += `&startDate=${learningStartDate}`;
-          if (learningEndDate) fullUrl += `&endDate=${learningEndDate}`;
-          if (selectedNgoFilter) fullUrl += `&ngoId=${encodeURIComponent(selectedNgoFilter)}`;
-          const fullRes = await fetch(fullUrl);
-          const fullJson = await fullRes.json();
-          let data = fullJson.data || fullJson;
-          
-          if (userRole === "school") {
-            const myUdiseCode = authData[0]?.Udise;
-            const mySchoolName = authData[0]?.name;
-            const myPartnerName = authData[0]?.Doner;
+          let allData = [];
+          let currentPage = 1;
+          const limit = 10000;
+          let hasMore = true;
+
+          while (hasMore && !isCancelled) {
+            let fullUrl = `https://rms-api.thesama.in/api/afe/details?includeMeta=true&page=${currentPage}&limit=${limit}`;
+            if (learningStartDate) fullUrl += `&startDate=${learningStartDate}`;
+            if (learningEndDate) fullUrl += `&endDate=${learningEndDate}`;
+            if (selectedNgoFilter) fullUrl += `&ngoId=${encodeURIComponent(selectedNgoFilter)}`;
             
-            // Helper function to normalize strings: lowercase, trim, and collapse multiple spaces into one
-            const normalizeStr = (str) => String(str || "").trim().toLowerCase().replace(/\s+/g, ' ');
+            const fullRes = await fetch(fullUrl);
+            const fullJson = await fullRes.json();
+            let rawDataChunk = fullJson.data || fullJson;
             
-            data = data.filter(item => {
-              const udiseMatch = myUdiseCode && String(item.school_udise) === String(myUdiseCode);
-              const namePartnerMatch = mySchoolName && myPartnerName && 
-                                       normalizeStr(item.school_name) === normalizeStr(mySchoolName) && 
-                                       normalizeStr(item.partner_name) === normalizeStr(myPartnerName);
+            if (!Array.isArray(rawDataChunk) || rawDataChunk.length === 0) {
+              break;
+            }
+
+            let dataChunk = rawDataChunk;
+            
+            if (userRole === "school") {
+              const myUdiseCode = authData[0]?.Udise;
+              const mySchoolName = authData[0]?.name;
+              const myPartnerName = authData[0]?.Doner;
               
-              return udiseMatch || namePartnerMatch;
-            });
+              const normalizeStr = (str) => String(str || "").trim().toLowerCase().replace(/\s+/g, ' ');
+              
+              dataChunk = dataChunk.filter(item => {
+                const udiseMatch = myUdiseCode && String(item.school_udise) === String(myUdiseCode);
+                const namePartnerMatch = mySchoolName && myPartnerName && 
+                                         normalizeStr(item.school_name) === normalizeStr(mySchoolName) && 
+                                         normalizeStr(item.partner_name) === normalizeStr(myPartnerName);
+                
+                return udiseMatch || namePartnerMatch;
+              });
+            }
+            
+            allData = [...allData, ...dataChunk];
+            if (!isCancelled) {
+              setFullLearningData(allData);
+            }
+
+            if (rawDataChunk.length < limit) {
+              hasMore = false;
+            } else {
+              currentPage++;
+            }
           }
-          
-          setFullLearningData(data);
         } catch(e) {
           console.error("Error fetching full analytics data", e);
         }
       };
       fetchFull();
     }
+    return () => {
+      isCancelled = true;
+    };
   }, [displayMetricType, learningStartDate, learningEndDate, selectedNgoFilter]);
 
   const fetchBeneficiaryData = async () => {
