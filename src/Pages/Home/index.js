@@ -9,6 +9,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import diamond from "./assets/dimanod.png";
 import BGIMG from "./assets/Group365.png";
 import DashboardPage from "../../Dashboard";
+
 function Home() {
 
   const isActive = useMediaQuery("(max-width:600px)");
@@ -50,7 +51,7 @@ function Home() {
         paddingY={isActive ? 5 : 28}
       >
         <Container maxWidth="lg">
-          <Typography align="center" variant="h3" className={!isActive ? "hero-text" : "hero-text-large"}>
+          <Typography align="center" variant="h3" component="h1" className={!isActive ? "hero-text" : "hero-text-large"}>
             Where yesterday's devices power tomorrow's innovators
           </Typography>
           <Typography variant="body1" margin="0 8px" style={{ color: "#FFF" }}>

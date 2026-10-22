@@ -1,3 +1,16 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+# Disallow internal operational, admin, login and portal routes
+Disallow: /login
+Disallow: /corporate*
+Disallow: /corpretedb*
+Disallow: /donorcsr*
+Disallow: /donormanager*
+Disallow: /pickup*
+Disallow: /admin*
+Disallow: /warehouse*
+
+# Sitemap location
+Sitemap: https://thesama.in/sitemap.xml

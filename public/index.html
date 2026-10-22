@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <!-- Google Fonts preconnect & font-display swap for Core Web Vitals speed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Raleway:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
 
@@ -16,38 +15,59 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Sama helps modern businesses responsibly repurpose their e-waste for educational usage by underserved women."
+      content="Sama repurposes corporate retired laptops and e-waste to power digital education for underserved girls and youth across India."
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-<!-- 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> -->
-    <title>Sama Digital Foundation</title>
 
-    <meta property="og:title" content="Sama Digital Foundation" />
-    <!-- <meta property="og:description" content="Helping businesses repurpose e-waste for education." /> -->
-    <!-- <meta property="og:image" content="%PUBLIC_URL%/logo.png" /> -->
-    <meta property="og:url" content="https://thesama.in" />
+    <title>Sama Digital Foundation | E-Waste & Laptop Donation</title>
+
+    <!-- Fallback Open Graph & Twitter Cards -->
+    <meta property="og:site_name" content="Sama Digital Foundation" />
+    <meta property="og:locale" content="en_IN" />
+    <meta property="og:title" content="Sama Digital Foundation | E-Waste & Laptop Donation" />
+    <meta property="og:description" content="Sama repurposes corporate retired laptops and e-waste to power digital education for underserved girls and youth across India." />
+    <meta property="og:image" content="https://thesama.in/og-image.jpg" />
+    <meta property="og:image:alt" content="Sama Digital Foundation - Corporate Laptop Donation & E-Waste CSR India" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Sama Digital Foundation | E-Waste & Laptop Donation" />
+    <meta name="twitter:description" content="Sama repurposes corporate retired laptops and e-waste to power digital education for underserved girls and youth across India." />
+    <meta name="twitter:image" content="https://thesama.in/og-image.jpg" />
+    <meta name="twitter:image:alt" content="Sama Digital Foundation - Corporate Laptop Donation & E-Waste CSR India" />
 
-    <!-- Structured Data for SEO (JSON-LD) -->
+    <meta name="google-site-verification" content="8Dn1M5kX5nmO5DXCQzvMJL_K7M2wiz_QZLYvfncascM" />
+    
+    <!-- Static Organization Schema (Readable by bots without executing JS) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Organization",
+        "@type": "NonProfitOrganization",
+        "@id": "https://thesama.in/#organization",
         "name": "Sama Digital Foundation",
         "url": "https://thesama.in",
-        "logo": "https://thesama.in/logo.png",
-        "description": "Sama Digital Foundation helps businesses responsibly repurpose e-waste for educational usage by underserved women."
+        "logo": "https://thesama.in/logo512.png",
+        "description": "Sama Digital Foundation repurposes corporate e-waste into digital education for underserved youth across India.",
+        "areaServed": "IN",
+        "sameAs": [
+          "https://www.linkedin.com/company/sama-digital-foundation",
+          "https://twitter.com/thesamain",
+          "https://instagram.com/thesama.in"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "operations@thesama.in",
+          "contactType": "Operations & Partnerships"
+        }
       }
     </script>
-    <meta name="google-site-verification" content="8Dn1M5kX5nmO5DXCQzvMJL_K7M2wiz_QZLYvfncascM" />
-    
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      Sama Digital Foundation helps businesses donate retired laptops and e-waste for digital education across India. Visit https://thesama.in/donate to partner with us.
+    </noscript>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <div id="root"></div>

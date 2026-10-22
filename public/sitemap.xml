@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Core Home Page -->
+  <url>
+    <loc>https://thesama.in</loc>
+    <lastmod>2026-10-22</lastmod>
+  </url>
+
+  <!-- Corporate Laptop Donation & E-Waste -->
+  <url>
+    <loc>https://thesama.in/donate</loc>
+    <lastmod>2026-10-22</lastmod>
+  </url>
+
+  <!-- NGO & School Laptop Requests -->
+  <url>
+    <loc>https://thesama.in/ngoregistration</loc>
+    <lastmod>2026-10-22</lastmod>
+  </url>
+
+  <!-- About Sama Digital Foundation -->
+  <url>
+    <loc>https://thesama.in/about</loc>
+    <lastmod>2026-10-22</lastmod>
+  </url>
+
+  <!-- Hardware Refurbishment & Device Lifecycle -->
+  <url>
+    <loc>https://thesama.in/our-approach</loc>
+    <lastmod>2026-10-22</lastmod>
+  </url>
+
+  <!-- Digital Initiative Overview -->
+  <url>
+    <loc>https://thesama.in/about-initiative</loc>
+    <lastmod>2026-10-22</lastmod>
+  </url>
+
+  <!-- Privacy Policy & Trust -->
+  <url>
+    <loc>https://thesama.in/privacy-policy</loc>
+    <lastmod>2026-10-22</lastmod>
+  </url>
+</urlset>

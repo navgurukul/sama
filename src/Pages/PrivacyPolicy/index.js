@@ -31,7 +31,7 @@ const PrivacyPolicy = () => {
     {
       title: "Cookies and Analytics",
       content:
-        "Our website may use cookies and analytics tools to understand user behavior, improve functionality, and enhance user experience. By using our site, you agree to the collection of anonymized data for these purposes.",
+        "Our website uses cookies and analytics tools—including the LinkedIn Insight Tag and web traffic analytics—to understand user behavior, improve platform functionality, measure campaign impact, and enhance user experience. By using our site, you agree to the collection of anonymized data for these purposes.",
     },
     {
       title: "Data Security",
@@ -79,7 +79,7 @@ const PrivacyPolicy = () => {
   return (
     <Container maxWidth="md" sx={{ mb: 5 }}>
       <Box sx={{ mt: 2, mb: 4 }}>
-        <Typography variant="h5" align="center" gutterBottom>
+        <Typography variant="h5" component="h1" align="center" gutterBottom>
           Privacy Policy
         </Typography>
       </Box>

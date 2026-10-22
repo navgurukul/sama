@@ -19,7 +19,6 @@ import "./Donate.css";
 
 import icon1 from "./assets/Group 22 (1).svg";
 
-
 function Donation() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -171,6 +170,7 @@ function Donation() {
       <Box sx={{ backgroundColor: "#F0F4EF" }} paddingBottom="80px" paddingTop="80px">
         <Container maxWidth="lg">
           <Typography
+            component="h1"
             variant="h6"
             sx={{ color: "#4A4A4A", fontSize: "24px" }}
           >
