@@ -8,8 +8,6 @@ import {
  } from '@mui/material';
 import ourteam from '../../Pages/About/OurTeam/style';
 
-
-
 function About() {
   return (
     <>

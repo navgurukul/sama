@@ -45,7 +45,7 @@ const OurApproach = () => {
               sm={12} 
               sx={{ px: { lg: 0, sm: 5, md: 3, xs: 5 } }}
             >
-              <Typography sx={styleh5} variant="h5">
+              <Typography sx={styleh5} variant="h5" component="h1">
                 Our Rationale
               </Typography>
               <Typography 

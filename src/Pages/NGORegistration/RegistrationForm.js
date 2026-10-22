@@ -771,7 +771,7 @@ function RegistrationForm() {
 
       {!showRequestTypeModal && (
         <>
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h5" component="h1" gutterBottom>
             NGO Information Form
           </Typography>
 

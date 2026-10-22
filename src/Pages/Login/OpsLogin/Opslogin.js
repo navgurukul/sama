@@ -20,7 +20,7 @@ import {
 import login_ngo from "./assets/login_ngo.svg";
 import EmailIcon from '@mui/icons-material/Email';
 import CloseIcon from '@mui/icons-material/Close'
-import AttentionNeeded from "../../../components/AttentionNeeded/AttentionNeeded"
+import AttentionNeeded from "../../../components/AttentionNeeded/AttentionNeeded";
 
 function Opslogin() {
   const [email, setEmail] = useState('');

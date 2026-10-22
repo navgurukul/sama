@@ -58,6 +58,7 @@ import OurGoverment from './Pages/About/OurGoverment/OurGoverment';
 import CommunityPartners from './Pages/About/CommunityPartners/CommunityPartners';
 import CorporatePartner from './Pages/About/CorporatePartner/CorporatePartner';
 import OpsWelcome from './components/OPS/OpsWelcome';
+import SeoRouter from './components/SEO/SeoRouter';
 import Audit from './components/OPS/LaptopAudit';
 import LearningAnalytics from './components/OPS/LearningAnalytics';
 import LaptopDetails from "./Pages/LaptopTagging/LaptopDetails";
@@ -83,6 +84,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Router>
+        <SeoRouter />
         <div className="layout">
           <Navbar />
           <div className="content">
