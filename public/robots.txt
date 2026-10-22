@@ -4,13 +4,32 @@ Allow: /
 
 # Disallow internal operational, admin, login and portal routes
 Disallow: /login
-Disallow: /corporate*
-Disallow: /corpretedb*
-Disallow: /donorcsr*
-Disallow: /donormanager*
-Disallow: /pickup*
-Disallow: /admin*
-Disallow: /warehouse*
+Disallow: /corporate$
+Disallow: /corporate/
+Disallow: /corpretedb
+Disallow: /donorcsr
+Disallow: /donormanager
+Disallow: /pickup-request-by-donor
+Disallow: /admin
+Disallow: /warehouse
+Disallow: /laptopinventory
+Disallow: /data-assignment-form
+Disallow: /documentupload
+Disallow: /mouUpload
+Disallow: /monthly-reporting
+Disallow: /preliminary
+
+# Explicitly Allow public partner and donation pages
+Allow: /corporatepartner
+Allow: /communitypartners
+Allow: /our-government
+Allow: /ourgoverment
+Allow: /ourteam
+Allow: /donate
+Allow: /ngoregistration
+Allow: /our-approach
+Allow: /about
+Allow: /about-initiative
 
 # Sitemap location
 Sitemap: https://thesama.in/sitemap.xml

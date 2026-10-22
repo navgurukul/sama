@@ -42,7 +42,6 @@ const SEO = ({
     };
 
     // 3. Search Engine Indexing Directives
-    // When noindex is true, explicitly block indexing. On public routes, remove the tag so bots use default indexing.
     let robotsMeta = document.querySelector('meta[name="robots"]');
     if (noindex) {
       if (!robotsMeta) {
@@ -51,8 +50,16 @@ const SEO = ({
         document.head.appendChild(robotsMeta);
       }
       robotsMeta.setAttribute("content", "noindex, nofollow");
-    } else if (robotsMeta) {
-      robotsMeta.remove();
+    } else {
+      if (!robotsMeta) {
+        robotsMeta = document.createElement("meta");
+        robotsMeta.setAttribute("name", "robots");
+        document.head.appendChild(robotsMeta);
+      }
+      robotsMeta.setAttribute(
+        "content",
+        "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+      );
     }
 
     // 4. Standard Description
