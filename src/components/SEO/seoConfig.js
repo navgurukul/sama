@@ -105,9 +105,9 @@ export const seoRoutes = {
     ogType: "website"
   },
   ourGoverment: {
-    title: "Government Partnerships & Digital India | Sama",
+    title: "Government & Public Sector Partnerships | Sama",
     description:
-      "Collaborating with state and national initiatives to advance digital literacy, e-waste circularity, and smart education in public schools.",
+      "Partnering with state and education initiatives to advance digital literacy, e-waste circularity, and smart education in public institutions.",
     canonical: `${BASE_URL}/ourgoverment`,
     ogType: "website"
   },

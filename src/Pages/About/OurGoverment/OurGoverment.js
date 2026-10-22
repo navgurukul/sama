@@ -27,7 +27,7 @@ const OurGoverment = () => {
         <>
         <Container maxWidth="lg" sx={ourteam.container}>
             <Box sx={ourteam.GovBox}>
-                <Typography variant="h5" gutterBottom>
+                <Typography component="h1" variant="h5" gutterBottom>
                     Our Government Partners
                 </Typography>
                 <Typography variant="body1" paragraph sx={ourteam.Para}>

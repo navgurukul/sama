@@ -8,7 +8,7 @@ const CorporatePartner = () => {
     return (
         <>
             <Container maxWidth="lg" sx={ourteam.container}>
-                <Typography variant="h5" gutterBottom >
+                <Typography component="h1" variant="h5" gutterBottom >
                     Our Corporate Partners
                 </Typography>
                 <Typography variant="body1" paragraph>

@@ -231,6 +231,7 @@ function App() {
               <Route path="/ngoprofile" element={<NgoProfile />} />
               <Route path="/ourteam" element={<OurTeam />} />
               <Route path="/ourgoverment" element={<OurGoverment />} />
+              <Route path="/our-government" element={<OurGoverment />} />
               <Route path="/communitypartners" element={<CommunityPartners />} />
               <Route path="/corporatepartner" element={<CorporatePartner />} />
               <Route path="/documentreupload" element={<DocumentReupload />} />

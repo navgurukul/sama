@@ -63,7 +63,7 @@ const OurTeam = () => {
   return (
     <>
       <Container maxWidth="lg" disableGutters sx={ourteam.container}>
-        <Typography variant="h5" gutterBottom>
+        <Typography component="h1" variant="h5" gutterBottom>
           Our Team
         </Typography>
         <Typography variant="body1" paragraph>
