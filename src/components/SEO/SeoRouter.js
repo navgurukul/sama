@@ -19,6 +19,10 @@ const routeMap = {
   "/ngoregistration": seoRoutes.ngoRegistration,
   "/privacy-policy": seoRoutes.privacyPolicy,
   "/about-initiative": seoRoutes.aboutInitiative,
+  "/corporatepartner": seoRoutes.corporatePartner,
+  "/communitypartners": seoRoutes.communityPartners,
+  "/ourgoverment": seoRoutes.ourGoverment,
+  "/ourteam": seoRoutes.ourTeam,
 };
 
 const SeoRouter = () => {

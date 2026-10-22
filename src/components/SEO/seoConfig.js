@@ -89,5 +89,33 @@ export const seoRoutes = {
       "Discover Sama's mission to bridge the digital divide in India through verified hardware refurbishment and education empowerment.",
     canonical: `${BASE_URL}/about-initiative`,
     ogType: "website"
+  },
+  corporatePartner: {
+    title: "Corporate ESG & CSR Partnerships | Sama",
+    description:
+      "Partner with Sama for ESG & CSR compliance. Turn retired company laptops into verified digital classrooms with certified data wiping and 80G tax benefits.",
+    canonical: `${BASE_URL}/corporatepartner`,
+    ogType: "website"
+  },
+  communityPartners: {
+    title: "Community Partners & Grassroots Impact | Sama",
+    description:
+      "See how Sama collaborates with community organizations, learning centres, and grassroots NGOs to empower youth and women across India.",
+    canonical: `${BASE_URL}/communitypartners`,
+    ogType: "website"
+  },
+  ourGoverment: {
+    title: "Government Partnerships & Digital India | Sama",
+    description:
+      "Collaborating with state and national initiatives to advance digital literacy, e-waste circularity, and smart education in public schools.",
+    canonical: `${BASE_URL}/ourgoverment`,
+    ogType: "website"
+  },
+  ourTeam: {
+    title: "Our Team & Leadership | Sama Digital Foundation",
+    description:
+      "Meet the dedicated team, leaders, and technologists driving Sama's circular economy and digital inclusion missions across India.",
+    canonical: `${BASE_URL}/ourteam`,
+    ogType: "website"
   }
 };
