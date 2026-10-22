@@ -9,7 +9,7 @@ const CommunityPartners = () => {
     return (
         <>
             <Container maxWidth="lg" sx={ourteam.Communitycontainer} >
-                <Typography variant="h5" gutterBottom mt={5}>
+                <Typography component="h1" variant="h5" gutterBottom mt={5}>
                     Our Community Partners
                 </Typography>
                 <Typography variant="body1" paragraph mt={2}>
