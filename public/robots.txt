@@ -1,17 +1,8 @@
-# User agents and general crawl allowance
+# Rules apply to all web crawlers and AI answer engines
 User-agent: *
-Allow: /
-
-# Explicitly welcome AI Search & Answer Engine Crawlers
 User-agent: GPTBot
-Allow: /
-
 User-agent: ClaudeBot
-Allow: /
-
 User-agent: PerplexityBot
-Allow: /
-
 User-agent: Google-Extended
 Allow: /
 
