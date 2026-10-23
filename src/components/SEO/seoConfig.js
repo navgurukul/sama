@@ -56,7 +56,7 @@ export const seoRoutes = {
   ourApproach: {
     title: "Device Lifecycle & Refurbishment | Sama",
     description:
-      "Explore Sama's transparent laptop refurbishment lifecycle: certified data sanitization, hardware audits, RMS monitoring, and impact reporting.",
+      "Explore Sama's laptop refurbishment process: collecting retired devices, data erasure, hardware testing, and empowering grassroots learners in India.",
     canonical: `${BASE_URL}/our-approach`,
     ogType: "website"
   },
@@ -64,7 +64,7 @@ export const seoRoutes = {
   donate: {
     title: "Donate Used Laptops & E-Waste | Sama",
     description:
-      "Partner with Sama to donate retired company laptops and IT assets. Certified data wiping, 80G tax receipts, nationwide logistics, and verifiable impact.",
+      "Partner with Sama to donate retired company laptops and IT assets. We turn end-of-life devices into learning tools for girls and youth across India.",
     canonical: `${BASE_URL}/donate`,
     ogType: "website",
     schema: {
@@ -129,9 +129,9 @@ export const seoRoutes = {
     ogType: "website"
   },
   corporatePartner: {
-    title: "Corporate ESG & CSR Partnerships | Sama",
+    title: "Corporate Partnerships | Sama Digital Foundation",
     description:
-      "Partner with Sama for ESG & CSR compliance. Turn retired company laptops into verified digital classrooms with certified data wiping and 80G tax benefits.",
+      "Partner with Sama to repurpose retired company laptops into digital education tools for underserved youth, supporting circular economy and sustainability.",
     canonical: `${BASE_URL}/corporatepartner`,
     ogType: "website"
   },
