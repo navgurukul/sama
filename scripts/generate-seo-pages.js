@@ -23,9 +23,27 @@ const routes = [
     description:
       "Partner with Sama to donate retired company laptops and IT assets. We turn end-of-life devices into learning tools for girls and youth across India.",
     canonical: `${BASE_URL}/donate`,
-    heading: "Corporate Laptop Donation & E-Waste",
+    heading: "Corporate Laptop Donation & E-Waste Repurposing in India",
     subtext:
-      "Partner with Sama to transform end-of-life company laptops into powerful educational tools for youth and girls across India.",
+      "Partner with Sama Digital Foundation to transform end-of-life company laptops into powerful educational tools for youth and girls across India. We coordinate pan-India pickup, complete data wiping, and track hardware deployment to verified grassroots schools.",
+    faqs: [
+      {
+        question: "What devices does Sama accept for donation?",
+        answer: "Sama accepts retired corporate laptops, desktops, monitors, tablets, and related IT peripherals in working or repairable condition."
+      },
+      {
+        question: "How does Sama handle data sanitization on donated laptops?",
+        answer: "Every donated device undergoes rigorous, complete storage data erasure to ensure all company proprietary data is permanently wiped before refurbishment."
+      },
+      {
+        question: "Does Sama arrange device pickup across India?",
+        answer: "Yes, Sama manages coordinated doorstep logistics and pickup for corporate IT assets across major cities and states in India."
+      },
+      {
+        question: "Who receives the refurbished laptops?",
+        answer: "Refurbished laptops are deployed to verified grassroots NGOs, government schools, and community digital learning centres supporting underserved girls and youth."
+      }
+    ],
     schema: {
       "@context": "https://schema.org",
       "@graph": [
@@ -41,6 +59,43 @@ const routes = [
             "@type": "EntryPoint",
             "urlTemplate": `${BASE_URL}/donate`
           }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What devices does Sama accept for donation?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Sama accepts retired corporate laptops, desktops, monitors, tablets, and related IT peripherals in working or repairable condition."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does Sama handle data sanitization on donated laptops?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Every donated device undergoes rigorous, complete storage data erasure to ensure all company proprietary data is permanently wiped before refurbishment."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does Sama arrange device pickup across India?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, Sama manages coordinated doorstep logistics and pickup for corporate IT assets across major cities and states in India."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Who receives the refurbished laptops?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Refurbished laptops are deployed to verified grassroots NGOs, government schools, and community digital learning centres supporting underserved girls and youth."
+              }
+            }
+          ]
         },
         {
           "@type": "BreadcrumbList",
@@ -68,9 +123,62 @@ const routes = [
     description:
       "Partner with Sama to repurpose retired company laptops into digital education tools for underserved youth, supporting circular economy and sustainability.",
     canonical: `${BASE_URL}/corporatepartner`,
-    heading: "Our Corporate Partners",
+    heading: "Corporate Partnerships: E-Waste Circularity & Digital Inclusion",
     subtext:
-      "Our corporate partners enable us to turn retired laptops into life-changing tools for underserved communities, fostering digital education, career opportunities, and sustainable e-waste solutions."
+      "Our corporate partners enable us to turn retired laptops into life-changing tools for underserved communities, fostering digital education, career opportunities, and sustainable e-waste solutions.",
+    faqs: [
+      {
+        question: "How does a company partner with Sama for laptop donation?",
+        answer: "Companies can sign up on our corporate partner portal to register device batches, schedule pan-India logistics, and track hardware impact."
+      },
+      {
+        question: "Can companies track the impact of their donated laptops?",
+        answer: "Yes, Sama provides transparent tracking reports showing deployment details, student reach, and educational outcomes across beneficiary schools."
+      }
+    ],
+    schema: {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How does a company partner with Sama for laptop donation?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Companies can sign up on our corporate partner portal to register device batches, schedule pan-India logistics, and track hardware impact."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can companies track the impact of their donated laptops?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, Sama provides transparent tracking reports showing deployment details, student reach, and educational outcomes across beneficiary schools."
+              }
+            }
+          ]
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": BASE_URL
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Corporate Partners",
+              "item": `${BASE_URL}/corporatepartner`
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     path: "/our-government",
@@ -222,11 +330,28 @@ function generateSeoPages() {
 
     // 6. Inject crawlable snapshot inside <div id="root">
     // React 18 createRoot will clear and hydrate this on mount, but non-JS bots see real text!
+    const faqHtml = route.faqs && route.faqs.length
+      ? `
+        <section style="margin-top: 24px;">
+          <h2>Frequently Asked Questions</h2>
+          ${route.faqs
+            .map(
+              (f) => `
+            <article style="margin-bottom: 16px;">
+              <h3>${f.question}</h3>
+              <p>${f.answer}</p>
+            </article>`
+            )
+            .join("")}
+        </section>`
+      : "";
+
     const staticContent = `
       <main style="max-width: 900px; margin: 40px auto; padding: 20px; font-family: sans-serif; display: none;">
         <h1>${route.heading}</h1>
         <p>${route.subtext}</p>
-        <p>Sama Digital Foundation | <a href="https://thesama.in/donate">Donate Laptops</a> | <a href="https://thesama.in/corporatepartner">Corporate Partnerships</a></p>
+        ${faqHtml}
+        <p style="margin-top: 20px;">Sama Digital Foundation | <a href="https://thesama.in/donate">Donate Laptops</a> | <a href="https://thesama.in/corporatepartner">Corporate Partnerships</a></p>
       </main>
     `;
     html = html.replace('<div id="root"></div>', `<div id="root">${staticContent}</div>`);
