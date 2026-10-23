@@ -13,8 +13,8 @@ const CorporatePartner = () => {
                 </Typography>
                 <Typography variant="body1" paragraph>
                     Our corporate partners enable us to turn retired laptops 
-                    into life-changing tools for underserved communities. With over <strong>17,000+ laptops refurbished and deployed</strong>, 
-                    certified DoD/NIST data sanitization, and Section 80G tax benefit certificates, we help leading businesses achieve ESG compliance and measurable digital education impact.
+                    into life-changing tools for underserved communities, 
+                    fostering digital education, career opportunities, and sustainable e-waste solutions.
                 </Typography>
                 <CompanyLogo />
                 <CorporateForm />

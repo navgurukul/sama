@@ -174,13 +174,13 @@ function Donation() {
             variant="h6"
             sx={{ color: "#4A4A4A", fontSize: "24px", fontWeight: 700 }}
           >
-            Corporate Laptop Donation & E-Waste CSR
+            Corporate Laptop Donation & E-Waste
           </Typography>
           <Typography
             variant="body1"
             sx={{ color: "#4A4A4A", mt: 1, maxWidth: "720px" }}
           >
-            Support Sama's mission: certified data wiping, Section 80G tax benefits, pan-India logistics, and verifiable impact across 17,000+ donated devices.
+            Partner with Sama to transform end-of-life company laptops into powerful educational tools for youth and girls across India.
           </Typography>
           <Grid container spacing={4} sx={{ mt: 1 }}>
             <Grid item xs={12} md={4}>
