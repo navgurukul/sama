@@ -43,7 +43,7 @@ const Footer = () => {
           <Grid container spacing={3} alignItems="center" marginBottom={"32px"}>
             <Grid item xs={12} md={2} textAlign={{ xs: "center", md: "left" }} mb={{ xs: 2, md: 12 }}>
               <Link href="/">
-                <img src={samalogo} alt="Logo" width={170} /> {/* Increased Size */}
+                <img src={samalogo} alt="Sama Digital Foundation Logo" width={170} /> {/* Increased Size */}
               </Link>
             </Grid>
 
@@ -56,7 +56,7 @@ const Footer = () => {
                   <Box display="flex" flexDirection="column" gap={2} mt={2}>
                     <Typography variant="body2" >
                       <Link href="/about" underline="none" color="#4A4A4A">
-                      Discover Us
+                        Discover Us
                       </Link>
                     </Typography>
                     <Typography variant="body2" >
@@ -100,14 +100,21 @@ const Footer = () => {
                     Support
                   </Typography>
                   <Box display="flex" justifyContent="center" alignItems="center" mt={1} gap={1}>
-                    <img src={Email} fontSize="small" sx={{ mr: 1 }} />
+                    <img src={Email} alt="Email" fontSize="small" sx={{ mr: 1 }} />
                     <Link href="mailto:operations@thesama.in" underline="none" target="_blank" rel="noopener noreferrer">
                       <Typography variant="body2" >operations@thesama.in</Typography>
                     </Link>
                   </Box>
-                  <Box display="flex" justifyContent="center" mt={2} gap={1}>
-                    <Link href="https://www.linkedin.com/company/thesama/" underline="none" target="_blank" rel="noopener noreferrer">
-                      <img src={LinkedInIcon} />
+                  <Box display="flex" justifyContent={{ xs: "center", md: "flex-start" }} mt={2} gap={1.5}>
+                    <Link href="https://www.linkedin.com/company/thesama/" underline="none" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                      <img src={LinkedInIcon} alt="LinkedIn" width="24" height="24" />
+                    </Link>
+                    <Link href="https://www.instagram.com/samadigitalfoundation/" underline="none" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A4A4A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                      </svg>
                     </Link>
                   </Box>
                 </Grid>

@@ -691,7 +691,7 @@ const Navbar = () => {
                     <Box
                       component="img"
                       src={logo}
-                      alt="Logo"
+                      alt="Sama Digital Foundation Logo"
                       className="header-logo"
                       sx={{ cursor: "pointer" }}
                       onClick={() => {

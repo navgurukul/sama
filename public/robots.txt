@@ -1,5 +1,9 @@
-# https://www.robotstxt.org/robotstxt.html
+# Rules apply to all web crawlers and AI answer engines
 User-agent: *
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: PerplexityBot
+User-agent: Google-Extended
 Allow: /
 
 # Disallow internal operational, admin, and portal routes
