@@ -90,7 +90,7 @@ const AdminNgo = () => {
           ...new Set(data.map((item) => item["Laptop require"])),
         ];
         const purposeOptions = [
-          ...new Set(data.map((item) => item.expectedOutcome)),
+          ...new Set(data.map((item) => (item.expectedOutcome || item.primaryUse || "").trim()).filter(Boolean)),
         ];
         const locationOptions = [...new Set(data.map((item) => item.location))];
         const statusOptions = [
@@ -218,7 +218,7 @@ const AdminNgo = () => {
         ngo.contactNumber?.toString().includes(searchTerm)) &&
       (filters.laptopsRequired === "" ||
         ngo["Laptop require"] === filters.laptopsRequired) &&
-      (filters.purpose === "" || ngo.expectedOutcome === filters.purpose) &&
+      (filters.purpose === "" || (ngo.expectedOutcome || ngo.primaryUse || "").trim() === filters.purpose) &&
       (filters.location === "" || ngo.location === filters.location) &&
       (filters.status === "" || ngo.Status === filters.status)
     );
@@ -476,7 +476,7 @@ const AdminNgo = () => {
                         {ngo.location}
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
-                        {ngo.expectedOutcome}
+                        {ngo.expectedOutcome || ngo.primaryUse || "-"}
                       </TableCell>
                       <TableCell sx={classes.tablecell}>
                         <FormControl fullWidth>
