@@ -12,9 +12,9 @@ const CorporatePartner = () => {
                     Our Corporate Partners
                 </Typography>
                 <Typography variant="body1" paragraph>
-                    Our corporate partners enable us to turn unused laptops 
-                    into life-changing tools for<br/> underserved communities, 
-                    fostering education, employment, and sustainability
+                    Our corporate partners enable us to turn retired laptops 
+                    into life-changing tools for underserved communities, 
+                    fostering digital education, career opportunities, and sustainable e-waste solutions.
                 </Typography>
                 <CompanyLogo />
                 <CorporateForm />

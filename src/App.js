@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { ThemeProvider } from "@mui/material/styles";
 import theme from './theme/theme';
 import Navbar from './components/Header/Navbar';
@@ -230,8 +230,8 @@ function App() {
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
               <Route path="/ngoprofile" element={<NgoProfile />} />
               <Route path="/ourteam" element={<OurTeam />} />
-              <Route path="/ourgoverment" element={<OurGoverment />} />
               <Route path="/our-government" element={<OurGoverment />} />
+              <Route path="/ourgoverment" element={<Navigate to="/our-government" replace />} />
               <Route path="/communitypartners" element={<CommunityPartners />} />
               <Route path="/corporatepartner" element={<CorporatePartner />} />
               <Route path="/documentreupload" element={<DocumentReupload />} />

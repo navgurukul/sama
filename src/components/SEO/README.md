@@ -62,9 +62,13 @@ All page titles follow Google's strict display limits (≤ 60 characters) and hi
 | :--- | :--- | :--- | :--- |
 | `/` | `https://thesama.in` | `Sama Digital Foundation \| E-Waste & Laptop Donation` (50 chars) | E-Waste, Laptop Donation India |
 | `/donate` | `https://thesama.in/donate` | `Donate Used Laptops & E-Waste \| Sama` (37 chars) | Corporate Laptop Donation, E-Waste CSR |
+| `/corporatepartner` | `https://thesama.in/corporatepartner` | `Corporate ESG & CSR Partnerships \| Sama` (41 chars) | Corporate ESG, IT Asset Disposal CSR |
 | `/ngoregistration` | `https://thesama.in/ngoregistration` | `Request Refurbished Laptops for NGOs \| Sama` (45 chars) | Refurbished Laptops for NGOs / Schools |
 | `/about` | `https://thesama.in/about` | `About Sama \| Tech & Digital Empowerment` (41 chars) | Digital Divide, Women Empowerment |
 | `/our-approach` | `https://thesama.in/our-approach` | `Device Lifecycle & Refurbishment \| Sama` (41 chars) | Hardware Refurbishment, Data Sanitization |
+| `/our-government` | `https://thesama.in/our-government` | `Government & Public Sector Partnerships \| Sama` (49 chars) | Public Education, Digital Inclusion |
+| `/communitypartners` | `https://thesama.in/communitypartners` | `Community Partners & Grassroots Impact \| Sama` (47 chars) | Community Learning Centres, Youth Empowerment |
+| `/ourteam` | `https://thesama.in/ourteam` | `Our Team & Leadership \| Sama Digital Foundation` (49 chars) | Leadership, Circular Economy Team |
 | `/about-initiative` | `https://thesama.in/about-initiative` | `About Our Initiative \| Sama Digital Foundation` (47 chars) | Digital Empowerment Initiative |
 | `/privacy-policy` | `https://thesama.in/privacy-policy` | `Privacy Policy \| Sama Digital Foundation` (41 chars) | Transparency, Cookie & LinkedIn Pixel Policy |
 

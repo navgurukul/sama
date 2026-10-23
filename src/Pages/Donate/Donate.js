@@ -172,14 +172,20 @@ function Donation() {
           <Typography
             component="h1"
             variant="h6"
-            sx={{ color: "#4A4A4A", fontSize: "24px" }}
+            sx={{ color: "#4A4A4A", fontSize: "24px", fontWeight: 700 }}
           >
-            Support Sama's Mission
+            Corporate Laptop Donation & E-Waste
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ color: "#4A4A4A", mt: 1, maxWidth: "720px" }}
+          >
+            Partner with Sama to transform end-of-life company laptops into powerful educational tools for youth and girls across India.
           </Typography>
           <Grid container spacing={4} sx={{ mt: 1 }}>
             <Grid item xs={12} md={4}>
               <Box>
-                <img src={icon1} />
+                <img src={icon1} alt="Corporate Laptop Donation" width="64" height="64" />
                 <Typography
                   className="customSubtitle1"
                   sx={{ mt: 2 }}
@@ -197,6 +203,10 @@ function Donation() {
                 <img
                   src={require("./assets/Group 22.svg").default}
                   alt="Corporate Impact Funding"
+                  loading="lazy"
+                  decoding="async"
+                  width="64"
+                  height="64"
                 />
                 <Typography
                   className="customSubtitle1"
@@ -216,6 +226,10 @@ function Donation() {
                 <img
                   src={require("./assets/Group 23.svg").default}
                   alt="Individual Contribution"
+                  loading="lazy"
+                  decoding="async"
+                  width="64"
+                  height="64"
                 />
                 <Typography
                   className="customSubtitle1"

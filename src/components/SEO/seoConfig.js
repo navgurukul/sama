@@ -66,7 +66,45 @@ export const seoRoutes = {
     description:
       "Partner with Sama to donate retired company laptops and IT assets. Certified data wiping, 80G tax receipts, nationwide logistics, and verifiable impact.",
     canonical: `${BASE_URL}/donate`,
-    ogType: "website"
+    ogType: "website",
+    schema: {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "DonateAction",
+          "name": "Donate Used Laptops and IT Assets to Sama",
+          "description": "Donate retired company laptops and e-waste to power digital education for underserved girls and youth in India.",
+          "recipient": {
+            "@id": `${BASE_URL}/#organization`
+          },
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": `${BASE_URL}/donate`,
+            "actionPlatform": [
+              "http://schema.org/DesktopWebPlatform",
+              "http://schema.org/MobileWebPlatform"
+            ]
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": BASE_URL
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Donate Laptops",
+              "item": `${BASE_URL}/donate`
+            }
+          ]
+        }
+      ]
+    }
   },
 
   ngoRegistration: {
@@ -108,7 +146,7 @@ export const seoRoutes = {
     title: "Government & Public Sector Partnerships | Sama",
     description:
       "Partnering with state and education initiatives to advance digital literacy, e-waste circularity, and smart education in public institutions.",
-    canonical: `${BASE_URL}/ourgoverment`,
+    canonical: `${BASE_URL}/our-government`,
     ogType: "website"
   },
   ourTeam: {

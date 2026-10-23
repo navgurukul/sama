@@ -9,6 +9,12 @@
   <!-- Corporate Laptop Donation & E-Waste -->
   <url>
     <loc>https://thesama.in/donate</loc>
+    <lastmod>2026-10-23</lastmod>
+  </url>
+
+  <!-- Corporate ESG & CSR Partnerships -->
+  <url>
+    <loc>https://thesama.in/corporatepartner</loc>
     <lastmod>2026-10-22</lastmod>
   </url>
 
@@ -21,7 +27,7 @@
   <!-- About Sama Digital Foundation -->
   <url>
     <loc>https://thesama.in/about</loc>
-    <lastmod>2026-10-22</lastmod>
+    <lastmod>2026-10-23</lastmod>
   </url>
 
   <!-- Hardware Refurbishment & Device Lifecycle -->
@@ -30,15 +36,15 @@
     <lastmod>2026-10-22</lastmod>
   </url>
 
-  <!-- Digital Initiative Overview -->
+  <!-- Team & Leadership -->
   <url>
-    <loc>https://thesama.in/about-initiative</loc>
-    <lastmod>2026-10-22</lastmod>
+    <loc>https://thesama.in/ourteam</loc>
+    <lastmod>2026-10-23</lastmod>
   </url>
 
-  <!-- Corporate ESG & CSR Partnerships -->
+  <!-- Government Partnerships -->
   <url>
-    <loc>https://thesama.in/corporatepartner</loc>
+    <loc>https://thesama.in/our-government</loc>
     <lastmod>2026-10-22</lastmod>
   </url>
 
@@ -48,16 +54,10 @@
     <lastmod>2026-10-22</lastmod>
   </url>
 
-  <!-- Government Partnerships -->
+  <!-- Digital Initiative Overview -->
   <url>
-    <loc>https://thesama.in/ourgoverment</loc>
-    <lastmod>2026-10-22</lastmod>
-  </url>
-
-  <!-- Team & Leadership -->
-  <url>
-    <loc>https://thesama.in/ourteam</loc>
-    <lastmod>2026-10-22</lastmod>
+    <loc>https://thesama.in/about-initiative</loc>
+    <lastmod>2024-12-18</lastmod>
   </url>
 
   <!-- Privacy Policy & Trust -->
