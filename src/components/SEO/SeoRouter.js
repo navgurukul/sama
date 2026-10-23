@@ -21,7 +21,6 @@ const routeMap = {
   "/about-initiative": seoRoutes.aboutInitiative,
   "/corporatepartner": seoRoutes.corporatePartner,
   "/communitypartners": seoRoutes.communityPartners,
-  "/ourgoverment": seoRoutes.ourGoverment,
   "/our-government": seoRoutes.ourGoverment,
   "/ourteam": seoRoutes.ourTeam,
 };
