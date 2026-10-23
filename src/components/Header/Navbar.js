@@ -52,7 +52,7 @@ const discoverUsItems = [
 
 const getInvolvedItems = [
   { text: "Corporate Partners", href: "/corporatepartner" },
-  { text: "Government Partners", href: "/ourgoverment" },
+  { text: "Government Partners", href: "/our-government" },
   { text: "Community Partners", href: "/communitypartners" },
 ];
 

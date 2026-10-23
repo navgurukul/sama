@@ -2,8 +2,7 @@
 User-agent: *
 Allow: /
 
-# Disallow internal operational, admin, login and portal routes
-Disallow: /login
+# Disallow internal operational, admin, and portal routes
 Disallow: /corporate$
 Disallow: /corporate/
 Disallow: /corpretedb
@@ -19,17 +18,7 @@ Disallow: /mouUpload
 Disallow: /monthly-reporting
 Disallow: /preliminary
 
-# Explicitly Allow public partner and donation pages
-Allow: /corporatepartner
-Allow: /communitypartners
-Allow: /our-government
-Allow: /ourgoverment
-Allow: /ourteam
-Allow: /donate
-Allow: /ngoregistration
-Allow: /our-approach
-Allow: /about
-Allow: /about-initiative
+# Note on /login: Kept out of robots.txt Disallow so Googlebot can crawl and obey the noindex meta tag (or use GSC Removals tool).
 
 # Sitemap location
 Sitemap: https://thesama.in/sitemap.xml

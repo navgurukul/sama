@@ -83,7 +83,7 @@ const Footer = () => {
                       </Link>
                     </Typography>
                     <Typography variant="body2" >
-                      <Link href="/ourgoverment" underline="none" color="#4A4A4A">
+                      <Link href="/our-government" underline="none" color="#4A4A4A">
                         Government Partners
                       </Link>
                     </Typography>
