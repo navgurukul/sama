@@ -43,7 +43,7 @@ const Footer = () => {
           <Grid container spacing={3} alignItems="center" marginBottom={"32px"}>
             <Grid item xs={12} md={2} textAlign={{ xs: "center", md: "left" }} mb={{ xs: 2, md: 12 }}>
               <Link href="/">
-                <img src={samalogo} alt="Logo" width={170} /> {/* Increased Size */}
+                <img src={samalogo} alt="Sama Digital Foundation Logo" width={170} /> {/* Increased Size */}
               </Link>
             </Grid>
 

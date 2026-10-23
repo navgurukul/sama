@@ -1,5 +1,18 @@
-# https://www.robotstxt.org/robotstxt.html
+# User agents and general crawl allowance
 User-agent: *
+Allow: /
+
+# Explicitly welcome AI Search & Answer Engine Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
 Allow: /
 
 # Disallow internal operational, admin, and portal routes
