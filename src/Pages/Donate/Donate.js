@@ -625,6 +625,7 @@ function Donation() {
         {/* Frequently Asked Questions Section */}
         <Box sx={{ mt: 8, mb: 8 }}>
           <Typography
+            component="h2"
             variant="h4"
             sx={{
               fontWeight: 700,
@@ -640,6 +641,7 @@ function Donation() {
           </Typography>
 
           <Accordion
+            TransitionProps={{ unmountOnExit: false }}
             sx={{
               mb: 1.5,
               borderRadius: "8px !important",
@@ -649,7 +651,7 @@ function Donation() {
             }}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography sx={{ fontWeight: 600, color: "#222222" }}>
+              <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 600, color: "#222222", m: 0 }}>
                 What devices does Sama accept for donation?
               </Typography>
             </AccordionSummary>
@@ -661,6 +663,7 @@ function Donation() {
           </Accordion>
 
           <Accordion
+            TransitionProps={{ unmountOnExit: false }}
             sx={{
               mb: 1.5,
               borderRadius: "8px !important",
@@ -670,7 +673,7 @@ function Donation() {
             }}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography sx={{ fontWeight: 600, color: "#222222" }}>
+              <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 600, color: "#222222", m: 0 }}>
                 How does Sama handle data sanitization on donated laptops?
               </Typography>
             </AccordionSummary>
@@ -682,6 +685,7 @@ function Donation() {
           </Accordion>
 
           <Accordion
+            TransitionProps={{ unmountOnExit: false }}
             sx={{
               mb: 1.5,
               borderRadius: "8px !important",
@@ -691,7 +695,7 @@ function Donation() {
             }}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography sx={{ fontWeight: 600, color: "#222222" }}>
+              <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 600, color: "#222222", m: 0 }}>
                 Does Sama arrange device pickup across India?
               </Typography>
             </AccordionSummary>
@@ -703,6 +707,7 @@ function Donation() {
           </Accordion>
 
           <Accordion
+            TransitionProps={{ unmountOnExit: false }}
             sx={{
               mb: 1.5,
               borderRadius: "8px !important",
@@ -712,7 +717,7 @@ function Donation() {
             }}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography sx={{ fontWeight: 600, color: "#222222" }}>
+              <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 600, color: "#222222", m: 0 }}>
                 Who receives the refurbished laptops?
               </Typography>
             </AccordionSummary>
