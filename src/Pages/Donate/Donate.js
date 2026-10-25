@@ -13,8 +13,11 @@ import {
   FormHelperText,
   FormControl,
   Container,
-  
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "./Donate.css";
 
 import icon1 from "./assets/Group 22 (1).svg";
@@ -617,6 +620,113 @@ function Donation() {
               </Grid>
             </Grid>
           </form>
+        </Box>
+
+        {/* Frequently Asked Questions Section */}
+        <Box sx={{ mt: 8, mb: 8 }}>
+          <Typography
+            component="h2"
+            variant="h4"
+            sx={{
+              fontWeight: 700,
+              color: "#333333",
+              mb: 1,
+              fontSize: { xs: "1.5rem", md: "2rem" },
+            }}
+          >
+            Frequently Asked Questions
+          </Typography>
+          <Typography variant="body1" sx={{ color: "#666666", mb: 3 }}>
+            Everything you need to know about corporate laptop donations, pan-India logistics, and data security.
+          </Typography>
+
+          <Accordion
+            TransitionProps={{ unmountOnExit: false }}
+            sx={{
+              mb: 1.5,
+              borderRadius: "8px !important",
+              border: "1px solid #EAEAEA",
+              boxShadow: "none",
+              "&:before": { display: "none" },
+            }}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 600, color: "#222222", m: 0 }}>
+                What devices does Sama accept for donation?
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography sx={{ color: "#555555" }}>
+                Sama accepts retired corporate laptops, desktops, monitors, tablets, and related IT peripherals in working or repairable condition.
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion
+            TransitionProps={{ unmountOnExit: false }}
+            sx={{
+              mb: 1.5,
+              borderRadius: "8px !important",
+              border: "1px solid #EAEAEA",
+              boxShadow: "none",
+              "&:before": { display: "none" },
+            }}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 600, color: "#222222", m: 0 }}>
+                How does Sama handle data sanitization on donated laptops?
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography sx={{ color: "#555555" }}>
+                Every donated device undergoes rigorous, complete storage data erasure to ensure all company proprietary data is permanently wiped before refurbishment.
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion
+            TransitionProps={{ unmountOnExit: false }}
+            sx={{
+              mb: 1.5,
+              borderRadius: "8px !important",
+              border: "1px solid #EAEAEA",
+              boxShadow: "none",
+              "&:before": { display: "none" },
+            }}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 600, color: "#222222", m: 0 }}>
+                Does Sama arrange device pickup across India?
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography sx={{ color: "#555555" }}>
+                Yes, Sama manages coordinated doorstep logistics and pickup for corporate IT assets across major cities and states in India.
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion
+            TransitionProps={{ unmountOnExit: false }}
+            sx={{
+              mb: 1.5,
+              borderRadius: "8px !important",
+              border: "1px solid #EAEAEA",
+              boxShadow: "none",
+              "&:before": { display: "none" },
+            }}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 600, color: "#222222", m: 0 }}>
+                Who receives the refurbished laptops?
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography sx={{ color: "#555555" }}>
+                Refurbished laptops are deployed to verified grassroots NGOs, government schools, and community digital learning centres supporting underserved girls and youth.
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
         </Box>
       </Container>
     </>
