@@ -581,7 +581,7 @@ const TableView = ({
 
       if (metric === "ngoPartners" || metric === "ngosServed") {
         data = data.data || data;
-        data = data.filter(ngo => ngo.Status === "Approved");
+        data = data.filter(ngo => ["Approved", "Delivered", "Dispatched"].includes(ngo.Status));
 
         if (metric === "ngosServed") {
           try {

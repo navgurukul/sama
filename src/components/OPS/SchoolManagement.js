@@ -94,8 +94,8 @@ export default function SchoolManagement() {
       if (data.status === 'success' && Array.isArray(data.data)) {
         const uniqueNgosMap = new Map();
         data.data.forEach(n => {
-          // Only include NGOs that are explicitly marked as "Approved"
-          if (n.organizationName && n.Status === "Approved") {
+          // Include NGOs that are Approved, Delivered, or Dispatched
+          if (n.organizationName && ["Approved", "Delivered", "Dispatched"].includes(n.Status)) {
             uniqueNgosMap.set(n.organizationName, { name: n.organizationName, id: n.Id || n.displayId || '' });
           }
         });
