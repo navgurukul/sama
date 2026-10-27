@@ -5675,7 +5675,7 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
                     SELECT id, organization_name AS ngo_name, status, location, doner AS donor,
                            beneficiaries_count, laptop_require
                     FROM {DB_SCHEMA}.external_registered_ngo
-                    WHERE status = 'Approved'
+                    WHERE UPPER(status) IN ('APPROVED', 'DISPATCHED', 'DELIVERED')
                 """)
                 for r in cur.fetchall():
                     target_b = 0
