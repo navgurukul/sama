@@ -5672,16 +5672,47 @@ async def get_donor_stats(orgName: Optional[str] = None, startDate: Optional[str
 
                 ngos = []
                 cur.execute(f"""
-                    SELECT id, organization_name AS ngo_name, status, location, doner AS donor,
-                           beneficiaries_count, laptop_require
-                    FROM {DB_SCHEMA}.external_registered_ngo
-                    WHERE UPPER(status) IN ('APPROVED', 'DISPATCHED', 'DELIVERED')
+                    WITH combined_ngos AS (
+                        SELECT 
+                            id::text, 
+                            organization_name AS ngo_name, 
+                            status, 
+                            COALESCE(location, 'Unknown') AS location, 
+                            doner AS donor,
+                            beneficiaries_count::text, 
+                            laptop_require::bigint
+                        FROM {DB_SCHEMA}.external_registered_ngo
+                        WHERE UPPER(status) IN ('APPROVED', 'DISPATCHED', 'DELIVERED')
+                        
+                        UNION ALL
+                        
+                        SELECT 
+                            id::text, 
+                            ngo_name, 
+                            status, 
+                            COALESCE(location, 'Unknown') AS location, 
+                            donor,
+                            beneficiaries_count::text, 
+                            laptop_quantity::bigint AS laptop_require
+                        FROM {DB_SCHEMA}.ngo_requests
+                        WHERE UPPER(status) IN ('APPROVED', 'DISPATCHED', 'DELIVERED')
+                          AND LOWER(TRIM(ngo_name)) NOT IN (
+                              SELECT LOWER(TRIM(organization_name)) 
+                              FROM {DB_SCHEMA}.external_registered_ngo 
+                              WHERE UPPER(status) IN ('APPROVED', 'DISPATCHED', 'DELIVERED')
+                          )
+                    )
+                    SELECT id, ngo_name, status, location, donor, beneficiaries_count, laptop_require
+                    FROM combined_ngos
                 """)
                 for r in cur.fetchall():
                     target_b = 0
                     try:
-                        target_b = r["beneficiaries_count"] or (r["laptop_require"] or 0) * 13
-                        target_b = int(target_b) if target_b else 0
+                        raw_b = r["beneficiaries_count"]
+                        if raw_b and str(raw_b).strip().isdigit():
+                            target_b = int(raw_b)
+                        else:
+                            target_b = (r["laptop_require"] or 0) * 13
                     except (ValueError, TypeError):
                         target_b = 0
 
