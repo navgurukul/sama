@@ -28,7 +28,9 @@ const BulkEditPanel = ({
                     `${process.env.REACT_APP_NgoInformationApi}?type=registration`
                 );
                 const responseData = await response.json();
-                const filteredNgos = responseData.data.filter(ngo => ngo.Status === "Approved");
+                const filteredNgos = responseData.data.filter(ngo => 
+                    ["Approved", "Delivered", "Dispatched"].includes(ngo.Status)
+                );
                 setApprovedNgos(filteredNgos.map(ngo => ngo.organizationName));
             } catch (error) {
                 console.error("Error fetching NGO data:", error);

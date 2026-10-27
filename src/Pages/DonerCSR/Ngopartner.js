@@ -80,7 +80,9 @@ const Ngopartner = () => {
           preRes.json()
         ]);
 
-        const approved = ngoJson.data?.filter((ngo) => ngo.Status === "Approved") || [];
+        const approved = ngoJson.data?.filter((ngo) => 
+          ["Approved", "Delivered", "Dispatched"].includes(ngo.Status)
+        ) || [];
         function parseDate(dateStr) {
           if (!dateStr) return null;
 
