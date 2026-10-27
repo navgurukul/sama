@@ -71,7 +71,9 @@ const FilterPanel = ({
           `${process.env.REACT_APP_NgoInformationApi}?type=registration`
         );
         const responseData = await response.json();
-        const filtered = responseData.data.filter((ngo) => ngo.Status === 'Approved');
+        const filtered = responseData.data.filter((ngo) => 
+          ['Approved', 'Delivered', 'Dispatched'].includes(ngo.Status)
+        );
         const names = filtered.map((ngo) => ngo.organizationName);
         setAllocatedToOptions(names);
       } catch (err) {

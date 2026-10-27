@@ -471,7 +471,7 @@ const Ngopartner = () => {
                   </Box>
                   <Chip
                     label={partner.status}
-                    color={partner.status === "Approved" ? "success" : "warning"}
+                    color={["Approved", "Delivered", "Dispatched"].includes(partner.status) ? "success" : "warning"}
                     variant="outlined"
                   />
                 </Box>
