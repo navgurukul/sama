@@ -3801,7 +3801,8 @@ def ngo_exec_get(request: Request) -> Any:
                                email, operating_state, location, years_operating, focus_area, works_with_women,
                                infrastructure, beneficiary_selection, beneficiaries_count, age_group, primary_use,
                                expected_outcome, laptop_tracking, jobs_created, previous_projects, sufficient_staff,
-                               impact_report, status, ngo_type, laptop_require, doner, request_type, ngo_requests
+                               impact_report, status, ngo_type, laptop_require, doner, request_type, ngo_requests,
+                               tentative_refurb_completion
                         FROM {DB_SCHEMA}.external_registered_ngo
                         ORDER BY id ASC
                     """
@@ -3837,6 +3838,7 @@ def ngo_exec_get(request: Request) -> Any:
                             "Laptop require": r["laptop_require"],
                             "Doner": r["doner"],
                             "requestType": r["request_type"],
+                            "tentative_refurb_completion": str(r["tentative_refurb_completion"]) if r.get("tentative_refurb_completion") else None,
                             "NGORequests": json.loads(r["ngo_requests"]) if r["ngo_requests"] else ""
                         })
                     data_json["data"] = data_list
@@ -4377,14 +4379,24 @@ async def ngo_exec_post(request: Request) -> Any:
             if date_val == "": date_val = None
             with get_conn() as conn:
                 with conn.cursor() as cur:
-                    cur.execute(
-                        f"""
-                        UPDATE {DB_SCHEMA}.ngo_requests
-                        SET tentative_refurb_completion = %s
-                        WHERE id = %s
-                        """,
-                        (date_val, db_id)
-                    )
+                    if str(ngo_id).startswith("SAM-"):
+                        cur.execute(
+                            f"""
+                            UPDATE {DB_SCHEMA}.external_registered_ngo
+                            SET tentative_refurb_completion = %s
+                            WHERE id = %s
+                            """,
+                            (date_val, str(ngo_id))
+                        )
+                    else:
+                        cur.execute(
+                            f"""
+                            UPDATE {DB_SCHEMA}.ngo_requests
+                            SET tentative_refurb_completion = %s
+                            WHERE id = %s
+                            """,
+                            (date_val, db_id)
+                        )
                     conn.commit()
             return {"status": "success", "id": ngo_id, "timeline_updated": date_val}
             
