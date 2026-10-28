@@ -70,7 +70,7 @@ export const DonatedTo = ({ value, onChange }) => {
         const responseData = await response.json();
 
         // Filter approved, delivered, or dispatched NGOs
-        const filteredNgos = (responseData.data).filter((ngo) => 
+        const filteredNgos = (responseData.data).filter((ngo) =>
           ["Approved", "Delivered", "Dispatched"].includes(ngo.Status)
         );
 
