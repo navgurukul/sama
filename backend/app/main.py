@@ -11,7 +11,9 @@ from typing import Any, Dict, List, Optional
 
 import boto3
 import httpx
+import urllib.parse
 from botocore.exceptions import ClientError
+from botocore.client import Config
 from psycopg.rows import dict_row
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile, BackgroundTasks, Response, Depends, Body
 from fastapi.responses import JSONResponse
@@ -1279,6 +1281,52 @@ def _presign_s3_get(client: Any, bucket: str, key: str, expires: int) -> str:
         Params={"Bucket": bucket, "Key": key},
         ExpiresIn=expires,
     )
+
+
+def _presign_s3_url_if_needed(raw_url: Any, expires: int = 3600) -> Any:
+    if not raw_url or not isinstance(raw_url, str):
+        return raw_url
+    url_str = raw_url.strip()
+    if "amazonaws.com/" not in url_str:
+        return raw_url
+
+    parsed = urllib.parse.urlparse(url_str)
+    host = parsed.netloc
+    path = parsed.path.lstrip("/")
+
+    bucket = None
+    key = None
+
+    if ".s3." in host or ".s3-" in host or host.endswith(".s3.amazonaws.com"):
+        bucket = host.split(".s3")[0]
+        key = path
+    elif host.startswith("s3.") or host.startswith("s3-"):
+        parts = path.split("/", 1)
+        if len(parts) == 2:
+            bucket, key = parts[0], parts[1]
+
+    if not bucket or not key:
+        return url_str
+
+    try:
+        region = os.getenv("AWS_REGION") or os.getenv("AWS_DEFAULT_REGION") or "ap-south-1"
+        client = boto3.client(
+            "s3",
+            aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID") or None,
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY") or None,
+            aws_session_token=os.getenv("AWS_SESSION_TOKEN") or None,
+            region_name=region,
+            endpoint_url=f"https://s3.{region}.amazonaws.com",
+            config=Config(signature_version="s3v4")
+        )
+        return client.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket, "Key": key},
+            ExpiresIn=expires
+        )
+    except Exception as e:
+        print(f"Error presigning S3 URL for {key}: {e}")
+        return url_str
 
 
 def _resolve_s3_evidence(key: str) -> Dict[str, Any]:
@@ -3769,7 +3817,7 @@ def ngo_exec_get(request: Request) -> Any:
 
             def document(link: Optional[str], status: Optional[str], description: Optional[str]) -> Dict[str, Any]:
                 return {
-                    "link": link or "",
+                    "link": _presign_s3_url_if_needed(link) or "",
                     "status": status or "",
                     "description": description or "",
                 }
