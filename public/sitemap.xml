@@ -65,4 +65,66 @@
     <loc>https://thesama.in/privacy-policy</loc>
     <lastmod>2026-10-22</lastmod>
   </url>
+
+  <!-- Initiatives -->
+  <url>
+    <loc>https://thesama.in/initiatives</loc>
+    <lastmod>2026-10-24</lastmod>
+  </url>
+
+  <!-- Sama Saathi Programme -->
+  <url>
+    <loc>https://thesama.in/sama-saathi</loc>
+    <lastmod>2026-10-24</lastmod>
+  </url>
+
+  <!-- Digital Inclusion & AI Literacy Labs -->
+  <url>
+    <loc>https://thesama.in/labs</loc>
+    <lastmod>2026-10-24</lastmod>
+  </url>
+
+  <!-- Giving Back -->
+  <url>
+    <loc>https://thesama.in/giving</loc>
+    <lastmod>2026-10-24</lastmod>
+  </url>
+
+  <!-- First Laptop, Next Builder -->
+  <url>
+    <loc>https://thesama.in/first-laptop</loc>
+    <lastmod>2026-10-24</lastmod>
+  </url>
+
+  <!-- Build for Good -->
+  <url>
+    <loc>https://thesama.in/bfg</loc>
+    <lastmod>2026-10-24</lastmod>
+  </url>
+
+  <!-- Communications & Reports -->
+  <url>
+    <loc>https://thesama.in/comms</loc>
+    <lastmod>2026-10-24</lastmod>
+  </url>
+
+  <!-- Contact Us -->
+  <url>
+    <loc>https://thesama.in/contact</loc>
+    <lastmod>2026-10-24</lastmod>
+  </url>
+
+  <!-- Editorial Articles & Insights -->
+  <url>
+    <loc>https://thesama.in/blog/beyond-connectivity</loc>
+    <lastmod>2026-10-24</lastmod>
+  </url>
+  <url>
+    <loc>https://thesama.in/blog/from-e-waste-to-new-beginnings</loc>
+    <lastmod>2026-10-24</lastmod>
+  </url>
+  <url>
+    <loc>https://thesama.in/blog/rethinking-digital-inclusion</loc>
+    <lastmod>2026-10-24</lastmod>
+  </url>
 </urlset>

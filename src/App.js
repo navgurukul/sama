@@ -2,8 +2,24 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { ThemeProvider } from "@mui/material/styles";
 import theme from './theme/theme';
-import Navbar from './components/Header/Navbar';
-import Footer from './components/Footer/Footer';
+import SmartHeader from './components/Header/SmartHeader';
+import SmartFooter from './components/Footer/SmartFooter';
+import EditorialHome from './Pages/Editorial/EditorialHome';
+import Initiatives from './Pages/Editorial/Initiatives';
+import SamaSaathi from './Pages/Editorial/SamaSaathi';
+import AiLabs from './Pages/Editorial/AiLabs';
+import GivingBack from './Pages/Editorial/GivingBack';
+import FirstLaptop from './Pages/Editorial/FirstLaptop';
+import BuildForGood from './Pages/Editorial/BuildForGood';
+import EditorialTeam from './Pages/Editorial/EditorialTeam';
+import Communications from './Pages/Editorial/Communications';
+import BlogPost from './Pages/Editorial/BlogPost';
+import BlogBeyondConnectivity from './Pages/Editorial/BlogBeyondConnectivity';
+import BlogEWaste from './Pages/Editorial/BlogEWaste';
+import BlogRethinkingInclusion from './Pages/Editorial/BlogRethinkingInclusion';
+import EditorialDonate from './Pages/Editorial/EditorialDonate';
+import EditorialContact from './Pages/Editorial/EditorialContact';
+import EditorialCorporate from './Pages/Editorial/EditorialCorporate';
 import Home from './Pages/Home';
 import About from './Pages/About/About';
 import OurApproach from './Pages/OurApproach/OurApproach';
@@ -16,9 +32,9 @@ import LaptopInventory from './Pages/LaptopData/index';
 import Ops from './components/OPS/index';
 import './App.css';
 import Userdata from ".././src/OppsFiles/UserDetails/Userdata"
-import Opslogin from './Pages/Login/OpsLogin/Opslogin';
+import EditorialLogin from './Pages/Login/OpsLogin/EditorialLogin';
 import PrivateRoute from './Privaterouts';
-import NgoForm from "../src/Pages/NGORegistration/RegistrationForm"
+import EditorialNgoRegistration from './Pages/NGORegistration/EditorialNgoRegistration';
 import CompanySelection from './Pages/NGORegistration/CompanySelection';
 import DonorManager from './Pages/NGORegistration/DonorManager';
 import Ngodashboard from './components/NgoDashboard/ngodashboard';
@@ -63,7 +79,7 @@ import Audit from './components/OPS/LaptopAudit';
 import LearningAnalytics from './components/OPS/LearningAnalytics';
 import LaptopDetails from "./Pages/LaptopTagging/LaptopDetails";
 import LaptopStageDetails from './Pages/LaptopTagging/LaptopStageDetails';
-import SignupForm from './Pages/Login/OpsLogin/SignupForm';
+import EditorialSignup from './Pages/Login/OpsLogin/EditorialSignup';
 import Registration from './components/Header/Registration';
 import Sidebar from './Pages/DonerCSR/SideBar';
 import Overview from './Pages/DonerCSR/Overview';
@@ -83,20 +99,36 @@ import RMSDonorDetailsDonors from './Pages/DonerCSR/RMSDonorDetailsDonors';
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <SeoRouter />
         <div className="layout">
-          <Navbar />
+          <SmartHeader />
           <div className="content">
             {" "}
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/our-approach" element={<OurApproach />} />
-              <Route path="/donate" element={<Donate />} />
-              <Route path="/ngoregistration/:donorId" element={<NgoForm />} />
-              <Route path='/ngoregistration' element={<NgoForm />} />  {/* // this is for all the ngo's */}
-              <Route path="/login" element={<Opslogin />} /> {/* // need to rename this component */}
+              <Route path="/" element={<EditorialHome />} />
+              <Route path="/initiatives" element={<Initiatives />} />
+              <Route path="/sama-saathi" element={<SamaSaathi />} />
+              <Route path="/our-approach" element={<SamaSaathi />} />
+              <Route path="/labs" element={<AiLabs />} />
+              <Route path="/giving" element={<GivingBack />} />
+              <Route path="/first-laptop" element={<FirstLaptop />} />
+              <Route path="/bfg" element={<BuildForGood />} />
+              <Route path="/build-for-good" element={<BuildForGood />} />
+              <Route path="/ourteam" element={<EditorialTeam />} />
+              <Route path="/team" element={<EditorialTeam />} />
+              <Route path="/comms" element={<Communications />} />
+              <Route path="/contact" element={<EditorialContact />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/blog/beyond-connectivity" element={<BlogBeyondConnectivity />} />
+              <Route path="/blog/from-e-waste-to-new-beginnings" element={<BlogEWaste />} />
+              <Route path="/blog/rethinking-digital-inclusion" element={<BlogRethinkingInclusion />} />
+              <Route path="/donate" element={<EditorialDonate />} />
+              <Route path="/corporatepartner" element={<EditorialCorporate />} />
+              <Route path="/about" element={<EditorialHome />} />
+              <Route path="/ngoregistration/:donorId" element={<EditorialNgoRegistration />} />
+              <Route path='/ngoregistration' element={<EditorialNgoRegistration />} />
+              <Route path="/login" element={<EditorialLogin />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/about-initiative" element={<LandingPage />} />
               <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
@@ -285,7 +317,7 @@ function App() {
                 }
               />
               <Route path="/edit-user/:id" element={<EditUserPage />} />
-              <Route path="/signup" element={<SignupForm />} />
+              <Route path="/signup" element={<EditorialSignup />} />
               <Route path="/registration" element={<Registration />} />
 
               <Route path="/yearly-reporting/:id" element={
@@ -343,7 +375,7 @@ function App() {
             </Routes>
             {" "}
           </div>
-          <Footer />
+          <SmartFooter />
         </div>
       </Router>
     </ThemeProvider >
