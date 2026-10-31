@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
+import BookCallModal from '../../components/Editorial/BookCallModal';
 import '../../styles/editorial.css';
 
 export default function GivingBack() {
   useReveal();
+  const [showBookCallModal, setShowBookCallModal] = useState(false);
 
   useEffect(() => {
     document.title = "Giving Back | Sama";
@@ -75,7 +77,7 @@ export default function GivingBack() {
 
     <div className="rd-cta reveal">
       <div><h3>Let’s set one up.</h3><p>Give us 30 minutes to walk through dates, and we will bring a Renew Desk to your office.</p></div>
-      <a className="bracket bracket--paper" href="#contact:connect" data-topic="Renew Desk at our office">Book 30 minutes with us <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <button type="button" className="bracket bracket--paper" onClick={() => setShowBookCallModal(true)}>Book 30 minutes with us <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </div>
     <p className="rd-foot reveal">There’s more life in your old laptop than you think.</p>
 
@@ -95,7 +97,7 @@ export default function GivingBack() {
       </div>
       <div className="rd-cta reveal">
         <div><h3>Bring your team in as mentors.</h3><p>Tell us about your team’s skills and we will match them with students who need them.</p></div>
-        <a className="bracket bracket--paper" href="#contact:connect" data-topic="Mentoring">Mentor with us <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a className="bracket bracket--paper" href="https://www.samasocial.in/be-a-mentor" target="_blank" rel="noopener noreferrer">Mentor with us <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
     </div>
   </div>
@@ -127,6 +129,13 @@ export default function GivingBack() {
     </div>
   </div>
 </section>
+
+      {/* Book a Call Modal */}
+      <BookCallModal
+        isOpen={showBookCallModal}
+        onClose={() => setShowBookCallModal(false)}
+        initialTopic="Renew Desk at our office"
+      />
     </div>
   );
 }

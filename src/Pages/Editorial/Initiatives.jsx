@@ -21,7 +21,7 @@ export default function Initiatives() {
   </div>
 </section>
 <section className="sec">
-  <div className="wrap cards3" style={{ gridTemplateColumns: 'repeat(2,1fr)' }}>
+  <div className="wrap cards2">
     <article className="card reveal">
       <div className="img"><img src="/img/saathi-kendra.jpg" alt="A Sama Digi Kendra at work" /></div>
       <div className="body"><h3>Sama Saathi Programme</h3>

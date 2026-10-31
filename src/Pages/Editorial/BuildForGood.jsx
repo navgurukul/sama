@@ -1,10 +1,42 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
+import BfgSlider from '../../components/Editorial/BfgSlider';
 import '../../styles/editorial.css';
 
 export default function BuildForGood() {
   useReveal();
+  const [email, setEmail] = useState('');
+  const [subscribeStatus, setSubscribeStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email || !email.includes('@')) return;
+    setSubscribeStatus('loading');
+    try {
+      const apiBase = process.env.REACT_APP_NgoInformationApi
+        ? process.env.REACT_APP_NgoInformationApi.replace(/\/ngo-exec.*$/, '')
+        : 'http://localhost:8000';
+      const res = await fetch(`${apiBase}/exec?type=publicInquiry`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: 'newsletter',
+          topic: 'Build for Good 2027 Cohort Updates',
+          email: email.trim().toLowerCase(),
+          message: 'Subscribed to receive news on upcoming hackathons, cohort announcements and civic innovation updates.'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || data.status === 'error') {
+        throw new Error(data.detail || 'Subscription failed');
+      }
+      setSubscribeStatus('success');
+    } catch (err) {
+      console.error('Subscription error:', err);
+      setSubscribeStatus('error');
+    }
+  };
 
   useEffect(() => {
     document.title = "Build for Good 2026 | Sama";
@@ -100,23 +132,20 @@ export default function BuildForGood() {
     <p className="mt-l reveal" style={{ fontFamily: 'var(--sans)', fontWeight: '700', color: 'var(--green)' }}>All three winning teams came from Tier II cities in Rajasthan.</p>
     <div className="reveal mt-m"><p style={{ color: 'var(--ink-2)' }}>Five further ideas are being carried forward beyond the finale:</p>
       <div className="chips"><span>Jan-Hit</span><span>Neonatal Health Monitoring System</span><span>TenderMind AI</span><span>KrishiSetu</span><span>SilverCare</span></div></div>
-    <div className="slider reveal" id="bfg-slider" aria-roledescription="carousel" aria-label="Build for Good 2026 photos">
-      <div className="slider__track">
-        <figure className="slider__slide"><img src="/img/bfg-g01.jpg" alt="Students waiting their turn as judges review notes at the finale" /></figure>
-        <figure className="slider__slide"><img src="/img/bfg-g02.jpg" alt="A finalist team presenting their prototype to the Sama team" /></figure>
-        <figure className="slider__slide"><img src="/img/bfg-g03.jpg" alt="A speaker presenting at the lectern" /></figure>
-        <figure className="slider__slide"><img src="/img/bfg-g04.jpg" alt="Finalists in the audience at the Build for Good finale" /></figure>
-        <figure className="slider__slide"><img src="/img/bfg-g05.jpg" alt="Judges, mentors and finalists on stage at the Build for Good 2026 national finale" /></figure>
-        <figure className="slider__slide"><img src="/img/bfg-g06.jpg" alt="The first-prize team receiving their cheque" /></figure>
-        <figure className="slider__slide"><img src="/img/bfg-g07.jpg" alt="All finalists holding their refurbished MacBooks" /></figure>
-        <figure className="slider__slide"><img src="/img/bfg-g08.jpg" alt="A Sama team member addressing the finalists" /></figure>
-        <figure className="slider__slide"><img src="/img/bfg-g09.jpg" alt="Keychains made from recycled laptop circuit boards" /></figure>
-        <figure className="slider__slide"><img src="/img/bfg-g10.jpg" alt="The Sama team at the finale" /></figure>
-      </div>
-      <button className="slider__btn slider__btn--prev" type="button" aria-label="Previous photo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
-      <button className="slider__btn slider__btn--next" type="button" aria-label="Next photo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-      <div className="slider__dots" role="tablist"></div>
-    </div>
+    <BfgSlider
+      slides={[
+        { src: '/img/bfg-g01.jpg', alt: 'Students waiting their turn as judges review notes at the finale' },
+        { src: '/img/bfg-g02.jpg', alt: 'A finalist team presenting their prototype to the Sama team' },
+        { src: '/img/bfg-g03.jpg', alt: 'A speaker presenting at the lectern' },
+        { src: '/img/bfg-g04.jpg', alt: 'Finalists in the audience at the Build for Good finale' },
+        { src: '/img/bfg-g05.jpg', alt: 'Judges, mentors and finalists on stage at the Build for Good 2026 national finale' },
+        { src: '/img/bfg-g06.jpg', alt: 'The first-prize team receiving their cheque' },
+        { src: '/img/bfg-g07.jpg', alt: 'All finalists holding their refurbished MacBooks' },
+        { src: '/img/bfg-g08.jpg', alt: 'A Sama team member addressing the finalists' },
+        { src: '/img/bfg-g09.jpg', alt: 'Keychains made from recycled laptop circuit boards' },
+        { src: '/img/bfg-g10.jpg', alt: 'The Sama team at the finale' }
+      ]}
+    />
     <p className="small mt-s">Build for Good 2026 national finale, Deshpande Foundation, Hubballi, 14 to 15 August 2026.</p>
   </div>
 </section>
@@ -128,7 +157,7 @@ export default function BuildForGood() {
       <span className="eyebrow">Prizes built with purpose</span>
       <h2 className="display h2 mt-s">Every prize has <em>a second life.</em></h2>
       <p className="lede mt-m">The refurbished MacBooks awarded to Build for Good finalists were restored through the same rigorous pipeline that powers digital inclusion across India, turning corporate hardware into tools for future builders.</p>
-      <a className="text-link mt-l" style={{ marginTop: '30px' }} href="#home:how">See how Sama restores devices <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <Link className="text-link mt-l" style={{ marginTop: '30px' }} to="/our-approach">See how Sama restores devices <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link>
     </div>
     <div className="reveal"><img src="https://navgurukul.github.io/sama-website/assets/hero-laptop-v2-BFsezopc.webp" alt="A restored laptop, open and ready to be passed on" style={{ marginLeft: 'auto', maxHeight: '340px' }} /></div>
   </div>
@@ -141,8 +170,33 @@ export default function BuildForGood() {
       <p className="lede mt-m">Build for Good is an ongoing commitment to nurturing student-led civic innovation. Whether you are a student ready to build, an engineer looking to mentor, or a corporate partner eager to support, there is a place for you in our next cohort.</p></div>
     <div><h3 className="display h3">Stay updated</h3>
       <p className="mt-s" style={{ color: 'var(--ink-2)' }}>Subscribe to receive news on upcoming hackathons, cohort announcements and civic innovation updates.</p>
-      <form className="signup" action="#"><label className="sr" htmlFor="em" style={{ position: 'absolute', left: '-9999px' }}>Email address</label><input id="em" type="email" required placeholder="Your email address" /><button className="bracket bracket--solid" type="submit">Notify me <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
-      <p className="small mt-m">Questions? Write to <a href="mailto:operations@thesama.in?subject=Build%20for%20Good%20query" style={{ color: 'var(--green)' }}>operations@thesama.in</a></p></div>
+      {subscribeStatus === 'success' ? (
+        <div style={{ padding: '12px 18px', background: '#EAF3EB', color: '#174B32', border: '1px solid #C4DFC7', borderRadius: '8px', fontWeight: '600', fontSize: '14.5px', marginTop: '16px' }}>
+          ✓ You’re on the list! We will notify you at <b>{email}</b> when 2027 registration opens.
+        </div>
+      ) : (
+        <form className="signup" onSubmit={handleSubscribe}>
+          <label className="sr" htmlFor="em" style={{ position: 'absolute', left: '-9999px' }}>Email address</label>
+          <input
+            id="em"
+            type="email"
+            required
+            placeholder="Your email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={subscribeStatus === 'loading'}
+          />
+          <button className="bracket bracket--solid" type="submit" disabled={subscribeStatus === 'loading'}>
+            {subscribeStatus === 'loading' ? 'Saving...' : 'Notify me'} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+      )}
+      {subscribeStatus === 'error' && (
+        <p style={{ color: '#9C2B2B', fontSize: '13px', marginTop: '8px' }}>
+          Could not subscribe right now. Please write directly to operations@thesama.in
+        </p>
+      )}
+      <p className="small mt-m">Questions? Write to <a href="mailto:operations@thesama.in?cc=brendon@thesama.in&subject=Build%20for%20Good%20query" style={{ color: 'var(--green)' }}>operations@thesama.in</a></p></div>
   </div>
 </section>
     </div>

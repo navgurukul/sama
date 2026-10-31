@@ -435,7 +435,7 @@ function generateSeoPages() {
       : "";
 
     const staticContent = `
-      <main style="max-width: 900px; margin: 40px auto; padding: 20px; font-family: sans-serif; display: none;">
+      <main style="max-width: 900px; margin: 40px auto; padding: 20px; font-family: sans-serif;">
         <h1>${route.heading}</h1>
         <p>${route.subtext}</p>
         ${faqHtml}

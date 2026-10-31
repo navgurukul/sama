@@ -23,12 +23,18 @@ const EDITORIAL_ROUTES = [
   '/ourgoverment',
   '/our-government',
   '/communitypartners',
-  '/about-initiative'
+  '/about-initiative',
+  '/login',
+  '/signup',
+  '/ngoregistration'
 ];
 
 export default function SmartFooter() {
   const location = useLocation();
-  const isEditorial = EDITORIAL_ROUTES.includes(location.pathname) || location.pathname.startsWith('/blog');
+  const isEditorial =
+    EDITORIAL_ROUTES.includes(location.pathname) ||
+    location.pathname.startsWith('/blog') ||
+    location.pathname.startsWith('/ngoregistration');
 
   if (isEditorial) {
     return <EditorialFooter />;

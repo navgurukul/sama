@@ -111,8 +111,13 @@ export default function AiLabs() {
 <section className="cta-band">
   <div className="wrap grid reveal">
     <h2 className="display h2">Equip an institution <em>with a lab.</em></h2>
-    <div><p className="lede">Running a school, vocational skilling centre or grassroots non-profit that needs hardware? Partner with Sama to bring refurbished laptops and digital infrastructure to the learners you support.</p>
-    <div className="btn-row mt-l"><a className="bracket bracket--solid" href="#involved:need">Request laptops <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><Link className="bracket bracket--line" to="/donate">Donate laptops <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link></div></div>
+    <div>
+      <p className="lede">Running a school, vocational skilling centre or grassroots non-profit that needs hardware? Partner with Sama to bring refurbished laptops and digital infrastructure to the learners you support.</p>
+      <div className="btn-row mt-l">
+        <Link className="bracket bracket--solid" to="/ngoregistration">Request laptops <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link>
+        <Link className="bracket bracket--line" to="/donate">Donate laptops <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link>
+      </div>
+    </div>
   </div>
 </section>
     </div>

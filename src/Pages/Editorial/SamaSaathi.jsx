@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
 import '../../styles/editorial.css';
 
@@ -179,14 +178,24 @@ export default function SamaSaathi() {
         <span className="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C785A" strokeWidth="1.6"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-4 4-6 7-6s5.8 2 7 6"/></svg></span>
         <div>
           <p>For women interested in owning and running a centre in their community.</p>
-          <a href="#contact:connect" data-topic="I want to become a Sama Saathi">I want to become a Saathi <span>→</span></a>
+          <a
+            href="mailto:operations@thesama.in?subject=Application:%20I%20want%20to%20become%20a%20Sama%20Saathi&body=Hello%20Sama%20Operations%20Team,%0D%0A%0D%0AI%20am%20interested%20in%20becoming%20a%20Sama%20Saathi%20and%20running%20a%20digital%20centre%20in%20my%20community.%0D%0A%0D%0AMy%20Details:%0D%0A%E2%80%A2%20Full%20Name:%20%0D%0A%E2%80%A2%20Phone%20Number:%20%0D%0A%E2%80%A2%20Age:%20%0D%0A%E2%80%A2%20Highest%20Education:%20%0D%0A%E2%80%A2%20Village%20/%20Ward%20/%20Location:%20%0D%0A%E2%80%A2%20Do%20you%20have%20space%20to%20set%20up%203%E2%80%935%20laptops%20(at%20home%20or%20community%20room)?:%20%0D%0A%E2%80%A2%20Computer%20Familiarity%20(Beginner%20/%20Intermediate%20/%20Advanced):%20%0D%0A%0D%0ALooking%20forward%20to%20hearing%20from%20you."
+            title="Email Sama Operations Team"
+          >
+            I want to become a Saathi <span>→</span>
+          </a>
         </div>
       </div>
       <div className="opt">
         <span className="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C785A" strokeWidth="1.6"><rect x="5" y="4" width="14" height="16" rx="1.5"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></span>
         <div>
           <p>For organisations and local partners who want to bring the Saathi model to their community.</p>
-          <a href="#contact:connect" data-topic="Bringing the Saathi model to my community">Bring the model to my community <span>→</span></a>
+          <a
+            href="mailto:operations@thesama.in?subject=Partnership:%20Bring%20the%20Saathi%20model%20to%20my%20community&body=Hello%20Sama%20Operations%20Team,%0D%0A%0D%0AWe%20are%20interested%20in%20bringing%20the%20Sama%20Saathi%20digital%20centre%20model%20to%20our%20community.%0D%0A%0D%0AOur%20Details:%0D%0A%E2%80%A2%20Organisation%20/%20Trust%20/%20Panchayat%20Name:%20%0D%0A%E2%80%A2%20Contact%20Person%20Name:%20%0D%0A%E2%80%A2%20Contact%20Phone%20%26%20Email:%20%0D%0A%E2%80%A2%20Target%20Community%20/%20Area%20of%20Operation:%20%0D%0A%E2%80%A2%20Available%20Infrastructure%20(Room%20available%20/%20Power%20backup%20/%20Internet%20access):%20%0D%0A%0D%0ALooking%20forward%20to%20discussing%20further."
+            title="Email Sama Operations Team"
+          >
+            Bring the model to my community <span>→</span>
+          </a>
         </div>
       </div>
     </div>

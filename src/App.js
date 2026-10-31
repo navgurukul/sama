@@ -32,9 +32,9 @@ import LaptopInventory from './Pages/LaptopData/index';
 import Ops from './components/OPS/index';
 import './App.css';
 import Userdata from ".././src/OppsFiles/UserDetails/Userdata"
-import Opslogin from './Pages/Login/OpsLogin/Opslogin';
+import EditorialLogin from './Pages/Login/OpsLogin/EditorialLogin';
 import PrivateRoute from './Privaterouts';
-import NgoForm from "../src/Pages/NGORegistration/RegistrationForm"
+import EditorialNgoRegistration from './Pages/NGORegistration/EditorialNgoRegistration';
 import CompanySelection from './Pages/NGORegistration/CompanySelection';
 import DonorManager from './Pages/NGORegistration/DonorManager';
 import Ngodashboard from './components/NgoDashboard/ngodashboard';
@@ -79,7 +79,7 @@ import Audit from './components/OPS/LaptopAudit';
 import LearningAnalytics from './components/OPS/LearningAnalytics';
 import LaptopDetails from "./Pages/LaptopTagging/LaptopDetails";
 import LaptopStageDetails from './Pages/LaptopTagging/LaptopStageDetails';
-import SignupForm from './Pages/Login/OpsLogin/SignupForm';
+import EditorialSignup from './Pages/Login/OpsLogin/EditorialSignup';
 import Registration from './components/Header/Registration';
 import Sidebar from './Pages/DonerCSR/SideBar';
 import Overview from './Pages/DonerCSR/Overview';
@@ -99,7 +99,7 @@ import RMSDonorDetailsDonors from './Pages/DonerCSR/RMSDonorDetailsDonors';
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <SeoRouter />
         <div className="layout">
           <SmartHeader />
@@ -126,9 +126,9 @@ function App() {
               <Route path="/donate" element={<EditorialDonate />} />
               <Route path="/corporatepartner" element={<EditorialCorporate />} />
               <Route path="/about" element={<EditorialHome />} />
-              <Route path="/ngoregistration/:donorId" element={<NgoForm />} />
-              <Route path='/ngoregistration' element={<NgoForm />} />  {/* // this is for all the ngo's */}
-              <Route path="/login" element={<Opslogin />} /> {/* // need to rename this component */}
+              <Route path="/ngoregistration/:donorId" element={<EditorialNgoRegistration />} />
+              <Route path='/ngoregistration' element={<EditorialNgoRegistration />} />
+              <Route path="/login" element={<EditorialLogin />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/about-initiative" element={<LandingPage />} />
               <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
@@ -317,7 +317,7 @@ function App() {
                 }
               />
               <Route path="/edit-user/:id" element={<EditUserPage />} />
-              <Route path="/signup" element={<SignupForm />} />
+              <Route path="/signup" element={<EditorialSignup />} />
               <Route path="/registration" element={<Registration />} />
 
               <Route path="/yearly-reporting/:id" element={

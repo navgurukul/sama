@@ -20,7 +20,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { useParams } from "react-router-dom";
 
 const RadioWithOther = ({ label, name, value, onChange, options, error }) => {
@@ -657,11 +659,23 @@ function RegistrationForm() {
     : formFields;
 
   const RequestTypeModal = () => (
-    <Dialog open={showRequestTypeModal} maxWidth="sm" fullWidth>
-      <DialogTitle>
+    <Dialog
+      open={showRequestTypeModal}
+      onClose={() => setShowRequestTypeModal(false)}
+      maxWidth="sm"
+      fullWidth
+    >
+      <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6" component="h2">
           Select Registration Type
         </Typography>
+        <IconButton
+          aria-label="close"
+          onClick={() => setShowRequestTypeModal(false)}
+          sx={{ color: (theme) => theme.palette.grey[500] }}
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body1" paragraph>

@@ -1,14 +1,45 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
+import BookCallModal from '../../components/Editorial/BookCallModal';
 import '../../styles/editorial.css';
 
 export default function EditorialHome() {
   useReveal();
+  const [showBookCallModal, setShowBookCallModal] = useState(false);
+
+  const [stats, setStats] = React.useState({
+    laptops: '18,500+',
+    people: '3.4 Lakh+',
+    states: '22',
+    districts: '68',
+    carbon: '4,810+ MT',
+    ngos: '88+',
+  });
 
   useEffect(() => {
     document.title = "Sama Digital Foundation | A laptop’s second life. Someone’s first.";
     window.scrollTo(0, 0);
+
+    const apiBase = window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://backend.thesama.in';
+    fetch(`${apiBase}/api/public/social-impact-stats`)
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          const laptopsCount = Math.max(18500, data.laptopsReceived || data.laptopsDistributed || 18500);
+          const peopleCount = data.beneficiariesImpacted || 340000;
+          const peopleLakh = (peopleCount / 100000).toFixed(1);
+          setStats({
+            laptops: `${laptopsCount.toLocaleString('en-IN')}+`,
+            people: `${peopleLakh} Lakh+`,
+            states: `${data.statesImpacted || 22}`,
+            districts: `${data.districtsImpacted || 68}`,
+            carbon: `${(data.carbonEmissionsAvoided || Math.round(laptopsCount * 0.26)).toLocaleString('en-IN')}+ MT`,
+            ngos: `${data.ngoPartners || 88}+`,
+          });
+        }
+      })
+      .catch(() => {});
   }, []);
 
   return (
@@ -42,12 +73,12 @@ export default function EditorialHome() {
       <h2 className="display h2 mt-m">Our impact, <em>in numbers.</em></h2>
     </div>
     <div className="stat-row reveal">
-      <div><b>20,000<sup>+</sup></b><span>Laptops refurbished</span></div>
-      <div><b>3.5 Lakh<sup>+</sup></b><span>People reached</span></div>
-      <div><b>22</b><span>States reached</span></div>
-      <div><b>68</b><span>Districts reached</span></div>
-      <div><b>5,390<sup>+ MT</sup></b><span>Carbon emissions avoided</span></div>
-      <div><b>60+</b><span>NGO partners</span></div>
+      <div><b>{stats.laptops}</b><span>Laptops refurbished</span></div>
+      <div><b>{stats.people}</b><span>People reached</span></div>
+      <div><b>{stats.states}</b><span>States reached</span></div>
+      <div><b>{stats.districts}</b><span>Districts reached</span></div>
+      <div><b>{stats.carbon}</b><span>Carbon emissions avoided</span></div>
+      <div><b>{stats.ngos}</b><span>NGO partners</span></div>
     </div>
   </div>
 </section>
@@ -124,7 +155,7 @@ export default function EditorialHome() {
       <span className="pill" style={{ marginTop: '0' }}>★ CSR-1 registered with the Ministry of Corporate Affairs</span>
       <div className="btn-row">
         <Link className="bracket bracket--solid" to="/donate">Donate your retired laptops <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link>
-        <a className="bracket bracket--line" href="mailto:operations@thesama.in?subject=Retired%20laptops%20%E2%80%93%2030%20minutes%20with%20Sama">Book 30 minutes with us <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <button type="button" className="bracket bracket--line" onClick={() => setShowBookCallModal(true)}>Book 30 minutes with us <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </div>
     </div>
   </div>
@@ -211,6 +242,13 @@ export default function EditorialHome() {
     </div>
   </div>
 </section>
+
+      {/* Book a Call Modal */}
+      <BookCallModal
+        isOpen={showBookCallModal}
+        onClose={() => setShowBookCallModal(false)}
+        initialTopic="Renew Desk at our office"
+      />
     </div>
   );
 }
