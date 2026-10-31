@@ -106,7 +106,7 @@ const Footer = () => {
                     </Link>
                   </Box>
                   <Box display="flex" justifyContent={{ xs: "center", md: "flex-start" }} mt={2} gap={1.5}>
-                    <Link href="https://www.linkedin.com/company/thesama/posts/" underline="none" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                    <Link href="https://www.linkedin.com/company/thesama/" underline="none" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                       <img src={LinkedInIcon} alt="LinkedIn" width="24" height="24" />
                     </Link>
                     <Link href="https://www.instagram.com/samadigitalfoundation/" underline="none" target="_blank" rel="noopener noreferrer" aria-label="Instagram">

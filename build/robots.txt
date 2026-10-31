@@ -1,16 +1,28 @@
-# https://www.robotstxt.org/robotstxt.html
+# Rules apply to all web crawlers and AI answer engines
 User-agent: *
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: PerplexityBot
+User-agent: Google-Extended
 Allow: /
 
-# Disallow internal operational, admin, login and portal routes
-Disallow: /login
-Disallow: /corporate*
-Disallow: /corpretedb*
-Disallow: /donorcsr*
-Disallow: /donormanager*
-Disallow: /pickup*
-Disallow: /admin*
-Disallow: /warehouse*
+# Disallow internal operational, admin, and portal routes
+Disallow: /corporate$
+Disallow: /corporate/
+Disallow: /corpretedb
+Disallow: /donorcsr
+Disallow: /donormanager
+Disallow: /pickup-request-by-donor
+Disallow: /admin
+Disallow: /warehouse
+Disallow: /laptopinventory
+Disallow: /data-assignment-form
+Disallow: /documentupload
+Disallow: /mouUpload
+Disallow: /monthly-reporting
+Disallow: /preliminary
+
+# Note on /login: Kept out of robots.txt Disallow so Googlebot can crawl and obey the noindex meta tag (or use GSC Removals tool).
 
 # Sitemap location
 Sitemap: https://thesama.in/sitemap.xml
