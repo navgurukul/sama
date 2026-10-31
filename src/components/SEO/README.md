@@ -79,7 +79,7 @@ All page titles follow Google's strict display limits (≤ 60 characters) and hi
 1. **Static Organization Schema (`public/index.html`):**
    - Available to raw crawlers without executing JavaScript.
    - Assigned `@id`: `"https://thesama.in/#organization"`.
-   - Includes official social links (LinkedIn, Twitter/X, Instagram), contact email (`operations@thesama.in`), logo URL, and area served (`IN`).
+   - Includes official social links (LinkedIn, Instagram), contact email (`operations@thesama.in`), logo URL, and area served (`IN`).
 2. **Linked Dynamic WebSite Schema (`seoConfig.js`):**
    - Embedded on the homepage with `@id`: `"https://thesama.in/#website"`.
    - Uses `"publisher": { "@id": "https://thesama.in/#organization" }` to link the site entity directly to the organization entity.
