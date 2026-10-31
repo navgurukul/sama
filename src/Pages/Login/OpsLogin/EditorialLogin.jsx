@@ -4,6 +4,27 @@ import SamaAuthArt from '../../../components/Editorial/SamaAuthArt';
 import useReveal from '../../../components/Editorial/useReveal';
 import '../../../styles/editorial.css';
 
+// Helper to resolve backend API URLs safely across localhost, LAN IPs, and production
+const resolveApiUrl = (envUrl, endpoint) => {
+  if (envUrl && typeof envUrl === 'string' && !envUrl.includes('undefined')) {
+    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && envUrl.includes('localhost:8000')) {
+      return `${window.location.protocol}//${window.location.hostname}:8000/${endpoint.replace(/^\/+/, '')}`;
+    }
+    return envUrl;
+  }
+  if (typeof window !== 'undefined') {
+    const { hostname } = window.location;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `http://localhost:8000/${endpoint.replace(/^\/+/, '')}`;
+    }
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+      return `${window.location.protocol}//${hostname}:8000/${endpoint.replace(/^\/+/, '')}`;
+    }
+    return `https://backend.thesama.in/${endpoint.replace(/^\/+/, '')}`;
+  }
+  return `http://localhost:8000/${endpoint.replace(/^\/+/, '')}`;
+};
+
 export default function EditorialLogin() {
   useReveal();
 
@@ -22,6 +43,9 @@ export default function EditorialLogin() {
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotMessage, setForgotMessage] = useState('');
+
+  const userApiUrl = resolveApiUrl(process.env.REACT_APP_UserDetailsApis, 'user-exec');
+  const ngoApiUrl = resolveApiUrl(process.env.REACT_APP_NgoInformationApi, 'ngo-exec');
 
   useEffect(() => {
     document.title = "Login to Dashboard | Sama";
@@ -50,10 +74,11 @@ export default function EditorialLogin() {
     setPassErr('');
 
     let hasValidationError = false;
-    if (!email.trim()) {
-      setEmailErr('Please enter your email.');
+    const trimmedIdentifier = email.trim();
+    if (!trimmedIdentifier) {
+      setEmailErr('Please enter your email or School ID.');
       hasValidationError = true;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    } else if (trimmedIdentifier.includes('@') && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedIdentifier)) {
       setEmailErr('Please enter a valid email address.');
       hasValidationError = true;
     }
@@ -74,12 +99,12 @@ export default function EditorialLogin() {
     const timeoutId = setTimeout(() => controller.abort(), 45000);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_UserDetailsApis}`, {
+      const response = await fetch(userApiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'login',
-          email: email.trim().toLowerCase(),
+          email: trimmedIdentifier,
           password: password,
         }),
         signal: controller.signal,
@@ -129,9 +154,7 @@ export default function EditorialLogin() {
           navigate('/ops');
         } else if (role.includes('ngo')) {
           try {
-            const regRes = await fetch(
-              `${process.env.REACT_APP_NgoInformationApi}?type=registration`
-            );
+            const regRes = await fetch(`${ngoApiUrl}?type=registration`);
             const regData = await regRes.json();
             const findUser = regData.data?.find(
               (item) =>
@@ -142,7 +165,7 @@ export default function EditorialLogin() {
 
             if (findUser) {
               const docRes = await fetch(
-                `${process.env.REACT_APP_NgoInformationApi}?type=MultipleDocsGet&userId=${user['Ngo Id']}`
+                `${ngoApiUrl}?type=MultipleDocsGet&userId=${user['Ngo Id']}`
               );
               const docData = await docRes.json();
 
@@ -216,6 +239,15 @@ export default function EditorialLogin() {
     } catch (err) {
       if (err.name === 'AbortError') {
         setError('Login service timed out. Please try again.');
+      } else if (
+        err.message &&
+        (err.message.includes('fetch') ||
+          err.message.includes('NetworkError') ||
+          err.message.includes('Load failed'))
+      ) {
+        setError(
+          'Unable to reach backend server. Please verify your connection or ensure backend is running on port 8000.'
+        );
       } else {
         setError(err.message || 'Unable to connect to the login service.');
       }
@@ -235,7 +267,7 @@ export default function EditorialLogin() {
     setForgotLoading(true);
     setForgotMessage('');
     try {
-      const res = await fetch(`${process.env.REACT_APP_UserDetailsApis}`, {
+      const res = await fetch(userApiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: forgotEmail.trim(), type: 'forgotPassword' }),
@@ -243,10 +275,15 @@ export default function EditorialLogin() {
       const data = await res.json().catch(() => ({}));
       if (res.ok && (data.status === 'success' || !data.error)) {
         setForgotMessage(
-          data.message || 'If your email is registered, reset instructions and your temporary password have been sent to your inbox.'
+          data.message ||
+            'If your email is registered, reset instructions and your temporary password have been sent to your inbox.'
         );
       } else {
-        setForgotMessage(data.detail || data.message || 'An error occurred. Please write directly to operations@thesama.in');
+        setForgotMessage(
+          data.detail ||
+            data.message ||
+            'An error occurred. Please write directly to operations@thesama.in'
+        );
       }
     } catch (err) {
       console.error('Forgot password error:', err);
@@ -281,7 +318,7 @@ export default function EditorialLogin() {
 
               <form className="auth-form" id="login-form" data-auth="login" onSubmit={handleSubmit} noValidate>
                 <div className={`fld ${emailErr ? 'has-err' : ''}`}>
-                  <label htmlFor="lg-email">User Email</label>
+                  <label htmlFor="lg-email">User Email or School ID</label>
                   <div className="inp">
                     <svg className="ico" viewBox="0 0 24 24" aria-hidden="true">
                       <rect x="3" y="5" width="18" height="14" rx="2" />
@@ -290,11 +327,11 @@ export default function EditorialLogin() {
                     <input
                       id="lg-email"
                       name="email"
-                      type="email"
+                      type="text"
                       required
                       autoComplete="username"
-                      placeholder="you@organisation.org"
-                      data-label="your email"
+                      placeholder="you@organisation.org or School ID"
+                      data-label="your email or School ID"
                       value={email}
                       onChange={(e) => {
                         setEmail(e.target.value);

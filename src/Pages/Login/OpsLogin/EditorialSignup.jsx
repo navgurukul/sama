@@ -4,6 +4,26 @@ import SamaAuthArt from '../../../components/Editorial/SamaAuthArt';
 import useReveal from '../../../components/Editorial/useReveal';
 import '../../../styles/editorial.css';
 
+const resolveApiUrl = (envUrl, endpoint) => {
+  if (envUrl && typeof envUrl === 'string' && !envUrl.includes('undefined')) {
+    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && envUrl.includes('localhost:8000')) {
+      return `${window.location.protocol}//${window.location.hostname}:8000/${endpoint.replace(/^\/+/, '')}`;
+    }
+    return envUrl;
+  }
+  if (typeof window !== 'undefined') {
+    const { hostname } = window.location;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `http://localhost:8000/${endpoint.replace(/^\/+/, '')}`;
+    }
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+      return `${window.location.protocol}//${hostname}:8000/${endpoint.replace(/^\/+/, '')}`;
+    }
+    return `https://backend.thesama.in/${endpoint.replace(/^\/+/, '')}`;
+  }
+  return `http://localhost:8000/${endpoint.replace(/^\/+/, '')}`;
+};
+
 export default function EditorialSignup() {
   useReveal();
 
@@ -20,13 +40,14 @@ export default function EditorialSignup() {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const [existingEmails, setExistingEmails] = useState([]);
+  const userApiUrl = resolveApiUrl(process.env.REACT_APP_UserDetailsApis, 'user-exec');
 
   useEffect(() => {
     document.title = "Sign up | Sama";
     window.scrollTo(0, 0);
 
     // Pre-fetch registered emails on mount just like original SignupForm
-    fetch(`${process.env.REACT_APP_UserDetailsApis}?type=getRegistration`)
+    fetch(`${userApiUrl}?type=getRegistration`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -106,7 +127,7 @@ export default function EditorialSignup() {
 
     try {
       // Submit new user registration to backend API
-      const response = await fetch(`${process.env.REACT_APP_UserDetailsApis}`, {
+      const response = await fetch(userApiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
