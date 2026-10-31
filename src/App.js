@@ -2,8 +2,24 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { ThemeProvider } from "@mui/material/styles";
 import theme from './theme/theme';
-import Navbar from './components/Header/Navbar';
-import Footer from './components/Footer/Footer';
+import SmartHeader from './components/Header/SmartHeader';
+import SmartFooter from './components/Footer/SmartFooter';
+import EditorialHome from './Pages/Editorial/EditorialHome';
+import Initiatives from './Pages/Editorial/Initiatives';
+import SamaSaathi from './Pages/Editorial/SamaSaathi';
+import AiLabs from './Pages/Editorial/AiLabs';
+import GivingBack from './Pages/Editorial/GivingBack';
+import FirstLaptop from './Pages/Editorial/FirstLaptop';
+import BuildForGood from './Pages/Editorial/BuildForGood';
+import EditorialTeam from './Pages/Editorial/EditorialTeam';
+import Communications from './Pages/Editorial/Communications';
+import BlogPost from './Pages/Editorial/BlogPost';
+import BlogBeyondConnectivity from './Pages/Editorial/BlogBeyondConnectivity';
+import BlogEWaste from './Pages/Editorial/BlogEWaste';
+import BlogRethinkingInclusion from './Pages/Editorial/BlogRethinkingInclusion';
+import EditorialDonate from './Pages/Editorial/EditorialDonate';
+import EditorialContact from './Pages/Editorial/EditorialContact';
+import EditorialCorporate from './Pages/Editorial/EditorialCorporate';
 import Home from './Pages/Home';
 import About from './Pages/About/About';
 import OurApproach from './Pages/OurApproach/OurApproach';
@@ -86,14 +102,30 @@ function App() {
       <Router>
         <SeoRouter />
         <div className="layout">
-          <Navbar />
+          <SmartHeader />
           <div className="content">
             {" "}
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/our-approach" element={<OurApproach />} />
-              <Route path="/donate" element={<Donate />} />
+              <Route path="/" element={<EditorialHome />} />
+              <Route path="/initiatives" element={<Initiatives />} />
+              <Route path="/sama-saathi" element={<SamaSaathi />} />
+              <Route path="/our-approach" element={<SamaSaathi />} />
+              <Route path="/labs" element={<AiLabs />} />
+              <Route path="/giving" element={<GivingBack />} />
+              <Route path="/first-laptop" element={<FirstLaptop />} />
+              <Route path="/bfg" element={<BuildForGood />} />
+              <Route path="/build-for-good" element={<BuildForGood />} />
+              <Route path="/ourteam" element={<EditorialTeam />} />
+              <Route path="/team" element={<EditorialTeam />} />
+              <Route path="/comms" element={<Communications />} />
+              <Route path="/contact" element={<EditorialContact />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/blog/beyond-connectivity" element={<BlogBeyondConnectivity />} />
+              <Route path="/blog/from-e-waste-to-new-beginnings" element={<BlogEWaste />} />
+              <Route path="/blog/rethinking-digital-inclusion" element={<BlogRethinkingInclusion />} />
+              <Route path="/donate" element={<EditorialDonate />} />
+              <Route path="/corporatepartner" element={<EditorialCorporate />} />
+              <Route path="/about" element={<EditorialHome />} />
               <Route path="/ngoregistration/:donorId" element={<NgoForm />} />
               <Route path='/ngoregistration' element={<NgoForm />} />  {/* // this is for all the ngo's */}
               <Route path="/login" element={<Opslogin />} /> {/* // need to rename this component */}
@@ -343,7 +375,7 @@ function App() {
             </Routes>
             {" "}
           </div>
-          <Footer />
+          <SmartFooter />
         </div>
       </Router>
     </ThemeProvider >

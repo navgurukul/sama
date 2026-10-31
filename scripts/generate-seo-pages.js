@@ -259,6 +259,94 @@ const routes = [
     heading: "Privacy Policy",
     subtext:
       "Review the official data privacy policy, transparency guidelines, and security practices of Sama Digital Foundation."
+  },
+  {
+    path: "/initiatives",
+    title: "Our Initiatives | Sama Digital Foundation",
+    description: "Explore Sama Digital Foundation initiatives: rural women-led Sama Saathi centres and hands-on digital & AI literacy labs.",
+    canonical: `${BASE_URL}/initiatives`,
+    heading: "Sama Digital Foundation Initiatives",
+    subtext: "Repurposing retired corporate laptops into learning and livelihood opportunities across India."
+  },
+  {
+    path: "/sama-saathi",
+    title: "Sama Saathi Programme | Sama Digital Foundation",
+    description: "Women who own and operate their own community digital service centres. Transforming rural livelihoods on refurbished laptops.",
+    canonical: `${BASE_URL}/sama-saathi`,
+    heading: "Sama Saathi Programme",
+    subtext: "Equipping rural women entrepreneurs with laptops, peripherals, and training to deliver essential digital services."
+  },
+  {
+    path: "/labs",
+    title: "Digital Inclusion & AI Literacy Labs | Sama",
+    description: "Building functional computer labs in government schools, colleges, and training centres using refurbished corporate laptops.",
+    canonical: `${BASE_URL}/labs`,
+    heading: "Digital Inclusion & AI Literacy Labs",
+    subtext: "Giving underserved students hands-on access to practical computing, AI literacy, and vocational skills."
+  },
+  {
+    path: "/giving",
+    title: "Giving Back | Sama Digital Foundation",
+    description: "Employee laptop giving, the Renew Desk corporate refurbishment program, and Build for Good hackathons.",
+    canonical: `${BASE_URL}/giving`,
+    heading: "Giving Back with Sama",
+    subtext: "Engage your workforce and empower community learning through corporate device refurbishment and hackathons."
+  },
+  {
+    path: "/first-laptop",
+    title: "First Laptop, Next Builder | Sama",
+    description: "Support young innovators and grassroots software builders with their very first laptop for real-world impact.",
+    canonical: `${BASE_URL}/first-laptop`,
+    heading: "First Laptop, Next Builder",
+    subtext: "Turning personal agency and ambition into technology solutions for India's underserved communities."
+  },
+  {
+    path: "/bfg",
+    title: "Build for Good 2026 | Sama",
+    description: "India's annual social-tech hackathon powering grassroots solutions on refurbished hardware.",
+    canonical: `${BASE_URL}/bfg`,
+    heading: "Build for Good Hackathon",
+    subtext: "Students and young builders solving real problems for communities across India."
+  },
+  {
+    path: "/comms",
+    title: "Communications & Reports | Sama Digital Foundation",
+    description: "Official annual reports, impact assessments, research publications, and field stories from Sama Digital Foundation.",
+    canonical: `${BASE_URL}/comms`,
+    heading: "Sama Communications & Reports",
+    subtext: "Transparent impact documentation, annual filings, and stories from our grassroots partners."
+  },
+  {
+    path: "/contact",
+    title: "Contact Us | Sama Digital Foundation",
+    description: "Get in touch with Sama Digital Foundation to donate laptops, explore corporate CSR partnerships, or start a Kendra.",
+    canonical: `${BASE_URL}/contact`,
+    heading: "Contact Sama Digital Foundation",
+    subtext: "Reach our operations team at operations@thesama.in or submit a partnership inquiry."
+  },
+  {
+    path: "/blog/beyond-connectivity",
+    title: "Beyond Connectivity: India's Real Digital Divide | Sama",
+    description: "Why smartphones are not enough for genuine education and livelihoods, and why computing access matters.",
+    canonical: `${BASE_URL}/blog/beyond-connectivity`,
+    heading: "Beyond Connectivity: The Real Divide",
+    subtext: "An in-depth perspective on digital literacy, hardware agency, and educational equity."
+  },
+  {
+    path: "/blog/from-e-waste-to-new-beginnings",
+    title: "From E-Waste to New Beginnings | Sama",
+    description: "How extending the lifecycle of corporate IT assets prevents carbon emissions and creates educational opportunity.",
+    canonical: `${BASE_URL}/blog/from-e-waste-to-new-beginnings`,
+    heading: "From E-Waste to New Beginnings",
+    subtext: "Circular economy in action: avoiding 220kg CO2e per refurbished laptop."
+  },
+  {
+    path: "/blog/rethinking-digital-inclusion",
+    title: "Rethinking Digital Inclusion Through Sama Saathi | Sama",
+    description: "How local women entrepreneurs are bridging the last-mile digital gap in rural India.",
+    canonical: `${BASE_URL}/blog/rethinking-digital-inclusion`,
+    heading: "Rethinking Digital Inclusion",
+    subtext: "Ownership, agency, and community service delivery through village Digi Kendras."
   }
 ];
 
