@@ -3559,7 +3559,7 @@ def send_afe_draft_submission_email(ngo_name: str, ngo_email: str, qty_requested
         subject=subject,
         html_part=html_part,
         to_name="Sama Operations",
-        from_email="product@thesama.in"
+        from_email=os.environ.get("SMTP_SENDER", "operations@thesama.in")
     )
 
 
