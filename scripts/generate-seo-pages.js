@@ -241,6 +241,16 @@ const routes = [
       "Meet the passionate individuals who bring innovation and excellence to every project, driven by a shared vision of creating lasting impact."
   },
   {
+    path: "/team",
+    title: "Our Team & Leadership | Sama Digital Foundation",
+    description:
+      "Meet the dedicated team, leaders, and technologists driving Sama's circular economy and digital inclusion missions across India.",
+    canonical: `${BASE_URL}/ourteam`,
+    heading: "Our Team",
+    subtext:
+      "Meet the passionate individuals who bring innovation and excellence to every project, driven by a shared vision of creating lasting impact."
+  },
+  {
     path: "/about-initiative",
     title: "About Our Initiative | Sama Digital Foundation",
     description:
