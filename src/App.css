@@ -1,6 +1,6 @@
 body {
   background-color: #ffffff;
-  height: 100vh;
+  min-height: 100vh;
   font-feature-settings: "tnum" 1, "lnum" 1, "ss01" 1;
   -webkit-font-feature-settings: "tnum" 1, "lnum" 1, "ss01" 1;
   font-variant-numeric: tabular-nums lining-nums;
