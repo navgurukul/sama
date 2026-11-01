@@ -261,7 +261,6 @@ function App() {
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
               <Route path="/ngoprofile" element={<NgoProfile />} />
-              <Route path="/ourteam" element={<OurTeam />} />
               <Route path="/our-government" element={<OurGoverment />} />
               <Route path="/ourgoverment" element={<Navigate to="/our-government" replace />} />
               <Route path="/communitypartners" element={<CommunityPartners />} />
