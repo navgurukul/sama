@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import useReveal from '../../components/Editorial/useReveal';
+import downloadPdf from '../../utils/downloadPdf';
 import '../../styles/editorial.css';
 
 export default function SamaSaathi() {
@@ -21,7 +22,7 @@ export default function SamaSaathi() {
     <p className="hero__sub">One woman. One centre.<br />Owned and run in her own community.</p>
     <div className="hero__ctas">
       <a className="bracket bracket--solid" href="#become">Support a Saathi Kendra →</a>
-      <a className="link" href="/docs/sama-saathi-concept-note.pdf" download="Sama_Saathi_Concept_Note.pdf">Download the Sama Saathi concept note (PDF)</a>
+      <a className="link" href="/docs/sama-saathi-concept-note.pdf" download="Sama_Saathi_Concept_Note.pdf" target="_blank" rel="noopener noreferrer" onClick={(e) => downloadPdf(e, '/docs/sama-saathi-concept-note.pdf', 'Sama_Saathi_Concept_Note.pdf')}>Download the Sama Saathi concept note (PDF)</a>
     </div>
   </div>
   <figure className="hero__media">

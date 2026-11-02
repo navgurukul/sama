@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
+import downloadPdf from '../../utils/downloadPdf';
 import '../../styles/editorial.css';
 
 export default function EditorialCorporate() {
@@ -42,7 +43,7 @@ export default function EditorialCorporate() {
       <h2 className="corp-h" style={{ marginTop: '40px' }}>Directors’ Report</h2>
       <div className="corp-doc">
         <div><b>Boards’ Report FY 2025–26</b><span>For the year ended 31 March 2026 · PDF</span></div>
-        <a className="bracket bracket--solid" href="/docs/directors-report-2025-26.pdf" download="SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf">Download PDF <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a className="bracket bracket--solid" href="/docs/directors-report-2025-26.pdf" download="SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf" target="_blank" rel="noopener noreferrer" onClick={(e) => downloadPdf(e, '/docs/directors-report-2025-26.pdf', 'SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf')}>Download PDF <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
       <p className="small mt-m">Our annual and impact reports are on the <Link to="/comms#reports">Communications</Link> page.</p>
     </div>
