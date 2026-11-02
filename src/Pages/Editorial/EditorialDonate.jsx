@@ -233,7 +233,7 @@ export default function EditorialDonate() {
             {/* Card 1: Corporate Fleet Decommissioning */}
             <div className="way way--give reveal">
               <span className="ico">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#174B32" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5C785A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <rect x="5" y="3" width="14" height="18" rx="1.5" />
                   <path d="M9 7h2M13 7h2M9 11h2M13 11h2M10 21v-4h4v4" />
                 </svg>
@@ -294,7 +294,7 @@ export default function EditorialDonate() {
             {/* Card 4: CSR Grants & Refurbishment Capital */}
             <div className="way way--give reveal">
               <span className="ico">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#174B32" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5C785A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
               </span>

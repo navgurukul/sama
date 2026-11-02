@@ -121,13 +121,13 @@ export default function SamaSaathi() {
       <div className="step">
         <div className="step__num">01</div><div className="step__label">Own</div>
         <p className="step__text">She establishes her digital service centre.</p>
-        <svg className="connector" viewBox="0 0 76 20" fill="none" stroke="#174B32" strokeWidth="1.2"><path d="M2 16C22 18 44 4 74 3"/></svg>
+        <svg className="connector" viewBox="0 0 76 20" fill="none" stroke="#5C785A" strokeWidth="1.2"><path d="M2 16C22 18 44 4 74 3"/></svg>
         <div className="step__art"><img src="https://navgurukul.github.io/sama-website/assets/centre-origin-transparent-IIE9goi7.webp" alt="An illustrated Saathi-owned digital service centre" /></div>
       </div>
       <div className="step">
         <div className="step__num">02</div><div className="step__label">Support</div>
         <p className="step__text">She trains and supports other women in her network.</p>
-        <svg className="connector" viewBox="0 0 76 20" fill="none" stroke="#174B32" strokeWidth="1.2"><path d="M2 4C28 2 46 18 74 15"/></svg>
+        <svg className="connector" viewBox="0 0 76 20" fill="none" stroke="#5C785A" strokeWidth="1.2"><path d="M2 4C28 2 46 18 74 15"/></svg>
         <div className="step__art"><img src="https://navgurukul.github.io/sama-website/assets/saathi-support-transparent-B6IdxMrx.webp" alt="An illustrated Saathi showing another woman how to work on a laptop" /></div>
       </div>
       <div className="step">
