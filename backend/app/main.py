@@ -3559,7 +3559,7 @@ def send_afe_draft_submission_email(ngo_name: str, ngo_email: str, qty_requested
         subject=subject,
         html_part=html_part,
         to_name="Sama Operations",
-        from_email="product@thesama.in"
+        from_email=os.environ.get("SMTP_SENDER", "operations@thesama.in")
     )
 
 
@@ -5672,7 +5672,52 @@ async def public_contribute(payload: dict):
         message = str(payload.get("message") or "").strip()
         receive_updates = bool(payload.get("receiveUpdates", True))
         
-        prefix = "REQ" if "need" in form_type else "DON"
+        is_give_individual = (form_type == "give_individual")
+        is_give_corporate = (form_type == "give_corporate")
+        is_need_individual = (form_type == "need_individual")
+        is_financial = (form_type == "financial_volunteer")
+
+        # Sanitize data to avoid cross-pollination between donation and request forms
+        if is_need_individual:
+            num_laptops = 0
+            device_condition = ""
+            device_brand = ""
+            device_age = ""
+            pickup_address = ""
+            decommission_timeline = ""
+            data_wiping_needed = False
+            company_name = ""
+            designation = ""
+        elif is_give_individual:
+            company_name = ""
+            designation = ""
+            decommission_timeline = ""
+            data_wiping_needed = False
+            applicant_category = ""
+            education_course = ""
+            purpose = ""
+            family_income = ""
+        elif is_give_corporate:
+            applicant_category = ""
+            education_course = ""
+            purpose = ""
+            family_income = ""
+        elif is_financial:
+            num_laptops = 0
+            device_condition = ""
+            device_brand = ""
+            device_age = ""
+            pickup_address = ""
+            decommission_timeline = ""
+            data_wiping_needed = False
+            company_name = ""
+            designation = ""
+            applicant_category = ""
+            education_course = ""
+            purpose = ""
+            family_income = ""
+
+        prefix = "REQ" if is_need_individual else "DON"
         random_suffix = uuid.uuid4().hex[:6].upper()
         reference_id = f"SAMA-{prefix}-{random_suffix}"
         
@@ -5701,7 +5746,7 @@ async def public_contribute(payload: dict):
                 ))
                 
                 # If laptops are being donated, also seamlessly sync into pickup table for logistics
-                if num_laptops > 0 or "give" in form_type:
+                if is_give_individual or is_give_corporate:
                     poc_name = f"{first_name} {last_name}".strip() or "Donor"
                     donor_company = company_name if contribution_type == "company" else "Individual"
                     loc_summary = f"{pickup_address or city or state or 'Pickup address to be confirmed'} (Ref: {reference_id})"
@@ -5740,20 +5785,41 @@ async def public_contribute(payload: dict):
                 f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Location:</td><td>{city or ""}{", " if city and state else ""}{state or "Not specified"}</td></tr>',
             ]
 
-            if company_name:
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Company Name:</td><td>{company_name} ({designation or "Not provided"})</td></tr>')
-            if num_laptops > 0:
+            if is_give_corporate:
+                if company_name:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Company Name:</td><td>{company_name} ({designation or "Not provided"})</td></tr>')
+                fleet_qty = payload.get("numberOfLaptops") or "10–50 laptops"
+                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Fleet Size:</td><td><b>{fleet_qty}</b></td></tr>')
+                if decommission_timeline:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Timeline:</td><td>{decommission_timeline} (Data wiping: {"Yes" if data_wiping_needed else "No"})</td></tr>')
+                if device_age:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Fleet Age:</td><td>{device_age}</td></tr>')
+                if pickup_address:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Office / Pickup:</td><td>{pickup_address}</td></tr>')
+
+            elif is_give_individual:
                 rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Number of Laptops:</td><td><b>{num_laptops}</b></td></tr>')
-            if device_condition or device_brand:
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Device Details:</td><td>Brand: {device_brand or "N/A"} | Condition: {device_condition or "N/A"} | Age: {device_age or "N/A"}</td></tr>')
-            if pickup_address:
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Pickup Address:</td><td>{pickup_address}</td></tr>')
-            if decommission_timeline:
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Timeline:</td><td>{decommission_timeline} (Data wiping: {"Yes" if data_wiping_needed else "No"})</td></tr>')
-            if applicant_category or education_course:
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Applicant Info:</td><td>{applicant_category or "Learner"} · Course: {education_course or "N/A"} · Family Income: {family_income or "N/A"}</td></tr>')
-            if purpose:
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Purpose / Need:</td><td>{purpose}</td></tr>')
+                device_info_parts = [f"Condition: {device_condition or 'Working'}"]
+                if device_brand:
+                    device_info_parts.append(f"Brand: {device_brand}")
+                if device_age:
+                    device_info_parts.append(f"Age: {device_age}")
+                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Device Details:</td><td>{" | ".join(device_info_parts)}</td></tr>')
+                if pickup_address:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Pickup Address:</td><td>{pickup_address}</td></tr>')
+
+            elif is_need_individual:
+                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Applying As:</td><td><b>{applicant_category or "Student"}</b></td></tr>')
+                if education_course:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Education / Course:</td><td>{education_course}</td></tr>')
+                if family_income:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Annual Family Income:</td><td>{family_income}</td></tr>')
+                if purpose:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Purpose / Need:</td><td><b>{purpose}</b></td></tr>')
+
+            elif is_financial:
+                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Contribution Type:</td><td><b>{donation_intent or "Financial / Volunteer Support"}</b></td></tr>')
+
             if hear_about:
                 rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Source:</td><td>{hear_about}</td></tr>')
 
