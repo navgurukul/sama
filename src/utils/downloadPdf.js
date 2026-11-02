@@ -1,9 +1,9 @@
 /**
  * Cross-browser reliable PDF downloader
- * Solves download issues on macOS Safari, iOS, Chrome, Edge, and laptops with download restrictions.
- * - Fetches PDF as a blob to bypass browser PDF preview interception and OS download restrictions
- * - Forces direct download via temporary anchor element with blob URL
- * - Graceful fallback: opens cleanly in a new tab if blob fetch fails or is blocked
+ * Solves download issues on macOS Safari, iOS, Chrome, Edge, Android, and SPA hostings.
+ * - Detects and prevents saving SPA 404 HTML fallback as corrupted PDF
+ * - Validates PDF binary signature (%PDF-)
+ * - Provides graceful direct download on mobile and desktop
  */
 export const downloadPdf = async (e, relativeOrAbsoluteUrl, fileName) => {
   if (e && e.preventDefault) {
@@ -16,12 +16,47 @@ export const downloadPdf = async (e, relativeOrAbsoluteUrl, fileName) => {
     ? relativeOrAbsoluteUrl
     : `${publicUrl}${relativeOrAbsoluteUrl.startsWith('/') ? '' : '/'}${relativeOrAbsoluteUrl}`;
 
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch file: ${response.statusText}`);
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    typeof navigator !== 'undefined' ? navigator.userAgent : ''
+  );
+
+  // On mobile browsers, direct window navigation triggers native PDF viewer & downloader reliably
+  if (isMobile) {
+    const mobileLink = document.createElement('a');
+    mobileLink.href = url;
+    mobileLink.target = '_blank';
+    mobileLink.rel = 'noopener noreferrer';
+    if (fileName) {
+      mobileLink.setAttribute('download', fileName);
     }
-    const blob = await response.blob();
+    document.body.appendChild(mobileLink);
+    mobileLink.click();
+    document.body.removeChild(mobileLink);
+    return;
+  }
+
+  try {
+    const response = await fetch(url, { method: 'GET', cache: 'no-cache' });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    const arrayBuffer = await response.arrayBuffer();
+
+    // Verify PDF binary signature (%PDF- = 0x25, 0x50, 0x44, 0x46, 0x2D)
+    const headerBytes = new Uint8Array(arrayBuffer.slice(0, 5));
+    const headerString = String.fromCharCode(...headerBytes);
+    const isPdfBinary = headerString === '%PDF-';
+
+    if (!isPdfBinary || contentType.includes('text/html')) {
+      console.warn('Server returned non-PDF or HTML fallback for:', url);
+      // Fallback: try direct window open
+      window.open(url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
     const blobUrl = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = blobUrl;
@@ -32,7 +67,7 @@ export const downloadPdf = async (e, relativeOrAbsoluteUrl, fileName) => {
     document.body.removeChild(link);
     setTimeout(() => {
       window.URL.revokeObjectURL(blobUrl);
-    }, 2000);
+    }, 4000);
   } catch (err) {
     console.warn('Direct blob download failed, falling back to window.open:', err);
     window.open(url, '_blank', 'noopener,noreferrer');

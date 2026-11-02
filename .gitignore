@@ -39,6 +39,10 @@ docs/
 *.doc
 *.docx
 *.pdf
+!public/docs/
+!public/docs/**
+!build/docs/
+!build/docs/**
 *.xls
 *.xlsx
 *.csv
