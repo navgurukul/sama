@@ -9,7 +9,7 @@ export default function EditorialHome() {
   const [showBookCallModal, setShowBookCallModal] = useState(false);
 
   const [stats, setStats] = React.useState({
-    laptops: '21,142+',
+    laptops: '21,100+',
     people: '3.4 Lakh+',
     states: '22',
     districts: '68',
@@ -27,7 +27,8 @@ export default function EditorialHome() {
       .then(res => res.json())
       .then(data => {
         if (data) {
-          const laptopsCount = data.laptopsReceived || 21142;
+          const rawLaptops = data.laptopsReceived || 21100;
+          const laptopsCount = Math.floor(rawLaptops / 100) * 100;
           const peopleCount = data.beneficiariesImpacted || 339512;
           const peopleLakh = (peopleCount / 100000).toFixed(1);
           const pct = Math.min(100, Math.max(1, Math.round((peopleCount / 1000000) * 100)));
@@ -36,7 +37,7 @@ export default function EditorialHome() {
             people: `${peopleLakh} Lakh+`,
             states: `${data.statesImpacted || 22}`,
             districts: `${data.districtsImpacted || 68}`,
-            carbon: `${(data.carbonEmissionsAvoided || Math.round(laptopsCount * 0.26)).toLocaleString('en-IN')}+ MT`,
+            carbon: `${(data.carbonEmissionsAvoided || Math.round(rawLaptops * 0.26)).toLocaleString('en-IN')}+ MT`,
             ngos: `${data.ngoPartners || 88}+`,
             progressPercent: `${pct}%`,
           });
