@@ -9,12 +9,13 @@ export default function EditorialHome() {
   const [showBookCallModal, setShowBookCallModal] = useState(false);
 
   const [stats, setStats] = React.useState({
-    laptops: '18,500+',
+    laptops: '21,142+',
     people: '3.4 Lakh+',
     states: '22',
     districts: '68',
-    carbon: '4,810+ MT',
+    carbon: '5,490+ MT',
     ngos: '88+',
+    progressPercent: '34%',
   });
 
   useEffect(() => {
@@ -26,9 +27,10 @@ export default function EditorialHome() {
       .then(res => res.json())
       .then(data => {
         if (data) {
-          const laptopsCount = Math.max(18500, data.laptopsReceived || data.laptopsDistributed || 18500);
-          const peopleCount = data.beneficiariesImpacted || 340000;
+          const laptopsCount = data.laptopsReceived || 21142;
+          const peopleCount = data.beneficiariesImpacted || 339512;
           const peopleLakh = (peopleCount / 100000).toFixed(1);
+          const pct = Math.min(100, Math.max(1, Math.round((peopleCount / 1000000) * 100)));
           setStats({
             laptops: `${laptopsCount.toLocaleString('en-IN')}+`,
             people: `${peopleLakh} Lakh+`,
@@ -36,6 +38,7 @@ export default function EditorialHome() {
             districts: `${data.districtsImpacted || 68}`,
             carbon: `${(data.carbonEmissionsAvoided || Math.round(laptopsCount * 0.26)).toLocaleString('en-IN')}+ MT`,
             ngos: `${data.ngoPartners || 88}+`,
+            progressPercent: `${pct}%`,
           });
         }
       })
@@ -73,7 +76,7 @@ export default function EditorialHome() {
       <h2 className="display h2 mt-m">Our impact, <em>in numbers.</em></h2>
     </div>
     <div className="stat-row reveal">
-      <div><b>{stats.laptops}</b><span>Laptops refurbished</span></div>
+      <div><b>{stats.laptops}</b><span>Laptops received</span></div>
       <div><b>{stats.people}</b><span>People reached</span></div>
       <div><b>{stats.states}</b><span>States reached</span></div>
       <div><b>{stats.districts}</b><span>Districts reached</span></div>
@@ -176,7 +179,7 @@ export default function EditorialHome() {
   <div className="wrap">
     <div className="faces__head reveal">
       <div><span className="eyebrow eyebrow--light">The people behind the numbers</span>
-      <h2 className="display h2 mt-s">3.5 lakh+ people. <em>Every one of them has a name.</em></h2></div>
+      <h2 className="display h2 mt-s">{stats.people} people. <em>Every one of them has a name.</em></h2></div>
       <p className="lede">Each face here is a girl or young woman learning, studying or working on a laptop that a company once retired.</p>
     </div>
     <figure className="faces__img reveal">
@@ -224,8 +227,8 @@ export default function EditorialHome() {
       <p className="lede mt-m" style={{ color: 'rgba(255,255,255,.88)' }}>By 2030, we aim to reach 1 million women and young people across India. We take laptops that companies no longer need, refurbish them, and give them to people who will use them to study and earn. Every laptop we repurpose stays out of a landfill and helps someone become more independent.</p>
     </div>
     <div className="progress reveal">
-      <div className="top"><div className="now"><b>3.5 Lakh+</b><span>people reached</span></div><div className="goal"><b>1M</b><span>goal by 2030</span></div></div>
-      <div className="track"><i data-w="35%"></i></div>
+      <div className="top"><div className="now"><b>{stats.people}</b><span>people reached</span></div><div className="goal"><b>1M</b><span>goal by 2030</span></div></div>
+      <div className="track"><i data-w={stats.progressPercent} style={{ width: stats.progressPercent }}></i></div>
       <div className="ticks"><span>0</span><span>2.5 Lakh</span><span>5 Lakh</span><span>7.5 Lakh</span><span>10 Lakh</span></div>
     </div>
     <div className="btn-row mt-l reveal"><Link className="bracket bracket--paper" to="/donate">Donate laptops <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link></div>
