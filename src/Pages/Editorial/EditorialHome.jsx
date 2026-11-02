@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
 import BookCallModal from '../../components/Editorial/BookCallModal';
+import { NGO_PARTNERS } from '../../data/ngoPartners';
 import '../../styles/editorial.css';
 
 export default function EditorialHome() {
   useReveal();
   const [showBookCallModal, setShowBookCallModal] = useState(false);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
+  const halfNgoCount = Math.ceil(NGO_PARTNERS.length / 2);
+  const ngoRow1 = NGO_PARTNERS.slice(0, halfNgoCount);
+  const ngoRow2 = NGO_PARTNERS.slice(halfNgoCount);
 
   const impactStories = [
     {
@@ -241,45 +245,100 @@ export default function EditorialHome() {
       </div>
     </div>
 
-    <div className="mt-l" style={{ borderTop: '1px solid rgba(69,55,34,0.1)', paddingTop: '28px' }}>
-      <span className="small" style={{ letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '16px' }}>
-        Implementation &amp; Community Partners
-      </span>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '14px' }}>
-        <div style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: '10px', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--sage)', flexShrink: 0 }}></span>
-          <div>
-            <b style={{ display: 'block', fontSize: '15px', color: 'var(--ink)' }}>Anish Jadhav Memorial Foundation</b>
-            <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>Navgurukul Campus Pune</span>
+    <div className="ngo-partners-section mt-l" style={{ borderTop: '1px solid rgba(69,55,34,0.1)', paddingTop: '40px' }}>
+      {/* Centered Structured Header */}
+      <div className="ngo-header-block">
+        <div className="ngo-header-badge">
+          <span className="pill" style={{ background: 'rgba(92,120,90,0.12)', color: 'var(--sage)', borderColor: 'var(--sage)' }}>
+            40+ Verified Grassroots Partners
+          </span>
+        </div>
+        <h3 className="ngo-header-title">Implementation &amp; Community Partners</h3>
+        <p className="ngo-header-subtitle">
+          Refurbished corporate laptops deployed across grassroots classrooms, residential skilling campuses, and women-led Digi Kendras across India.
+        </p>
+      </div>
+
+      {/* Featured Anchor Partner: Anish Jadhav Memorial Foundation */}
+      <div className="ngo-featured-card">
+        <div className="ngo-featured-left">
+          <div className="ngo-featured-logo-wrap">
+            <img
+              src="/img/ngo-partners/anish-jadhav-navgurukul.png"
+              alt="Anish Jadhav Memorial Foundation"
+              loading="lazy"
+            />
+          </div>
+          <div className="ngo-featured-content">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <b style={{ fontSize: '17px', color: 'var(--ink)' }}>Anish Jadhav Memorial Foundation</b>
+              <span className="pill" style={{ fontSize: '11px', padding: '2px 8px', background: 'rgba(92,120,90,0.12)', color: 'var(--sage)', borderColor: 'var(--sage)' }}>
+                ★ Flagship Residential Campus
+              </span>
+            </div>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--muted)', display: 'block', marginTop: '3px' }}>
+              Navgurukul Campus Pune · Residential Software Engineering Academy
+            </span>
+            <p style={{ fontSize: '13.5px', color: 'var(--ink)', margin: '6px 0 0', lineHeight: 1.5, opacity: 0.9 }}>
+              Full scholarship residential software engineering campus providing laptops, high-speed connectivity, and rigorous coding education to young women from rural and marginalized communities.
+            </p>
           </div>
         </div>
-        <div style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: '10px', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--sage)', flexShrink: 0 }}></span>
-          <div>
-            <b style={{ display: 'block', fontSize: '15px', color: 'var(--ink)' }}>Navgurukul Foundation</b>
-            <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>Pan-India Residential Campuses</span>
-          </div>
+        <Link to="/about" className="bracket" style={{ padding: '8px 18px', fontSize: '13px', alignSelf: 'center', whiteSpace: 'nowrap' }}>
+          Learn about Pune Campus →
+        </Link>
+      </div>
+
+      {/* 2-Row Horizontal Scrolling Logo Showcase */}
+      <div className="ngo-marquee-wrap" aria-label="Implementation Partner Logos">
+        {/* Row 1 - Smooth Left Scroll */}
+        <div className="ngo-marquee-row ngo-marquee-row--left">
+          <ul className="ngo-marquee-track">
+            {ngoRow1.concat(ngoRow1).map((p, idx) => (
+              <li
+                key={`r1-${p.id}-${idx}`}
+                className="ngo-logo-tile"
+                title={`${p.name}${p.sub ? ` · ${p.sub}` : ''}`}
+              >
+                <img
+                  src={p.logo}
+                  alt={p.name}
+                  loading="lazy"
+                />
+              </li>
+            ))}
+          </ul>
         </div>
-        <div style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: '10px', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--sage)', flexShrink: 0 }}></span>
-          <div>
-            <b style={{ display: 'block', fontSize: '15px', color: 'var(--ink)' }}>Grassroots NGO Network</b>
-            <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>88+ Grassroots Partners Pan-India</span>
-          </div>
-        </div>
-        <div style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: '10px', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--sage)', flexShrink: 0 }}></span>
-          <div>
-            <b style={{ display: 'block', fontSize: '15px', color: 'var(--ink)' }}>Government Schools &amp; Labs</b>
-            <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>22 States &amp; 68 Districts</span>
-          </div>
+
+        {/* Row 2 - Smooth Right (Reverse) Scroll */}
+        <div className="ngo-marquee-row ngo-marquee-row--right">
+          <ul className="ngo-marquee-track">
+            {ngoRow2.concat(ngoRow2).map((p, idx) => (
+              <li
+                key={`r2-${p.id}-${idx}`}
+                className="ngo-logo-tile"
+                title={`${p.name}${p.sub ? ` · ${p.sub}` : ''}`}
+              >
+                <img
+                  src={p.logo}
+                  alt={p.name}
+                  loading="lazy"
+                />
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
-    </div>
 
-    <div className="mt-m" style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
-      <span className="pill">★ CSR-1 registered with the Ministry of Corporate Affairs</span>
-      <span className="small">Working alongside 60+ institutional, corporate and grassroots partners across India.</span>
+      {/* Centered Structured Trust Bar */}
+      <div className="ngo-trust-bar">
+        <span className="pill" style={{ background: 'rgba(69,55,34,0.06)', color: 'var(--ink)', border: '1px solid var(--line)' }}>
+          ★ CSR-1 registered with the Ministry of Corporate Affairs
+        </span>
+        <span className="small" style={{ color: 'var(--muted)', fontSize: '13.5px' }}>
+          Working alongside 60+ institutional, corporate and grassroots partners across 22 States &amp; 68 Districts.
+        </span>
+      </div>
     </div>
   </div>
 </section>
@@ -333,7 +392,7 @@ export default function EditorialHome() {
       </div>
     </div>
 
-    <div className="story-feature mt-m reveal" key={currentStoryIndex} style={{ animation: 'fadeIn 0.3s ease' }}>
+    <div className="story-feature mt-m" key={currentStoryIndex} style={{ animation: 'samafadein 0.35s ease', opacity: 1 }}>
       <img
         src={impactStories[currentStoryIndex].image}
         alt={impactStories[currentStoryIndex].name}
