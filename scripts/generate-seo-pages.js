@@ -319,10 +319,18 @@ const routes = [
     subtext: "Students and young builders solving real problems for communities across India."
   },
   {
+    path: "/communications",
+    title: "Communications & Reports | Sama Digital Foundation",
+    description: "Official annual reports, impact assessments, research publications, and field stories from Sama Digital Foundation.",
+    canonical: `${BASE_URL}/communications`,
+    heading: "Sama Communications & Reports",
+    subtext: "Transparent impact documentation, annual filings, and stories from our grassroots partners."
+  },
+  {
     path: "/comms",
     title: "Communications & Reports | Sama Digital Foundation",
     description: "Official annual reports, impact assessments, research publications, and field stories from Sama Digital Foundation.",
-    canonical: `${BASE_URL}/comms`,
+    canonical: `${BASE_URL}/communications`,
     heading: "Sama Communications & Reports",
     subtext: "Transparent impact documentation, annual filings, and stories from our grassroots partners."
   },

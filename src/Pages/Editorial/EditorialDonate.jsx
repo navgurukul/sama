@@ -255,7 +255,7 @@ export default function EditorialDonate() {
           <span className="eyebrow">Join the digital inclusion movement</span>
           <h1 className="display h1 mt-s">Donate <em>a laptop.</em></h1>
           <p className="lede mt-m">
-            Whether you are a corporation looking to offboard IT assets seamlessly, an individual giving a pre-owned device a second life, or a student needing hardware access, there is a place for you in our ecosystem. Help us close the hardware divide.
+            Partner with Sama Digital Foundation to offboard retired corporate IT assets responsibly and seamlessly. We collect, securely data-wipe, and redeploy decommissioned corporate laptops as powerful learning and livelihood tools for underserved girls and youth across India.
           </p>
         </div>
       </section>
