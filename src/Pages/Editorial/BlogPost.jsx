@@ -15,6 +15,6 @@ export default function BlogPost() {
     case 'rethinking-digital-inclusion':
       return <BlogRethinkingInclusion />;
     default:
-      return <Navigate to="/comms" replace />;
+      return <Navigate to="/communications" replace />;
   }
 }

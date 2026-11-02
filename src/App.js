@@ -117,7 +117,8 @@ function App() {
               <Route path="/build-for-good" element={<BuildForGood />} />
               <Route path="/ourteam" element={<EditorialTeam />} />
               <Route path="/team" element={<EditorialTeam />} />
-              <Route path="/comms" element={<Communications />} />
+              <Route path="/communications" element={<Communications />} />
+              <Route path="/comms" element={<Navigate to="/communications" replace />} />
               <Route path="/contact" element={<EditorialContact />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/blog/beyond-connectivity" element={<BlogBeyondConnectivity />} />

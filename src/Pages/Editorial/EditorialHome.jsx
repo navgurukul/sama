@@ -240,8 +240,8 @@ export default function EditorialHome() {
   <div className="wrap grid reveal">
     <div><span className="eyebrow">Our reports</span><h2 className="display h2 mt-s">Read our work, <em>year by year.</em></h2></div>
     <div className="report-links">
-      <Link className="report-chip" to="/comms#reports"><b>Annual Report</b><span>FY 2025–26</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link>
-      <Link className="report-chip" to="/comms#reports"><b>Impact Report</b><span>FY 2024–25</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link>
+      <Link className="report-chip" to="/communications#reports"><b>Annual Report</b><span>FY 2025–26</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link>
+      <Link className="report-chip" to="/communications#reports"><b>Impact Report</b><span>FY 2024–25</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link>
     </div>
   </div>
 </section>

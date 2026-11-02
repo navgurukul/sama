@@ -17,6 +17,7 @@ const EDITORIAL_ROUTES = new Set([
   '/build-for-good',
   '/ourteam',
   '/team',
+  '/communications',
   '/comms',
   '/donate',
   '/contact',

@@ -15,6 +15,7 @@ const EDITORIAL_ROUTES = [
   '/bfg',
   '/build-for-good',
   '/ourteam',
+  '/communications',
   '/comms',
   '/donate',
   '/contact',

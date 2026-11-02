@@ -11,7 +11,7 @@ export default function EditorialHeader() {
   const isInitiatives = currentPath.startsWith('/initiatives') || currentPath.startsWith('/sama-saathi') || currentPath.startsWith('/labs');
   const isGiving = currentPath.startsWith('/giving') || currentPath.startsWith('/first-laptop') || currentPath.startsWith('/bfg');
   const isTeam = currentPath.startsWith('/ourteam') || currentPath.startsWith('/team');
-  const isComms = currentPath.startsWith('/comms') || currentPath.startsWith('/blog');
+  const isComms = currentPath.startsWith('/communications') || currentPath.startsWith('/comms') || currentPath.startsWith('/blog');
   const isContact = currentPath.startsWith('/contact');
 
   // Automatically close menu when route changes
@@ -144,7 +144,7 @@ export default function EditorialHeader() {
             </Link>
 
             <Link
-              to="/comms"
+              to="/communications"
               data-group="comms"
               className={`site-nav-link ${isComms ? 'is-active' : ''}`}
               onClick={closeMenu}

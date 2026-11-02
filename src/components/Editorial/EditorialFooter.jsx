@@ -57,7 +57,7 @@ export default function EditorialFooter() {
             <Link to="/giving">Giving Back</Link>
             <Link to="/bfg">Build for Good</Link>
             <Link to="/ourteam">Team</Link>
-            <Link to="/comms">Communications</Link>
+            <Link to="/communications">Communications</Link>
             <Link to="/donate">Donate</Link>
             <Link to="/contact">Contact Us</Link>
             <Link to="/corporatepartner">NGO Information</Link>
