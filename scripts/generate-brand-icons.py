@@ -44,26 +44,26 @@ def generate_icons():
     icon_192 = create_square_icon(192, padding_ratio=0.10)
     icon_512 = create_square_icon(512, padding_ratio=0.10)
 
-    # 2. Save individual PNGs to public/
-    icon_16.save(os.path.join(public_dir, "favicon-16x16.png"), format="PNG")
-    icon_32.save(os.path.join(public_dir, "favicon-32x32.png"), format="PNG")
-    icon_32.save(os.path.join(public_dir, "favicon.png"), format="PNG")
-    icon_48.save(os.path.join(public_dir, "favicon-48x48.png"), format="PNG")
-    icon_180_touch.save(os.path.join(public_dir, "apple-touch-icon.png"), format="PNG")
-    icon_192.save(os.path.join(public_dir, "logo192.png"), format="PNG")
-    icon_512.save(os.path.join(public_dir, "logo512.png"), format="PNG")
-    icon_512.save(os.path.join(public_dir, "samalogo.png"), format="PNG")
+    # 2. Save individual PNGs to public/ (both standard and cache-busting brand names)
+    for p in [os.path.join(public_dir, "favicon-16x16.png"), os.path.join(public_dir, "sama-favicon-16x16.png")]:
+        icon_16.save(p, format="PNG")
+    for p in [os.path.join(public_dir, "favicon-32x32.png"), os.path.join(public_dir, "favicon.png"), os.path.join(public_dir, "sama-favicon-32x32.png")]:
+        icon_32.save(p, format="PNG")
+    for p in [os.path.join(public_dir, "favicon-48x48.png"), os.path.join(public_dir, "sama-favicon-48x48.png")]:
+        icon_48.save(p, format="PNG")
+    for p in [os.path.join(public_dir, "apple-touch-icon.png"), os.path.join(public_dir, "sama-apple-touch-icon.png")]:
+        icon_180_touch.save(p, format="PNG")
+    for p in [os.path.join(public_dir, "logo192.png"), os.path.join(public_dir, "sama-logo-192.png")]:
+        icon_192.save(p, format="PNG")
+    for p in [os.path.join(public_dir, "logo512.png"), os.path.join(public_dir, "sama-logo-512.png"), os.path.join(public_dir, "samalogo.png")]:
+        icon_512.save(p, format="PNG")
     
     # Save multi-size favicon.ico (containing 16x16, 32x32, 48x48)
-    # Note: Pillow creates a multi-frame ICO when sizes list is specified
     ico_master = create_square_icon(256, padding_ratio=0.08)
-    ico_master.save(
-        os.path.join(public_dir, "favicon.ico"),
-        format="ICO",
-        sizes=[(16, 16), (32, 32), (48, 48)]
-    )
+    for p in [os.path.join(public_dir, "favicon.ico"), os.path.join(public_dir, "sama-favicon.ico")]:
+        ico_master.save(p, format="ICO", sizes=[(16, 16), (32, 32), (48, 48)])
     
-    print("[Brand Icons] Generated public favicon.ico (16, 32, 48), favicon-16x16, favicon-32x32, favicon-48x48, apple-touch-icon, logo192, logo512.")
+    print("[Brand Icons] Generated public favicon.ico, sama-favicon.ico, 16/32/48/180/192/512 icons successfully.")
 
     # 3. Ensure full horizontal logo (Emblem + sama wordmark) in brand colors is consistent across components
     # We already have high-res 1030x305 in components/Header/samalogo.png with #9C9265 & #5C785A

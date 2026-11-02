@@ -4,31 +4,46 @@
   "description": "A laptop’s second life. Someone’s first.",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "sama-favicon.ico",
       "sizes": "48x48 32x32 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "favicon-48x48.png",
+      "src": "sama-favicon-48x48.png",
       "type": "image/png",
       "sizes": "48x48"
     },
     {
-      "src": "favicon-32x32.png",
+      "src": "sama-favicon-32x32.png",
       "type": "image/png",
       "sizes": "32x32"
     },
     {
-      "src": "logo192.png",
+      "src": "sama-logo-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "logo512.png",
+      "src": "sama-logo-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
+    },
+    {
+      "src": "favicon.ico",
+      "sizes": "48x48 32x32 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     },
     {
       "src": "samalogo.png",
