@@ -233,7 +233,7 @@ export default function EditorialContact() {
           ) : (
             /* Instant Success Confirmation Card */
             <div className="contact-form reveal" style={{ textAlign: 'center', padding: '40px 28px' }}>
-              <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#EAF3EB', color: 'var(--green, #174B32)', display: 'grid', placeItems: 'center', margin: '0 auto 16px' }}>
+              <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#EAF3EB', color: 'var(--green, #5C785A)', display: 'grid', placeItems: 'center', margin: '0 auto 16px' }}>
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12.5l4.5 4.5L19 7.5" />
                 </svg>

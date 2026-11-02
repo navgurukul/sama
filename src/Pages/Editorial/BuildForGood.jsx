@@ -83,11 +83,11 @@ export default function BuildForGood() {
   <div className="wrap">
     <div className="reveal"><span className="eyebrow">From idea to impact</span><h2 className="display h2 mt-s">How it <em>unfolded.</em></h2></div>
     <div className="rail reveal">
-      <div className="node"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#174B32" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg></i><b>100K+</b><span>Students reached</span><p>Mobilised youth across colleges and technical institutions nationwide.</p></div>
-      <div className="node"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#174B32" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></i><b>2K+</b><span>Students registered</span><p>Forms submitted from aspiring civic tech builders.</p></div>
-      <div className="node"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#174B32" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8z"/></svg></i><b>117</b><span>Finalist teams</span><p>Shortlisted for feasibility, original thinking and social relevance.</p></div>
-      <div className="node"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#174B32" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></i><b>45 days</b><span>Of development</span><p>A dedicated sprint to build, test and refine open-source prototypes.</p></div>
-      <div className="node"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#174B32" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4"/></svg></i><b>14–15 Aug</b><span>2026 finale</span><p>Grand Demo Day: finalist teams pitched live to a panel of expert judges.</p></div>
+      <div className="node"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5C785A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg></i><b>100K+</b><span>Students reached</span><p>Mobilised youth across colleges and technical institutions nationwide.</p></div>
+      <div className="node"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5C785A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></i><b>2K+</b><span>Students registered</span><p>Forms submitted from aspiring civic tech builders.</p></div>
+      <div className="node"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5C785A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8z"/></svg></i><b>117</b><span>Finalist teams</span><p>Shortlisted for feasibility, original thinking and social relevance.</p></div>
+      <div className="node"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5C785A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></i><b>45 days</b><span>Of development</span><p>A dedicated sprint to build, test and refine open-source prototypes.</p></div>
+      <div className="node"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5C785A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4"/></svg></i><b>14–15 Aug</b><span>2026 finale</span><p>Grand Demo Day: finalist teams pitched live to a panel of expert judges.</p></div>
     </div>
   </div>
 </section>
@@ -171,7 +171,7 @@ export default function BuildForGood() {
     <div><h3 className="display h3">Stay updated</h3>
       <p className="mt-s" style={{ color: 'var(--ink-2)' }}>Subscribe to receive news on upcoming hackathons, cohort announcements and civic innovation updates.</p>
       {subscribeStatus === 'success' ? (
-        <div style={{ padding: '12px 18px', background: '#EAF3EB', color: '#174B32', border: '1px solid #C4DFC7', borderRadius: '8px', fontWeight: '600', fontSize: '14.5px', marginTop: '16px' }}>
+        <div style={{ padding: '12px 18px', background: '#EAF3EB', color: '#5C785A', border: '1px solid #C4DFC7', borderRadius: '8px', fontWeight: '600', fontSize: '14.5px', marginTop: '16px' }}>
           ✓ You’re on the list! We will notify you at <b>{email}</b> when 2027 registration opens.
         </div>
       ) : (
