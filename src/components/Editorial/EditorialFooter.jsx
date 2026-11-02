@@ -65,32 +65,24 @@ export default function EditorialFooter() {
         </div>
 
         <div className="foot-legal">
-          <span>
-            © 2026 S.A.M.A. Digital Foundation · CIN U85500PN2024NPL233531 · CSR-1 registered with the Ministry of Corporate Affairs.
-          </span>
-          <span>
-            <a className="foot-mail" href="mailto:operations@thesama.in">
-              operations@thesama.in
-            </a>{' '}
-            · <Link to="/privacy-policy">Privacy Policy</Link> ·{' '}
-            <a
-              href="https://www.linkedin.com/company/thesama/posts/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'inherit' }}
-            >
-              LinkedIn
-            </a>{' '}
-            ·{' '}
-            <a
-              href="https://www.instagram.com/samadigitalfoundation/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'inherit' }}
-            >
-              Instagram
-            </a>
-          </span>
+          <div className="foot-legal-row" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px 12px', fontSize: '13.5px' }}>
+            <span>© 2026 S.A.M.A. Digital Foundation</span>
+            <span>·</span>
+            <span>CIN U85500PN2024NPL233531</span>
+            <span>·</span>
+            <span style={{ whiteSpace: 'nowrap' }}>CSR-1 Reg. with Ministry of Corporate Affairs</span>
+            <span style={{ color: 'var(--sage)' }}>•</span>
+            <a className="foot-mail" href="mailto:operations@thesama.in">operations@thesama.in</a>
+            <span>·</span>
+            <Link to="/privacy-policy">Privacy Policy</Link>
+            <span>·</span>
+            <a href="https://www.linkedin.com/company/thesama/posts/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>LinkedIn</a>
+            <span>·</span>
+            <a href="https://www.instagram.com/samadigitalfoundation/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>Instagram</a>
+          </div>
+          <div className="foot-compliance mt-xs" style={{ marginTop: '8px', fontSize: '12px', opacity: 0.75 }}>
+            <span>Designated Grievance Officer: Sama Operations (<a href="mailto:operations@thesama.in" style={{ textDecoration: 'underline' }}>operations@thesama.in</a>) · Registered Office: Pune, Maharashtra, India.</span>
+          </div>
         </div>
       </div>
     </footer>

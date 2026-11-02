@@ -7,6 +7,52 @@ import '../../styles/editorial.css';
 export default function EditorialHome() {
   useReveal();
   const [showBookCallModal, setShowBookCallModal] = useState(false);
+  const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
+
+  const impactStories = [
+    {
+      name: 'Shrutika, 19',
+      location: 'Mitnapur, Yavatmal district, Maharashtra',
+      image: '/img/shrutika.jpg',
+      quote: '“A laptop a company had retired became the start of her business.”',
+      text: 'After her father passed away, Shrutika watched debt weigh on her family. At 19, she set up a Sama Digi Kendra at home on a refurbished laptop that a company had retired. Her centre has since served 900+ people in her village, and in one week in September 2026 she earned ₹10,000. She is now expanding it to serve children and the elderly.'
+    },
+    {
+      name: 'Kavita, 21',
+      location: 'Raigarh, Chhattisgarh',
+      image: '/img/builder-1.jpg',
+      quote: '“Teaching 45 girls digital skills changed the mindset of our entire community.”',
+      text: 'Kavita received a refurbished laptop through Sama’s rural empowerment deployment. She now conducts daily batches teaching typing, office spreadsheets, and internet research to young women preparing for banking and civil examinations.'
+    },
+    {
+      name: 'Pooja, 22',
+      location: 'Pune, Maharashtra',
+      image: '/img/builder-2.jpg',
+      quote: '“Without a working machine, freelancing in graphic design was impossible.”',
+      text: 'Coming from an underserved background, purchasing high-specification hardware was out of reach. Through Build for Good, Pooja received a refurbished laptop and now supports her household with regular client design contracts.'
+    },
+    {
+      name: 'Sunita, 20',
+      location: 'Bilaspur, Chhattisgarh',
+      image: '/img/builder-3.jpg',
+      quote: '“Villagers no longer have to travel 25 kilometers for basic citizen services.”',
+      text: 'Sunita’s Kendra serves as the digital lifeline of her gram panchayat. With a refurbished laptop and biometric device, she assists more than 1,200 residents with DBT schemes, scholarship forms, and government certificates.'
+    },
+    {
+      name: 'Aarti, 18',
+      location: 'Yavatmal, Maharashtra',
+      image: '/img/builder-4.jpg',
+      quote: '“Having my own laptop means I no longer queue for an hour at a cyber café.”',
+      text: 'As the first girl in her family to enter higher education, Aarti uses her Sama laptop for online lectures, test preparation, and digital libraries. Her younger siblings share the machine in the evenings for school homework.'
+    },
+    {
+      name: 'Rani, 23',
+      location: 'Gondia, Maharashtra',
+      image: '/img/builder-5.jpg',
+      quote: '“One refurbished laptop unlocked hands-on computer learning for 80 children.”',
+      text: 'Rani partnered with her local village school to deliver computer classes after school hours. Students who had never touched a keyboard before are now learning digital literacy and creative computing.'
+    }
+  ];
 
   const [stats, setStats] = React.useState({
     laptops: '21,142',
@@ -152,7 +198,7 @@ export default function EditorialHome() {
       <div className="adv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B25F65" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 21s-7-6.3-7-11.5A7 7 0 0 1 19 9.5C19 14.7 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><h3>Full traceability</h3><p>Every laptop is logged on our dashboard from pickup to the person who uses it.</p></div>
       <div className="adv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B25F65" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h6M9 12h6M9 16h3"/></svg><h3>Impact you can report</h3><p>Regular updates on laptops refurbished, people reached and where each batch went, ready for your CSR and ESG reporting.</p></div>
       <div className="adv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B25F65" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19l8-8"/></svg><h3>Measurable sustainability</h3><p>Every laptop reused instead of replaced avoids about 220 kg CO₂e of manufacturing emissions. Our partners have avoided 5,390+ MT so far.</p></div>
-      <div className="adv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B25F65" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c.8-3.5 3.2-5.5 6-5.5s5.2 2 6 5.5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.6c2.6.2 4.4 2 5 5.4"/></svg><h3>Employees who take part</h3><p>Bring a <a href="#contact:connect" data-topic="Renew Desk at our office">Renew Desk</a> to your office, where employees refurbish laptops alongside our team.</p></div>
+      <div className="adv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B25F65" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c.8-3.5 3.2-5.5 6-5.5s5.2 2 6 5.5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.6c2.6.2 4.4 2 5 5.4"/></svg><h3>Employees who take part</h3><p>Bring a <Link to="/giving#renew-desk" onClick={(e) => { e.preventDefault(); setShowBookCallModal(true); }} style={{ textDecoration: 'underline', fontWeight: 600 }}>Renew Desk</Link> to your office, where employees refurbish laptops alongside our team.</p></div>
     </div>
     <div className="corp__foot reveal">
       <span className="pill" style={{ marginTop: '0' }}>★ CSR-1 registered with the Ministry of Corporate Affairs</span>
@@ -164,13 +210,77 @@ export default function EditorialHome() {
   </div>
 </section>
 
-{/*  A8 · Trusted by  */}
+{/*  A8 · Partners Ecosystem  */}
 <section className="trust">
   <div className="wrap reveal">
-    <span className="eyebrow">Trusted by</span>
-    <div className="marquee" aria-label="Our corporate partners"><ul className="marquee__track"><li><img src="/img/p-amazon.png" alt="Amazon" loading="lazy" /></li><li><img src="/img/p-microsoft.png" alt="Microsoft" loading="lazy" /></li><li><img src="/img/p-accenture.png" alt="Accenture" loading="lazy" /></li><li><img src="/img/p-capgemini.svg" alt="Capgemini" loading="lazy" /></li><li><img src="/img/p-eaton.png" alt="Eaton" loading="lazy" /></li><li><img src="/img/p-sp-global.png" alt="S&amp;P Global" loading="lazy" /></li><li><img src="/img/p-tiger-analytics.png" alt="Tiger Analytics" loading="lazy" /></li><li><img src="/img/p-macquarie.png" alt="Macquarie" loading="lazy" /></li><li><img src="/img/p-dxc.png" alt="DXC Technology" loading="lazy" /></li><li><img src="/img/p-apexon.png" alt="Apexon" loading="lazy" /></li><li><img src="/img/p-avid.png" alt="Avid Learning" loading="lazy" /></li><li><img src="/img/p-fossil.svg" alt="Fossil" loading="lazy" /></li><li><img src="/img/p-sga.svg" alt="SG Analytics" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-amazon.png" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-microsoft.png" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-accenture.png" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-capgemini.svg" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-eaton.png" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-sp-global.png" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-tiger-analytics.png" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-macquarie.png" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-dxc.png" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-apexon.png" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-avid.png" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-fossil.svg" alt="" loading="lazy" /></li><li aria-hidden="true"><img src="/img/p-sga.svg" alt="" loading="lazy" /></li></ul></div>
-    <p className="small mt-m">Along with our other corporate partners.</p>
-    <span className="pill">★ CSR-1 registered with the Ministry of Corporate Affairs</span>
+    <div className="center">
+      <span className="eyebrow">Partnership Ecosystem</span>
+      <h2 className="display h2 mt-s" style={{ fontSize: '36px' }}>Powering digital inclusion <em>across India.</em></h2>
+    </div>
+
+    <div className="mt-l">
+      <span className="small" style={{ letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '14px' }}>
+        Corporate Fleet &amp; Asset Donors
+      </span>
+      <div className="marquee" aria-label="Our corporate partners">
+        <ul className="marquee__track">
+          <li><img src="/img/p-amazon.png" alt="Amazon" loading="lazy" /></li>
+          <li><img src="/img/p-microsoft.png" alt="Microsoft" loading="lazy" /></li>
+          <li><img src="/img/p-accenture.png" alt="Accenture" loading="lazy" /></li>
+          <li><img src="/img/p-capgemini.svg" alt="Capgemini" loading="lazy" /></li>
+          <li><img src="/img/p-eaton.png" alt="Eaton" loading="lazy" /></li>
+          <li><img src="/img/p-sp-global.png" alt="S&amp;P Global" loading="lazy" /></li>
+          <li><img src="/img/p-tiger-analytics.png" alt="Tiger Analytics" loading="lazy" /></li>
+          <li><img src="/img/p-macquarie.png" alt="Macquarie" loading="lazy" /></li>
+          <li><img src="/img/p-dxc.png" alt="DXC Technology" loading="lazy" /></li>
+          <li><img src="/img/p-apexon.png" alt="Apexon" loading="lazy" /></li>
+          <li><img src="/img/p-avid.png" alt="Avid Learning" loading="lazy" /></li>
+          <li><img src="/img/p-fossil.svg" alt="Fossil" loading="lazy" /></li>
+          <li><img src="/img/p-sga.svg" alt="SG Analytics" loading="lazy" /></li>
+        </ul>
+      </div>
+    </div>
+
+    <div className="mt-l" style={{ borderTop: '1px solid rgba(69,55,34,0.1)', paddingTop: '28px' }}>
+      <span className="small" style={{ letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '16px' }}>
+        Implementation &amp; Community Partners
+      </span>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '14px' }}>
+        <div style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: '10px', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--sage)', flexShrink: 0 }}></span>
+          <div>
+            <b style={{ display: 'block', fontSize: '15px', color: 'var(--ink)' }}>Anish Jadhav Memorial Foundation</b>
+            <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>Navgurukul Campus Pune</span>
+          </div>
+        </div>
+        <div style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: '10px', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--sage)', flexShrink: 0 }}></span>
+          <div>
+            <b style={{ display: 'block', fontSize: '15px', color: 'var(--ink)' }}>Navgurukul Foundation</b>
+            <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>Pan-India Residential Campuses</span>
+          </div>
+        </div>
+        <div style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: '10px', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--sage)', flexShrink: 0 }}></span>
+          <div>
+            <b style={{ display: 'block', fontSize: '15px', color: 'var(--ink)' }}>Grassroots NGO Network</b>
+            <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>88+ Grassroots Partners Pan-India</span>
+          </div>
+        </div>
+        <div style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: '10px', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--sage)', flexShrink: 0 }}></span>
+          <div>
+            <b style={{ display: 'block', fontSize: '15px', color: 'var(--ink)' }}>Government Schools &amp; Labs</b>
+            <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>22 States &amp; 68 Districts</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="mt-m" style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+      <span className="pill">★ CSR-1 registered with the Ministry of Corporate Affairs</span>
+      <span className="small">Working alongside 60+ institutional, corporate and grassroots partners across India.</span>
+    </div>
   </div>
 </section>
 
@@ -188,18 +298,82 @@ export default function EditorialHome() {
   </div>
 </section>
 
-{/*  A4 · One person's story  */}
-<section className="sec dark">
+{/*  A4 · Voices of Impact (Interactive Multi-story Carousel)  */}
+<section className="sec dark" id="stories">
   <div className="wrap">
-    <span className="eyebrow eyebrow--light reveal">One person’s story</span>
-    <div className="story-feature mt-m reveal">
-      <img src="/img/shrutika.jpg" alt="Shrutika at her Sama Digi Kendra" />
-      <div className="body">
-        <blockquote>“A laptop a company had retired became the start of her business.”</blockquote>
-        <div className="who"><b>Shrutika, 19</b> <span>· Mitnapur, Yavatmal district, Maharashtra</span></div>
-        <p>After her father passed away, Shrutika watched debt weigh on her family. At 19, she set up a Sama Digi Kendra at home on a refurbished laptop that a company had retired. Her centre has since served 900+ people in her village, and in one week in September 2026 she earned ₹10,000. She is now expanding it to serve children and the elderly.</p>
-        <Link className="text-link mt-m" style={{ alignSelf: 'flex-start', color: 'var(--ink)' }} to="/sama-saathi">Read more stories <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link>
+    <div className="reveal" style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
+      <div>
+        <span className="pill pill--live">Voices of Impact</span>
+        <h2 className="display h2 mt-s" style={{ color: 'var(--paper)' }}>Stories from <em>the field.</em></h2>
+        <p className="lede mt-s" style={{ color: 'rgba(245,242,237,.78)' }}>See how a retired corporate laptop opens up income, education, and social mobility across India.</p>
       </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <button
+          type="button"
+          onClick={() => setCurrentStoryIndex((prev) => (prev === 0 ? impactStories.length - 1 : prev - 1))}
+          className="bracket bracket--light"
+          style={{ padding: '8px 14px', cursor: 'pointer' }}
+          aria-label="Previous story"
+        >
+          ← Prev
+        </button>
+        <span style={{ fontSize: '13px', color: 'rgba(245,242,237,.75)', minWidth: '45px', textAlign: 'center' }}>
+          {currentStoryIndex + 1} / {impactStories.length}
+        </span>
+        <button
+          type="button"
+          onClick={() => setCurrentStoryIndex((prev) => (prev === impactStories.length - 1 ? 0 : prev + 1))}
+          className="bracket bracket--light"
+          style={{ padding: '8px 14px', cursor: 'pointer' }}
+          aria-label="Next story"
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+
+    <div className="story-feature mt-m reveal" key={currentStoryIndex} style={{ animation: 'fadeIn 0.3s ease' }}>
+      <img
+        src={impactStories[currentStoryIndex].image}
+        alt={impactStories[currentStoryIndex].name}
+        style={{ width: '100%', maxHeight: '420px', objectFit: 'cover', borderRadius: '12px' }}
+      />
+      <div className="body">
+        <blockquote>{impactStories[currentStoryIndex].quote}</blockquote>
+        <div className="who">
+          <b>{impactStories[currentStoryIndex].name}</b> <span>· {impactStories[currentStoryIndex].location}</span>
+        </div>
+        <p>{impactStories[currentStoryIndex].text}</p>
+        <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap', marginTop: '20px' }}>
+          <Link className="text-link" style={{ color: 'var(--ink)' }} to="/sama-saathi">
+            Explore Sama Saathi programme <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </Link>
+          <Link className="text-link" style={{ color: 'var(--ink)' }} to="/donate">
+            Fund a laptop for a learner <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </Link>
+        </div>
+      </div>
+    </div>
+
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '24px' }}>
+      {impactStories.map((_, idx) => (
+        <button
+          key={idx}
+          type="button"
+          onClick={() => setCurrentStoryIndex(idx)}
+          style={{
+            width: idx === currentStoryIndex ? '28px' : '9px',
+            height: '9px',
+            borderRadius: '5px',
+            background: idx === currentStoryIndex ? 'var(--sage)' : 'rgba(255,255,255,0.25)',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.25s ease'
+          }}
+          aria-label={`Jump to story ${idx + 1}`}
+        />
+      ))}
     </div>
   </div>
 </section>
