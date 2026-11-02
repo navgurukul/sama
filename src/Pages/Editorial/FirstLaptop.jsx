@@ -23,10 +23,6 @@ export default function FirstLaptop() {
     <p className="lede mt-m">Every founder remembers their first laptop. Share yours, and help put 400 refurbished MacBooks in the hands of the next generation of builders.</p>
     <div className="btn-row mt-l"><a className="bracket bracket--paper" href="#founders">How it works <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a className="bracket bracket--light" href="mailto:brendon@thesama.in?subject=First%20Laptop%2C%20Next%20Builder">Join the campaign <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
   </div>
-  <a className="fl-hero__scroll" href="#founders" aria-label="Scroll to explore">
-    <span>Scroll to explore</span>
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg>
-  </a>
 </section>
 <section className="sec founders fl-page" id="founders">
   <div className="wrap">
