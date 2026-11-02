@@ -1745,83 +1745,34 @@ section[id]{scroll-margin-top:90px}
   margin: 0;
 }
 
-/* Featured Card: Centered max-width with strict left text-align */
-.ngo-featured-card {
-  max-width: 940px;
-  margin: 0 auto 28px;
-  background: #FFFFFF;
-  border: 1px solid rgba(92, 120, 90, 0.28);
-  border-radius: 14px;
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 22px;
-  box-shadow: 0 4px 16px rgba(44,35,22,0.04);
-  text-align: left;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-}
-.ngo-featured-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--sage, #5C785A);
-  box-shadow: 0 10px 28px rgba(44,35,22,0.08);
-}
-.ngo-featured-left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex: 1;
-  text-align: left;
-}
-.ngo-featured-logo-wrap {
-  width: 64px;
-  height: 64px;
-  border-radius: 12px;
-  background: #FAF8F5;
-  border: 1px solid var(--line, rgba(69,55,34,0.12));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px;
-  flex-shrink: 0;
-}
-.ngo-featured-logo-wrap img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-.ngo-featured-content {
-  flex: 1;
-  text-align: left;
-}
-
 /* 2-Row Logo Marquee */
 .ngo-marquee-wrap {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 16px;
+  margin-top: 32px;
 }
 .ngo-marquee-row {
   position: relative;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  padding: 6px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
 .ngo-marquee-track {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
   width: max-content;
   list-style: none;
-  padding: 4px 0;
+  padding: 6px 0;
   will-change: transform;
 }
 .ngo-marquee-row--left .ngo-marquee-track {
-  animation: ngomarqueeLeft 54s linear infinite;
+  animation: ngomarqueeLeft 52s linear infinite;
 }
 .ngo-marquee-row--right .ngo-marquee-track {
-  animation: ngomarqueeRight 58s linear infinite;
+  animation: ngomarqueeRight 56s linear infinite;
 }
 .ngo-marquee-row:hover .ngo-marquee-track {
   animation-play-state: paused;
@@ -1841,28 +1792,41 @@ section[id]{scroll-margin-top:90px}
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 56px;
-  min-width: 130px;
-  max-width: 190px;
-  padding: 8px 18px;
+  height: 66px;
+  min-width: 150px;
+  max-width: 220px;
+  padding: 10px 22px;
   background: #FFFFFF;
   border: 1px solid rgba(69, 55, 34, 0.1);
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(44, 35, 22, 0.04);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(44, 35, 22, 0.04);
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
-  cursor: default;
+  cursor: pointer;
 }
 .ngo-logo-tile:hover {
-  transform: translateY(-2px) scale(1.03);
+  transform: translateY(-2px) scale(1.02);
   border-color: var(--sage, #5C785A);
-  box-shadow: 0 8px 20px rgba(44, 35, 22, 0.08);
+  box-shadow: 0 8px 22px rgba(44, 35, 22, 0.1);
+}
+.ngo-logo-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
 }
 .ngo-logo-tile img {
-  height: 36px;
+  height: auto;
+  max-height: 44px;
   width: auto;
-  max-width: 140px;
+  max-width: 175px;
   object-fit: contain;
   transition: transform 0.25s ease;
+  display: block;
+}
+.ngo-logo-tile:hover img {
+  transform: scale(1.04);
 }
 
 /* Trust Bar Centered */
@@ -1872,7 +1836,7 @@ section[id]{scroll-margin-top:90px}
   justify-content: center;
   gap: 14px;
   flex-wrap: wrap;
-  margin-top: 28px;
+  margin-top: 32px;
   text-align: center;
 }
 
@@ -1889,29 +1853,14 @@ section[id]{scroll-margin-top:90px}
   }
 }
 @media (max-width: 768px) {
-  .ngo-featured-card {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 18px;
-    gap: 16px;
-  }
-  .ngo-featured-left {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-  }
-  .ngo-featured-logo-wrap {
-    width: 52px;
-    height: 52px;
-  }
   .ngo-logo-tile {
-    height: 48px;
-    min-width: 110px;
-    padding: 6px 12px;
+    height: 52px;
+    min-width: 120px;
+    padding: 6px 14px;
   }
   .ngo-logo-tile img {
-    height: 28px;
-    max-width: 110px;
+    max-height: 32px;
+    max-width: 130px;
   }
   .ngo-marquee-track {
     gap: 12px;

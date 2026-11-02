@@ -259,85 +259,109 @@ export default function EditorialHome() {
         </p>
       </div>
 
-      {/* Featured Anchor Partner: Anish Jadhav Memorial Foundation */}
-      <div className="ngo-featured-card">
-        <div className="ngo-featured-left">
-          <a
-            href="https://anishjadhavmemorialfoundation.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ngo-featured-logo-wrap"
-            aria-label="Visit Anish Jadhav Memorial Foundation website"
-          >
-            <img
-              src="/img/ngo-partners/anish-jadhav-navgurukul.png"
-              alt="Anish Jadhav Memorial Foundation"
-              loading="lazy"
-            />
-          </a>
-          <div className="ngo-featured-content">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <b style={{ fontSize: '17px', color: 'var(--ink)' }}>Anish Jadhav Memorial Foundation</b>
-              <span className="pill" style={{ fontSize: '11px', padding: '2px 8px', background: 'rgba(92,120,90,0.12)', color: 'var(--sage)', borderColor: 'var(--sage)' }}>
-                ★ Flagship Residential Campus
-              </span>
-            </div>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--muted)', display: 'block', marginTop: '3px' }}>
-              Navgurukul Campus Pune · Residential Software Engineering Academy
-            </span>
-            <p style={{ fontSize: '13.5px', color: 'var(--ink)', margin: '6px 0 0', lineHeight: 1.5, opacity: 0.9 }}>
-              Full scholarship residential software engineering campus providing laptops, high-speed connectivity, and rigorous coding education to young women from rural and marginalized communities.
-            </p>
-          </div>
-        </div>
-        <a
-          href="https://anishjadhavmemorialfoundation.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bracket"
-          style={{ padding: '8px 18px', fontSize: '13px', alignSelf: 'center', whiteSpace: 'nowrap' }}
-        >
-          Learn about Pune Campus →
-        </a>
-      </div>
-
       {/* 2-Row Horizontal Scrolling Logo Showcase */}
       <div className="ngo-marquee-wrap" aria-label="Implementation Partner Logos">
         {/* Row 1 - Smooth Left Scroll */}
         <div className="ngo-marquee-row ngo-marquee-row--left">
           <ul className="ngo-marquee-track">
-            {ngoRow1.concat(ngoRow1).map((p, idx) => (
-              <li
-                key={`r1-${p.id}-${idx}`}
-                className="ngo-logo-tile"
-                title={`${p.name}${p.sub ? ` · ${p.sub}` : ''}`}
-              >
-                <img
-                  src={p.logo}
-                  alt={p.name}
-                  loading="lazy"
-                />
-              </li>
-            ))}
+            {ngoRow1.concat(ngoRow1).map((p, idx) => {
+              const TileInner = (
+                <>
+                  <img
+                    src={p.logo}
+                    alt={p.name}
+                    loading="eager"
+                    decoding="async"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      if (e.currentTarget.nextElementSibling) {
+                        e.currentTarget.nextElementSibling.style.display = 'block';
+                      }
+                    }}
+                  />
+                  <span
+                    className="ngo-logo-fallback"
+                    style={{ display: 'none', fontSize: '12px', fontWeight: 600, color: 'var(--ink)', textAlign: 'center' }}
+                  >
+                    {p.name}
+                  </span>
+                </>
+              );
+
+              return (
+                <li
+                  key={`r1-${p.id}-${idx}`}
+                  className="ngo-logo-tile"
+                  title={`${p.name}${p.sub ? ` · ${p.sub}` : ''}`}
+                >
+                  {p.website ? (
+                    <a
+                      href={p.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ngo-logo-link"
+                      aria-label={p.name}
+                    >
+                      {TileInner}
+                    </a>
+                  ) : (
+                    TileInner
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
 
         {/* Row 2 - Smooth Right (Reverse) Scroll */}
         <div className="ngo-marquee-row ngo-marquee-row--right">
           <ul className="ngo-marquee-track">
-            {ngoRow2.concat(ngoRow2).map((p, idx) => (
-              <li
-                key={`r2-${p.id}-${idx}`}
-                className="ngo-logo-tile"
-                title={`${p.name}${p.sub ? ` · ${p.sub}` : ''}`}
-              >
-                <img
-                  src={p.logo}
-                  alt={p.name}
-                  loading="lazy"
-                />
-              </li>
-            ))}
+            {ngoRow2.concat(ngoRow2).map((p, idx) => {
+              const TileInner = (
+                <>
+                  <img
+                    src={p.logo}
+                    alt={p.name}
+                    loading="eager"
+                    decoding="async"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      if (e.currentTarget.nextElementSibling) {
+                        e.currentTarget.nextElementSibling.style.display = 'block';
+                      }
+                    }}
+                  />
+                  <span
+                    className="ngo-logo-fallback"
+                    style={{ display: 'none', fontSize: '12px', fontWeight: 600, color: 'var(--ink)', textAlign: 'center' }}
+                  >
+                    {p.name}
+                  </span>
+                </>
+              );
+
+              return (
+                <li
+                  key={`r2-${p.id}-${idx}`}
+                  className="ngo-logo-tile"
+                  title={`${p.name}${p.sub ? ` · ${p.sub}` : ''}`}
+                >
+                  {p.website ? (
+                    <a
+                      href={p.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ngo-logo-link"
+                      aria-label={p.name}
+                    >
+                      {TileInner}
+                    </a>
+                  ) : (
+                    TileInner
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
