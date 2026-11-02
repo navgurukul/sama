@@ -89,7 +89,7 @@ export default function EditorialTeam() {
   <div className="wrap grid reveal">
     <h2 className="display h2">Our work is collective. Our impact is shared. <em>Let’s build more of it, together.</em></h2>
     <div><p className="lede">Want to work with us or support our mission?</p>
-      <div className="btn-row mt-l"><a className="bracket bracket--solid" href="#contact:connect">Get in touch <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><Link className="bracket bracket--line" to="/donate">Donate <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link></div></div>
+      <div className="btn-row mt-l"><Link className="bracket bracket--solid" to="/contact">Get in touch <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link><Link className="bracket bracket--line" to="/donate">Donate <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link></div></div>
   </div>
 </section>
       </div>
