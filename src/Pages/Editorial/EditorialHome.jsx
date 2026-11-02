@@ -272,7 +272,8 @@ export default function EditorialHome() {
             <img
               src="/img/ngo-partners/anish-jadhav-navgurukul.png"
               alt="Anish Jadhav Memorial Foundation"
-              loading="lazy"
+              loading="eager"
+              decoding="async"
             />
           </a>
           <div className="ngo-featured-content">
@@ -315,8 +316,21 @@ export default function EditorialHome() {
                 <img
                   src={p.logo}
                   alt={p.name}
-                  loading="lazy"
+                  loading="eager"
+                  decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    if (e.currentTarget.nextElementSibling) {
+                      e.currentTarget.nextElementSibling.style.display = 'block';
+                    }
+                  }}
                 />
+                <span
+                  className="ngo-logo-fallback"
+                  style={{ display: 'none', fontSize: '12px', fontWeight: 600, color: 'var(--ink)', textAlign: 'center' }}
+                >
+                  {p.name}
+                </span>
               </li>
             ))}
           </ul>
@@ -334,8 +348,21 @@ export default function EditorialHome() {
                 <img
                   src={p.logo}
                   alt={p.name}
-                  loading="lazy"
+                  loading="eager"
+                  decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    if (e.currentTarget.nextElementSibling) {
+                      e.currentTarget.nextElementSibling.style.display = 'block';
+                    }
+                  }}
                 />
+                <span
+                  className="ngo-logo-fallback"
+                  style={{ display: 'none', fontSize: '12px', fontWeight: 600, color: 'var(--ink)', textAlign: 'center' }}
+                >
+                  {p.name}
+                </span>
               </li>
             ))}
           </ul>

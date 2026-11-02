@@ -3,7 +3,7 @@ export const NGO_PARTNERS = [
     id: 'anish-jadhav',
     name: 'Anish Jadhav Memorial Foundation',
     sub: 'Navgurukul Campus Pune',
-    logo: '/img/ngo-partners/anish-jadhav-navgurukul.png',
+    logo: '/img/ngo-partners/anish-jadhav.png',
     website: 'https://anishjadhavmemorialfoundation.org/',
     featured: true
   },
@@ -38,13 +38,13 @@ export const NGO_PARTNERS = [
     id: 'def',
     name: 'Digital Empowerment Foundation',
     sub: 'Community Information Resource Centres',
-    logo: '/img/ngo-partners/def.jpg'
+    logo: '/img/ngo-partners/def.png'
   },
   {
     id: 'deshpande',
     name: 'Deshpande Skilling',
     sub: 'Rural Youth Skilling',
-    logo: '/img/ngo-partners/deshpande-skilling.png'
+    logo: '/img/ngo-partners/deshpande.png'
   },
   {
     id: 'convegenius',
@@ -56,7 +56,7 @@ export const NGO_PARTNERS = [
     id: 'computer-shiksha',
     name: 'Computer Shiksha',
     sub: 'Digital Literacy for Underprivileged',
-    logo: '/img/ngo-partners/computer-shiksha.jpg'
+    logo: '/img/ngo-partners/computer-shiksha.png'
   },
   {
     id: 'asha-chennai',
@@ -80,7 +80,7 @@ export const NGO_PARTNERS = [
     id: 'pi-jam',
     name: 'Pi Jam Foundation',
     sub: 'Creative Computing & Problem Solving',
-    logo: '/img/ngo-partners/pi-jam.jpeg'
+    logo: '/img/ngo-partners/pi-jam.png'
   },
   {
     id: 'sewa',
@@ -104,7 +104,7 @@ export const NGO_PARTNERS = [
     id: 'leadership-for-equity',
     name: 'Leadership For Equity',
     sub: 'Systemic Education Reform',
-    logo: '/img/ngo-partners/leadership-for-equity.jpeg'
+    logo: '/img/ngo-partners/leadership-for-equity.png'
   },
   {
     id: 'waste-warriors',
@@ -116,43 +116,43 @@ export const NGO_PARTNERS = [
     id: 'bala-vikasa',
     name: 'Bala Vikasa',
     sub: 'Community Development',
-    logo: '/img/ngo-partners/bala-vikasa.jpeg'
+    logo: '/img/ngo-partners/bala-vikasa.png'
   },
   {
     id: 'barabari-collective',
     name: 'Barabari Collective',
     sub: 'Gender & Digital Equity',
-    logo: '/img/ngo-partners/barabari-collective.jpeg'
+    logo: '/img/ngo-partners/barabari-collective.png'
   },
   {
     id: 'bachpan-banao',
     name: 'Bachpan Banao',
     sub: 'Dantewada Education Initiative',
-    logo: '/img/ngo-partners/bachpan-banao.jpeg'
+    logo: '/img/ngo-partners/bachpan-banao.png'
   },
   {
     id: 'code-to-enhance',
     name: 'Code to Enhance Plan',
     sub: 'Girls in Technology',
-    logo: '/img/ngo-partners/code-to-enhance.jpeg'
+    logo: '/img/ngo-partners/code-to-enhance.png'
   },
   {
     id: 'atamdeepam',
     name: 'Atamdeepam Society',
     sub: 'Grassroots Empowerment',
-    logo: '/img/ngo-partners/atamdeepam.jpeg'
+    logo: '/img/ngo-partners/atamdeepam.png'
   },
   {
     id: 'fia',
     name: 'Foundation For Innovation & Action',
     sub: 'Public Systems Innovation',
-    logo: '/img/ngo-partners/fia.jpeg'
+    logo: '/img/ngo-partners/fia.png'
   },
   {
     id: 'jan-shaurya',
     name: 'Jan Shaurya',
     sub: 'Youth Social Leadership',
-    logo: '/img/ngo-partners/jan-shaurya.jpeg'
+    logo: '/img/ngo-partners/jan-shaurya.png'
   },
   {
     id: 'lcf',
@@ -164,25 +164,25 @@ export const NGO_PARTNERS = [
     id: 'nazariya',
     name: 'Nazariya Arts Collective',
     sub: 'Creative Computing',
-    logo: '/img/ngo-partners/nazariya.jpeg'
+    logo: '/img/ngo-partners/nazariya.png'
   },
   {
     id: 'nirnaya',
     name: 'Nirnaya',
     sub: 'Women’s Livelihood Trust',
-    logo: '/img/ngo-partners/nirnaya.jpeg'
+    logo: '/img/ngo-partners/nirnaya.png'
   },
   {
     id: 'paper-crane-lab',
     name: 'Paper Crane Lab',
     sub: 'Hands-on STEM & Computing',
-    logo: '/img/ngo-partners/paper-crane-lab.jpeg'
+    logo: '/img/ngo-partners/paper-crane-lab.png'
   },
   {
     id: 'pifinity',
     name: 'Pifinity Education Foundation',
     sub: 'Digital Classroom Labs',
-    logo: '/img/ngo-partners/pifinity.jpeg'
+    logo: '/img/ngo-partners/pifinity.png'
   },
   {
     id: 'project-shiksha',
@@ -200,19 +200,19 @@ export const NGO_PARTNERS = [
     id: 'sanjhi-sikhiya',
     name: 'Sanjhi Sikhiya',
     sub: 'Punjab Education Collective',
-    logo: '/img/ngo-partners/sanjhi-sikhiya.jpeg'
+    logo: '/img/ngo-partners/sanjhi-sikhiya.png'
   },
   {
     id: 'signsetu',
     name: 'Signsetu',
     sub: 'Accessibility & Inclusion',
-    logo: '/img/ngo-partners/signsetu.jpeg'
+    logo: '/img/ngo-partners/signsetu.png'
   },
   {
     id: 'tis',
     name: 'The Innovation Story (TIS)',
     sub: 'Next-gen Tech Literacy',
-    logo: '/img/ngo-partners/tis.jpg'
+    logo: '/img/ngo-partners/tis.png'
   },
   {
     id: 'trrain',
@@ -224,7 +224,7 @@ export const NGO_PARTNERS = [
     id: 'trutiya-ratna',
     name: 'Trutiya Ratna',
     sub: 'Social Justice & Education',
-    logo: '/img/ngo-partners/trutiya-ratna.jpeg'
+    logo: '/img/ngo-partners/trutiya-ratna.png'
   },
   {
     id: 'visthar',
@@ -236,19 +236,19 @@ export const NGO_PARTNERS = [
     id: 'eklavya',
     name: 'Eklavya Foundation',
     sub: 'Educational Innovation',
-    logo: '/img/ngo-partners/eklavya.jpg'
+    logo: '/img/ngo-partners/eklavya.png'
   },
   {
     id: 'esther',
     name: 'Esther Foundation',
     sub: 'Girls Leadership',
-    logo: '/img/ngo-partners/esther.jpg'
+    logo: '/img/ngo-partners/esther.png'
   },
   {
     id: 'ei',
     name: 'Educational Initiatives',
     sub: 'Learning Assessment & Tech',
-    logo: '/img/ngo-partners/ei.jpeg'
+    logo: '/img/ngo-partners/ei.png'
   }
 ];
 
