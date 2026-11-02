@@ -155,6 +155,11 @@ export default function EditorialDonate() {
         ? process.env.REACT_APP_NgoInformationApi.replace(/\/ngo-exec.*$/, '')
         : 'http://localhost:8000';
 
+      const isGiveInd = formType === 'give_individual';
+      const isGiveCorp = formType === 'give_corporate';
+      const isNeedInd = formType === 'need_individual';
+      const isFinVol = formType === 'financial_volunteer';
+
       const payload = {
         formType,
         firstName: formData.firstName.trim(),
@@ -163,21 +168,21 @@ export default function EditorialDonate() {
         phone: formData.phone.trim(),
         city: formData.city.trim(),
         state: formData.state.trim(),
-        contributionType: formType === 'give_corporate' ? 'company' : 'individual',
-        companyName: formData.companyName.trim(),
-        designation: formData.designation.trim(),
-        donationIntent: formType === 'need_individual' ? 'request_laptop' : (formType === 'financial_volunteer' ? formData.financialVolunteerChoice : 'donate_laptops'),
-        numberOfLaptops: formType === 'give_individual' ? parseInt(formData.numberOfLaptops, 10) || 1 : (formType === 'give_corporate' ? formData.fleetSize : 0),
-        deviceCondition: formData.deviceCondition,
-        deviceBrand: formData.deviceBrand,
-        deviceAge: formData.deviceAge,
-        pickupAddress: formData.pickupAddress.trim(),
-        decommissionTimeline: formData.decommissionTimeline,
-        dataWipingNeeded: formData.dataWipingNeeded === 'Yes',
-        applicantCategory: formData.applicantCategory,
-        educationCourse: formData.educationCourse.trim(),
-        purpose: formData.purpose.trim(),
-        familyIncome: formData.familyIncome,
+        contributionType: isGiveCorp ? 'company' : 'individual',
+        companyName: isGiveCorp ? formData.companyName.trim() : '',
+        designation: isGiveCorp ? formData.designation.trim() : '',
+        donationIntent: isNeedInd ? 'request_laptop' : (isFinVol ? formData.financialVolunteerChoice : 'donate_laptops'),
+        numberOfLaptops: isGiveInd ? (parseInt(formData.numberOfLaptops, 10) || 1) : (isGiveCorp ? formData.fleetSize : 0),
+        deviceCondition: isGiveInd ? formData.deviceCondition : '',
+        deviceBrand: isGiveInd ? formData.deviceBrand.trim() : '',
+        deviceAge: (isGiveInd || isGiveCorp) ? formData.deviceAge : '',
+        pickupAddress: (isGiveInd || isGiveCorp) ? formData.pickupAddress.trim() : '',
+        decommissionTimeline: isGiveCorp ? formData.decommissionTimeline : '',
+        dataWipingNeeded: isGiveCorp ? (formData.dataWipingNeeded === 'Yes') : false,
+        applicantCategory: isNeedInd ? formData.applicantCategory : '',
+        educationCourse: isNeedInd ? formData.educationCourse.trim() : '',
+        purpose: isNeedInd ? formData.purpose.trim() : '',
+        familyIncome: isNeedInd ? formData.familyIncome : '',
         hearAbout: formData.hearAbout,
         message: formData.message.trim(),
         receiveUpdates: formData.receiveUpdates,
