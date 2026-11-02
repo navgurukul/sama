@@ -262,13 +262,19 @@ export default function EditorialHome() {
       {/* Featured Anchor Partner: Anish Jadhav Memorial Foundation */}
       <div className="ngo-featured-card">
         <div className="ngo-featured-left">
-          <div className="ngo-featured-logo-wrap">
+          <a
+            href="https://anishjadhavmemorialfoundation.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ngo-featured-logo-wrap"
+            aria-label="Visit Anish Jadhav Memorial Foundation website"
+          >
             <img
               src="/img/ngo-partners/anish-jadhav-navgurukul.png"
               alt="Anish Jadhav Memorial Foundation"
               loading="lazy"
             />
-          </div>
+          </a>
           <div className="ngo-featured-content">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <b style={{ fontSize: '17px', color: 'var(--ink)' }}>Anish Jadhav Memorial Foundation</b>
@@ -284,9 +290,15 @@ export default function EditorialHome() {
             </p>
           </div>
         </div>
-        <Link to="/about" className="bracket" style={{ padding: '8px 18px', fontSize: '13px', alignSelf: 'center', whiteSpace: 'nowrap' }}>
+        <a
+          href="https://anishjadhavmemorialfoundation.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bracket"
+          style={{ padding: '8px 18px', fontSize: '13px', alignSelf: 'center', whiteSpace: 'nowrap' }}
+        >
           Learn about Pune Campus →
-        </Link>
+        </a>
       </div>
 
       {/* 2-Row Horizontal Scrolling Logo Showcase */}

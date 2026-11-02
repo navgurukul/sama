@@ -4,6 +4,7 @@ export const NGO_PARTNERS = [
     name: 'Anish Jadhav Memorial Foundation',
     sub: 'Navgurukul Campus Pune',
     logo: '/img/ngo-partners/anish-jadhav-navgurukul.png',
+    website: 'https://anishjadhavmemorialfoundation.org/',
     featured: true
   },
   {
