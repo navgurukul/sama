@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.e93a7f5a.css",
-    "main.js": "/static/js/main.732d13da.js",
+    "main.js": "/static/js/main.b73ce1c5.js",
     "static/js/239.3a65871d.chunk.js": "/static/js/239.3a65871d.chunk.js",
     "static/js/213.04254071.chunk.js": "/static/js/213.04254071.chunk.js",
     "static/js/553.3b7277d1.chunk.js": "/static/js/553.3b7277d1.chunk.js",
@@ -21,7 +21,7 @@
     "static/media/14.png": "/static/media/14.634e98c1b61391f35207.png",
     "static/media/Working Productively 1 1.svg": "/static/media/Working Productively 1 1.f32a09706c5788045b27351e57d34e49.svg",
     "static/media/samalogo.svg": "/static/media/samalogo.7342ccd440a0095913e8129e66df692b.svg",
-    "static/media/samalogo.png": "/static/media/samalogo.051f0385236d4f6fdd05.png",
+    "static/media/samalogo.png": "/static/media/samalogo.2f8cec165655a5efcb46.png",
     "static/media/Collaborators.svg": "/static/media/Collaborators.f4fd9522f602d4999786c9518951b0a9.svg",
     "static/media/Waiting 2 1.svg": "/static/media/Waiting 2 1.200ff1e9c2deb7604491c326a94e78eb.svg",
     "static/media/profile.png": "/static/media/profile.caa01870ac437a0b72f9.png",
@@ -39,7 +39,7 @@
     "static/media/QualityCheck.png": "/static/media/QualityCheck.e11c6fba3396c7f5a98d.png",
     "index.html": "/index.html",
     "main.e93a7f5a.css.map": "/static/css/main.e93a7f5a.css.map",
-    "main.732d13da.js.map": "/static/js/main.732d13da.js.map",
+    "main.b73ce1c5.js.map": "/static/js/main.b73ce1c5.js.map",
     "239.3a65871d.chunk.js.map": "/static/js/239.3a65871d.chunk.js.map",
     "213.04254071.chunk.js.map": "/static/js/213.04254071.chunk.js.map",
     "553.3b7277d1.chunk.js.map": "/static/js/553.3b7277d1.chunk.js.map",
@@ -47,6 +47,6 @@
   },
   "entrypoints": [
     "static/css/main.e93a7f5a.css",
-    "static/js/main.732d13da.js"
+    "static/js/main.b73ce1c5.js"
   ]
 }
