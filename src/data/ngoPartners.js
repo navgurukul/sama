@@ -4,29 +4,25 @@ export const NGO_PARTNERS = [
     name: 'Anish Jadhav Memorial Foundation',
     sub: 'Navgurukul Campus Pune',
     logo: '/img/ngo-partners/anish-jadhav.png',
-    website: 'https://anishjadhavmemorialfoundation.org/',
-    featured: true
+    website: 'https://anishjadhavmemorialfoundation.org/'
   },
   {
     id: 'navgurukul',
     name: 'Navgurukul Foundation',
     sub: 'Pan-India Residential Campuses',
-    logo: '/img/ngo-partners/navgurukul.png',
-    featured: true
+    logo: '/img/ngo-partners/navgurukul.png'
   },
   {
     id: 'unicef',
     name: 'UNICEF',
     sub: 'Digital Learning Partner',
-    logo: '/img/ngo-partners/unicef.png',
-    featured: true
+    logo: '/img/ngo-partners/unicef.png'
   },
   {
     id: 'aif',
     name: 'American India Foundation',
     sub: 'Digital Equalizer Initiative',
-    logo: '/img/ngo-partners/aif.png',
-    featured: true
+    logo: '/img/ngo-partners/aif.png'
   },
   {
     id: 'quest-alliance',
