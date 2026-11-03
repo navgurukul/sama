@@ -20,6 +20,7 @@ import BlogRethinkingInclusion from './Pages/Editorial/BlogRethinkingInclusion';
 import EditorialDonate from './Pages/Editorial/EditorialDonate';
 import EditorialContact from './Pages/Editorial/EditorialContact';
 import EditorialCorporate from './Pages/Editorial/EditorialCorporate';
+import EditorialCorporatePartners from './Pages/Editorial/EditorialCorporatePartners';
 import DashboardPage from './Dashboard';
 import MacRearch from './Pages/LaptopTagging';
 import DataAssignmentForm from './Pages/LaptopData/LaptopData';
@@ -116,13 +117,16 @@ function App() {
               <Route path="/blog/from-e-waste-to-new-beginnings" element={<BlogEWaste />} />
               <Route path="/blog/rethinking-digital-inclusion" element={<BlogRethinkingInclusion />} />
               <Route path="/donate" element={<EditorialDonate />} />
-              <Route path="/corporatepartner" element={<EditorialCorporate />} />
-              <Route path="/about" element={<EditorialHome />} />
+              <Route path="/corporatepartner" element={<EditorialCorporatePartners />} />
+              <Route path="/corporate-partners" element={<EditorialCorporatePartners />} />
+              <Route path="/ngo-information" element={<EditorialCorporate />} />
+              <Route path="/statutory-disclosures" element={<EditorialCorporate />} />
+              <Route path="/about" element={<Navigate to="/" replace />} />
               <Route path="/ngoregistration/:donorId" element={<EditorialNgoRegistration />} />
               <Route path='/ngoregistration' element={<EditorialNgoRegistration />} />
               <Route path="/login" element={<EditorialLogin />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/about-initiative" element={<LandingPage />} />
+              <Route path="/about-initiative" element={<Navigate to="/initiatives" replace />} />
               <Route path="/donormanager" element={<DonorManager />} /> {/* this is to add the manege the donor data*/}
               <Route path="/corporate" element={<CorporateteDb />} />
               <Route path="/corpretedb/DataViewDetail" element={<DetailView />} />
@@ -256,7 +260,6 @@ function App() {
               <Route path="/our-government" element={<OurGoverment />} />
               <Route path="/ourgoverment" element={<Navigate to="/our-government" replace />} />
               <Route path="/communitypartners" element={<CommunityPartners />} />
-              <Route path="/corporatepartner" element={<CorporatePartner />} />
               <Route path="/documentreupload" element={<DocumentReupload />} />
               <Route path="/attentionneeded" element={<AttentionNeeded />} />
               <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />

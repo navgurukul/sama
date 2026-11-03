@@ -129,10 +129,17 @@ export const seoRoutes = {
     ogType: "website"
   },
   corporatePartner: {
-    title: "Corporate Partnerships | Sama Digital Foundation",
+    title: "Corporate Laptop Donation & E-Waste CSR Partnerships | Sama Digital Foundation",
     description:
-      "Partner with Sama to repurpose retired company laptops into digital education tools for underserved youth, supporting circular economy and sustainability.",
+      "Partner with Sama to repurpose retired company laptops, achieve NIST 800-88 certified data erasure, Form CSR-1 compliance, and Scope 3 ESG carbon offset in India.",
     canonical: `${BASE_URL}/corporatepartner`,
+    ogType: "website"
+  },
+  ngoInformation: {
+    title: "NGO Information & Statutory Disclosures | Sama Digital Foundation",
+    description:
+      "Statutory information, Form CSR-1 registration, CIN U85500PN2024NPL233531, and Directors' Report of S.A.M.A. Digital Foundation under Companies Act, 2013.",
+    canonical: `${BASE_URL}/ngo-information`,
     ogType: "website"
   },
   communityPartners: {

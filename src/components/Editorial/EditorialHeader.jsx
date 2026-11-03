@@ -128,6 +128,7 @@ export default function EditorialHeader() {
                 </button>
               </div>
               <div className={`menu ${expandedSubmenu === 'giving' ? 'expanded' : 'collapsed'}`}>
+                <Link to="/corporatepartner" onClick={closeMenu}>Corporate Partnerships</Link>
                 <Link to="/giving#employee" onClick={closeMenu}>Employee giving</Link>
                 <Link to="/first-laptop" onClick={closeMenu}>First Laptop, Next Builder</Link>
                 <Link to="/bfg" onClick={closeMenu}>Build for Good hackathon</Link>

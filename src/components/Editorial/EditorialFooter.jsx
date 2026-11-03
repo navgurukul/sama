@@ -22,7 +22,7 @@ export default function EditorialFooter() {
     <footer className="site-footer">
       <div className="foot-partners">
         <div className="wrap">
-          <span className="eyebrow">Our corporate partners</span>
+          <Link to="/corporatepartner" className="eyebrow" style={{ textDecoration: 'none', color: 'inherit' }}>Our corporate partners →</Link>
           <div className="marquee" aria-label="Our corporate partners (footer)">
             <ul className="marquee__track">
               {PARTNERS.map((p, idx) => (
@@ -60,7 +60,8 @@ export default function EditorialFooter() {
             <Link to="/communications">Communications</Link>
             <Link to="/donate">Donate</Link>
             <Link to="/contact">Contact Us</Link>
-            <Link to="/corporatepartner">NGO Information</Link>
+            <Link to="/corporatepartner">Corporate Partnerships</Link>
+            <Link to="/ngo-information">NGO Information</Link>
           </nav>
         </div>
 
