@@ -7,7 +7,7 @@ export default function EditorialDonate() {
   useReveal();
 
   const formRef = useRef(null);
-  const [formType, setFormType] = useState('give_corporate'); // 'give_corporate', 'financial_volunteer'
+  const [formType, setFormType] = useState('give_individual'); // 'give_individual', 'give_corporate', 'need_individual', 'financial_volunteer'
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -15,14 +15,21 @@ export default function EditorialDonate() {
     phone: '',
     city: '',
     state: '',
+    numberOfLaptops: '1',
+    deviceCondition: 'Working',
+    deviceBrand: '',
+    deviceAge: '< 3 years',
+    pickupAddress: '',
     companyName: '',
     designation: '',
     fleetSize: '10–50 laptops',
     decommissionTimeline: 'Within 1 month',
     dataWipingNeeded: 'Yes',
-    deviceAge: '< 3 years',
-    pickupAddress: '',
-    financialVolunteerChoice: 'Make a CSR contribution towards refurbishment',
+    applicantCategory: 'Student',
+    educationCourse: '',
+    purpose: '',
+    familyIncome: 'Under ₹1.5 Lakhs',
+    financialVolunteerChoice: 'Make a financial contribution',
     hearAbout: 'Social Media',
     message: '',
     receiveUpdates: true,
@@ -43,6 +50,15 @@ export default function EditorialDonate() {
     }
   };
 
+  const handleLaptopCountChange = (delta) => {
+    const current = parseInt(formData.numberOfLaptops, 10) || 1;
+    const next = Math.max(1, current + delta);
+    setFormData((prev) => ({ ...prev, numberOfLaptops: String(next) }));
+  };
+
+  const handlePresetLaptops = (num) => {
+    setFormData((prev) => ({ ...prev, numberOfLaptops: String(num) }));
+  };
 
   const handleChipSelect = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -55,14 +71,17 @@ export default function EditorialDonate() {
     document.title = "Donate | Sama";
     const params = new URLSearchParams(window.location.search);
     const tabParam = params.get('tab');
+    const hash = window.location.hash;
 
-    if (tabParam === 'financial_volunteer') {
-      setFormType('financial_volunteer');
-    } else {
-      setFormType('give_corporate');
-    }
-
-    if (tabParam) {
+    if (tabParam && ['give_individual', 'give_corporate', 'need_individual', 'financial_volunteer'].includes(tabParam)) {
+      setFormType(tabParam);
+      setTimeout(() => {
+        if (formRef.current) {
+          formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 150);
+    } else if (hash === '#need' || hash === '#involved:need') {
+      setFormType('need_individual');
       setTimeout(() => {
         if (formRef.current) {
           formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -99,7 +118,7 @@ export default function EditorialDonate() {
     if (!formData.email.trim()) {
       errs.email = 'Email address is required.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      errs.email = 'Please enter a valid work email address.';
+      errs.email = 'Please enter a valid email address.';
     }
     if (!formData.phone.trim()) {
       errs.phone = 'Phone number is required.';
@@ -110,6 +129,11 @@ export default function EditorialDonate() {
     if (formType === 'give_corporate') {
       if (!formData.companyName.trim()) errs.companyName = 'Company name is required.';
       if (!formData.designation.trim()) errs.designation = 'Work role / designation is required.';
+    }
+
+    if (formType === 'need_individual') {
+      if (!formData.educationCourse.trim()) errs.educationCourse = 'Please specify your education or course.';
+      if (!formData.purpose.trim()) errs.purpose = 'Please describe why you need a laptop.';
     }
 
     return errs;
@@ -127,11 +151,16 @@ export default function EditorialDonate() {
     setServerError('');
 
     try {
-      const apiBase = process.env.REACT_APP_NgoInformationApi 
-        ? process.env.REACT_APP_NgoInformationApi.replace(/\/ngo-exec.*$/, '')
-        : 'http://localhost:8000';
+      const apiBase = process.env.REACT_APP_API_BASE_URL ||
+        (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
+          ? "http://localhost:8000"
+          : (process.env.REACT_APP_NgoInformationApi 
+              ? process.env.REACT_APP_NgoInformationApi.replace(/\/ngo-exec.*$/, '')
+              : "https://sama-api.thesama.in"));
 
+      const isGiveInd = formType === 'give_individual';
       const isGiveCorp = formType === 'give_corporate';
+      const isNeedInd = formType === 'need_individual';
       const isFinVol = formType === 'financial_volunteer';
 
       const payload = {
@@ -142,15 +171,21 @@ export default function EditorialDonate() {
         phone: formData.phone.trim(),
         city: formData.city.trim(),
         state: formData.state.trim(),
-        contributionType: isGiveCorp ? 'company' : 'csr_grant',
+        contributionType: isGiveCorp ? 'company' : 'individual',
         companyName: isGiveCorp ? formData.companyName.trim() : '',
         designation: isGiveCorp ? formData.designation.trim() : '',
-        donationIntent: isFinVol ? formData.financialVolunteerChoice : 'donate_laptops',
-        numberOfLaptops: isGiveCorp ? formData.fleetSize : 0,
-        deviceAge: isGiveCorp ? formData.deviceAge : '',
-        pickupAddress: isGiveCorp ? formData.pickupAddress.trim() : '',
+        donationIntent: isNeedInd ? 'request_laptop' : (isFinVol ? formData.financialVolunteerChoice : 'donate_laptops'),
+        numberOfLaptops: isGiveInd ? (parseInt(formData.numberOfLaptops, 10) || 1) : (isGiveCorp ? formData.fleetSize : 0),
+        deviceCondition: isGiveInd ? formData.deviceCondition : '',
+        deviceBrand: isGiveInd ? formData.deviceBrand.trim() : '',
+        deviceAge: (isGiveInd || isGiveCorp) ? formData.deviceAge : '',
+        pickupAddress: (isGiveInd || isGiveCorp) ? formData.pickupAddress.trim() : '',
         decommissionTimeline: isGiveCorp ? formData.decommissionTimeline : '',
         dataWipingNeeded: isGiveCorp ? (formData.dataWipingNeeded === 'Yes') : false,
+        applicantCategory: isNeedInd ? formData.applicantCategory : '',
+        educationCourse: isNeedInd ? formData.educationCourse.trim() : '',
+        purpose: isNeedInd ? formData.purpose.trim() : '',
+        familyIncome: isNeedInd ? formData.familyIncome : '',
         hearAbout: formData.hearAbout,
         message: formData.message.trim(),
         receiveUpdates: formData.receiveUpdates,
@@ -189,14 +224,21 @@ export default function EditorialDonate() {
       phone: '',
       city: '',
       state: '',
+      numberOfLaptops: '1',
+      deviceCondition: 'Working',
+      deviceBrand: '',
+      deviceAge: '< 3 years',
+      pickupAddress: '',
       companyName: '',
       designation: '',
       fleetSize: '10–50 laptops',
       decommissionTimeline: 'Within 1 month',
       dataWipingNeeded: 'Yes',
-      deviceAge: '< 3 years',
-      pickupAddress: '',
-      financialVolunteerChoice: 'Make a CSR contribution towards refurbishment',
+      applicantCategory: 'Student',
+      educationCourse: '',
+      purpose: '',
+      familyIncome: 'Under ₹1.5 Lakhs',
+      financialVolunteerChoice: 'Make a financial contribution',
       hearAbout: 'Social Media',
       message: '',
       receiveUpdates: true,
@@ -216,41 +258,102 @@ export default function EditorialDonate() {
           <span className="eyebrow">Join the digital inclusion movement</span>
           <h1 className="display h1 mt-s">Donate <em>a laptop.</em></h1>
           <p className="lede mt-m">
-            Partner with Sama Digital Foundation to offboard retired corporate IT assets responsibly and seamlessly. We collect, securely data-wipe, and redeploy decommissioned corporate laptops as powerful learning and livelihood tools for underserved girls and youth across India.
+            Whether you are a corporation looking to offboard IT assets seamlessly, an NGO expanding grassroots education, or an institution driving digital literacy, there is a place for you in our ecosystem. Help us close the hardware divide.
           </p>
         </div>
       </section>
 
-      {/* Corporate & Institutional Engagement Pathways */}
+      {/* Five Ways In Section */}
       <section className="sec" style={{ paddingBottom: '40px' }}>
         <div className="wrap">
           <div className="center reveal">
-            <span className="eyebrow">Engagement Pathways</span>
-            <h2 className="display h2 mt-s">Partner with Sama to <em>scale hardware impact.</em></h2>
+            <span className="eyebrow">Five ways in</span>
+            <h2 className="display h2 mt-s">Give or need, as an individual, <em>an employee or an organisation.</em></h2>
           </div>
 
           <div className="ways" id="give">
-            {/* Card 1: Corporate Fleet Decommissioning */}
+            {/* Card 1: Give Individual */}
             <div className="way way--give reveal">
               <span className="ico">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5C785A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#174B32" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="4" y="5" width="16" height="11" rx="1.5" />
+                  <path d="M2 19h20" />
+                </svg>
+              </span>
+              <span className="eyebrow">Give · Individual</span>
+              <h3>Donate a used laptop</h3>
+              <p>Give your pre-owned laptop a second life. Sama refurbishes and deploys decommissioned devices directly to students, aspiring entrepreneurs, or community members preparing for their first digital milestone.</p>
+              <button
+                type="button"
+                className="bracket bracket--solid"
+                onClick={() => handleSelectTab('give_individual')}
+              >
+                Donate a laptop <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </button>
+            </div>
+
+            {/* Card 2: Give Organisation */}
+            <div className="way way--give reveal">
+              <span className="ico">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#174B32" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <rect x="5" y="3" width="14" height="18" rx="1.5" />
                   <path d="M9 7h2M13 7h2M9 11h2M13 11h2M10 21v-4h4v4" />
                 </svg>
               </span>
-              <span className="eyebrow">Enterprise · IT Asset Offboarding</span>
+              <span className="eyebrow">Give · Organisation</span>
               <h3>Decommission a corporate fleet</h3>
-              <p>Transform end-of-life hardware into measurable social impact. Sama collects, sanitises, and redeploys corporate laptop fleets at scale, turning them into fully functional computer labs and livelihood programmes with CSR-1 certification.</p>
+              <p>Transform end-of-life hardware into measurable social impact. Sama collects, refurbishes and redeploys corporate laptop fleets at scale, turning them into fully functional computer labs and livelihood programmes.</p>
               <button
                 type="button"
                 className="bracket bracket--solid"
                 onClick={() => handleSelectTab('give_corporate')}
               >
-                Donate corporate fleet <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                Donate as a company <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </button>
+            </div>
+          </div>
+
+          <div className="ways" id="need" style={{ marginTop: '26px' }}>
+            {/* Card 3: Need Individual */}
+            <div className="way way--need reveal">
+              <span className="ico">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B6EA5" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="8" r="3.5" />
+                  <path d="M5 20c1.2-4 4-6 7-6s5.8 2 7 6" />
+                </svg>
+              </span>
+              <span className="eyebrow" style={{ color: '#3B6EA5' }}>Need · Individual</span>
+              <h3>Request individual access</h3>
+              <p>Are you preparing for a career-defining exam, launching a local enterprise, or building your technical skills without access to a computer? Share your requirements with us to see how we can help.</p>
+              <button
+                type="button"
+                className="bracket bracket--solid"
+                style={{ background: '#3B6EA5', color: '#fff' }}
+                onClick={() => handleSelectTab('need_individual')}
+              >
+                Request a laptop <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
               </button>
             </div>
 
-            {/* Card 2: Renew Desk at Your Office */}
+            {/* Card 4: Need Organisation (Links to Verified NGO Registration) */}
+            <div className="way way--need reveal">
+              <span className="ico">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B6EA5" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="5" y="3" width="14" height="18" rx="1.5" />
+                  <path d="M9 8h6M9 12h6M9 16h3" />
+                </svg>
+              </span>
+              <span className="eyebrow" style={{ color: '#3B6EA5' }}>Need · Organisation</span>
+              <h3>Equip an institution or lab</h3>
+              <p>Are you running a school, vocational skilling centre or grassroots non-profit in need of hardware? Partner with Sama to bring quality refurbished laptops and digital infrastructure to the learners you support.</p>
+              <Link className="bracket bracket--solid" to="/ngoregistration">
+                Request laptops for your organisation <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </Link>
+            </div>
+          </div>
+
+          <div className="ways" style={{ marginTop: '26px' }}>
+            {/* Card 5: Give Employees */}
             <div className="way way--emp reveal">
               <span className="ico">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5A4A35" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -261,53 +364,16 @@ export default function EditorialDonate() {
                 </svg>
               </span>
               <div>
-                <span className="eyebrow" style={{ color: 'var(--text)' }}>Volunteering · Employee Engagement</span>
-                <h3>Bring a Renew Desk to your office</h3>
-                <p>Host an on-site refurbishment event at your corporate office where employees restore retired laptops alongside our technical team, seeing first-hand the impact on first-time learners.</p>
+                <span className="eyebrow" style={{ color: 'var(--text)' }}>Give · Employees</span>
+                <h3>Renew a laptop. Reboot someone’s life.</h3>
+                <p>Bring your team to a Sama Renew Desk at your office and restore retired laptops yourselves, alongside our refurbishment team. Every laptop you work on goes to someone using a computer for the first time.</p>
               </div>
-              <a
+              <Link
                 className="bracket bracket--solid"
-                href="mailto:operations@thesama.in?subject=Renew%20Desk%20at%20our%20office&body=Hello%20Sama%20Operations%20Team,%0D%0A%0D%0AWe%20would%20like%20to%20explore%20hosting%20a%20Sama%20Renew%20Desk%20at%20our%20office%20for%20our%20employees.%0D%0A%0D%0ACompany%20Name:%0D%0AContact%20Person:%0D%0APhone%20/%20Email:%0D%0AOffice%20Location:%0D%0AApproximate%20Team%20Size:%0D%0A%0D%0ALooking%20forward%20to%20collaborating."
+                to="/contact?topic=Renew%20Desk%20at%20our%20office#connect"
               >
-                Host a Renew Desk <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-              </a>
-            </div>
-          </div>
-
-          <div className="ways" id="need" style={{ marginTop: '26px' }}>
-            {/* Card 3: Equip an Institution or Lab */}
-            <div className="way way--need reveal">
-              <span className="ico">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B6EA5" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect x="5" y="3" width="14" height="18" rx="1.5" />
-                  <path d="M9 8h6M9 12h6M9 16h3" />
-                </svg>
-              </span>
-              <span className="eyebrow" style={{ color: '#3B6EA5' }}>Institutions · NGO Network</span>
-              <h3>Equip a school or computer lab</h3>
-              <p>Are you running a registered school, vocational training centre, or grassroots non-profit in need of hardware? Apply through Sama's verified NGO portal to receive batches of high-quality refurbished laptops.</p>
-              <Link className="bracket bracket--solid" to="/ngoregistration">
-                Request laptops for your organisation <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                Bring a Renew Desk to your office <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
               </Link>
-            </div>
-
-            {/* Card 4: CSR Grants & Refurbishment Capital */}
-            <div className="way way--give reveal">
-              <span className="ico">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5C785A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
-              </span>
-              <span className="eyebrow">Funding · CSR Capital</span>
-              <h3>Support refurbishment &amp; parts</h3>
-              <p>Every laptop requires replacement batteries, SSD upgrades, certified data sanitisation, and safe logistics. Your CSR contribution directly funds the restoration and deployment pipeline.</p>
-              <button
-                type="button"
-                className="bracket bracket--solid"
-                onClick={() => handleSelectTab('financial_volunteer')}
-              >
-                Contribute CSR funds <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-              </button>
             </div>
           </div>
         </div>
@@ -319,7 +385,7 @@ export default function EditorialDonate() {
           <div className="donate-card-wrapper">
             <div className="donate-card-accent-bar" />
             <div className="donate-card-inner">
-              
+
               {!isSubmitted ? (
                 <form onSubmit={handleSubmit} noValidate>
                   <div className="donate-header">
@@ -335,15 +401,27 @@ export default function EditorialDonate() {
                     </p>
                   </div>
 
-                  {/* Corporate B2B Form Mode Selector */}
-                  <div className="donate-tabs-grid" role="tablist" aria-label="Select contribution type" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+                  {/* Form Mode Selector Cards */}
+                  <div className="donate-tabs-grid" role="tablist" aria-label="Select contribution type">
                     {[
                       {
-                        id: 'give_corporate',
-                        title: 'Corporate Fleet Decommissioning',
-                        sub: 'Enterprise · 10+ devices',
+                        id: 'give_individual',
+                        title: 'Donate a Laptop',
+                        sub: 'Individual · 1+ devices',
                         icon: (
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                            <line x1="8" y1="21" x2="16" y2="21" />
+                            <line x1="12" y1="17" x2="12" y2="21" />
+                          </svg>
+                        ),
+                      },
+                      {
+                        id: 'give_corporate',
+                        title: 'Corporate Fleet',
+                        sub: 'Company · 10+ devices',
+                        icon: (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
                             <line x1="9" y1="22" x2="9" y2="22.01" />
                             <line x1="15" y1="22" x2="15" y2="22.01" />
@@ -357,11 +435,22 @@ export default function EditorialDonate() {
                         ),
                       },
                       {
-                        id: 'financial_volunteer',
-                        title: 'CSR & Refurbishment Capital',
-                        sub: 'Funding · Logistics & Parts',
+                        id: 'need_individual',
+                        title: 'Request a Laptop',
+                        sub: 'Learner · Skilling & education',
                         icon: (
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                            <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                          </svg>
+                        ),
+                      },
+                      {
+                        id: 'financial_volunteer',
+                        title: 'Financial / Volunteer',
+                        sub: 'Support refurbishment',
+                        icon: (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                           </svg>
                         ),
@@ -388,15 +477,6 @@ export default function EditorialDonate() {
                         </button>
                       );
                     })}
-                  </div>
-
-                  <div style={{ background: 'rgba(92,120,90,0.08)', border: '1px solid rgba(92,120,90,0.22)', borderRadius: '10px', padding: '12px 18px', marginTop: '18px', marginBottom: '24px', fontSize: '13.5px', color: 'var(--ink)' }}>
-                    <span>
-                      <b>Institutional Requests:</b> If you are a school, vocational lab, or grassroots non-profit seeking laptops, please apply via our{' '}
-                      <Link to="/ngoregistration" style={{ textDecoration: 'underline', fontWeight: 600, color: 'var(--sage)' }}>
-                        Verified NGO Partner Portal →
-                      </Link>
-                    </span>
                   </div>
 
                   {serverError && (
@@ -527,7 +607,147 @@ export default function EditorialDonate() {
 
                   {/* Section 2: Conditional Fields based on formType */}
                   <div className="donate-context-panel">
-                    
+
+                    {/* Option A: Give Individual */}
+                    {formType === 'give_individual' && (
+                      <>
+                        <div className="donate-context-header">
+                          <div className="donate-context-badge">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                              <line x1="8" y1="21" x2="16" y2="21" />
+                              <line x1="12" y1="17" x2="12" y2="21" />
+                            </svg>
+                          </div>
+                          <div>
+                            <h4>Device Details & Pickup</h4>
+                            <span>Tell us about the laptops you would like to contribute</span>
+                          </div>
+                        </div>
+
+                        <div className="donate-field">
+                          <label>
+                            <span>Estimated number of laptops to donate</span>
+                          </label>
+                          <div className="donate-stepper-wrap">
+                            <div className="donate-stepper">
+                              <button
+                                type="button"
+                                className="donate-stepper-btn"
+                                onClick={() => handleLaptopCountChange(-1)}
+                                aria-label="Decrease laptops"
+                              >
+                                −
+                              </button>
+                              <input
+                                type="number"
+                                name="numberOfLaptops"
+                                min="1"
+                                value={formData.numberOfLaptops}
+                                onChange={handleChange}
+                                className="donate-stepper-input"
+                              />
+                              <button
+                                type="button"
+                                className="donate-stepper-btn"
+                                onClick={() => handleLaptopCountChange(1)}
+                                aria-label="Increase laptops"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <div className="donate-presets-row">
+                              {[1, 2, 5, 10].map((num) => (
+                                <button
+                                  key={num}
+                                  type="button"
+                                  className={`donate-preset-btn ${formData.numberOfLaptops === String(num) ? 'is-active' : ''}`}
+                                  onClick={() => handlePresetLaptops(num)}
+                                >
+                                  {num} {num === 1 ? 'device' : 'devices'}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="donate-field">
+                          <label>
+                            <span>Laptop Condition:</span>
+                          </label>
+                          <div className="donate-chips-wrap">
+                            {['Working', 'Needs minor repair', 'Spare parts / Non-functional'].map((cond) => {
+                              const isSelected = formData.deviceCondition === cond;
+                              return (
+                                <button
+                                  key={cond}
+                                  type="button"
+                                  className={`donate-chip-btn ${isSelected ? 'is-selected' : ''}`}
+                                  onClick={() => handleChipSelect('deviceCondition', cond)}
+                                >
+                                  <span className="donate-chip-dot">
+                                    <span className="donate-chip-dot-inner" />
+                                  </span>
+                                  {cond}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="donate-fields-grid" style={{ marginBottom: 0 }}>
+                          <div className="donate-field">
+                            <label htmlFor="donate-deviceBrand">
+                              <span>Laptop Brand / Model</span>
+                              <span className="opt">Optional</span>
+                            </label>
+                            <input
+                              id="donate-deviceBrand"
+                              type="text"
+                              name="deviceBrand"
+                              value={formData.deviceBrand}
+                              onChange={handleChange}
+                              placeholder="e.g. Dell Latitude, Lenovo ThinkPad"
+                              className="donate-input"
+                            />
+                          </div>
+
+                          <div className="donate-field">
+                            <label htmlFor="donate-deviceAge">
+                              <span>Approximate Age:</span>
+                            </label>
+                            <select
+                              id="donate-deviceAge"
+                              name="deviceAge"
+                              value={formData.deviceAge}
+                              onChange={handleChange}
+                              className="donate-select"
+                            >
+                              <option value="< 3 years">Under 3 years</option>
+                              <option value="3–5 years">3 to 5 years</option>
+                              <option value="5+ years">More than 5 years</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="donate-field">
+                          <label htmlFor="donate-pickupAddress">
+                            <span>Pickup Address / Locality</span>
+                            <span className="opt">Optional for collection</span>
+                          </label>
+                          <input
+                            id="donate-pickupAddress"
+                            type="text"
+                            name="pickupAddress"
+                            value={formData.pickupAddress}
+                            onChange={handleChange}
+                            placeholder="Your street or residential area for doorstep collection"
+                            className="donate-input"
+                          />
+                        </div>
+                      </>
+                    )}
+
                     {/* Option B: Give Corporate */}
                     {formType === 'give_corporate' && (
                       <>
@@ -670,6 +890,109 @@ export default function EditorialDonate() {
                       </>
                     )}
 
+                    {/* Option C: Need Individual */}
+                    {formType === 'need_individual' && (
+                      <>
+                        <div className="donate-context-header">
+                          <div className="donate-context-badge">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                              <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                              <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                            </svg>
+                          </div>
+                          <div>
+                            <h4>Learner Application Details</h4>
+                            <span>Tell us about your educational background and technical goals</span>
+                          </div>
+                        </div>
+
+                        <div className="donate-field">
+                          <label>
+                            <span>I am applying as a:</span>
+                          </label>
+                          <div className="donate-chips-wrap">
+                            {['Student', 'Job Seeker', 'Competitive Exam Aspirant', 'Upskilling'].map((cat) => {
+                              const isSelected = formData.applicantCategory === cat;
+                              return (
+                                <button
+                                  key={cat}
+                                  type="button"
+                                  className={`donate-chip-btn ${isSelected ? 'is-selected' : ''}`}
+                                  onClick={() => handleChipSelect('applicantCategory', cat)}
+                                >
+                                  <span className="donate-chip-dot">
+                                    <span className="donate-chip-dot-inner" />
+                                  </span>
+                                  {cat}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="donate-fields-grid" style={{ marginBottom: 0 }}>
+                          <div className="donate-field">
+                            <label htmlFor="donate-educationCourse">
+                              <span>Current Education / Course <span className="req">*</span></span>
+                            </label>
+                            <input
+                              id="donate-educationCourse"
+                              type="text"
+                              name="educationCourse"
+                              value={formData.educationCourse}
+                              onChange={handleChange}
+                              placeholder="e.g. 12th Standard, BCA 2nd Year, UPSC Prep"
+                              className={`donate-input ${errors.educationCourse ? 'has-error' : ''}`}
+                            />
+                            {errors.educationCourse && (
+                              <span className="donate-field-err">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                                {errors.educationCourse}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="donate-field">
+                            <label htmlFor="donate-familyIncome">
+                              <span>Annual Family Income:</span>
+                            </label>
+                            <select
+                              id="donate-familyIncome"
+                              name="familyIncome"
+                              value={formData.familyIncome}
+                              onChange={handleChange}
+                              className="donate-select"
+                            >
+                              <option value="Under ₹1.5 Lakhs">Under ₹1.5 Lakhs</option>
+                              <option value="₹1.5L - ₹3 Lakhs">₹1.5L to ₹3 Lakhs</option>
+                              <option value="₹3L - ₹5 Lakhs">₹3L to ₹5 Lakhs</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="donate-field">
+                          <label htmlFor="donate-purpose">
+                            <span>Primary Purpose / Why do you need a laptop? <span className="req">*</span></span>
+                          </label>
+                          <input
+                            id="donate-purpose"
+                            type="text"
+                            name="purpose"
+                            value={formData.purpose}
+                            onChange={handleChange}
+                            placeholder="e.g. Online classes, Python programming, civil services exam preparation"
+                            className={`donate-input ${errors.purpose ? 'has-error' : ''}`}
+                          />
+                          {errors.purpose && (
+                            <span className="donate-field-err">
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                              {errors.purpose}
+                            </span>
+                          )}
+                        </div>
+                      </>
+                    )}
+
                     {/* Option D: Financial / Volunteer */}
                     {formType === 'financial_volunteer' && (
                       <>
@@ -796,8 +1119,10 @@ export default function EditorialDonate() {
                         </>
                       ) : (
                         <>
+                          {formType === 'give_individual' && 'Submit Laptop Donation Details'}
                           {formType === 'give_corporate' && 'Submit Corporate Fleet Inquiry'}
-                          {formType === 'financial_volunteer' && 'Submit CSR Funding Inquiry'}
+                          {formType === 'need_individual' && 'Submit Laptop Request Application'}
+                          {formType === 'financial_volunteer' && 'Submit Support Inquiry'}
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="5" y1="12" x2="19" y2="12" />
                             <polyline points="12 5 19 12 12 19" />

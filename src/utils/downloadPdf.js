@@ -6,10 +6,6 @@
  * - Provides graceful direct download on mobile and desktop
  */
 export const downloadPdf = async (e, relativeOrAbsoluteUrl, fileName) => {
-  if (e && e.preventDefault) {
-    e.preventDefault();
-  }
-
   // Ensure full URL if relative
   const publicUrl = process.env.PUBLIC_URL || '';
   const url = relativeOrAbsoluteUrl.startsWith('http')
@@ -20,19 +16,15 @@ export const downloadPdf = async (e, relativeOrAbsoluteUrl, fileName) => {
     typeof navigator !== 'undefined' ? navigator.userAgent : ''
   );
 
-  // On mobile browsers, direct window navigation triggers native PDF viewer & downloader reliably
+  // On mobile browsers, allow native anchor event to execute directly.
+  // This opens the PDF in iOS Safari's native reader / downloads in Android Chrome cleanly
+  // without triggering asynchronous popup blocker warnings.
   if (isMobile) {
-    const mobileLink = document.createElement('a');
-    mobileLink.href = url;
-    mobileLink.target = '_blank';
-    mobileLink.rel = 'noopener noreferrer';
-    if (fileName) {
-      mobileLink.setAttribute('download', fileName);
-    }
-    document.body.appendChild(mobileLink);
-    mobileLink.click();
-    document.body.removeChild(mobileLink);
     return;
+  }
+
+  if (e && e.preventDefault) {
+    e.preventDefault();
   }
 
   try {
@@ -51,8 +43,8 @@ export const downloadPdf = async (e, relativeOrAbsoluteUrl, fileName) => {
 
     if (!isPdfBinary || contentType.includes('text/html')) {
       console.warn('Server returned non-PDF or HTML fallback for:', url);
-      // Fallback: try direct window open
-      window.open(url, '_blank', 'noopener,noreferrer');
+      // Fallback: direct browser navigation
+      window.location.assign(url);
       return;
     }
 
@@ -69,8 +61,8 @@ export const downloadPdf = async (e, relativeOrAbsoluteUrl, fileName) => {
       window.URL.revokeObjectURL(blobUrl);
     }, 4000);
   } catch (err) {
-    console.warn('Direct blob download failed, falling back to window.open:', err);
-    window.open(url, '_blank', 'noopener,noreferrer');
+    console.warn('Direct blob download failed, falling back to direct location assign:', err);
+    window.location.assign(url);
   }
 };
 
