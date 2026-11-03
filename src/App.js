@@ -20,6 +20,8 @@ import BlogRethinkingInclusion from './Pages/Editorial/BlogRethinkingInclusion';
 import EditorialDonate from './Pages/Editorial/EditorialDonate';
 import EditorialContact from './Pages/Editorial/EditorialContact';
 import EditorialCorporate from './Pages/Editorial/EditorialCorporate';
+import EditorialNotFound from './Pages/Editorial/EditorialNotFound';
+import PdfViewer from './Pages/Editorial/PdfViewer';
 import DashboardPage from './Dashboard';
 import MacRearch from './Pages/LaptopTagging';
 import DataAssignmentForm from './Pages/LaptopData/LaptopData';
@@ -189,8 +191,7 @@ function App() {
                 }
               />
 
-              <Route path="/donorcsr/*" element={<h2>Page Not Found</h2>} />
-              <Route path="*" element={<h2>Page Not Found</h2>} />
+              <Route path="/donorcsr/*" element={<EditorialNotFound />} />
 
 
               <Route path="/question-selection" element={
@@ -365,6 +366,8 @@ function App() {
                 }
               />
               <Route path="/pickup" element={<Pickup />} />
+              <Route path="/docs/:filename" element={<PdfViewer />} />
+              <Route path="*" element={<EditorialNotFound />} />
             </Routes>
             {" "}
           </div>

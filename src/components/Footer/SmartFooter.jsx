@@ -3,49 +3,46 @@ import { useLocation } from 'react-router-dom';
 import Footer from './Footer';
 import EditorialFooter from '../Editorial/EditorialFooter';
 
-const EDITORIAL_ROUTES = new Set([
-  '',
-  '/',
-  '/about',
-  '/initiatives',
-  '/sama-saathi',
-  '/our-approach',
-  '/labs',
-  '/giving',
-  '/first-laptop',
-  '/bfg',
-  '/build-for-good',
-  '/ourteam',
-  '/team',
-  '/communications',
-  '/comms',
-  '/donate',
-  '/contact',
-  '/ngo-information',
-  '/statutory-disclosures',
-  '/privacy-policy',
-  '/ourgoverment',
-  '/our-government',
-  '/communitypartners',
-  '/about-initiative',
-  '/login',
-  '/signup',
-  '/ngoregistration'
-]);
+// Internal operational / dashboard prefixes
+const DASHBOARD_PREFIXES = [
+  '/dashboard',
+  '/ops',
+  '/corporate',
+  '/corpretedb',
+  '/donorcsr',
+  '/pickup',
+  '/pickup-request-by-donor',
+  '/laptopinventory',
+  '/laptop-tagging',
+  '/laptop-stage',
+  '/user-details',
+  '/userdetails',
+  '/data-assignment-form',
+  '/documentupload',
+  '/documentreupload',
+  '/monthly-reporting',
+  '/monthly-report',
+  '/yearly-reporting',
+  '/yearly-report',
+  '/audit',
+  '/afe',
+  '/attentionneeded',
+  '/ngoprofile',
+  '/beneficiaryprofile',
+  '/mouupload',
+  '/question-selection',
+  '/donormanager',
+];
 
 export default function SmartFooter() {
   const location = useLocation();
-  const normalizedPath = (location.pathname || '').toLowerCase().replace(/\/+$/, '') || '/';
+  const path = (location.pathname || '').toLowerCase();
+  const isDashboard = DASHBOARD_PREFIXES.some((prefix) => path.startsWith(prefix));
 
-  const isEditorial =
-    EDITORIAL_ROUTES.has(normalizedPath) ||
-    normalizedPath.startsWith('/ourteam') ||
-    normalizedPath.startsWith('/team') ||
-    normalizedPath.startsWith('/blog') ||
-    normalizedPath.startsWith('/ngoregistration');
-
-  if (isEditorial) {
-    return <EditorialFooter />;
+  // If inside an internal operations dashboard, render internal Footer;
+  // otherwise (including all public pages and 404s), render the EditorialFooter.
+  if (isDashboard) {
+    return <Footer />;
   }
-  return <Footer />;
+  return <EditorialFooter />;
 }
