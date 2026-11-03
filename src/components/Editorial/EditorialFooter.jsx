@@ -60,7 +60,7 @@ export default function EditorialFooter() {
             <Link to="/communications">Communications</Link>
             <Link to="/donate">Donate</Link>
             <Link to="/contact">Contact Us</Link>
-            <Link to="/corporatepartner">NGO Information</Link>
+            <Link to="/ngo-information">NGO Information</Link>
           </nav>
         </div>
 

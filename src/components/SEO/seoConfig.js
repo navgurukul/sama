@@ -128,11 +128,11 @@ export const seoRoutes = {
     canonical: `${BASE_URL}/about-initiative`,
     ogType: "website"
   },
-  corporatePartner: {
-    title: "Corporate Partnerships | Sama Digital Foundation",
+  ngoInformation: {
+    title: "NGO Information & Statutory Disclosures | Sama Digital Foundation",
     description:
-      "Partner with Sama to repurpose retired company laptops into digital education tools for underserved youth, supporting circular economy and sustainability.",
-    canonical: `${BASE_URL}/corporatepartner`,
+      "Statutory information, Form CSR-1 registration, CIN U85500PN2024NPL233531, and Directors' Report of S.A.M.A. Digital Foundation under Companies Act, 2013.",
+    canonical: `${BASE_URL}/ngo-information`,
     ogType: "website"
   },
   communityPartners: {

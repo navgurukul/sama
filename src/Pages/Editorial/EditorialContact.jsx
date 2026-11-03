@@ -260,7 +260,7 @@ export default function EditorialContact() {
             <p><a href="mailto:operations@thesama.in">operations@thesama.in</a></p>
             <h3 className="mt-l">Registered office</h3>
             <p>S.A.M.A. Digital Foundation<br />C-804, Surbhi Mangalam, Dhanori,<br />Pune City, Pune, Maharashtra 411015, India</p>
-            <p className="small mt-m">CIN U85500PN2024NPL233531 · CSR-1 registered with the Ministry of Corporate Affairs. <Link to="/corporatepartner">NGO information</Link></p>
+            <p className="small mt-m">CIN U85500PN2024NPL233531 · CSR-1 registered with the Ministry of Corporate Affairs. <Link to="/ngo-information">NGO information</Link></p>
           </aside>
         </div>
       </section>

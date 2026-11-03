@@ -3,128 +3,132 @@
   <!-- Core Home Page -->
   <url>
     <loc>https://thesama.in</loc>
-    <lastmod>2026-11-02</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
   </url>
 
-  <!-- Corporate Laptop Donation & E-Waste -->
+  <!-- Corporate Laptop Donation & E-Waste Offboarding -->
   <url>
     <loc>https://thesama.in/donate</loc>
-    <lastmod>2026-10-23</lastmod>
-  </url>
-
-  <!-- Corporate ESG & CSR Partnerships -->
-  <url>
-    <loc>https://thesama.in/corporatepartner</loc>
-    <lastmod>2026-10-23</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
 
   <!-- NGO & School Laptop Requests -->
   <url>
     <loc>https://thesama.in/ngoregistration</loc>
-    <lastmod>2026-10-22</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 
-  <!-- About Sama Digital Foundation -->
-  <url>
-    <loc>https://thesama.in/about</loc>
-    <lastmod>2026-10-23</lastmod>
-  </url>
-
-  <!-- Hardware Refurbishment & Device Lifecycle -->
-  <url>
-    <loc>https://thesama.in/our-approach</loc>
-    <lastmod>2026-10-23</lastmod>
-  </url>
-
-  <!-- Team & Leadership -->
-  <url>
-    <loc>https://thesama.in/ourteam</loc>
-    <lastmod>2026-10-23</lastmod>
-  </url>
-
-  <!-- Government Partnerships -->
-  <url>
-    <loc>https://thesama.in/our-government</loc>
-    <lastmod>2026-10-22</lastmod>
-  </url>
-
-  <!-- Community Partners -->
-  <url>
-    <loc>https://thesama.in/communitypartners</loc>
-    <lastmod>2026-10-22</lastmod>
-  </url>
-
-  <!-- Digital Initiative Overview -->
-  <url>
-    <loc>https://thesama.in/about-initiative</loc>
-    <lastmod>2024-12-18</lastmod>
-  </url>
-
-  <!-- Privacy Policy & Trust -->
-  <url>
-    <loc>https://thesama.in/privacy-policy</loc>
-    <lastmod>2026-10-22</lastmod>
-  </url>
-
-  <!-- Initiatives -->
+  <!-- Our Initiatives -->
   <url>
     <loc>https://thesama.in/initiatives</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <!-- Sama Saathi Programme -->
   <url>
     <loc>https://thesama.in/sama-saathi</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <!-- Digital Inclusion & AI Literacy Labs -->
   <url>
     <loc>https://thesama.in/labs</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 
-  <!-- Giving Back -->
+  <!-- Giving Back & Renew Desk -->
   <url>
     <loc>https://thesama.in/giving</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
   <!-- First Laptop, Next Builder -->
   <url>
     <loc>https://thesama.in/first-laptop</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
-  <!-- Build for Good -->
+  <!-- Build for Good Hackathon -->
   <url>
     <loc>https://thesama.in/bfg</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
-  <!-- Communications & Reports -->
+  <!-- Team & Leadership -->
+  <url>
+    <loc>https://thesama.in/ourteam</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Communications, Annual & Impact Reports -->
   <url>
     <loc>https://thesama.in/communications</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
   <!-- Contact Us -->
   <url>
     <loc>https://thesama.in/contact</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Statutory Disclosures & NGO Information (Companies Act, 2013) -->
+  <url>
+    <loc>https://thesama.in/ngo-information</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://thesama.in/privacy-policy</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
 
   <!-- Editorial Articles & Insights -->
   <url>
     <loc>https://thesama.in/blog/beyond-connectivity</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://thesama.in/blog/from-e-waste-to-new-beginnings</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://thesama.in/blog/rethinking-digital-inclusion</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
 </urlset>
