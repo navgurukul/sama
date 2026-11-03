@@ -155,5 +155,82 @@ export const seoRoutes = {
       "Meet the dedicated team, leaders, and technologists driving Sama's circular economy and digital inclusion missions across India.",
     canonical: `${BASE_URL}/ourteam`,
     ogType: "website"
+  },
+  samaSaathi: {
+    title: "Sama Saathi | Women-Led Digital Centres Across India",
+    description:
+      "Village-level digital centres owned and operated by local women leaders, delivering digital education, government services, and livelihoods.",
+    canonical: `${BASE_URL}/sama-saathi`,
+    ogType: "website"
+  },
+  labs: {
+    title: "Digital & AI Labs | Sama Digital Foundation",
+    description:
+      "Transforming retired corporate hardware into state-of-the-art school computer labs, AI learning spaces, and community skilling hubs.",
+    canonical: `${BASE_URL}/labs`,
+    ogType: "website"
+  },
+  giving: {
+    title: "Giving Back | Renew Desks & Mentorship | Sama",
+    description:
+      "Bring a hands-on Renew Desk to your office to restore laptops with your team, or mentor grassroots students building real-world projects.",
+    canonical: `${BASE_URL}/giving`,
+    ogType: "website"
+  },
+  initiatives: {
+    title: "Our Initiatives | Sama Digital Foundation",
+    description:
+      "Explore Sama's flagship programmes: Sama Saathi kendras, Digital & AI Labs, Renew Desks, and the Build for Good hackathon.",
+    canonical: `${BASE_URL}/initiatives`,
+    ogType: "website"
+  },
+  firstLaptop: {
+    title: "First Laptop Campaign | Sama Digital Foundation",
+    description:
+      "Putting high-performance laptops into the hands of first-generation learners, young coders, and competitive exam aspirants across India.",
+    canonical: `${BASE_URL}/first-laptop`,
+    ogType: "website"
+  },
+  bfg: {
+    title: "Build for Good Hackathon | Sama Digital Foundation",
+    description:
+      "India's premier digital inclusion hackathon empowering students and youth to build open-source solutions for social impact.",
+    canonical: `${BASE_URL}/bfg`,
+    ogType: "website"
+  },
+  communications: {
+    title: "Reports & Communications | Sama Digital Foundation",
+    description:
+      "Read our Annual Reports, Impact Reports, field stories, and press coverage on closing India's hardware divide.",
+    canonical: `${BASE_URL}/communications`,
+    ogType: "website"
+  },
+  contact: {
+    title: "Contact Us | Sama Digital Foundation",
+    description:
+      "Connect with Sama to donate laptops, bring a Renew Desk to your office, become a Sama Saathi, or explore corporate partnerships.",
+    canonical: `${BASE_URL}/contact`,
+    ogType: "website"
+  },
+  blogBeyondConnectivity: {
+    title: "Beyond Connectivity | Sama Blog",
+    description:
+      "Why access to a working computer, not just connectivity, decides who gets to take part in India's digital economy.",
+    canonical: `${BASE_URL}/blog/beyond-connectivity`,
+    ogType: "article"
+  },
+  blogEWaste: {
+    title: "From E-Waste to New Beginnings | Sama Blog",
+    description:
+      "How responsible corporate refurbishment keeps electronics out of landfills and gives laptops a second life in education.",
+    canonical: `${BASE_URL}/blog/from-e-waste-to-new-beginnings`,
+    ogType: "article"
+  },
+  blogRethinkingInclusion: {
+    title: "Rethinking Digital Inclusion | Sama Blog",
+    description:
+      "What it takes to make technology truly useful in someone's life, from the women running Sama Saathi centres.",
+    canonical: `${BASE_URL}/blog/rethinking-digital-inclusion`,
+    ogType: "article"
   }
 };
