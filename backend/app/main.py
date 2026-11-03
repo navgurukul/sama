@@ -5944,26 +5944,48 @@ async def public_contribute(payload: dict):
 
 
 @app.get("/api/public/download-report")
-async def download_public_report(report: str = "directors-report-2025-26"):
+async def download_public_report(report: str = "directors-report-2025-26", inline: bool = False):
     import os
     from fastapi.responses import FileResponse
     clean_report = "".join(c for c in report if c.isalnum() or c in "-_")
-    filename = f"{clean_report}.pdf" if not clean_report.endswith(".pdf") else clean_report
+    lower = clean_report.lower()
     
+    # Map common aliases or keywords
+    target_file = None
+    if "director" in lower or "board" in lower:
+        target_file = "SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf"
+    elif "impact" in lower:
+        target_file = "Sama_Impact_Report_2024-25.pdf"
+    elif "annual" in lower:
+        target_file = "Sama_Annual_Report_2025-26.pdf"
+    elif "saathi" in lower or "concept" in lower:
+        target_file = "sama-saathi-concept-note.pdf"
+    else:
+        target_file = f"{clean_report}.pdf" if not clean_report.endswith(".pdf") else clean_report
+
+    filename = target_file
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     search_paths = [
+        os.path.join(backend_dir, "docs", filename),
         os.path.join(base_dir, "public", "docs", filename),
         os.path.join(base_dir, "public", filename),
         os.path.join(base_dir, "build", "docs", filename),
         os.path.join(base_dir, "build", filename),
+        os.path.join(backend_dir, "docs", f"{clean_report}.pdf"),
+        os.path.join(base_dir, "public", "docs", f"{clean_report}.pdf"),
     ]
+    disposition = "inline" if inline else "attachment"
     for p in search_paths:
         if os.path.exists(p) and os.path.isfile(p):
-            download_name = "SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf" if "director" in clean_report.lower() or "board" in clean_report.lower() else filename
             return FileResponse(
                 path=p,
                 media_type="application/pdf",
-                filename=download_name
+                filename=filename,
+                headers={
+                    "Content-Disposition": f'{disposition}; filename="{filename}"',
+                    "Cache-Control": "public, max-age=86400"
+                }
             )
     raise HTTPException(status_code=404, detail="Requested report not found")
 
