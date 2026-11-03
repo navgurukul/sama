@@ -24,7 +24,45 @@ const routeMap = {
   "/communitypartners": seoRoutes.communityPartners,
   "/our-government": seoRoutes.ourGoverment,
   "/ourteam": seoRoutes.ourTeam,
+  "/team": seoRoutes.ourTeam,
+  "/sama-saathi": seoRoutes.samaSaathi,
+  "/labs": seoRoutes.labs,
+  "/giving": seoRoutes.giving,
+  "/initiatives": seoRoutes.initiatives,
+  "/first-laptop": seoRoutes.firstLaptop,
+  "/bfg": seoRoutes.bfg,
+  "/build-for-good": seoRoutes.bfg,
+  "/communications": seoRoutes.communications,
+  "/comms": seoRoutes.communications,
+  "/contact": seoRoutes.contact,
+  "/blog/beyond-connectivity": seoRoutes.blogBeyondConnectivity,
+  "/blog/from-e-waste-to-new-beginnings": seoRoutes.blogEWaste,
+  "/blog/rethinking-digital-inclusion": seoRoutes.blogRethinkingInclusion,
 };
+
+// Internal admin / operations paths that must not appear in Google search
+const privatePrefixes = [
+  "/login",
+  "/dashboard",
+  "/ops",
+  "/corporate",
+  "/pickup",
+  "/corpretedb",
+  "/donorcsr",
+  "/donormanager",
+  "/admin",
+  "/user-details",
+  "/data-assignment",
+  "/beneficiarydata",
+  "/documentupload",
+  "/laptopinventory",
+  "/laptop-tagging",
+  "/laptop-stage",
+  "/yearly-reporting",
+  "/yearly-report",
+  "/signup",
+  "/registration",
+];
 
 const SeoRouter = () => {
   const { pathname } = useLocation();
@@ -39,15 +77,27 @@ const SeoRouter = () => {
   const config = routeMap[normalizedPath];
 
   if (config) {
-    return <SEO {...config} />;
+    return <SEO {...config} noindex={false} />;
   }
 
-  // 4. Any unmapped or internal route (/corporate, /admin, /pickup, /login, or 404s) gets strict noindex
+  // 3. Check if path is an internal/private operations portal route
+  const isPrivate = privatePrefixes.some((prefix) => normalizedPath.startsWith(prefix));
+  if (isPrivate) {
+    return (
+      <SEO
+        title="Sama Digital Foundation | Portal"
+        description="Sama Digital Foundation operations and management portal."
+        noindex={true}
+      />
+    );
+  }
+
+  // 4. Default for any other public route: keep indexable, clean title
   return (
     <SEO
-      title="Sama Digital Foundation"
-      description="Sama Digital Foundation operations and management portal."
-      noindex={true}
+      title="Sama Digital Foundation | E-Waste & Laptop Donation"
+      description="Sama repurposes corporate retired laptops and e-waste to power digital education for underserved girls and youth across India."
+      noindex={false}
     />
   );
 };
