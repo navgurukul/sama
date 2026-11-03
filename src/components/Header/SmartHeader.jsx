@@ -3,43 +3,46 @@ import { useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import EditorialHeader from '../Editorial/EditorialHeader';
 
-const EDITORIAL_ROUTES = [
-  '/',
-  '/about',
-  '/initiatives',
-  '/sama-saathi',
-  '/our-approach',
-  '/labs',
-  '/giving',
-  '/first-laptop',
-  '/bfg',
-  '/build-for-good',
-  '/ourteam',
-  '/communications',
-  '/comms',
-  '/donate',
-  '/contact',
-  '/ngo-information',
-  '/statutory-disclosures',
-  '/privacy-policy',
-  '/ourgoverment',
-  '/our-government',
-  '/communitypartners',
-  '/about-initiative',
-  '/login',
-  '/signup',
-  '/ngoregistration'
+// Internal operational / dashboard prefixes
+const DASHBOARD_PREFIXES = [
+  '/dashboard',
+  '/ops',
+  '/corporate',
+  '/corpretedb',
+  '/donorcsr',
+  '/pickup',
+  '/pickup-request-by-donor',
+  '/laptopinventory',
+  '/laptop-tagging',
+  '/laptop-stage',
+  '/user-details',
+  '/userdetails',
+  '/data-assignment-form',
+  '/documentupload',
+  '/documentreupload',
+  '/monthly-reporting',
+  '/monthly-report',
+  '/yearly-reporting',
+  '/yearly-report',
+  '/audit',
+  '/afe',
+  '/attentionneeded',
+  '/ngoprofile',
+  '/beneficiaryprofile',
+  '/mouupload',
+  '/question-selection',
+  '/donormanager',
 ];
 
 export default function SmartHeader() {
   const location = useLocation();
-  const isEditorial =
-    EDITORIAL_ROUTES.includes(location.pathname) ||
-    location.pathname.startsWith('/blog') ||
-    location.pathname.startsWith('/ngoregistration');
+  const path = (location.pathname || '').toLowerCase();
+  const isDashboard = DASHBOARD_PREFIXES.some((prefix) => path.startsWith(prefix));
 
-  if (isEditorial) {
-    return <EditorialHeader />;
+  // If inside an internal operations dashboard, render internal Navbar;
+  // otherwise (including all public pages and 404s), render the EditorialHeader.
+  if (isDashboard) {
+    return <Navbar />;
   }
-  return <Navbar />;
+  return <EditorialHeader />;
 }
