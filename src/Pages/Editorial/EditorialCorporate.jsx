@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
+import downloadPdf from '../../utils/downloadPdf';
 import '../../styles/editorial.css';
 
 export default function EditorialCorporate() {
@@ -44,7 +45,9 @@ export default function EditorialCorporate() {
         <div><b>Boards’ Report FY 2025–26</b><span>For the year ended 31 March 2026 · PDF</span></div>
         <a
           className="bracket bracket--solid"
-          href="/docs/SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf"
+          href="https://sama-api.thesama.in/api/public/download-report?report=SAMA_Digital_Foundation_Directors_Report_FY2025-26"
+          onClick={(e) => downloadPdf(e, '/docs/SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf', 'SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf')}
+          download="SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf"
           target="_blank"
           rel="noopener noreferrer"
         >

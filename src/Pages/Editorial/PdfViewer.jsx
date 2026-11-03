@@ -15,9 +15,10 @@ export default function PdfViewer() {
     ? 'Boards’ Report FY 2025–26'
     : cleanName.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-  // Direct static path and API download fallback
-  const pdfUrl = `/docs/${safeFilename}`;
+  // Direct API streaming URLs (bypasses any Amplify SPA HTML rewrites)
   const apiDownloadUrl = `https://sama-api.thesama.in/api/public/download-report?report=${encodeURIComponent(cleanName)}`;
+  const apiInlineUrl = `https://sama-api.thesama.in/api/public/download-report?report=${encodeURIComponent(cleanName)}&inline=true`;
+  const staticPdfUrl = `/docs/${safeFilename}`;
 
   useEffect(() => {
     document.title = `${displayName} | Sama Digital Foundation`;
@@ -49,12 +50,12 @@ export default function PdfViewer() {
             </a>
             <a
               className="bracket"
-              href={pdfUrl}
+              href={apiInlineUrl}
               target="_blank"
               rel="noopener noreferrer"
               style={{ border: '1px solid #ccc', color: 'inherit' }}
             >
-              Open Fullscreen Viewer
+              Open in New Window
             </a>
             <Link className="bracket" to="/ngo-information" style={{ border: '1px solid #ccc', color: 'inherit' }}>
               Back to Disclosures
@@ -76,14 +77,14 @@ export default function PdfViewer() {
             boxShadow: '0 8px 30px rgba(0,0,0,0.06)'
           }}>
             <object
-              data={pdfUrl}
+              data={apiInlineUrl}
               type="application/pdf"
               width="100%"
               height="100%"
               style={{ display: 'block' }}
             >
               <iframe
-                src={pdfUrl}
+                src={apiInlineUrl}
                 width="100%"
                 height="100%"
                 title={displayName}
@@ -103,3 +104,4 @@ export default function PdfViewer() {
     </div>
   );
 }
+

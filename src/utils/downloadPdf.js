@@ -1,36 +1,41 @@
 /**
  * Cross-browser reliable PDF downloader
  * Solves download issues on macOS Safari, iOS, Chrome, Edge, Android, and SPA hostings.
- * - Detects and prevents saving SPA 404 HTML fallback as corrupted PDF
  * - Validates PDF binary signature (%PDF-)
- * - Provides graceful direct download on mobile and desktop
+ * - Prevents saving SPA HTML fallbacks as corrupted PDFs
+ * - Automatically falls back to the backend streaming endpoint (https://sama-api.thesama.in)
  */
 export const downloadPdf = async (e, relativeOrAbsoluteUrl, fileName) => {
-  // Ensure full URL if relative
-  const publicUrl = process.env.PUBLIC_URL || '';
-  const url = relativeOrAbsoluteUrl.startsWith('http')
-    ? relativeOrAbsoluteUrl
-    : `${publicUrl}${relativeOrAbsoluteUrl.startsWith('/') ? '' : '/'}${relativeOrAbsoluteUrl}`;
+  if (e && e.preventDefault) {
+    e.preventDefault();
+  }
+
+  const cleanName = (fileName || relativeOrAbsoluteUrl || 'document.pdf')
+    .split('/')
+    .pop()
+    .replace(/\.pdf$/i, '');
+  
+  const apiUrl = `https://sama-api.thesama.in/api/public/download-report?report=${encodeURIComponent(cleanName)}`;
 
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     typeof navigator !== 'undefined' ? navigator.userAgent : ''
   );
 
-  // On mobile browsers, allow native anchor event to execute directly.
-  // This opens the PDF in iOS Safari's native reader / downloads in Android Chrome cleanly
-  // without triggering asynchronous popup blocker warnings.
+  // On mobile browsers, direct navigation to the streaming API triggers native PDF download/viewing
   if (isMobile) {
+    window.location.href = apiUrl;
     return;
   }
 
-  if (e && e.preventDefault) {
-    e.preventDefault();
-  }
+  const publicUrl = process.env.PUBLIC_URL || '';
+  const url = relativeOrAbsoluteUrl.startsWith('http')
+    ? relativeOrAbsoluteUrl
+    : `${publicUrl}${relativeOrAbsoluteUrl.startsWith('/') ? '' : '/'}${relativeOrAbsoluteUrl}`;
 
   try {
     const response = await fetch(url, { method: 'GET', cache: 'no-cache' });
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status} ${response.statusText}`);
+      throw new Error(`HTTP ${response.status}`);
     }
 
     const contentType = response.headers.get('content-type') || '';
@@ -42,9 +47,8 @@ export const downloadPdf = async (e, relativeOrAbsoluteUrl, fileName) => {
     const isPdfBinary = headerString === '%PDF-';
 
     if (!isPdfBinary || contentType.includes('text/html')) {
-      console.warn('Server returned non-PDF or HTML fallback for:', url);
-      // Fallback: direct browser navigation
-      window.location.assign(url);
+      console.warn('SPA rewrite detected (HTML returned instead of PDF). Streaming from API fallback:', apiUrl);
+      window.location.href = apiUrl;
       return;
     }
 
@@ -52,7 +56,7 @@ export const downloadPdf = async (e, relativeOrAbsoluteUrl, fileName) => {
     const blobUrl = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = blobUrl;
-    link.setAttribute('download', fileName || 'document.pdf');
+    link.setAttribute('download', fileName || `${cleanName}.pdf`);
     link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
@@ -61,8 +65,8 @@ export const downloadPdf = async (e, relativeOrAbsoluteUrl, fileName) => {
       window.URL.revokeObjectURL(blobUrl);
     }, 4000);
   } catch (err) {
-    console.warn('Direct blob download failed, falling back to direct location assign:', err);
-    window.location.assign(url);
+    console.warn('Direct fetch failed, redirecting to streaming API:', err);
+    window.location.href = apiUrl;
   }
 };
 
