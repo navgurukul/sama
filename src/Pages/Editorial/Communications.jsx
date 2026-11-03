@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
-import downloadPdf from '../../utils/downloadPdf';
 import '../../styles/editorial.css';
 
 export default function Communications() {
@@ -27,8 +26,8 @@ export default function Communications() {
   <div className="wrap">
     <div className="reveal"><span className="eyebrow">Our reports</span><h2 className="display h2 mt-s">Our work, <em>year by year.</em></h2></div>
     <div className="reports mt-l">
-      <article className="report reveal"><div className="report__cover"><span>Annual Report</span><b>2025–26</b><img className="report__logo" src="/img/logo-light.png" alt="Sama" /></div><div className="report__body"><h3>Annual Report FY 2025–26</h3><p>Our programmes, partners and impact for the year.</p><a className="bracket bracket--solid" href="/docs/annual-report-2025-26.pdf" download="Sama_Annual_Report_2025-26.pdf" target="_blank" rel="noopener noreferrer" onClick={(e) => downloadPdf(e, '/docs/annual-report-2025-26.pdf', 'Sama_Annual_Report_2025-26.pdf')}>Download PDF <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article>
-      <article className="report reveal"><div className="report__cover report__cover--alt"><span>Impact Report</span><b>2024–25</b><img className="report__logo" src="/img/logo-light.png" alt="Sama" /></div><div className="report__body"><h3>Impact Report FY 2024–25</h3><p>Our programmes, partners and impact for the year.</p><a className="bracket bracket--solid" href="/docs/impact-report-2024-25.pdf" download="Sama_Impact_Report_2024-25.pdf" target="_blank" rel="noopener noreferrer" onClick={(e) => downloadPdf(e, '/docs/impact-report-2024-25.pdf', 'Sama_Impact_Report_2024-25.pdf')}>Download PDF <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article>
+      <article className="report reveal"><div className="report__cover"><span>Annual Report</span><b>2025–26</b><img className="report__logo" src="/img/logo-light.png" alt="Sama" /></div><div className="report__body"><h3>Annual Report FY 2025–26</h3><p>Our programmes, partners and impact for the year.</p><a className="bracket bracket--solid" href="/docs/annual-report-2025-26.pdf" download="Sama_Annual_Report_2025-26.pdf" target="_blank" rel="noopener noreferrer">Download PDF <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article>
+      <article className="report reveal"><div className="report__cover report__cover--alt"><span>Impact Report</span><b>2024–25</b><img className="report__logo" src="/img/logo-light.png" alt="Sama" /></div><div className="report__body"><h3>Impact Report FY 2024–25</h3><p>Our programmes, partners and impact for the year.</p><a className="bracket bracket--solid" href="/docs/impact-report-2024-25.pdf" download="Sama_Impact_Report_2024-25.pdf" target="_blank" rel="noopener noreferrer">Download PDF <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article>
     </div>
   </div>
 </section>
