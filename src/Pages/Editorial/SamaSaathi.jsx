@@ -26,10 +26,7 @@ export default function SamaSaathi() {
       <a
         className="link"
         href="https://sama-api.thesama.in/api/public/download-report?report=sama-saathi-concept-note"
-        onClick={(e) => downloadPdf(e, '/docs/sama-saathi-concept-note.pdf', 'Sama_Saathi_Concept_Note.pdf')}
         download="Sama_Saathi_Concept_Note.pdf"
-        target="_blank"
-        rel="noopener noreferrer"
       >
         Download the Sama Saathi concept note (PDF)
       </a>

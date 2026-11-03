@@ -21,7 +21,6 @@ import EditorialDonate from './Pages/Editorial/EditorialDonate';
 import EditorialContact from './Pages/Editorial/EditorialContact';
 import EditorialCorporate from './Pages/Editorial/EditorialCorporate';
 import EditorialNotFound from './Pages/Editorial/EditorialNotFound';
-import PdfViewer from './Pages/Editorial/PdfViewer';
 import DashboardPage from './Dashboard';
 import MacRearch from './Pages/LaptopTagging';
 import DataAssignmentForm from './Pages/LaptopData/LaptopData';
@@ -366,7 +365,6 @@ function App() {
                 }
               />
               <Route path="/pickup" element={<Pickup />} />
-              <Route path="/docs/:filename" element={<PdfViewer />} />
               <Route path="*" element={<EditorialNotFound />} />
             </Routes>
             {" "}

@@ -46,10 +46,7 @@ export default function EditorialCorporate() {
         <a
           className="bracket bracket--solid"
           href="https://sama-api.thesama.in/api/public/download-report?report=SAMA_Digital_Foundation_Directors_Report_FY2025-26"
-          onClick={(e) => downloadPdf(e, '/docs/SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf', 'SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf')}
           download="SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
         >
           Download PDF <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
