@@ -3,10 +3,10 @@ import { useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import EditorialHeader from '../Editorial/EditorialHeader';
 
-// Internal operational / dashboard prefixes
 const DASHBOARD_PREFIXES = [
   '/dashboard',
   '/ops',
+  '/ngo',
   '/corporate',
   '/corpretedb',
   '/donorcsr',
@@ -29,20 +29,34 @@ const DASHBOARD_PREFIXES = [
   '/attentionneeded',
   '/ngoprofile',
   '/beneficiaryprofile',
+  '/beneficiarydata',
   '/mouupload',
   '/question-selection',
   '/donormanager',
+  '/preliminary',
+  '/submission-success',
+  '/edit-user',
+  '/edit-form',
+  '/edit-yearly-form',
+  '/laptop-with-issues',
+  '/user-details',
+  '/beneficiaryProfile',
+  '/beneficiaryprofile',
 ];
 
 export default function SmartHeader() {
   const location = useLocation();
   const path = (location.pathname || '').toLowerCase();
+  const isLoggedIn = typeof window !== 'undefined' && !!localStorage.getItem('isLoggedIn');
   const isDashboard = DASHBOARD_PREFIXES.some((prefix) => path.startsWith(prefix));
 
-  // If inside an internal operations dashboard, render internal Navbar;
-  // otherwise (including all public pages and 404s), render the EditorialHeader.
+  if (isLoggedIn) {
+    return <Navbar />;
+  }
+
   if (isDashboard) {
     return <Navbar />;
   }
+
   return <EditorialHeader />;
 }
