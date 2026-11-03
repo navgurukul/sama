@@ -47,13 +47,13 @@ const routes = [
   },
   {
     path: "/donate",
-    title: "Donate Used Laptops & E-Waste | Sama",
+    title: "Donate Used Laptops & E-Waste | Sama Digital Foundation",
     description:
-      "Partner with Sama to donate retired company laptops and IT assets. We turn end-of-life devices into learning tools for girls and youth across India.",
+      "Donate retired company laptops, pre-owned devices, or request laptops for education. Certified data erasure and pan-India logistics by Sama Digital Foundation.",
     canonical: `${BASE_URL}/donate`,
-    heading: "Corporate Laptop Donation & E-Waste Repurposing in India",
+    heading: "Donate a Laptop | Join the Digital Inclusion Movement",
     subtext:
-      "Partner with Sama Digital Foundation to transform end-of-life company laptops into powerful educational tools for youth and girls across India. We coordinate pan-India pickup, complete data wiping, and track hardware deployment to verified grassroots schools.",
+      "Whether you are a corporation looking to offboard IT assets seamlessly, an individual giving a pre-owned device a second life, or an institution driving digital literacy, there is a place for you in our ecosystem. Help us close the hardware divide.",
     faqs: [
       {
         question: "What devices does Sama accept for donation?",

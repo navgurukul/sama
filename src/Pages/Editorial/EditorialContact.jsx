@@ -23,13 +23,38 @@ export default function EditorialContact() {
 
   useEffect(() => {
     document.title = "Contact Us | Sama";
-    window.scrollTo(0, 0);
 
     // Support pre-selecting topic via URL query param (?topic=...) or hash
     const params = new URLSearchParams(location.search);
     const topicParam = params.get('topic');
     if (topicParam) {
-      setFormData((prev) => ({ ...prev, topic: topicParam }));
+      const normalized = topicParam.trim().toLowerCase();
+      if (normalized.includes('renew') || normalized.includes('desk')) {
+        setFormData((prev) => ({ ...prev, topic: 'Renew Desk at our office' }));
+      } else if (normalized.includes('corporate') || normalized.includes('partner')) {
+        setFormData((prev) => ({ ...prev, topic: 'Corporate partnership' }));
+      } else if (normalized.includes('donate') || normalized.includes('laptop')) {
+        setFormData((prev) => ({ ...prev, topic: 'Donating laptops' }));
+      } else if (normalized.includes('mentor')) {
+        setFormData((prev) => ({ ...prev, topic: 'Mentoring' }));
+      } else if (normalized.includes('community') || normalized.includes('model')) {
+        setFormData((prev) => ({ ...prev, topic: 'Bringing the Saathi model to my community' }));
+      } else if (normalized.includes('saathi')) {
+        setFormData((prev) => ({ ...prev, topic: 'I want to become a Sama Saathi' }));
+      } else {
+        setFormData((prev) => ({ ...prev, topic: topicParam }));
+      }
+    }
+
+    if (location.hash || topicParam) {
+      setTimeout(() => {
+        const target = document.querySelector(location.hash || '#contact-form');
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      window.scrollTo(0, 0);
     }
   }, [location]);
 
@@ -67,9 +92,12 @@ export default function EditorialContact() {
     setServerError('');
 
     try {
-      const apiBase = process.env.REACT_APP_NgoInformationApi 
-        ? process.env.REACT_APP_NgoInformationApi.replace(/\/ngo-exec.*$/, '')
-        : 'http://localhost:8000';
+      const apiBase = process.env.REACT_APP_API_BASE_URL ||
+        (process.env.REACT_APP_NgoInformationApi 
+          ? process.env.REACT_APP_NgoInformationApi.replace(/\/ngo-exec.*$/, '')
+          : (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
+              ? "http://localhost:8000"
+              : "https://sama-api.thesama.in"));
 
       const payload = {
         formType: 'contact',

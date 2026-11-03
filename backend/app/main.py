@@ -3109,6 +3109,25 @@ def _save_public_inquiry(payload: Dict[str, Any]) -> Dict[str, Any]:
         with conn.cursor() as cur:
             cur.execute(
                 f"""
+                CREATE TABLE IF NOT EXISTS {DB_SCHEMA}.public_inquiries (
+                    id SERIAL PRIMARY KEY,
+                    form_type VARCHAR(50),
+                    email VARCHAR(255),
+                    first_name VARCHAR(100),
+                    last_name VARCHAR(100),
+                    company_name VARCHAR(255),
+                    phone VARCHAR(50),
+                    state VARCHAR(100),
+                    city VARCHAR(100),
+                    message TEXT,
+                    payload JSONB,
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                )
+                """
+            )
+            cur.execute(
+                f"""
                 INSERT INTO {DB_SCHEMA}.public_inquiries
                 (form_type, email, first_name, last_name, company_name, phone,
                  state, city, message, payload)
@@ -5651,10 +5670,14 @@ async def public_contribute(payload: dict):
         donation_intent = str(payload.get("donationIntent") or "").strip()
         
         number_of_laptops = payload.get("numberOfLaptops")
-        try:
-            num_laptops = int(number_of_laptops) if number_of_laptops is not None else 0
-        except Exception:
-            num_laptops = 0
+        num_laptops = 0
+        if number_of_laptops is not None:
+            try:
+                num_laptops = int(number_of_laptops)
+            except Exception:
+                import re
+                match = re.search(r'\d+', str(number_of_laptops))
+                num_laptops = int(match.group()) if match else 0
             
         device_condition = str(payload.get("deviceCondition") or "").strip()
         device_brand = str(payload.get("deviceBrand") or "").strip()
@@ -5724,6 +5747,40 @@ async def public_contribute(payload: dict):
         with get_conn() as conn:
             with conn.cursor() as cur:
                 cur.execute(f"""
+                    CREATE TABLE IF NOT EXISTS {DB_SCHEMA}.public_contributions (
+                        id SERIAL PRIMARY KEY,
+                        reference_id VARCHAR(50) UNIQUE,
+                        form_type VARCHAR(50),
+                        first_name VARCHAR(100),
+                        last_name VARCHAR(100),
+                        email VARCHAR(255),
+                        phone VARCHAR(50),
+                        city VARCHAR(100),
+                        state VARCHAR(100),
+                        contribution_type VARCHAR(50),
+                        company_name VARCHAR(255),
+                        designation VARCHAR(100),
+                        donation_intent TEXT,
+                        number_of_laptops INT,
+                        device_condition VARCHAR(100),
+                        device_brand VARCHAR(100),
+                        device_age VARCHAR(100),
+                        pickup_address TEXT,
+                        decommission_timeline VARCHAR(100),
+                        data_wiping_needed BOOLEAN DEFAULT FALSE,
+                        applicant_category VARCHAR(100),
+                        education_course VARCHAR(255),
+                        purpose TEXT,
+                        family_income VARCHAR(100),
+                        hear_about VARCHAR(100),
+                        message TEXT,
+                        receive_updates BOOLEAN DEFAULT TRUE,
+                        status VARCHAR(50) DEFAULT 'Pending',
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                    )
+                """)
+                cur.execute(f"""
                     INSERT INTO {DB_SCHEMA}.public_contributions (
                         reference_id, form_type, first_name, last_name, email, phone, city, state,
                         contribution_type, company_name, designation, donation_intent, number_of_laptops,
@@ -5747,21 +5804,24 @@ async def public_contribute(payload: dict):
                 
                 # If laptops are being donated, also seamlessly sync into pickup table for logistics
                 if is_give_individual or is_give_corporate:
-                    poc_name = f"{first_name} {last_name}".strip() or "Donor"
-                    donor_company = company_name if contribution_type == "company" else "Individual"
-                    loc_summary = f"{pickup_address or city or state or 'Pickup address to be confirmed'} (Ref: {reference_id})"
-                    
-                    cur.execute(f"""
-                        INSERT INTO {DB_SCHEMA}.pickup (
-                            pickup_id, donor_company, poc_name, poc_contact, poc_email, 
-                            number_of_laptops, pickup_location, status, current_date_time, updated_on
-                        ) VALUES (
-                            %s, %s, %s, %s, %s, %s, %s, 'Pending', now(), now()
-                        )
-                    """, (
-                        reference_id, donor_company, poc_name, phone, email, 
-                        num_laptops, loc_summary
-                    ))
+                    try:
+                        poc_name = f"{first_name} {last_name}".strip() or "Donor"
+                        donor_company = company_name if contribution_type == "company" else "Individual"
+                        loc_summary = f"{pickup_address or city or state or 'Pickup address to be confirmed'} (Ref: {reference_id})"
+                        
+                        cur.execute(f"""
+                            INSERT INTO {DB_SCHEMA}.pickup (
+                                pickup_id, donor_company, poc_name, poc_contact, poc_email, 
+                                number_of_laptops, pickup_location, status, current_date_time, updated_on
+                            ) VALUES (
+                                %s, %s, %s, %s, %s, %s, %s, 'Pending', now(), now()
+                            )
+                        """, (
+                            reference_id, donor_company, poc_name, phone, email, 
+                            num_laptops, loc_summary
+                        ))
+                    except Exception as pickup_err:
+                        print(f"Warning: could not sync to pickup table: {pickup_err}")
                     
                 conn.commit()
 
@@ -5881,6 +5941,31 @@ async def public_contribute(payload: dict):
     except Exception as e:
         print(f"Error in public_contribute: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/public/download-report")
+async def download_public_report(report: str = "directors-report-2025-26"):
+    import os
+    from fastapi.responses import FileResponse
+    clean_report = "".join(c for c in report if c.isalnum() or c in "-_")
+    filename = f"{clean_report}.pdf" if not clean_report.endswith(".pdf") else clean_report
+    
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    search_paths = [
+        os.path.join(base_dir, "public", "docs", filename),
+        os.path.join(base_dir, "public", filename),
+        os.path.join(base_dir, "build", "docs", filename),
+        os.path.join(base_dir, "build", filename),
+    ]
+    for p in search_paths:
+        if os.path.exists(p) and os.path.isfile(p):
+            download_name = "SAMA_Digital_Foundation_Directors_Report_FY2025-26.pdf" if "director" in clean_report.lower() or "board" in clean_report.lower() else filename
+            return FileResponse(
+                path=p,
+                media_type="application/pdf",
+                filename=download_name
+            )
+    raise HTTPException(status_code=404, detail="Requested report not found")
 
 
 @app.get("/api/public/social-impact-stats")
