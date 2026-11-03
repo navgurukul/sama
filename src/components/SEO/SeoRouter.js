@@ -19,8 +19,6 @@ const routeMap = {
   "/ngoregistration": seoRoutes.ngoRegistration,
   "/privacy-policy": seoRoutes.privacyPolicy,
   "/about-initiative": seoRoutes.aboutInitiative,
-  "/corporatepartner": seoRoutes.corporatePartner,
-  "/corporate-partners": seoRoutes.corporatePartner,
   "/ngo-information": seoRoutes.ngoInformation,
   "/statutory-disclosures": seoRoutes.ngoInformation,
   "/communitypartners": seoRoutes.communityPartners,

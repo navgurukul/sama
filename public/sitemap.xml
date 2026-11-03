@@ -8,14 +8,6 @@
     <priority>1.0</priority>
   </url>
 
-  <!-- Corporate ESG & CSR Partnerships -->
-  <url>
-    <loc>https://thesama.in/corporatepartner</loc>
-    <lastmod>2026-11-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
   <!-- Corporate Laptop Donation & E-Waste Offboarding -->
   <url>
     <loc>https://thesama.in/donate</loc>

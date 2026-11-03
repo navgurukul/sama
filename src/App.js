@@ -20,7 +20,6 @@ import BlogRethinkingInclusion from './Pages/Editorial/BlogRethinkingInclusion';
 import EditorialDonate from './Pages/Editorial/EditorialDonate';
 import EditorialContact from './Pages/Editorial/EditorialContact';
 import EditorialCorporate from './Pages/Editorial/EditorialCorporate';
-import EditorialCorporatePartners from './Pages/Editorial/EditorialCorporatePartners';
 import DashboardPage from './Dashboard';
 import MacRearch from './Pages/LaptopTagging';
 import DataAssignmentForm from './Pages/LaptopData/LaptopData';
@@ -117,8 +116,8 @@ function App() {
               <Route path="/blog/from-e-waste-to-new-beginnings" element={<BlogEWaste />} />
               <Route path="/blog/rethinking-digital-inclusion" element={<BlogRethinkingInclusion />} />
               <Route path="/donate" element={<EditorialDonate />} />
-              <Route path="/corporatepartner" element={<EditorialCorporatePartners />} />
-              <Route path="/corporate-partners" element={<EditorialCorporatePartners />} />
+              <Route path="/corporatepartner" element={<Navigate to="/donate" replace />} />
+              <Route path="/corporate-partners" element={<Navigate to="/donate" replace />} />
               <Route path="/ngo-information" element={<EditorialCorporate />} />
               <Route path="/statutory-disclosures" element={<EditorialCorporate />} />
               <Route path="/about" element={<Navigate to="/" replace />} />

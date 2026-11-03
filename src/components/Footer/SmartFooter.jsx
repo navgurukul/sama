@@ -21,8 +21,6 @@ const EDITORIAL_ROUTES = new Set([
   '/comms',
   '/donate',
   '/contact',
-  '/corporatepartner',
-  '/corporate-partners',
   '/ngo-information',
   '/statutory-disclosures',
   '/privacy-policy',

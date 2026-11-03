@@ -19,8 +19,6 @@ const EDITORIAL_ROUTES = [
   '/comms',
   '/donate',
   '/contact',
-  '/corporatepartner',
-  '/corporate-partners',
   '/ngo-information',
   '/statutory-disclosures',
   '/privacy-policy',

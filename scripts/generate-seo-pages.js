@@ -146,117 +146,6 @@ const routes = [
     }
   },
   {
-    path: "/corporatepartner",
-    title: "Corporate Laptop Donation & E-Waste CSR Partnerships | Sama Digital Foundation",
-    description:
-      "Partner with Sama to repurpose retired company laptops, achieve NIST 800-88 certified data erasure, Form CSR-1 compliance, and Scope 3 ESG carbon offset in India.",
-    canonical: `${BASE_URL}/corporatepartner`,
-    heading: "Corporate Laptop Donation, E-Waste Circularity & CSR in India",
-    subtext:
-      "We partner with leading enterprises across India to responsibly offboard decommissioned IT hardware, guarantee certified NIST 800-88 data sanitization, and deploy refurbished laptops to empower 18,500+ underserved learners and girls across 21 states.",
-    faqs: [
-      {
-        question: "What types and conditions of IT assets does Sama accept from corporations?",
-        answer: "Sama accepts laptops, desktops, monitors, MacBooks, tablets, and peripherals in working or repairable condition. Our refurbishment technicians repair hardware, replace batteries/screens, and upgrade RAM/SSDs."
-      },
-      {
-        question: "How does Sama guarantee enterprise data security and confidentiality?",
-        answer: "Every device undergoes certified multi-pass data erasure meeting NIST 800-88 standards. Sama provides serialized, tamper-proof Certificates of Data Erasure for your IT security team and CISO compliance."
-      },
-      {
-        question: "Is laptop donation eligible under CSR Section 135 of the Companies Act?",
-        answer: "Yes. S.A.M.A. Digital Foundation is registered with the Ministry of Corporate Affairs under Form CSR-1 (Registration No. CSR00078179, CIN: U85500PN2024NPL233531). Donations qualify under Schedule VII of the Companies Act, 2013."
-      },
-      {
-        question: "Who handles logistics, packaging, and pickup across India?",
-        answer: "Sama manages the complete chain-of-custody reverse logistics. Our verified logistics partners handle doorstep pickup and secure transport across Bengaluru, Pune, Mumbai, Hyderabad, Delhi NCR, and Chennai at zero hassle to your team."
-      },
-      {
-        question: "Do corporate partners receive ESG carbon offset and sustainability reporting?",
-        answer: "Yes. For every batch of retired devices repurposed, Sama issues an ESG Impact Certificate calculating electronic waste diverted from landfills and estimated Scope 3 GHG carbon emissions avoided by extending device life."
-      },
-      {
-        question: "How does our company track where our refurbished laptops are deployed?",
-        answer: "Every device is tracked with a unique Sama Asset ID. Once deployed to schools, NGOs, or community centres, corporate partners receive comprehensive impact reports detailing student beneficiary demographics."
-      }
-    ],
-    schema: {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "FAQPage",
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "What types and conditions of IT assets does Sama accept from corporations?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Sama accepts laptops, desktops, monitors, MacBooks, tablets, and peripherals in working or repairable condition. Our refurbishment technicians repair hardware, replace batteries/screens, and upgrade RAM/SSDs."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How does Sama guarantee enterprise data security and confidentiality?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Every device undergoes certified multi-pass data erasure meeting NIST 800-88 standards. Sama provides serialized, tamper-proof Certificates of Data Erasure for your IT security team and CISO compliance."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Is laptop donation eligible under CSR Section 135 of the Companies Act?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes. S.A.M.A. Digital Foundation is registered with the Ministry of Corporate Affairs under Form CSR-1 (Registration No. CSR00078179, CIN: U85500PN2024NPL233531). Donations qualify under Schedule VII of the Companies Act, 2013."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Who handles logistics, packaging, and pickup across India?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Sama manages the complete chain-of-custody reverse logistics. Our verified logistics partners handle doorstep pickup and secure transport across Bengaluru, Pune, Mumbai, Hyderabad, Delhi NCR, and Chennai at zero hassle to your team."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Do corporate partners receive ESG carbon offset and sustainability reporting?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes. For every batch of retired devices repurposed, Sama issues an ESG Impact Certificate calculating electronic waste diverted from landfills and estimated Scope 3 GHG carbon emissions avoided by extending device life."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How does our company track where our refurbished laptops are deployed?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Every device is tracked with a unique Sama Asset ID. Once deployed to schools, NGOs, or community centres, corporate partners receive comprehensive impact reports detailing student beneficiary demographics."
-              }
-            }
-          ]
-        },
-        {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            {
-              "@type": "ListItem",
-              "position": 1,
-              "name": "Home",
-              "item": BASE_URL
-            },
-            {
-              "@type": "ListItem",
-              "position": 2,
-              "name": "Corporate Partnerships",
-              "item": `${BASE_URL}/corporatepartner`
-            }
-          ]
-        }
-      ]
-    }
-  },
-  {
     path: "/ngo-information",
     title: "NGO Information & Statutory Disclosures | Sama Digital Foundation",
     description:
@@ -573,7 +462,6 @@ function generateSeoPages() {
         <nav style="margin-top: 36px; padding-top: 24px; border-top: 1px solid #E2E8F0; font-size: 14px; color: #718096;">
           <p style="margin-bottom: 10px;"><strong>Sama Digital Foundation (S.A.M.A. Digital Foundation)</strong> · CIN: U85500PN2024NPL233531 · Form CSR-1 Reg. Ministry of Corporate Affairs · Pune, Maharashtra</p>
           <div style="display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 10px;">
-            <a href="https://thesama.in/corporatepartner" style="color: #5C785A; text-decoration: underline;">Corporate Partnerships &amp; CSR</a>
             <a href="https://thesama.in/donate" style="color: #5C785A; text-decoration: underline;">Donate Laptops</a>
             <a href="https://thesama.in/initiatives" style="color: #5C785A; text-decoration: underline;">Our Initiatives</a>
             <a href="https://thesama.in/sama-saathi" style="color: #5C785A; text-decoration: underline;">Sama Saathi</a>
@@ -599,7 +487,36 @@ function generateSeoPages() {
     count++;
   }
 
-  console.log(`[generate-seo] Successfully generated ${count} static route pages for S3/CloudFront.`);
+  // 8. Generate clean 301/meta-refresh redirects for consolidated & removed URLs
+  const redirects = [
+    { from: "/corporatepartner", to: `${BASE_URL}/donate`, label: "Donate Laptops & Corporate Asset Disposal" },
+    { from: "/corporate-partners", to: `${BASE_URL}/donate`, label: "Donate Laptops & Corporate Asset Disposal" },
+    { from: "/about", to: `${BASE_URL}/`, label: "Who We Are | Sama Digital Foundation" },
+    { from: "/about-initiative", to: `${BASE_URL}/initiatives`, label: "Our Initiatives" },
+  ];
+
+  for (const red of redirects) {
+    const redFolder = path.join(BUILD_DIR, red.from.replace(/^\//, ""));
+    if (!fs.existsSync(redFolder)) {
+      fs.mkdirSync(redFolder, { recursive: true });
+    }
+    const redHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting to ${red.label}...</title>
+  <link rel="canonical" href="${red.to}">
+  <meta http-equiv="refresh" content="0; url=${red.to}">
+  <meta name="robots" content="noindex, follow">
+</head>
+<body>
+  <p>Redirecting to <a href="${red.to}">${red.label}</a>...</p>
+</body>
+</html>`;
+    fs.writeFileSync(path.join(redFolder, "index.html"), redHtml, "utf8");
+  }
+
+  console.log(`[generate-seo] Successfully generated ${count} static route pages and ${redirects.length} SEO redirects for S3/CloudFront.`);
 }
 
 generateSeoPages();

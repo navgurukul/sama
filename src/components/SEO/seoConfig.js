@@ -128,13 +128,6 @@ export const seoRoutes = {
     canonical: `${BASE_URL}/about-initiative`,
     ogType: "website"
   },
-  corporatePartner: {
-    title: "Corporate Laptop Donation & E-Waste CSR Partnerships | Sama Digital Foundation",
-    description:
-      "Partner with Sama to repurpose retired company laptops, achieve NIST 800-88 certified data erasure, Form CSR-1 compliance, and Scope 3 ESG carbon offset in India.",
-    canonical: `${BASE_URL}/corporatepartner`,
-    ogType: "website"
-  },
   ngoInformation: {
     title: "NGO Information & Statutory Disclosures | Sama Digital Foundation",
     description:
