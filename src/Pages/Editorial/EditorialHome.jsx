@@ -60,33 +60,34 @@ export default function EditorialHome() {
 
   const [stats, setStats] = React.useState({
     laptops: '21,142',
-    people: '3.4 Lakh+',
+    people: '4,22,840',
     states: '22',
     districts: '68',
-    carbon: '5,490+ MT',
+    carbon: '5,803+ MT',
     ngos: '88+',
-    progressPercent: '34%',
+    progressPercent: '42%',
   });
 
   useEffect(() => {
     document.title = "Sama Digital Foundation | A laptop’s second life. Someone’s first.";
     window.scrollTo(0, 0);
 
-    const apiBase = window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://backend.thesama.in';
+    const apiBase = window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://sama-api.thesama.in';
     fetch(`${apiBase}/api/public/social-impact-stats`)
       .then(res => res.json())
       .then(data => {
         if (data) {
           const rawLaptops = data.laptopsReceived || 21142;
-          const peopleCount = data.beneficiariesImpacted || 339512;
-          const peopleLakh = (peopleCount / 100000).toFixed(1);
+          // Dynamic calculation: 1 laptop = 20 beneficiaries
+          const peopleCount = data.beneficiariesImpacted || (rawLaptops * 20);
+          const carbonMt = data.carbonEmissionsAvoided || Math.round((rawLaptops * 274.5) / 1000);
           const pct = Math.min(100, Math.max(1, Math.round((peopleCount / 1000000) * 100)));
           setStats({
             laptops: `${Number(rawLaptops).toLocaleString('en-IN')}`,
-            people: `${peopleLakh} Lakh+`,
+            people: `${Number(peopleCount).toLocaleString('en-IN')}`,
             states: `${data.statesImpacted || 22}`,
             districts: `${data.districtsImpacted || 68}`,
-            carbon: `${(data.carbonEmissionsAvoided || Math.round(rawLaptops * 0.26)).toLocaleString('en-IN')}+ MT`,
+            carbon: `${Number(carbonMt).toLocaleString('en-IN')}+ MT`,
             ngos: `${data.ngoPartners || 88}+`,
             progressPercent: `${pct}%`,
           });
@@ -157,7 +158,7 @@ export default function EditorialHome() {
       <div className="stat-card"><b>12.16 crore</b><p>Students enrolled in India’s government schools</p><small>UDISE+ 2024–25</small></div>
       <div className="stat-card"><b>4.2%</b><p>Of rural households own a computer of any kind; 9.9% nationally</p><small>NSS 79th round (CAMS) 2022–23</small></div>
       <div className="stat-card"><b>13.98 lakh MT</b><p>E-waste generated in FY 2024–25; 29% never formally collected or recycled</p><small>CPCB, Rajya Sabha reply, July 2025</small></div>
-      <div className="stat-card"><b>220 kg</b><p>CO₂e in manufacturing emissions avoided each time one laptop is reused instead of replaced</p><small>Laptop life-cycle assessment, 2025</small></div>
+      <div className="stat-card"><b>274.5 kg</b><p>CO₂e in lifecycle emissions avoided each time one laptop is reused instead of replaced</p><small>Laptop life-cycle assessment, 2025</small></div>
       <div className="stat-card" style={{ background: 'var(--green)', borderColor: 'var(--green)' }}><b style={{ color: '#fff' }}>85% vs 33.9%</b><p style={{ color: '#DDE9E0' }}>Access is what changes the outcome. Among rural 14–18 year-olds surveyed by ASER, 85% of those with a computer at home could use one, against 33.9% of those without.</p><small style={{ color: '#A6CFB0' }}>ASER</small></div>
     </div>
   </div>
@@ -201,7 +202,7 @@ export default function EditorialHome() {
       <div className="adv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B25F65" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><h3>Your data stays protected</h3><p>Laptops are wiped as per your IT policy before handover, or the drives are removed before pickup.</p></div>
       <div className="adv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B25F65" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 21s-7-6.3-7-11.5A7 7 0 0 1 19 9.5C19 14.7 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><h3>Full traceability</h3><p>Every laptop is logged on our dashboard from pickup to the person who uses it.</p></div>
       <div className="adv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B25F65" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h6M9 12h6M9 16h3"/></svg><h3>Impact you can report</h3><p>Regular updates on laptops refurbished, people reached and where each batch went, ready for your CSR and ESG reporting.</p></div>
-      <div className="adv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B25F65" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19l8-8"/></svg><h3>Measurable sustainability</h3><p>Every laptop reused instead of replaced avoids about 220 kg CO₂e of manufacturing emissions. Our partners have avoided 5,390+ MT so far.</p></div>
+      <div className="adv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B25F65" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19l8-8"/></svg><h3>Measurable sustainability</h3><p>Every laptop reused instead of replaced avoids about 274.5 kg CO₂e of lifecycle emissions. Our partners have avoided {stats.carbon} so far.</p></div>
       <div className="adv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B25F65" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c.8-3.5 3.2-5.5 6-5.5s5.2 2 6 5.5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.6c2.6.2 4.4 2 5 5.4"/></svg><h3>Employees who take part</h3><p>Bring a <Link to="/giving#renew-desk" style={{ textDecoration: 'underline', fontWeight: 600, color: 'inherit' }}>Renew Desk</Link> to your office, where employees refurbish laptops alongside our team.</p></div>
     </div>
     <div className="corp__foot reveal">

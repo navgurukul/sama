@@ -6014,15 +6014,16 @@ async def get_social_impact_stats():
 
                 # Laptops Received (all active laptops in system)
                 cur.execute(f"""
-                    SELECT COUNT(*) 
+                    SELECT COUNT(*) as count
                     FROM {DB_SCHEMA}.laptop_labeling
                     WHERE (is_deleted_from_sheet = FALSE OR is_deleted_from_sheet IS NULL)
                 """)
-                laptops_received = max(18500, cur.fetchone()["count"])
+                row_received = cur.fetchone()
+                laptops_received = row_received["count"] if row_received and row_received["count"] else 21142
 
-                # Beneficiaries Impacted (from userdetails)
-                cur.execute(f"SELECT COUNT(*) as total FROM {DB_SCHEMA}.userdetails")
-                beneficiaries_from_users = cur.fetchone()["total"]
+                # Beneficiaries: 1 laptop reaches 20 beneficiaries (students, women, youth learners)
+                # Dynamic formula requested: laptops_received * 20
+                beneficiaries_impacted = laptops_received * 20
 
                 # Females Reached, Schools Reached & Prelim Students (from preliminary)
                 cur.execute(f"""
@@ -6033,11 +6034,14 @@ async def get_social_impact_stats():
                     FROM {DB_SCHEMA}.preliminary
                 """)
                 preliminary_stats = cur.fetchone()
-                
-                # Total beneficiaries = individual users + prelim students
-                beneficiaries_impacted = beneficiaries_from_users + preliminary_stats["prelim_students"]
 
-                # Calculate dynamic environmental metrics based on 4131 laptops baseline
+                # Environmental metrics calculated dynamically based on 274.5 kg CO2e lifecycle emissions avoided per laptop
+                # Formula requested: laptops_received * 274.5 kg CO2e; displayed in Metric Tonnes (MT)
+                carbon_multiplier_kg = 274.5
+                carbon_emissions_kg = int(round(laptops_received * carbon_multiplier_kg))
+                carbon_emissions_mt = int(round(carbon_emissions_kg / 1000.0))
+
+                # Material waste reduction metrics
                 plastic = round(laptops_distributed * 0.295933, 1)
                 aluminium = round(laptops_distributed * 0.118373, 1)
                 copper = round(laptops_distributed * 0.059186, 1)
@@ -6094,25 +6098,44 @@ async def get_social_impact_stats():
                 except Exception:
                     ngo_partners_count = 88
 
-                # Live districts
+                # Live districts dynamically computed across schools, requests, and inquiries
                 try:
-                    cur.execute(f"SELECT COUNT(DISTINCT location) as cnt FROM {DB_SCHEMA}.external_registered_ngo WHERE location IS NOT NULL AND location != ''")
-                    districts_count = cur.fetchone()["cnt"] or 68
+                    cur.execute(f"""
+                        WITH operational_districts AS (
+                            SELECT LOWER(TRIM(district)) AS dist FROM {DB_SCHEMA}.schools WHERE district IS NOT NULL AND TRIM(district) != ''
+                            UNION
+                            SELECT LOWER(TRIM(city)) AS dist FROM {DB_SCHEMA}.schools WHERE city IS NOT NULL AND TRIM(city) != ''
+                            UNION
+                            SELECT LOWER(TRIM(district)) AS dist FROM {DB_SCHEMA}.school_details WHERE district IS NOT NULL AND TRIM(district) != ''
+                            UNION
+                            SELECT LOWER(TRIM(city)) AS dist FROM {DB_SCHEMA}.school_details WHERE city IS NOT NULL AND TRIM(city) != ''
+                            UNION
+                            SELECT LOWER(TRIM(city)) AS dist FROM {DB_SCHEMA}.all_website_inquiries WHERE city IS NOT NULL AND TRIM(city) != ''
+                            UNION
+                            SELECT LOWER(TRIM(city)) AS dist FROM {DB_SCHEMA}.public_contributions WHERE city IS NOT NULL AND TRIM(city) != ''
+                            UNION
+                            SELECT LOWER(TRIM(dispatch_location)) AS dist FROM {DB_SCHEMA}.ngo_requests WHERE dispatch_location IS NOT NULL AND TRIM(dispatch_location) != ''
+                        )
+                        SELECT COUNT(DISTINCT dist) as cnt FROM operational_districts
+                    """)
+                    row = cur.fetchone()
+                    districts_count = row["cnt"] if row and row["cnt"] else 68
                 except Exception:
                     districts_count = 68
-
-                carbon_emissions_mt = int(round(laptops_received * 0.26)) if laptops_received else 5390
 
         return {
             "laptopsDistributed": laptops_distributed,
             "laptopsReceived": laptops_received,
             "beneficiariesImpacted": beneficiaries_impacted,
+            "beneficiariesPerLaptop": 20,
             "femalesReached": preliminary_stats["females_reached"],
             "schoolsReached": preliminary_stats["schools_reached"],
             "statesImpacted": states_impacted,
-            "districtsImpacted": districts_count if districts_count > 20 else 68,
+            "districtsImpacted": districts_count,
             "ngoPartners": ngo_partners_count,
             "carbonEmissionsAvoided": carbon_emissions_mt,
+            "carbonEmissionsAvoidedKg": carbon_emissions_kg,
+            "carbonMultiplierKg": carbon_multiplier_kg,
             "statesList": states_list,
             "Resource Waste Reduction": resource_waste,
             "Plastic": plastic,
