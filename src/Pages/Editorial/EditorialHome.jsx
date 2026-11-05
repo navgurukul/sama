@@ -64,7 +64,7 @@ export default function EditorialHome() {
     states: '22',
     districts: '68',
     carbon: '5,803+ MT',
-    ngos: '88+',
+    ngos: '89',
     progressPercent: '42%',
   });
 
@@ -88,7 +88,7 @@ export default function EditorialHome() {
             states: `${data.statesImpacted || 22}`,
             districts: `${data.districtsImpacted || 68}`,
             carbon: `${Number(carbonMt).toLocaleString('en-IN')}+ MT`,
-            ngos: `${data.ngoPartners || 88}+`,
+            ngos: `${data.ngoPartners || 89}`,
             progressPercent: `${pct}%`,
           });
         }
