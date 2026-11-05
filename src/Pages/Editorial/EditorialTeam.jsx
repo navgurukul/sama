@@ -79,7 +79,10 @@ export default function EditorialTeam() {
 </article>
     </div>
     <div className="tm-grid">
-      <div></div>
+      <article className="tm tm--l reveal">
+        <figure className="tm__img"><img src="/img/ganesh.jpg" alt="Ganesh" /></figure>
+        <div className="tm__txt"><span className="tm__name">Ganesh</span><blockquote>“I believe the next great innovator is sitting in a village without a device today. My job is to make sure they don’t wait long.”</blockquote></div>
+      </article>
       <div className="growing reveal"><p className="hand hand--big">And still<br />growing.</p><img src="https://navgurukul.github.io/sama-website/assets/team-growing-illustration-BHZiAJLZ.jpg" alt="" /></div>
     </div>
   </div>
