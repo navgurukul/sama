@@ -234,8 +234,20 @@ const Overview = () => {
           params.append("endDate", appliedEndDate);
         }
 
-        const res = await fetch(`${apiBase}/api/public/donor-stats?${params.toString()}`);
-        const data = await res.json();
+        let data;
+        try {
+          const res = await fetch(`${apiBase}/api/public/donor-stats?${params.toString()}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          data = await res.json();
+        } catch (fetchErr) {
+          if (apiBase !== "https://sama-api.thesama.in") {
+            const fallbackRes = await fetch(`https://sama-api.thesama.in/api/public/donor-stats?${params.toString()}`);
+            if (!fallbackRes.ok) throw fetchErr;
+            data = await fallbackRes.json();
+          } else {
+            throw fetchErr;
+          }
+        }
 
         if (isActive) {
           setStats({
