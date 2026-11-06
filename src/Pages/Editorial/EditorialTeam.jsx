@@ -134,23 +134,12 @@ export default function EditorialTeam() {
       </article>
     </div>
 
-    {/* Closing Banner: And still growing */}
-    <div className="growing-banner reveal">
-      <div className="growing-banner__txt">
-        <span className="eyebrow" style={{ color: 'var(--green)' }}>Building the movement</span>
-        <p className="hand hand--big" style={{ marginTop: '10px' }}>And still growing.</p>
-        <p className="growing-banner__p">
-          From our refurbishment workshops to learning centres across India, our work grows with every laptop restored. No one here works just one job. Every device and community we touch brings more hands, more hope, and more stories to Sama.
-        </p>
-        <div style={{ marginTop: '22px' }}>
-          <Link className="bracket bracket--solid" to="/contact?topic=Something+else#contact-form">
-            Work with us <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </Link>
-        </div>
+    {/* Closing: And still growing */}
+    <div className="growing-row reveal">
+      <div className="growing">
+        <p className="hand hand--big">And still<br />growing.</p>
+        <img src="/img/team-growing-illustration.jpg" alt="Team Sama walking together towards a sunrise" />
       </div>
-      <figure className="growing-banner__img">
-        <img src="https://navgurukul.github.io/sama-website/assets/team-growing-illustration-BHZiAJLZ.jpg" alt="Team Sama walking together towards a sunrise" />
-      </figure>
     </div>
   </div>
 </section>
