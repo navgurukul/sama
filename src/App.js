@@ -191,6 +191,8 @@ function App() {
               />
 
               <Route path="/donorcsr/*" element={<EditorialNotFound />} />
+              <Route path="/donarcsr" element={<Navigate to="/donorcsr/overview" replace />} />
+              <Route path="/donarcsr/*" element={<Navigate to="/donorcsr/overview" replace />} />
 
 
               <Route path="/question-selection" element={
