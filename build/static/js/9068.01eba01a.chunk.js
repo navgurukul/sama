@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunksama=self.webpackChunksama||[]).push([[9068],{29068:(e,a,r)=>{r.r(a),r.d(a,{default:()=>l});var s=r(65043),c=r(73216),n=r(6967),t=r(70579);const l=()=>{const e=(0,c.zy)(),a=(0,c.Zp)();(0,s.useEffect)(()=>{"learningAnalytics"!==new URLSearchParams(e.search).get("metric")&&a("/afe?metric=learningAnalytics",{replace:!0})},[e,a]);return"learningAnalytics"!==new URLSearchParams(e.search).get("metric")?null:(0,t.jsx)(n.default,{})}}}]);
+//# sourceMappingURL=9068.01eba01a.chunk.js.map
