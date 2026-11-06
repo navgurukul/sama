@@ -81,9 +81,65 @@ export default function EditorialTeam() {
     <div className="tm-grid">
       <article className="tm tm--l reveal">
         <figure className="tm__img"><img src="/img/ganesh.jpg" alt="Ganesh" /></figure>
-        <div className="tm__txt"><span className="tm__name">Ganesh</span><blockquote>“I believe the next great innovator is sitting in a village without a device today. My job is to make sure they don’t wait long.”</blockquote></div>
+        <div className="tm__txt"><span className="tm__name">Ganesh</span><blockquote>“Talent is everywhere. Access is not. I am building Sama so a million women and young people never wait to build what they dream.”</blockquote></div>
       </article>
-      <div className="growing reveal"><p className="hand hand--big">And still<br />growing.</p><img src="https://navgurukul.github.io/sama-website/assets/team-growing-illustration-BHZiAJLZ.jpg" alt="" /></div>
+      <article className="tm tm--r reveal">
+        <figure className="tm__img"><img src="/img/aditya.jpg" alt="Aditya Gupta" /></figure>
+        <div className="tm__txt"><span className="tm__name">Aditya Gupta</span><blockquote>“What a company calls waste, an underserved community calls hope. We (SAMA) have turned e-waste into 15,000+ opportunities, and we are turning those opportunities into livelihoods, with 1 million women and youth by 2030 as our measure.”</blockquote></div>
+      </article>
+    </div>
+
+    <p className="hand hand--big reveal" style={{ marginTop: '48px', marginBottom: '16px' }}>Voices of Sama.<br />What a refurbished laptop makes possible.</p>
+    <div className="tm-grid">
+      <article className="tm tm--l reveal">
+        <figure className="tm__img"><img src="/img/pradeep.jpg" alt="Pradeep Kumar" /></figure>
+        <div className="tm__txt"><span className="tm__name">Pradeep Kumar</span><blockquote>“Being part of Sama since its beginning has been a journey of learning, building and growing together. Every laptop we refurbish is more than just a device; it's an opportunity to connect someone with a world of possibilities.”</blockquote></div>
+      </article>
+      <article className="tm tm--r reveal">
+        <figure className="tm__img"><img src="/img/rinki.jpg" alt="Rinki" /></figure>
+        <div className="tm__txt"><span className="tm__name">Rinki</span><blockquote>“For me, Sama is where technology finds its purpose and every effort becomes a possibility. What begins with a laptop can become a learner's first step towards a world of opportunities. Being part of this journey reminds me that the most meaningful impact is not measured by what we build, but by the futures we help unlock.”</blockquote></div>
+      </article>
+    </div>
+
+    <div className="tm-grid">
+      <article className="tm tm--l reveal">
+        <figure className="tm__img"><img src="/img/anumita.jpg" alt="Anumita" /></figure>
+        <div className="tm__txt"><span className="tm__name">Anumita</span><blockquote>“Every device can become an opportunity. Every connection can create a possibility. Every learner deserves a chance to grow.”</blockquote></div>
+      </article>
+      <article className="tm tm--r reveal">
+        <figure className="tm__img"><img src="/img/vishwanath.jpg" alt="Vishwanath" /></figure>
+        <div className="tm__txt"><span className="tm__name">Vishwanath</span><blockquote>“For us, every laptop is the beginning of a new story. A chance to learn, grow and discover new possibilities. A step towards confidence, skills and independence. A new opportunity to build a brighter future.”</blockquote></div>
+      </article>
+    </div>
+
+    <div className="tm-grid">
+      <article className="tm tm--l reveal">
+        <figure className="tm__img"><img src="/img/bhavesh.jpg" alt="Bhavesh" /></figure>
+        <div className="tm__txt"><span className="tm__name">Bhavesh</span><blockquote>“Every laptop I refurbish is more than just a repaired device; it's an opportunity for someone to learn, grow, and build a better future.”</blockquote></div>
+      </article>
+      <article className="tm tm--r reveal">
+        <figure className="tm__img"><img src="/img/shivansh.jpg" alt="Shivansh" /></figure>
+        <div className="tm__txt"><span className="tm__name">Shivansh</span><blockquote>“I started my journey with confusion about my future, but every opportunity and experience has helped me discover my potential. Today, I'm not just learning new skills; I'm becoming more confident about the person I want to be.”</blockquote></div>
+      </article>
+    </div>
+
+    <div className="tm-grid">
+      <article className="tm tm--l reveal">
+        <figure className="tm__img"><img src="/img/jyoti.jpg" alt="Jyoti" /></figure>
+        <div className="tm__txt"><span className="tm__name">Jyoti</span><blockquote>“Turning old laptops into new opportunities, one device at a time. Every repair is a step towards making technology accessible to everyone.”</blockquote></div>
+      </article>
+      <article className="tm tm--r reveal">
+        <figure className="tm__img"><img src="/img/ragini.jpg" alt="Ragini" /></figure>
+        <div className="tm__txt"><span className="tm__name">Ragini</span><blockquote>“Every opportunity teaches us something new, helps us grow, and brings us one step closer to our dreams.”</blockquote></div>
+      </article>
+    </div>
+
+    {/* Closing: And still growing */}
+    <div className="growing-row reveal">
+      <div className="growing">
+        <p className="hand hand--big">And still<br />growing.</p>
+        <img src="/img/team-growing-illustration.jpg" alt="Team Sama walking together towards a sunrise" />
+      </div>
     </div>
   </div>
 </section>
