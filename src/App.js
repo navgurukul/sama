@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { ThemeProvider } from "@mui/material/styles";
 import theme from './theme/theme';
@@ -21,72 +21,77 @@ import EditorialDonate from './Pages/Editorial/EditorialDonate';
 import EditorialContact from './Pages/Editorial/EditorialContact';
 import EditorialCorporate from './Pages/Editorial/EditorialCorporate';
 import EditorialNotFound from './Pages/Editorial/EditorialNotFound';
-import DashboardPage from './Dashboard';
-import MacRearch from './Pages/LaptopTagging';
-import DataAssignmentForm from './Pages/LaptopData/LaptopData';
-import './App.css';
-import LaptopInventory from './Pages/LaptopData/index';
-import Userdata from ".././src/OppsFiles/UserDetails/Userdata"
 import EditorialLogin from './Pages/Login/OpsLogin/EditorialLogin';
-import PrivateRoute from './Privaterouts';
+import EditorialSignup from './Pages/Login/OpsLogin/EditorialSignup';
 import EditorialNgoRegistration from './Pages/NGORegistration/EditorialNgoRegistration';
-import CompanySelection from './Pages/NGORegistration/CompanySelection';
-import DonorManager from './Pages/NGORegistration/DonorManager';
-import SchoolManagement from './components/OPS/SchoolManagement';
-import AdminNgo from './Dashboard/AdminNgo';
-// import NgoDetails from './Dashboard/AdminNgo/NgoDetails';
-import TabNavigation from './Dashboard/AdminNgo/TabNavigation';
-import BeneficiaryData from './Dashboard/BeneficiaryData';
-import MouUpload from "./Pages/MouUpload/MouUpload";
-import BeneficiaryProfileSub from "./Dashboard/BeneficiaryData/BeneficiaryProfile"
-import BeneficiaryProfile from "./Pages/BeneficiaryProfile/BeneficiaryProfile";
-import EditUserPage from './Dashboard/BeneficiaryData/EditUser/EditUserPage';
-import DocumentUpload from './components/DocumentUpload/DocumentUpload';
-import AttentionNeeded from './components/AttentionNeeded/AttentionNeeded';
-import DocumentReupload from './Pages/DocumentReupload/DocumentReupload';
-// import Ngodashboard from "./components/NgoDashboard/ngodashboard";
-import PreliminaryForm from './Dashboard/Preliminary/PreliminaryForm';
-import Preliminary from './Dashboard/Preliminary';
-import MonthlyReportingForm from './Dashboard/Preliminary/MothlyReportingForm';
-import MonthlyForm from './Dashboard/MontlyReport/MothlyForm';
-import SubmissionSuccess from './components/SubmissionSuccess/SubmissionSuccess';
-import MonthlyEditForm from './Dashboard/MontlyReport/MonthlyEditForm';
-import NgoProfile from './Dashboard/AdminNgo/NgoProfile';
-import MonthlyReportData from './Dashboard/Preliminary/MonthlyReportData';
 import PrivacyPolicy from './Pages/PrivacyPolicy';
-import LandingPage from './Pages/LandingPage';
-import YearlyEditForm from './Dashboard/YearlyReport/YearlyEditForm';
-import YearlyForm from './Dashboard/YearlyReport/YearlyForm';
-import YearlyReportingForm from './Dashboard/Preliminary/YearlyReportingForm';
-import YearlyReportData from './Dashboard/Preliminary/YearlyReportData';
-import CorporateteDb from './CorporateDB/index';
-import DetailView from './CorporateDB/MonthlyImpact/DetailView';
-import NGOTrainedTable from './CorporateDB/YearlyImpact/NGOTrainedTable';
 import OurGoverment from './Pages/About/OurGoverment/OurGoverment';
 import CommunityPartners from './Pages/About/CommunityPartners/CommunityPartners';
-import CorporatePartner from './Pages/About/CorporatePartner/CorporatePartner';
-import OpsWelcome from './components/OPS/OpsWelcome';
-import SeoRouter from './components/SEO/SeoRouter';
-import Audit from './components/OPS/LaptopAudit';
-import LearningAnalytics from './components/OPS/LearningAnalytics';
-import LaptopDetails from "./Pages/LaptopTagging/LaptopDetails";
-import LaptopStageDetails from './Pages/LaptopTagging/LaptopStageDetails';
-import EditorialSignup from './Pages/Login/OpsLogin/EditorialSignup';
-import Registration from './components/Header/Registration';
-import Sidebar from './Pages/DonerCSR/SideBar';
-import Overview from './Pages/DonerCSR/Overview';
-import LaptopPipeline from './Pages/DonerCSR/LaptopPipeline';
-import LaptopTracking from './Pages/DonerCSR/LaptopTracking';
-import ImpactAnalysis from './Pages/DonerCSR/ImpactAnalysis';
-import Ngopartner from './Pages/DonerCSR/Ngopartner';
-import Pickup from './Pages/Pickup/Pickup';
+import PrivateRoute from './Privaterouts';
 import DonorCSRRoute from './Pages/DonerCSR/DonorCSRRoute';
-import PickupRequestByDoner from './Pages/Pickup/PickupRequestByDoner';
-import TableView from './Pages/DonerCSR/TableView';
-import RMSDetails from './Pages/DonerCSR/RMSDetails';
-import RMSControlPanel from './Pages/DonerCSR/RMSControlPanel';
-import RMSDonorDetailsNGOs from './Pages/DonerCSR/RMSDonorDetailsNGOs';
-import RMSDonorDetailsDonors from './Pages/DonerCSR/RMSDonorDetailsDonors';
+import SeoRouter from './components/SEO/SeoRouter';
+import './App.css';
+
+// Lazy-load heavy internal operational dashboards & admin tools on demand
+const DashboardPage = lazy(() => import('./Dashboard'));
+const MacRearch = lazy(() => import('./Pages/LaptopTagging'));
+const DataAssignmentForm = lazy(() => import('./Pages/LaptopData/LaptopData'));
+const LaptopInventory = lazy(() => import('./Pages/LaptopData/index'));
+const Userdata = lazy(() => import('.././src/OppsFiles/UserDetails/Userdata'));
+const CompanySelection = lazy(() => import('./Pages/NGORegistration/CompanySelection'));
+const DonorManager = lazy(() => import('./Pages/NGORegistration/DonorManager'));
+const SchoolManagement = lazy(() => import('./components/OPS/SchoolManagement'));
+const AdminNgo = lazy(() => import('./Dashboard/AdminNgo'));
+const TabNavigation = lazy(() => import('./Dashboard/AdminNgo/TabNavigation'));
+const BeneficiaryData = lazy(() => import('./Dashboard/BeneficiaryData'));
+const MouUpload = lazy(() => import('./Pages/MouUpload/MouUpload'));
+const BeneficiaryProfileSub = lazy(() => import('./Dashboard/BeneficiaryData/BeneficiaryProfile'));
+const BeneficiaryProfile = lazy(() => import('./Pages/BeneficiaryProfile/BeneficiaryProfile'));
+const EditUserPage = lazy(() => import('./Dashboard/BeneficiaryData/EditUser/EditUserPage'));
+const DocumentUpload = lazy(() => import('./components/DocumentUpload/DocumentUpload'));
+const AttentionNeeded = lazy(() => import('./components/AttentionNeeded/AttentionNeeded'));
+const DocumentReupload = lazy(() => import('./Pages/DocumentReupload/DocumentReupload'));
+const PreliminaryForm = lazy(() => import('./Dashboard/Preliminary/PreliminaryForm'));
+const Preliminary = lazy(() => import('./Dashboard/Preliminary'));
+const MonthlyReportingForm = lazy(() => import('./Dashboard/Preliminary/MothlyReportingForm'));
+const MonthlyForm = lazy(() => import('./Dashboard/MontlyReport/MothlyForm'));
+const SubmissionSuccess = lazy(() => import('./components/SubmissionSuccess/SubmissionSuccess'));
+const MonthlyEditForm = lazy(() => import('./Dashboard/MontlyReport/MonthlyEditForm'));
+const NgoProfile = lazy(() => import('./Dashboard/AdminNgo/NgoProfile'));
+const MonthlyReportData = lazy(() => import('./Dashboard/Preliminary/MonthlyReportData'));
+const YearlyEditForm = lazy(() => import('./Dashboard/YearlyReport/YearlyEditForm'));
+const YearlyForm = lazy(() => import('./Dashboard/YearlyReport/YearlyForm'));
+const YearlyReportingForm = lazy(() => import('./Dashboard/Preliminary/YearlyReportingForm'));
+const YearlyReportData = lazy(() => import('./Dashboard/Preliminary/YearlyReportData'));
+const CorporateteDb = lazy(() => import('./CorporateDB/index'));
+const DetailView = lazy(() => import('./CorporateDB/MonthlyImpact/DetailView'));
+const NGOTrainedTable = lazy(() => import('./CorporateDB/YearlyImpact/NGOTrainedTable'));
+const OpsWelcome = lazy(() => import('./components/OPS/OpsWelcome'));
+const Audit = lazy(() => import('./components/OPS/LaptopAudit'));
+const LearningAnalytics = lazy(() => import('./components/OPS/LearningAnalytics'));
+const LaptopDetails = lazy(() => import('./Pages/LaptopTagging/LaptopDetails'));
+const LaptopStageDetails = lazy(() => import('./Pages/LaptopTagging/LaptopStageDetails'));
+const Registration = lazy(() => import('./components/Header/Registration'));
+const Sidebar = lazy(() => import('./Pages/DonerCSR/SideBar'));
+const Overview = lazy(() => import('./Pages/DonerCSR/Overview'));
+const LaptopPipeline = lazy(() => import('./Pages/DonerCSR/LaptopPipeline'));
+const LaptopTracking = lazy(() => import('./Pages/DonerCSR/LaptopTracking'));
+const ImpactAnalysis = lazy(() => import('./Pages/DonerCSR/ImpactAnalysis'));
+const Ngopartner = lazy(() => import('./Pages/DonerCSR/Ngopartner'));
+const Pickup = lazy(() => import('./Pages/Pickup/Pickup'));
+const PickupRequestByDoner = lazy(() => import('./Pages/Pickup/PickupRequestByDoner'));
+const TableView = lazy(() => import('./Pages/DonerCSR/TableView'));
+const RMSDetails = lazy(() => import('./Pages/DonerCSR/RMSDetails'));
+const RMSControlPanel = lazy(() => import('./Pages/DonerCSR/RMSControlPanel'));
+const RMSDonorDetailsNGOs = lazy(() => import('./Pages/DonerCSR/RMSDonorDetailsNGOs'));
+const RMSDonorDetailsDonors = lazy(() => import('./Pages/DonerCSR/RMSDonorDetailsDonors'));
+
+const RouteLoadingFallback = () => (
+  <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ width: 36, height: 36, border: '3px solid rgba(92,120,90,0.2)', borderTopColor: '#5C785A', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+  </div>
+);
 
 function App() {
   return (
@@ -96,8 +101,8 @@ function App() {
         <div className="layout">
           <SmartHeader />
           <div className="content">
-            {" "}
-            <Routes>
+            <Suspense fallback={<RouteLoadingFallback />}>
+              <Routes>
               <Route path="/" element={<EditorialHome />} />
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/sama-saathi" element={<SamaSaathi />} />
@@ -369,7 +374,7 @@ function App() {
               <Route path="/pickup" element={<Pickup />} />
               <Route path="*" element={<EditorialNotFound />} />
             </Routes>
-            {" "}
+            </Suspense>
           </div>
           <SmartFooter />
         </div>

@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/6578.ccbb8aec.chunk.css","mappings":"AAAA,cACI,aAAc,CACd,yBAA2B,CAC3B,2BAEJ","sources":["Dashboard/AdminNgo/style.css"],"sourcesContent":[".detailHeader{\n    color: #828282;\n    font-weight: 700 !important;\n    margin-bottom: 8px !important;\n\n}"],"names":[],"sourceRoot":""}
