@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
 import BookCallModal from '../../components/Editorial/BookCallModal';
+import ActiveLearnersMap from '../../components/Editorial/ActiveLearnersMap';
 import { NGO_PARTNERS } from '../../data/ngoPartners';
 import '../../styles/editorial.css';
 
@@ -163,6 +164,9 @@ export default function EditorialHome() {
     </div>
   </div>
 </section>
+
+{/* Live Telemetry Map · RMS Fleet Overview */}
+<ActiveLearnersMap />
 
 {/*  A6 · How it works  */}
 <section className="sec how-band" id="how">

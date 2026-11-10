@@ -1897,3 +1897,1060 @@ section[id]{scroll-margin-top:90px}
     gap: 8px;
   }
 }
+
+/* ==========================================================================
+   Active Learners Live Telemetry Map Section (RMS Integration)
+   ========================================================================== */
+.telemetry-section {
+  padding: 80px 0;
+  background: var(--bg);
+}
+
+.telemetry-dashboard-shell {
+  background: var(--footer);
+  border: 1px solid rgba(245, 242, 237, 0.12);
+  border-radius: 28px;
+  padding: 44px 40px;
+  box-shadow: 0 24px 64px -16px rgba(44, 35, 22, 0.35);
+  color: var(--paper);
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.telemetry-shell-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.telemetry-status-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.live-fleet-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 12px;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 999px;
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.fleet-ping-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: live-ping-glow 1.5s infinite;
+}
+
+@keyframes live-ping-glow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.6;
+  }
+}
+
+.last-signal-text {
+  color: #9c9265;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--sans);
+}
+
+.telemetry-shell-title {
+  margin-top: 18px;
+  color: var(--paper) !important;
+  font-family: var(--sans);
+  font-size: clamp(2.3rem, 4vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.telemetry-shell-title em {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  color: #34d399 !important;
+}
+
+.telemetry-shell-subtitle {
+  margin-top: 14px;
+  color: rgba(245, 242, 237, 0.72) !important;
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 620px;
+}
+
+/* Main 2-Column Dashboard Grid */
+.telemetry-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.48fr) minmax(320px, 0.95fr);
+  gap: 20px;
+  margin-top: 36px;
+}
+
+/* Left Column: Interactive Map Box */
+.telemetry-map-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #231b11;
+  border: 1px solid rgba(245, 242, 237, 0.12);
+  border-radius: 20px;
+  padding: 20px;
+  position: relative;
+  min-height: 580px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.telemetry-map-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.telemetry-toggle-group {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(245, 242, 237, 0.05);
+  border: 1px solid rgba(245, 242, 237, 0.12);
+}
+
+.telemetry-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: transparent;
+  color: #9c9265;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  border: 0;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.telemetry-toggle-btn:hover {
+  color: var(--paper);
+}
+
+.telemetry-toggle-btn.is-active {
+  background: var(--paper);
+  color: var(--footer);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.toggle-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.toggle-dot.green {
+  background: #10b981;
+}
+
+.telemetry-toggle-btn.is-active .toggle-dot.green {
+  background: #059669;
+}
+
+.toggle-dot.blue {
+  background: #38bdf8;
+}
+
+.telemetry-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(245, 242, 237, 0.05);
+  border: 1px solid rgba(245, 242, 237, 0.12);
+  min-width: 200px;
+}
+
+.telemetry-search-icon {
+  width: 13px;
+  height: 13px;
+  color: #9c9265;
+}
+
+.telemetry-search-input {
+  border: 0;
+  background: transparent;
+  color: var(--paper);
+  font-size: 12px;
+  font-family: var(--sans);
+  outline: none;
+  width: 100%;
+}
+
+.telemetry-search-input::placeholder {
+  color: #9c9265;
+  opacity: 0.65;
+  font-size: 11px;
+}
+
+.telemetry-search-clear {
+  color: #9c9265;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  display: flex;
+  align-items: center;
+}
+
+.telemetry-search-clear:hover {
+  color: var(--paper);
+}
+
+/* Selected Hub Pill Banner */
+.selected-hub-pill-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(226, 183, 116, 0.14);
+  border: 1px solid rgba(226, 183, 116, 0.35);
+  margin-bottom: 8px;
+}
+
+.selected-hub-pill-banner .banner-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selected-hub-pill-banner .banner-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e2b774;
+  box-shadow: 0 0 6px #e2b774;
+}
+
+.selected-hub-pill-banner .banner-city {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--paper);
+}
+
+.selected-hub-pill-banner .banner-val {
+  font-size: 12px;
+  color: #9c9265;
+  font-family: var(--sans);
+}
+
+.selected-hub-pill-banner .banner-close-btn {
+  background: transparent;
+  border: 0;
+  color: #9c9265;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.selected-hub-pill-banner .banner-close-btn:hover {
+  color: var(--paper);
+}
+
+/* Map Viewport & SVG Container */
+.telemetry-map-viewport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex: 1;
+  padding: 16px 8px;
+  position: relative;
+  overflow: visible;
+}
+
+.editorial-india-map {
+  position: relative;
+  width: min(100%, 460px);
+  aspect-ratio: 611.86 / 695.702;
+  margin: 0 auto;
+}
+
+.editorial-india-map__svg {
+  width: 100%;
+  height: 100%;
+}
+
+.editorial-india-map__svg svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.45));
+}
+
+.editorial-india-map__svg svg path {
+  fill: #8fa896 !important;
+  stroke: #231b11 !important;
+  stroke-width: 0.85 !important;
+  transition: fill 200ms ease, stroke 200ms ease;
+}
+
+.editorial-india-map__svg svg path:hover {
+  fill: #a2bba9 !important;
+}
+
+.editorial-india-map__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 10;
+}
+
+/* Telemetry Nodes & Waves */
+.telemetry-node {
+  transition: transform 180ms ease;
+}
+
+.telemetry-node.is-standby .telemetry-core {
+  fill: rgba(235, 231, 224, 0.35);
+  stroke: rgba(44, 35, 22, 0.6);
+  stroke-width: 0.5;
+  transition: fill 180ms ease, r 180ms ease;
+}
+
+.telemetry-node.is-active .telemetry-core {
+  fill: #10b981;
+  stroke: #ffffff;
+  stroke-width: 0.85;
+}
+
+.telemetry-node.is-mega-hub .telemetry-core {
+  fill: #38bdf8;
+  stroke: #ffffff;
+  stroke-width: 1.1;
+}
+
+.telemetry-node.is-hovered .telemetry-core,
+.telemetry-node.is-selected .telemetry-core {
+  fill: #ffffff;
+  stroke: #10b981;
+  stroke-width: 2.2;
+}
+
+.telemetry-node.is-mega-hub.is-hovered .telemetry-core,
+.telemetry-node.is-mega-hub.is-selected .telemetry-core {
+  stroke: #38bdf8;
+}
+
+.telemetry-wave {
+  fill: none;
+  pointer-events: none;
+  animation: telemetry-radar-pulse 3s cubic-bezier(0.2, 0.8, 0.25, 1) infinite;
+  transform-origin: center;
+}
+
+.telemetry-wave.wave-primary {
+  stroke: #10b981;
+}
+
+.telemetry-wave.wave-secondary {
+  stroke: #34d399;
+}
+
+.telemetry-node.is-mega-hub .telemetry-wave.wave-primary {
+  stroke: #38bdf8;
+}
+
+.telemetry-node.is-mega-hub .telemetry-wave.wave-secondary {
+  stroke: #0284c7;
+}
+
+@keyframes telemetry-radar-pulse {
+  0% {
+    r: 2px;
+    opacity: 0.95;
+    stroke-width: 2.2px;
+  }
+  60% {
+    opacity: 0.45;
+  }
+  100% {
+    r: 26px;
+    opacity: 0;
+    stroke-width: 0.3px;
+  }
+}
+
+/* Tooltip for Telemetry Pins */
+.telemetry-pin-tooltip {
+  position: absolute;
+  transform: translate(-50%, -125%);
+  pointer-events: none;
+  z-index: 50;
+  white-space: nowrap;
+  animation: telemetry-tooltip-pop 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes telemetry-tooltip-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -110%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -125%) scale(1);
+  }
+}
+
+.telemetry-pin-tooltip__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid rgba(226, 183, 116, 0.35);
+  border-radius: 12px;
+  background: rgba(35, 27, 17, 0.96);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55), 0 0 12px rgba(16, 185, 129, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.telemetry-pin-tooltip__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.telemetry-beacon {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.telemetry-beacon.is-live {
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.telemetry-beacon.is-standby {
+  background: #9c9265;
+}
+
+.telemetry-pin-tooltip__title {
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.telemetry-pin-tooltip__metrics {
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid rgba(245, 242, 237, 0.1);
+  padding-top: 4px;
+}
+
+.telemetry-pin-tooltip__metrics .metric-chip {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 11px;
+}
+
+.telemetry-pin-tooltip__metrics .lbl {
+  color: #9c9265;
+}
+
+.telemetry-pin-tooltip__metrics .val {
+  color: var(--paper);
+  font-family: var(--sans);
+  font-weight: 700;
+}
+
+.telemetry-pin-tooltip__metrics .val.live {
+  color: #34d399;
+}
+
+/* Map Legend */
+.telemetry-map-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  font-size: 11px;
+  color: #9c9265;
+  padding-top: 12px;
+  border-top: 1px solid rgba(245, 242, 237, 0.12);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot.green {
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+.legend-dot.blue {
+  background: #38bdf8;
+}
+
+.legend-dot.amber {
+  background: #e2b774;
+  box-shadow: 0 0 6px #e2b774;
+}
+
+/* Right Column: Stacked Analytics Cards */
+.telemetry-stats-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.telemetry-stat-card {
+  background: #362b1c;
+  border: 1px solid rgba(245, 242, 237, 0.12);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Card 1: Online Right Now */
+.online-now-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-top-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #34d399;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.status-ping-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: live-ping-glow 1.5s infinite;
+}
+
+.card-big-number {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  margin-top: 12px;
+  font-family: var(--sans);
+}
+
+.card-big-number .digit-val {
+  font-size: clamp(3.2rem, 5vw, 4.4rem);
+  font-weight: 700;
+  color: var(--paper);
+  letter-spacing: -1.5px;
+  line-height: 1;
+}
+
+.card-big-number .plus-sign {
+  font-size: 32px;
+  font-weight: 400;
+  color: #34d399;
+  margin-left: 2px;
+}
+
+.card-description {
+  margin-top: 12px;
+  color: rgba(245, 242, 237, 0.72);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.sub-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.sub-metric-box {
+  background: rgba(44, 35, 22, 0.45);
+  border: 1px solid rgba(245, 242, 237, 0.1);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.sub-metric-box .sub-num {
+  display: block;
+  font-family: var(--sans);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--paper);
+  line-height: 1.1;
+}
+
+.sub-metric-box .sub-lbl {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #9c9265;
+}
+
+.locations-progress-block {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(245, 242, 237, 0.12);
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9c9265;
+  margin-bottom: 7px;
+}
+
+.progress-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(245, 242, 237, 0.1);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #34d399;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+  transition: width 400ms ease;
+}
+
+/* Card 2: Busiest Hubs Leaderboard */
+.busiest-hubs-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-table-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.table-title {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--paper);
+}
+
+.table-meta {
+  font-size: 11px;
+  color: #9c9265;
+}
+
+.hubs-leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.leaderboard-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 160ms ease;
+}
+
+.leaderboard-row:hover,
+.leaderboard-row.is-selected {
+  background: rgba(245, 242, 237, 0.08);
+}
+
+.leaderboard-row.is-selected {
+  border: 1px solid rgba(226, 183, 116, 0.4);
+}
+
+.row-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.row-rank {
+  font-size: 11px;
+  color: #9c9265;
+  width: 14px;
+}
+
+.row-city {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--paper);
+  margin-left: 8px;
+}
+
+.row-count {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: #34d399;
+}
+
+.row-bar-track {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(245, 242, 237, 0.08);
+  width: 100%;
+  overflow: hidden;
+}
+
+.row-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #34d399;
+  opacity: 0.85;
+}
+
+/* Bottom Stream Ribbon */
+.telemetry-stream-ribbon {
+  margin-top: 24px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #231b11;
+  border: 1px solid rgba(245, 242, 237, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  overflow: hidden;
+}
+
+.stream-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 700;
+  color: #e2b774;
+  letter-spacing: 0.8px;
+  flex-shrink: 0;
+}
+
+.stream-ticker-wrap {
+  overflow: hidden;
+  width: 100%;
+  mask-image: linear-gradient(90deg, transparent 0%, black 5%, black 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 5%, black 95%, transparent 100%);
+}
+
+.stream-ticker-track {
+  display: flex;
+  gap: 14px;
+  animation: ticker-slide 34s linear infinite;
+  white-space: nowrap;
+}
+
+.stream-ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.stream-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(245, 242, 237, 0.05);
+  color: var(--paper);
+  font-size: 11px;
+  border: 1px solid rgba(245, 242, 237, 0.12);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.stream-pill:hover {
+  background: rgba(245, 242, 237, 0.1);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.stream-pill .pill-city {
+  font-weight: 600;
+}
+
+.stream-pill .pill-dot {
+  color: #9c9265;
+  font-size: 8px;
+}
+
+.stream-pill .pill-active {
+  color: #34d399;
+  font-weight: 700;
+}
+
+/* Footnote */
+.telemetry-footnote {
+  margin-top: 18px;
+  font-size: 12px;
+  color: #9c9265;
+  line-height: 1.5;
+}
+
+.telemetry-footnote strong {
+  color: var(--paper);
+}
+
+/* ==========================================================================
+   Comprehensive Multi-Device Responsiveness for Live Telemetry Dashboard
+   ========================================================================== */
+
+/* Laptops & Small Desktops (<= 1100px) */
+@media (max-width: 1100px) {
+  .telemetry-dashboard-shell {
+    padding: 36px 30px;
+    border-radius: 24px;
+  }
+  .telemetry-main-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 1fr);
+    gap: 16px;
+  }
+  .editorial-india-map {
+    width: min(100%, 420px);
+  }
+}
+
+/* Tablets & iPads (<= 980px) */
+@media (max-width: 980px) {
+  .telemetry-section {
+    padding: 60px 0;
+  }
+  .telemetry-dashboard-shell {
+    padding: 28px 22px;
+    border-radius: 20px;
+  }
+  .telemetry-main-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 28px;
+  }
+  .telemetry-map-card {
+    min-height: auto;
+    padding: 18px 16px;
+  }
+  .editorial-india-map {
+    width: min(100%, 420px);
+  }
+  .telemetry-stats-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .telemetry-stream-ribbon {
+    margin-top: 20px;
+  }
+}
+
+/* Small Tablets & Large Mobiles (<= 768px) */
+@media (max-width: 768px) {
+  .telemetry-section {
+    padding: 48px 0;
+  }
+  .telemetry-dashboard-shell {
+    padding: 24px 16px;
+    border-radius: 18px;
+  }
+  .telemetry-stats-column {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .telemetry-shell-title {
+    font-size: clamp(1.85rem, 5vw, 2.6rem);
+    margin-top: 14px;
+  }
+  .telemetry-shell-subtitle {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  .editorial-india-map {
+    width: min(100%, 380px);
+  }
+}
+
+/* Standard Mobile Phones (<= 640px) */
+@media (max-width: 640px) {
+  .telemetry-dashboard-shell {
+    padding: 20px 14px;
+    border-radius: 16px;
+  }
+  .telemetry-map-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .telemetry-toggle-group {
+    width: 100%;
+    display: flex;
+  }
+  .telemetry-toggle-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+  .telemetry-search-bar {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 14px;
+  }
+  .telemetry-search-input {
+    font-size: 13px;
+  }
+  .selected-hub-pill-banner {
+    flex-wrap: wrap;
+    padding: 7px 10px;
+    gap: 8px;
+  }
+  .selected-hub-pill-banner .banner-info {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .editorial-india-map {
+    width: 100%;
+    max-width: 350px;
+  }
+  .telemetry-map-legend {
+    gap: 10px 14px;
+    font-size: 10.5px;
+    padding-top: 10px;
+  }
+  .telemetry-stat-card {
+    padding: 18px 14px;
+    border-radius: 16px;
+  }
+  .card-big-number .digit-val {
+    font-size: 38px;
+  }
+  .card-big-number .plus-sign {
+    font-size: 26px;
+  }
+  .card-description {
+    font-size: 12.5px;
+  }
+  .sub-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .sub-metric-box {
+    padding: 10px 12px;
+  }
+  .sub-metric-box .sub-num {
+    font-size: 20px;
+  }
+  .sub-metric-box .sub-lbl {
+    font-size: 10.5px;
+  }
+  .leaderboard-row {
+    padding: 7px 6px;
+  }
+  .telemetry-stream-ribbon {
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 14px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .stream-badge {
+    font-size: 9.5px;
+  }
+  .stream-ticker-wrap {
+    width: 100%;
+  }
+}
+
+/* Compact / Small Mobile Phones (<= 380px) */
+@media (max-width: 380px) {
+  .telemetry-dashboard-shell {
+    padding: 16px 10px;
+    border-radius: 14px;
+  }
+  .telemetry-shell-title {
+    font-size: 22px;
+  }
+  .telemetry-shell-subtitle {
+    font-size: 12.5px;
+  }
+  .editorial-india-map {
+    max-width: 290px;
+  }
+  .sub-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .card-big-number .digit-val {
+    font-size: 32px;
+  }
+}
+

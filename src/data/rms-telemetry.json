@@ -1,0 +1,2489 @@
+{
+  "metrics": {
+    "total_devices": 9113,
+    "offline_devices": 15,
+    "inactive_7_days": 7403,
+    "inactive_30_days": 5465,
+    "never_synced": 207,
+    "active_last_7_days": 1710,
+    "mapped_devices": 8824,
+    "unmapped_devices": 289
+  },
+  "clusters": [
+    {
+      "id": "cluster_13_77.6",
+      "lat": 12.9716,
+      "lng": 77.5946,
+      "name": "Bengaluru",
+      "total": 2688,
+      "active": 163,
+      "inactive": 2525
+    },
+    {
+      "id": "cluster_18.5_73.9",
+      "lat": 18.5196,
+      "lng": 73.8554,
+      "name": "Pune, Maharashtra, IN",
+      "total": 2243,
+      "active": 205,
+      "inactive": 2038
+    },
+    {
+      "id": "cluster_17.4_78.5",
+      "lat": 17.384,
+      "lng": 78.4564,
+      "name": "Hyderabad, Telangana, IN",
+      "total": 851,
+      "active": 449,
+      "inactive": 402
+    },
+    {
+      "id": "cluster_18.6_73.8",
+      "lat": 18.6229,
+      "lng": 73.807,
+      "name": "Pimpri, Maharashtra, IN",
+      "total": 651,
+      "active": 37,
+      "inactive": 614
+    },
+    {
+      "id": "cluster_19.1_72.9",
+      "lat": 19.0728,
+      "lng": 72.8826,
+      "name": "Mumbai, Maharashtra, IN",
+      "total": 391,
+      "active": 47,
+      "inactive": 344
+    },
+    {
+      "id": "cluster_13.1_80.3",
+      "lat": 13.0878,
+      "lng": 80.2785,
+      "name": "Chennai, Tamil Nadu, IN",
+      "total": 186,
+      "active": 64,
+      "inactive": 122
+    },
+    {
+      "id": "cluster_30.9_75.9",
+      "lat": 30.912,
+      "lng": 75.8538,
+      "name": "Ludhiana, Punjab, IN",
+      "total": 74,
+      "active": 17,
+      "inactive": 57
+    },
+    {
+      "id": "cluster_18_79.6",
+      "lat": 18,
+      "lng": 79.5833,
+      "name": "Warangal, Telangana, IN",
+      "total": 72,
+      "active": 55,
+      "inactive": 17
+    },
+    {
+      "id": "cluster_18.4_79.1",
+      "lat": 18.4392,
+      "lng": 79.1286,
+      "name": "Kar\u012bmnagar, Telangana, IN",
+      "total": 68,
+      "active": 42,
+      "inactive": 26
+    },
+    {
+      "id": "cluster_17.7_83.3",
+      "lat": 17.7331,
+      "lng": 83.3162,
+      "name": "Rasap\u016bdipalem, Andhra Pradesh, IN",
+      "total": 67,
+      "active": 53,
+      "inactive": 14
+    },
+    {
+      "id": "cluster_22.7_75.8",
+      "lat": 22.7179,
+      "lng": 75.8333,
+      "name": "Indore, Madhya Pradesh, IN",
+      "total": 64,
+      "active": 7,
+      "inactive": 57
+    },
+    {
+      "id": "cluster_23.3_77.4",
+      "lat": 23.2547,
+      "lng": 77.4029,
+      "name": "Bhopal, Madhya Pradesh, IN",
+      "total": 57,
+      "active": 9,
+      "inactive": 48
+    },
+    {
+      "id": "cluster_28.7_77.2",
+      "lat": 28.6519,
+      "lng": 77.2315,
+      "name": "Delhi, Delhi, IN",
+      "total": 51,
+      "active": 14,
+      "inactive": 37
+    },
+    {
+      "id": "cluster_16.5_80.6",
+      "lat": 16.5074,
+      "lng": 80.6466,
+      "name": "Vijayawada, Andhra Pradesh, IN",
+      "total": 43,
+      "active": 17,
+      "inactive": 26
+    },
+    {
+      "id": "cluster_25.6_85.1",
+      "lat": 25.5941,
+      "lng": 85.1356,
+      "name": "Patna, Bihar, IN",
+      "total": 38,
+      "active": 8,
+      "inactive": 30
+    },
+    {
+      "id": "cluster_26.9_75.8",
+      "lat": 26.9196,
+      "lng": 75.7878,
+      "name": "Jaipur, Rajasthan, IN",
+      "total": 35,
+      "active": 6,
+      "inactive": 29
+    },
+    {
+      "id": "cluster_21.1_79.1",
+      "lat": 21.1463,
+      "lng": 79.0849,
+      "name": "Nagpur, Maharashtra, IN",
+      "total": 35,
+      "active": 9,
+      "inactive": 26
+    },
+    {
+      "id": "cluster_30.3_76.4",
+      "lat": 30.3362,
+      "lng": 76.3922,
+      "name": "Pati\u0101la, Punjab, IN",
+      "total": 33,
+      "active": 10,
+      "inactive": 23
+    },
+    {
+      "id": "cluster_18.7_78.1",
+      "lat": 18.6715,
+      "lng": 78.0988,
+      "name": "Niz\u0101m\u0101b\u0101d, Telangana, IN",
+      "total": 33,
+      "active": 29,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_16.4_78.1",
+      "lat": 16.3674,
+      "lng": 78.0689,
+      "name": "Wanparti, Telangana, IN",
+      "total": 32,
+      "active": 31,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_19.1_78",
+      "lat": 19.1129,
+      "lng": 77.9634,
+      "name": "Bhaisa, Telangana, IN",
+      "total": 25,
+      "active": 19,
+      "inactive": 6
+    },
+    {
+      "id": "cluster_24.8_93.9",
+      "lat": 24.8081,
+      "lng": 93.9442,
+      "name": "Imphal, Manipur, IN",
+      "total": 23,
+      "active": 8,
+      "inactive": 15
+    },
+    {
+      "id": "cluster_17.3_78.6",
+      "lat": 17.3477,
+      "lng": 78.5576,
+      "name": "Lal Bahadur Nagar, Telangana, IN",
+      "total": 21,
+      "active": 9,
+      "inactive": 12
+    },
+    {
+      "id": "cluster_21.2_72.8",
+      "lat": 21.1959,
+      "lng": 72.8302,
+      "name": "Surat, Gujarat, IN",
+      "total": 20,
+      "active": 1,
+      "inactive": 19
+    },
+    {
+      "id": "cluster_13.2_77.7",
+      "lat": 13.2465,
+      "lng": 77.7118,
+      "name": "Devanahalli, Karnataka, IN",
+      "total": 20,
+      "active": 0,
+      "inactive": 20
+    },
+    {
+      "id": "cluster_26.8_80.9",
+      "lat": 26.8393,
+      "lng": 80.9231,
+      "name": "Lucknow, Uttar Pradesh, IN",
+      "total": 19,
+      "active": 4,
+      "inactive": 15
+    },
+    {
+      "id": "cluster_25.3_83",
+      "lat": 25.3176,
+      "lng": 82.9739,
+      "name": "Varanasi",
+      "total": 19,
+      "active": 5,
+      "inactive": 14
+    },
+    {
+      "id": "cluster_20.3_85.8",
+      "lat": 20.2724,
+      "lng": 85.8338,
+      "name": "Bhubaneswar, Odisha, IN",
+      "total": 18,
+      "active": 5,
+      "inactive": 13
+    },
+    {
+      "id": "cluster_19.9_75.3",
+      "lat": 19.8776,
+      "lng": 75.3423,
+      "name": "Aurangabad, Maharashtra, IN",
+      "total": 17,
+      "active": 1,
+      "inactive": 16
+    },
+    {
+      "id": "cluster_19.2_73",
+      "lat": 19.2472,
+      "lng": 73.0152,
+      "name": "Kalher, Maharashtra, IN",
+      "total": 17,
+      "active": 7,
+      "inactive": 10
+    },
+    {
+      "id": "cluster_28.7_77.4",
+      "lat": 28.6654,
+      "lng": 77.4391,
+      "name": "Gh\u0101zi\u0101b\u0101d, Uttar Pradesh, IN",
+      "total": 17,
+      "active": 1,
+      "inactive": 16
+    },
+    {
+      "id": "cluster_17.2_80.1",
+      "lat": 17.2477,
+      "lng": 80.1437,
+      "name": "Khammam, Telangana, IN",
+      "total": 17,
+      "active": 10,
+      "inactive": 7
+    },
+    {
+      "id": "cluster_17.5_78.3",
+      "lat": 17.4931,
+      "lng": 78.302,
+      "name": "Serilingampalle, Telangana, IN",
+      "total": 17,
+      "active": 13,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_13.1_79.9",
+      "lat": 13.1438,
+      "lng": 79.9089,
+      "name": "Tiruvallur, Tamil Nadu, IN",
+      "total": 16,
+      "active": 14,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_29.4_77",
+      "lat": 29.3875,
+      "lng": 76.9682,
+      "name": "Panipat, Haryana, IN",
+      "total": 16,
+      "active": 10,
+      "inactive": 6
+    },
+    {
+      "id": "cluster_19.1_74.7",
+      "lat": 19.0946,
+      "lng": 74.7384,
+      "name": "Ahilyanagar, Maharashtra, IN",
+      "total": 16,
+      "active": 0,
+      "inactive": 16
+    },
+    {
+      "id": "cluster_20.5_72.9",
+      "lat": 20.5087,
+      "lng": 72.9457,
+      "name": "P\u0101rdi, Gujarat, IN",
+      "total": 16,
+      "active": 0,
+      "inactive": 16
+    },
+    {
+      "id": "cluster_8.8_78.1",
+      "lat": 8.7674,
+      "lng": 78.1342,
+      "name": "Thoothukudi, Tamil Nadu, IN",
+      "total": 15,
+      "active": 6,
+      "inactive": 9
+    },
+    {
+      "id": "cluster_21.2_81.6",
+      "lat": 21.2333,
+      "lng": 81.6333,
+      "name": "Raipur, Chhattisgarh, IN",
+      "total": 15,
+      "active": 8,
+      "inactive": 7
+    },
+    {
+      "id": "cluster_26.2_91.7",
+      "lat": 26.1844,
+      "lng": 91.7458,
+      "name": "Guwahati, Assam, IN",
+      "total": 14,
+      "active": 4,
+      "inactive": 10
+    },
+    {
+      "id": "cluster_17.5_78.5",
+      "lat": 17.5043,
+      "lng": 78.5426,
+      "name": "Secunderabad, Telangana, IN",
+      "total": 14,
+      "active": 9,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_23_72.6",
+      "lat": 23.0258,
+      "lng": 72.5873,
+      "name": "Ahmedabad, Gujarat, IN",
+      "total": 14,
+      "active": 5,
+      "inactive": 9
+    },
+    {
+      "id": "cluster_26.5_80.3",
+      "lat": 26.4652,
+      "lng": 80.3498,
+      "name": "Kanpur, Uttar Pradesh, IN",
+      "total": 13,
+      "active": 3,
+      "inactive": 10
+    },
+    {
+      "id": "cluster_9.9_78.1",
+      "lat": 9.919,
+      "lng": 78.1195,
+      "name": "Madurai, Tamil Nadu, IN",
+      "total": 13,
+      "active": 8,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_30.5_76.6",
+      "lat": 30.4786,
+      "lng": 76.5928,
+      "name": "Rajpura, Punjab, IN",
+      "total": 13,
+      "active": 5,
+      "inactive": 8
+    },
+    {
+      "id": "cluster_12.7_80",
+      "lat": 12.6918,
+      "lng": 79.9766,
+      "name": "Chengalpattu, Tamil Nadu, IN",
+      "total": 12,
+      "active": 4,
+      "inactive": 8
+    },
+    {
+      "id": "cluster_11_77",
+      "lat": 11.0055,
+      "lng": 76.9661,
+      "name": "Coimbatore, Tamil Nadu, IN",
+      "total": 12,
+      "active": 4,
+      "inactive": 8
+    },
+    {
+      "id": "cluster_12.2_79.1",
+      "lat": 12.2266,
+      "lng": 79.0746,
+      "name": "Tiruvannamalai, Tamil Nadu, IN",
+      "total": 11,
+      "active": 7,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_22.6_88.4",
+      "lat": 22.5626,
+      "lng": 88.363,
+      "name": "Kolkata, West Bengal, IN",
+      "total": 11,
+      "active": 2,
+      "inactive": 9
+    },
+    {
+      "id": "cluster_10.1_78.8",
+      "lat": 10.0662,
+      "lng": 78.7678,
+      "name": "K\u0101raikkudi, Tamil Nadu, IN",
+      "total": 11,
+      "active": 9,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_25.6_91.9",
+      "lat": 25.5689,
+      "lng": 91.8831,
+      "name": "Shillong, Meghalaya, IN",
+      "total": 11,
+      "active": 0,
+      "inactive": 11
+    },
+    {
+      "id": "cluster_28.6_77.6",
+      "lat": 28.5526,
+      "lng": 77.554,
+      "name": "D\u0101dri, Uttar Pradesh, IN",
+      "total": 11,
+      "active": 1,
+      "inactive": 10
+    },
+    {
+      "id": "cluster_29_77",
+      "lat": 28.9948,
+      "lng": 77.0194,
+      "name": "Son\u012bpat, Haryana, IN",
+      "total": 11,
+      "active": 7,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_17_73.3",
+      "lat": 16.9915,
+      "lng": 73.3102,
+      "name": "Ratnagiri, Maharashtra, IN",
+      "total": 11,
+      "active": 0,
+      "inactive": 11
+    },
+    {
+      "id": "cluster_11.4_79.7",
+      "lat": 11.3993,
+      "lng": 79.6914,
+      "name": "Chidambaram, Tamil Nadu, IN",
+      "total": 10,
+      "active": 6,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_18.8_79.5",
+      "lat": 18.8008,
+      "lng": 79.4521,
+      "name": "R\u0101mgundam, Telangana, IN",
+      "total": 10,
+      "active": 4,
+      "inactive": 6
+    },
+    {
+      "id": "cluster_17.3_76.8",
+      "lat": 17.3358,
+      "lng": 76.8376,
+      "name": "Kalaburagi, Karnataka, IN",
+      "total": 10,
+      "active": 1,
+      "inactive": 9
+    },
+    {
+      "id": "cluster_23.3_85.3",
+      "lat": 23.3432,
+      "lng": 85.3094,
+      "name": "Ranchi, Jharkhand, IN",
+      "total": 9,
+      "active": 1,
+      "inactive": 8
+    },
+    {
+      "id": "cluster_11.8_79.8",
+      "lat": 11.7562,
+      "lng": 79.7669,
+      "name": "Cuddalore, Tamil Nadu, IN",
+      "total": 9,
+      "active": 1,
+      "inactive": 8
+    },
+    {
+      "id": "cluster_20_73.8",
+      "lat": 19.9973,
+      "lng": 73.791,
+      "name": "Nashik, Maharashtra, IN",
+      "total": 9,
+      "active": 1,
+      "inactive": 8
+    },
+    {
+      "id": "cluster_16.3_80.5",
+      "lat": 16.2997,
+      "lng": 80.4573,
+      "name": "Guntur, Andhra Pradesh, IN",
+      "total": 9,
+      "active": 5,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_17.7_80.9",
+      "lat": 17.6685,
+      "lng": 80.8889,
+      "name": "Bhadr\u0101chalam, Telangana, IN",
+      "total": 9,
+      "active": 7,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_17.5_78.8",
+      "lat": 17.4917,
+      "lng": 78.823,
+      "name": "G\u016bd\u016br, Telangana, IN",
+      "total": 9,
+      "active": 9,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_19_81.4",
+      "lat": 18.9743,
+      "lng": 81.3989,
+      "name": "G\u012bdam, Chhattisgarh, IN",
+      "total": 9,
+      "active": 5,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_8.6_78.1",
+      "lat": 8.5714,
+      "lng": 78.1199,
+      "name": "Kayalpattinam, Tamil Nadu, IN",
+      "total": 8,
+      "active": 5,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_22.8_86.2",
+      "lat": 22.8028,
+      "lng": 86.1855,
+      "name": "Jamshedpur, Jharkhand, IN",
+      "total": 8,
+      "active": 3,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_15.3_75.1",
+      "lat": 15.3478,
+      "lng": 75.1338,
+      "name": "Hubballi, Karnataka, IN",
+      "total": 8,
+      "active": 1,
+      "inactive": 7
+    },
+    {
+      "id": "cluster_23.8_91.3",
+      "lat": 23.8315,
+      "lng": 91.2868,
+      "name": "Agartala",
+      "total": 8,
+      "active": 3,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_18.1_83.4",
+      "lat": 18.1169,
+      "lng": 83.4115,
+      "name": "Vizianagaram, Andhra Pradesh, IN",
+      "total": 8,
+      "active": 4,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_22.2_75.1",
+      "lat": 22.2357,
+      "lng": 75.0892,
+      "name": "Man\u0101war, Madhya Pradesh, IN",
+      "total": 8,
+      "active": 0,
+      "inactive": 8
+    },
+    {
+      "id": "cluster_10_76.3",
+      "lat": 9.9667,
+      "lng": 76.2667,
+      "name": "Kanayannur, Kerala, IN",
+      "total": 7,
+      "active": 3,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_28.6_77.2",
+      "lat": 28.6214,
+      "lng": 77.2148,
+      "name": "New Delhi, Delhi, IN",
+      "total": 7,
+      "active": 0,
+      "inactive": 7
+    },
+    {
+      "id": "cluster_28.5_77",
+      "lat": 28.4601,
+      "lng": 77.0263,
+      "name": "Gurugram, Haryana, IN",
+      "total": 7,
+      "active": 1,
+      "inactive": 6
+    },
+    {
+      "id": "cluster_27.2_78",
+      "lat": 27.1767,
+      "lng": 78.0081,
+      "name": "Agra",
+      "total": 7,
+      "active": 1,
+      "inactive": 6
+    },
+    {
+      "id": "cluster_17.6_79.7",
+      "lat": 17.5835,
+      "lng": 79.6586,
+      "name": "Tor\u016br, Telangana, IN",
+      "total": 7,
+      "active": 7,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_17.3_78.5",
+      "lat": 17.3102,
+      "lng": 78.4997,
+      "name": "B\u0101l\u0101pur, Telangana, IN",
+      "total": 7,
+      "active": 2,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_16.7_78",
+      "lat": 16.7438,
+      "lng": 77.986,
+      "name": "Mahb\u016bbnagar, Telangana, IN",
+      "total": 7,
+      "active": 7,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_28.6_76.7",
+      "lat": 28.6063,
+      "lng": 76.6565,
+      "name": "Jhajjar, Haryana, IN",
+      "total": 7,
+      "active": 0,
+      "inactive": 7
+    },
+    {
+      "id": "cluster_19.2_73.1",
+      "lat": 19.2437,
+      "lng": 73.1355,
+      "name": "Kaly\u0101n, Maharashtra, IN",
+      "total": 6,
+      "active": 1,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_8.7_77.7",
+      "lat": 8.7274,
+      "lng": 77.6838,
+      "name": "Tirunelveli, Tamil Nadu, IN",
+      "total": 6,
+      "active": 4,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_10.8_79.1",
+      "lat": 10.7852,
+      "lng": 79.1391,
+      "name": "Thanjavur, Tamil Nadu, IN",
+      "total": 6,
+      "active": 1,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_19_74",
+      "lat": 19.0444,
+      "lng": 73.9555,
+      "name": "Kalamb, Maharashtra, IN",
+      "total": 6,
+      "active": 0,
+      "inactive": 6
+    },
+    {
+      "id": "cluster_12.8_79.7",
+      "lat": 12.8352,
+      "lng": 79.7001,
+      "name": "Kanchipuram, Tamil Nadu, IN",
+      "total": 6,
+      "active": 3,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_30.8_75.2",
+      "lat": 30.8138,
+      "lng": 75.1688,
+      "name": "Moga, Punjab, IN",
+      "total": 6,
+      "active": 3,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_17.3_80",
+      "lat": 17.3097,
+      "lng": 80.0356,
+      "name": "Tirumalayapalem, Telangana, IN",
+      "total": 6,
+      "active": 4,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_14.7_77.6",
+      "lat": 14.6778,
+      "lng": 77.6081,
+      "name": "Anantapur, Andhra Pradesh, IN",
+      "total": 6,
+      "active": 6,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_19.3_73.1",
+      "lat": 19.3002,
+      "lng": 73.0588,
+      "name": "Bhiwandi, Maharashtra, IN",
+      "total": 5,
+      "active": 1,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_23.8_86.4",
+      "lat": 23.7976,
+      "lng": 86.4299,
+      "name": "Dhanbad, Jharkhand, IN",
+      "total": 5,
+      "active": 2,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_16.7_74.2",
+      "lat": 16.6956,
+      "lng": 74.2317,
+      "name": "Kolh\u0101pur, Maharashtra, IN",
+      "total": 5,
+      "active": 0,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_11_79.4",
+      "lat": 10.9621,
+      "lng": 79.3912,
+      "name": "Kumbakonam, Tamil Nadu, IN",
+      "total": 5,
+      "active": 4,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_25.4_81.8",
+      "lat": 25.4448,
+      "lng": 81.8432,
+      "name": "Prayagraj, Uttar Pradesh, IN",
+      "total": 5,
+      "active": 3,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_12.9_79.3",
+      "lat": 12.9247,
+      "lng": 79.3333,
+      "name": "R\u0101nipet, Tamil Nadu, IN",
+      "total": 5,
+      "active": 4,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_11.9_79.8",
+      "lat": 11.9338,
+      "lng": 79.8298,
+      "name": "Puducherry, Puducherry, IN",
+      "total": 5,
+      "active": 0,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_22.7_75.9",
+      "lat": 22.7196,
+      "lng": 75.8577,
+      "name": "Indore",
+      "total": 5,
+      "active": 2,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_30.7_76.8",
+      "lat": 30.7363,
+      "lng": 76.7884,
+      "name": "Chandigarh, Chandigarh, IN",
+      "total": 5,
+      "active": 2,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_12.3_76.6",
+      "lat": 12.2979,
+      "lng": 76.6393,
+      "name": "Mysuru, Karnataka, IN",
+      "total": 5,
+      "active": 1,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_17.4_78.6",
+      "lat": 17.4058,
+      "lng": 78.5591,
+      "name": "Uppal Kalan, Telangana, IN",
+      "total": 5,
+      "active": 3,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_17.1_79.3",
+      "lat": 17.0544,
+      "lng": 79.2671,
+      "name": "Nalgonda, Telangana, IN",
+      "total": 5,
+      "active": 0,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_16.4_80.6",
+      "lat": 16.4308,
+      "lng": 80.5682,
+      "name": "Mangalagiri, Andhra Pradesh, IN",
+      "total": 5,
+      "active": 4,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_12.9_74.9",
+      "lat": 12.9172,
+      "lng": 74.856,
+      "name": "Mangaluru, Karnataka, IN",
+      "total": 5,
+      "active": 0,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_19.1_82",
+      "lat": 19.0814,
+      "lng": 82.0213,
+      "name": "Jagdalpur, Chhattisgarh, IN",
+      "total": 5,
+      "active": 0,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_20.9_77.8",
+      "lat": 20.9333,
+      "lng": 77.75,
+      "name": "Amravati, Maharashtra, IN",
+      "total": 5,
+      "active": 0,
+      "inactive": 5
+    },
+    {
+      "id": "cluster_24_85.3",
+      "lat": 24.0078,
+      "lng": 85.2567,
+      "name": "Masr\u0101tu, Jharkhand, IN",
+      "total": 4,
+      "active": 0,
+      "inactive": 4
+    },
+    {
+      "id": "cluster_19_78.6",
+      "lat": 19.0484,
+      "lng": 78.6414,
+      "name": "Timm\u0101pur, Telangana, IN",
+      "total": 4,
+      "active": 1,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_19.1_79.5",
+      "lat": 19.0558,
+      "lng": 79.493,
+      "name": "Bellampalli, Telangana, IN",
+      "total": 4,
+      "active": 1,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_17_82.2",
+      "lat": 16.9604,
+      "lng": 82.2381,
+      "name": "K\u0101kin\u0101da, Andhra Pradesh, IN",
+      "total": 4,
+      "active": 1,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_22.3_73.2",
+      "lat": 22.3072,
+      "lng": 73.1812,
+      "name": "Vadodara",
+      "total": 4,
+      "active": 1,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_17.4_78.4",
+      "lat": 17.4038,
+      "lng": 78.3988,
+      "name": "Shaikpet, Telangana, IN",
+      "total": 4,
+      "active": 1,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_21.6_76.9",
+      "lat": 21.5533,
+      "lng": 76.8897,
+      "name": "Dh\u0101rni, Madhya Pradesh, IN",
+      "total": 4,
+      "active": 4,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_18.8_78.9",
+      "lat": 18.7947,
+      "lng": 78.9166,
+      "name": "Jagti\u0101l, Telangana, IN",
+      "total": 4,
+      "active": 3,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_17.5_73.2",
+      "lat": 17.4841,
+      "lng": 73.1929,
+      "name": "Guh\u0101gar, Maharashtra, IN",
+      "total": 4,
+      "active": 2,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_8.6_77.9",
+      "lat": 8.6293,
+      "lng": 77.9128,
+      "name": "Srivaikuntam, Tamil Nadu, IN",
+      "total": 3,
+      "active": 3,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_19_73.9",
+      "lat": 19.0044,
+      "lng": 73.9435,
+      "name": "Manchar, Maharashtra, IN",
+      "total": 3,
+      "active": 1,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_27.9_78.1",
+      "lat": 27.8815,
+      "lng": 78.0746,
+      "name": "Al\u012bgarh, Uttar Pradesh, IN",
+      "total": 3,
+      "active": 1,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_30.7_76.7",
+      "lat": 30.68,
+      "lng": 76.7221,
+      "name": "Mohali, Punjab, IN",
+      "total": 3,
+      "active": 0,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_9.2_77.4",
+      "lat": 9.1749,
+      "lng": 77.398,
+      "name": "Puliyankudi, Tamil Nadu, IN",
+      "total": 3,
+      "active": 3,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_17.7_83.2",
+      "lat": 17.6868,
+      "lng": 83.2185,
+      "name": "Visakhapatnam",
+      "total": 3,
+      "active": 1,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_15.5_78.5",
+      "lat": 15.478,
+      "lng": 78.4836,
+      "name": "Nandy\u0101l, Andhra Pradesh, IN",
+      "total": 3,
+      "active": 3,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_13.3_77.8",
+      "lat": 13.2972,
+      "lng": 77.8018,
+      "name": "Vijayapura, Karnataka, IN",
+      "total": 3,
+      "active": 2,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_24.2_88.3",
+      "lat": 24.1839,
+      "lng": 88.2717,
+      "name": "Murshid\u0101b\u0101d, West Bengal, IN",
+      "total": 3,
+      "active": 0,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_17.7_75.9",
+      "lat": 17.6715,
+      "lng": 75.9104,
+      "name": "Sholapur, Maharashtra, IN",
+      "total": 3,
+      "active": 1,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_24.6_73.7",
+      "lat": 24.5858,
+      "lng": 73.7135,
+      "name": "Udaipur, Rajasthan, IN",
+      "total": 3,
+      "active": 2,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_19_73",
+      "lat": 19.0323,
+      "lng": 73.0428,
+      "name": "Artist Village, Maharashtra, IN",
+      "total": 3,
+      "active": 1,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_27.5_77.7",
+      "lat": 27.5035,
+      "lng": 77.6722,
+      "name": "Mathura, Uttar Pradesh, IN",
+      "total": 3,
+      "active": 0,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_19_73.1",
+      "lat": 18.9888,
+      "lng": 73.1101,
+      "name": "Panvel, Maharashtra, IN",
+      "total": 3,
+      "active": 0,
+      "inactive": 3
+    },
+    {
+      "id": "cluster_17.6_80.6",
+      "lat": 17.5511,
+      "lng": 80.6178,
+      "name": "Kottag\u016bdem, Telangana, IN",
+      "total": 3,
+      "active": 3,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_18.3_80.5",
+      "lat": 18.268,
+      "lng": 80.489,
+      "name": "Kamal\u0101puram, Telangana, IN",
+      "total": 3,
+      "active": 3,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_17.5_73.5",
+      "lat": 17.5334,
+      "lng": 73.5093,
+      "name": "Chipl\u016bn, Maharashtra, IN",
+      "total": 3,
+      "active": 3,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_25.2_75.8",
+      "lat": 25.1825,
+      "lng": 75.8391,
+      "name": "Kota, Rajasthan, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_23.4_85.3",
+      "lat": 23.4348,
+      "lng": 85.3206,
+      "name": "K\u0101nke, Jharkhand, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_18.5_73.7",
+      "lat": 18.5084,
+      "lng": 73.6892,
+      "name": "Pirangut, Maharashtra, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_18.8_73.9",
+      "lat": 18.7606,
+      "lng": 73.8635,
+      "name": "Ch\u0101kan, Maharashtra, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_13.1_79.7",
+      "lat": 13.0845,
+      "lng": 79.6705,
+      "name": "Arakkonam, Tamil Nadu, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_21.2_79.1",
+      "lat": 21.1555,
+      "lng": 79.0909,
+      "name": "Nagpur, Maharashtra, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_12.9_79.1",
+      "lat": 12.9184,
+      "lng": 79.1325,
+      "name": "Vellore, Tamil Nadu, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_13.1_80.2",
+      "lat": 13.0982,
+      "lng": 80.1615,
+      "name": "Ambattur, Tamil Nadu, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_8.9_78",
+      "lat": 8.9075,
+      "lng": 78.0217,
+      "name": "Ottapidaram, Tamil Nadu, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_31.6_74.9",
+      "lat": 31.6223,
+      "lng": 74.8753,
+      "name": "Amritsar, Punjab, IN",
+      "total": 2,
+      "active": 1,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_10.4_79.3",
+      "lat": 10.4236,
+      "lng": 79.3195,
+      "name": "Pattukkottai, Tamil Nadu, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_13_79.9",
+      "lat": 12.9676,
+      "lng": 79.942,
+      "name": "Sr\u012bperumb\u016bd\u016br, Tamil Nadu, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_16.7_78.9",
+      "lat": 16.6919,
+      "lng": 78.9207,
+      "name": "Devarkonda, Telangana, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_15.8_78.1",
+      "lat": 15.83,
+      "lng": 78.05,
+      "name": "Kurnool, undefined, India",
+      "total": 2,
+      "active": 2,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_18.1_78.8",
+      "lat": 18.1048,
+      "lng": 78.8486,
+      "name": "Siddipet, Telangana, IN",
+      "total": 2,
+      "active": 2,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_18.5_73.8",
+      "lat": 18.5131,
+      "lng": 73.7825,
+      "name": "Pune, Maharashtra, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_25.6_88.3",
+      "lat": 25.6344,
+      "lng": 88.3267,
+      "name": "K\u0101liy\u0101ganj, West Bengal, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_16.5_80.5",
+      "lat": 16.514,
+      "lng": 80.516,
+      "name": "Amaravati, Andhra Pradesh, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_21.5_70.5",
+      "lat": 21.5197,
+      "lng": 70.4598,
+      "name": "J\u016bn\u0101gadh, Gujarat, IN",
+      "total": 2,
+      "active": 1,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_13.1_78.1",
+      "lat": 13.1377,
+      "lng": 78.13,
+      "name": "Kol\u0101r, Karnataka, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_16.9_79.6",
+      "lat": 16.8722,
+      "lng": 79.5625,
+      "name": "Miryalaguda, Telangana, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_13_79.1",
+      "lat": 12.9695,
+      "lng": 79.1455,
+      "name": "K\u0101tp\u0101di, Tamil Nadu, IN",
+      "total": 2,
+      "active": 2,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_19.7_78.5",
+      "lat": 19.672,
+      "lng": 78.5359,
+      "name": "\u0100dil\u0101b\u0101d, Telangana, IN",
+      "total": 2,
+      "active": 1,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_22.5_78.4",
+      "lat": 22.4679,
+      "lng": 78.4331,
+      "name": "Pachmarhi, Madhya Pradesh, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_19.1_78.3",
+      "lat": 19.0968,
+      "lng": 78.3441,
+      "name": "Nirmal, Telangana, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_22.3_70.8",
+      "lat": 22.2916,
+      "lng": 70.7932,
+      "name": "R\u0101jkot, Gujarat, IN",
+      "total": 2,
+      "active": 0,
+      "inactive": 2
+    },
+    {
+      "id": "cluster_16.9_74.6",
+      "lat": 16.8544,
+      "lng": 74.5642,
+      "name": "S\u0101ngli, Maharashtra, IN",
+      "total": 2,
+      "active": 1,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_9.7_77.3",
+      "lat": 9.68333,
+      "lng": 77.26667,
+      "name": "Gudalur, undefined, India",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_10.1_76.5",
+      "lat": 10.1154,
+      "lng": 76.4761,
+      "name": "Perump\u0101v\u016br, Kerala, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_25.9_85.8",
+      "lat": 25.8622,
+      "lng": 85.7795,
+      "name": "Sam\u0101stipur, Bihar, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_32.3_75.7",
+      "lat": 32.2748,
+      "lng": 75.6529,
+      "name": "Path\u0101nkot, Punjab, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_13.3_78.2",
+      "lat": 13.3391,
+      "lng": 78.2117,
+      "name": "Sr\u012bniv\u0101spur, Karnataka, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_32.2_76.3",
+      "lat": 32.2201,
+      "lng": 76.3201,
+      "name": "Dharamsala, Himachal Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_30.8_77",
+      "lat": 30.8372,
+      "lng": 76.9614,
+      "name": "Parwanoo, Himachal Pradesh, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_27.6_75.1",
+      "lat": 27.6121,
+      "lng": 75.14,
+      "name": "S\u012bkar, Rajasthan, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_15.9_74.5",
+      "lat": 15.8521,
+      "lng": 74.5045,
+      "name": "Belagavi, Karnataka, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_28.4_77.3",
+      "lat": 28.4112,
+      "lng": 77.3132,
+      "name": "Faridabad, Haryana, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_28.3_76.8",
+      "lat": 28.3255,
+      "lng": 76.7786,
+      "name": "Pataudi, Haryana, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_11.9_79.5",
+      "lat": 11.9398,
+      "lng": 79.4924,
+      "name": "Villupuram, Tamil Nadu, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_28.6_77.3",
+      "lat": 28.579891,
+      "lng": 77.329864,
+      "name": "Noida, undefined, India",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_13.1_80.1",
+      "lat": 13.1147,
+      "lng": 80.1098,
+      "name": "Avadi, Tamil Nadu, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_11.7_78.2",
+      "lat": 11.6538,
+      "lng": 78.1554,
+      "name": "Salem, Tamil Nadu, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_25.1_81.1",
+      "lat": 25.0608,
+      "lng": 81.0996,
+      "name": "M\u0101nikpur, Uttar Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_12.7_79.3",
+      "lat": 12.6677,
+      "lng": 79.2853,
+      "name": "Arni, Tamil Nadu, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_12.8_78.7",
+      "lat": 12.7916,
+      "lng": 78.7164,
+      "name": "Ambur, Tamil Nadu, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_12.6_80.2",
+      "lat": 12.6209,
+      "lng": 80.1933,
+      "name": "Mahabalipuram, Tamil Nadu, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_25.3_82.5",
+      "lat": 25.3327,
+      "lng": 82.4664,
+      "name": "Gy\u0101npur, Uttar Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_18.4_76.6",
+      "lat": 18.3972,
+      "lng": 76.5678,
+      "name": "Latur, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_11.4_79.2",
+      "lat": 11.4039,
+      "lng": 79.2416,
+      "name": "Penn\u0101dam, Tamil Nadu, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_25.2_88.8",
+      "lat": 25.221,
+      "lng": 88.7773,
+      "name": "B\u0101lurgh\u0101t, West Bengal, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_25.8_82.7",
+      "lat": 25.7536,
+      "lng": 82.6869,
+      "name": "Jaunpur, Uttar Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_11.7_79",
+      "lat": 11.7338,
+      "lng": 78.9592,
+      "name": "Kallakurichi, Tamil Nadu, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_10.4_79.9",
+      "lat": 10.3721,
+      "lng": 79.8509,
+      "name": "Vedaraniyam, Tamil Nadu, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_30.8_75.5",
+      "lat": 30.7878,
+      "lng": 75.4739,
+      "name": "Jagraon, Punjab, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_21.9_87.5",
+      "lat": 21.8995,
+      "lng": 87.5379,
+      "name": "Egra, West Bengal, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_30.6_76.8",
+      "lat": 30.5881,
+      "lng": 76.845,
+      "name": "Basi, Punjab, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_31.3_75.6",
+      "lat": 31.3256,
+      "lng": 75.5792,
+      "name": "Jalandhar, Punjab, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_23.2_77.1",
+      "lat": 23.2,
+      "lng": 77.0833,
+      "name": "Sehore, Madhya Pradesh, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_23.2_80",
+      "lat": 23.167,
+      "lng": 79.9501,
+      "name": "Jabalpur, Madhya Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_30.1_74.2",
+      "lat": 30.1445,
+      "lng": 74.1955,
+      "name": "Abohar, Punjab, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_8.5_76.9",
+      "lat": 8.4855,
+      "lng": 76.9492,
+      "name": "Thiruvananthapuram, Kerala, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_9_76.9",
+      "lat": 9,
+      "lng": 76.93333,
+      "name": "Punalur, undefined, India",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_19.2_73.2",
+      "lat": 19.2,
+      "lng": 73.1667,
+      "name": "Ambarnath, Maharashtra, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_19.3_72.9",
+      "lat": 19.3016,
+      "lng": 72.8511,
+      "name": "Bhayandar, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_21.3_81.6",
+      "lat": 21.2514,
+      "lng": 81.6296,
+      "name": "Raipur",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_28.5_77.5",
+      "lat": 28.4962,
+      "lng": 77.536,
+      "name": "Greater Noida, Uttar Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_28.5_77.2",
+      "lat": 28.5025,
+      "lng": 77.2312,
+      "name": "Deoli, Delhi, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_17.3_78.4",
+      "lat": 17.2519,
+      "lng": 78.4184,
+      "name": "Shamshabad, Telangana, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_19.6_74.7",
+      "lat": 19.622,
+      "lng": 74.657,
+      "name": "Shrirampur, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_19.4_74.6",
+      "lat": 19.3907,
+      "lng": 74.6498,
+      "name": "R\u0101huri, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_20.5_85.9",
+      "lat": 20.465,
+      "lng": 85.8793,
+      "name": "Cuttack, Odisha, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_25.6_88.1",
+      "lat": 25.6128,
+      "lng": 88.1245,
+      "name": "R\u0101iganj, West Bengal, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_24.5_74.2",
+      "lat": 24.5023,
+      "lng": 74.1855,
+      "name": "Bhind\u0101r, Rajasthan, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_17.5_80.6",
+      "lat": 17.5233,
+      "lng": 80.6041,
+      "name": "Chunchupally, Telangana, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_17.2_80.8",
+      "lat": 17.2099,
+      "lng": 80.8364,
+      "name": "S\u0101dpalli, Telangana, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_22.3_74.4",
+      "lat": 22.3039,
+      "lng": 74.3557,
+      "name": "Alirajpur, Madhya Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_18.8_78.3",
+      "lat": 18.7928,
+      "lng": 78.2767,
+      "name": "\u0100m\u016br, Telangana, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_22.1_79.6",
+      "lat": 22.085,
+      "lng": 79.5504,
+      "name": "Seoni, Madhya Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_25_84.2",
+      "lat": 24.969,
+      "lng": 84.1964,
+      "name": "Madhurampur Dehri, Bihar, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_17.5_78.4",
+      "lat": 17.4849,
+      "lng": 78.4138,
+      "name": "Kukatpally, Telangana, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_20.8_76.7",
+      "lat": 20.7932,
+      "lng": 76.6992,
+      "name": "Shegaon, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_29.5_77.7",
+      "lat": 29.4709,
+      "lng": 77.7033,
+      "name": "Muzaffarnagar, Uttar Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_29.6_76.1",
+      "lat": 29.599,
+      "lng": 76.1193,
+      "name": "Narw\u0101na, Haryana, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_26.8_83.4",
+      "lat": 26.7663,
+      "lng": 83.3689,
+      "name": "Gorakhpur, Uttar Pradesh, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_28.8_78.8",
+      "lat": 28.8389,
+      "lng": 78.7768,
+      "name": "Mor\u0101d\u0101b\u0101d, Uttar Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_15.8_77.5",
+      "lat": 15.772,
+      "lng": 77.4835,
+      "name": "Emmigan\u016br, Andhra Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_14.5_78.8",
+      "lat": 14.48,
+      "lng": 78.8235,
+      "name": "Kadapa, Andhra Pradesh, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_17.6_78.5",
+      "lat": 17.6297,
+      "lng": 78.4814,
+      "name": "Medchal, Telangana, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_19.9_74.7",
+      "lat": 19.9267,
+      "lng": 74.7275,
+      "name": "Vaij\u0101pur, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_18.8_73.4",
+      "lat": 18.7527,
+      "lng": 73.4057,
+      "name": "Lonavla, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_17.9_79.9",
+      "lat": 17.92786,
+      "lng": 79.89227,
+      "name": "Warangal, undefined, India",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_19.2_77.3",
+      "lat": 19.1602,
+      "lng": 77.315,
+      "name": "Nanded, Maharashtra, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_27.6_78.1",
+      "lat": 27.5955,
+      "lng": 78.052,
+      "name": "H\u0101thras, Uttar Pradesh, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_10.3_79.2",
+      "lat": 10.2904,
+      "lng": 79.2016,
+      "name": "Peravurani, Tamil Nadu, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_20.3_75.7",
+      "lat": 20.303,
+      "lng": 75.6528,
+      "name": "Sillod, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_12.9_80.3",
+      "lat": 12.9495,
+      "lng": 80.2592,
+      "name": "Neelankarai, Tamil Nadu, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_26.7_88.4",
+      "lat": 26.71,
+      "lng": 88.4285,
+      "name": "Siliguri, West Bengal, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_9.9_76.7",
+      "lat": 9.8939,
+      "lng": 76.7222,
+      "name": "Thodupuzha, Kerala, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_15.3_74",
+      "lat": 15.275,
+      "lng": 73.9579,
+      "name": "Madgaon, Goa, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_24.8_94",
+      "lat": 24.81667,
+      "lng": 93.95,
+      "name": "Imphal, undefined, India",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_10.8_79.5",
+      "lat": 10.7702,
+      "lng": 79.4916,
+      "name": "Koradacheri, Tamil Nadu, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_29_77.7",
+      "lat": 28.98,
+      "lng": 77.7064,
+      "name": "Meerut, Uttar Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_28.9_76.6",
+      "lat": 28.8945,
+      "lng": 76.5892,
+      "name": "Rohtak, Haryana, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_23.5_74",
+      "lat": 23.51667,
+      "lng": 74,
+      "name": "Galiakot, undefined, India",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_22.6_73",
+      "lat": 22.5525,
+      "lng": 72.9552,
+      "name": "Anand, Gujarat, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_17.6_80.7",
+      "lat": 17.6018,
+      "lng": 80.7051,
+      "name": "P\u0101loncha, Telangana, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_18.3_78.4",
+      "lat": 18.31667,
+      "lng": 78.35,
+      "name": "Kamareddi, undefined, India",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_17.6_80",
+      "lat": 17.61667,
+      "lng": 80.01667,
+      "name": "Mahbubabad, undefined, India",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_20.5_74.5",
+      "lat": 20.5497,
+      "lng": 74.5346,
+      "name": "Malegaon, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_13.4_77.7",
+      "lat": 13.4351,
+      "lng": 77.7279,
+      "name": "Chik Ball\u0101pur, Karnataka, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_12.8_76.2",
+      "lat": 12.78278,
+      "lng": 76.24306,
+      "name": "Hole Narsipur, undefined, India",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_17_80",
+      "lat": 16.9985,
+      "lng": 79.9656,
+      "name": "Kod\u0101r, Telangana, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_13.4_77.9",
+      "lat": 13.389,
+      "lng": 77.8644,
+      "name": "Sidlaghatta, Karnataka, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_13_78.2",
+      "lat": 12.9912,
+      "lng": 78.178,
+      "name": "Bangarapet, Karnataka, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_19.4_79.5",
+      "lat": 19.3518,
+      "lng": 79.4832,
+      "name": "Koth\u0101pet, Telangana, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_19.5_72.8",
+      "lat": 19.4559,
+      "lng": 72.8114,
+      "name": "Vir\u0101r, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_16.2_80.6",
+      "lat": 16.2425,
+      "lng": 80.6398,
+      "name": "Thenali, Andhra Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_14.4_80",
+      "lat": 14.43333,
+      "lng": 79.96667,
+      "name": "Nellore, undefined, India",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_18.4_79.2",
+      "lat": 18.43333,
+      "lng": 79.15,
+      "name": "Karimnagar, undefined, India",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_14.5_80",
+      "lat": 14.4655,
+      "lng": 79.9874,
+      "name": "Nellore, undefined, India",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_13.2_78.4",
+      "lat": 13.1635,
+      "lng": 78.3935,
+      "name": "Mulb\u0101gal, Karnataka, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_9.1_77.3",
+      "lat": 9.0728,
+      "lng": 77.3415,
+      "name": "Kadayanallur, Tamil Nadu, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_19.4_73.2",
+      "lat": 19.3669,
+      "lng": 73.1758,
+      "name": "Padghe, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_17.9_78.1",
+      "lat": 17.8745,
+      "lng": 78.1002,
+      "name": "Chand\u016br, Telangana, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_17.7_79.2",
+      "lat": 17.71667,
+      "lng": 79.18333,
+      "name": "Jangaon, undefined, India",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_18.4_79.9",
+      "lat": 18.4287,
+      "lng": 79.8638,
+      "name": "Bhupalpally, Telangana, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_18.6_78.2",
+      "lat": 18.6042,
+      "lng": 78.2101,
+      "name": "Dichpally, Telangana, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_17.5_78.9",
+      "lat": 17.51083,
+      "lng": 78.88889,
+      "name": "Bhongir, undefined, India",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_18.5_74.6",
+      "lat": 18.4652,
+      "lng": 74.5837,
+      "name": "Daund, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_21.8_76.3",
+      "lat": 21.83333,
+      "lng": 76.33333,
+      "name": "Khandwa, undefined, India",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_23.5_80.5",
+      "lat": 23.46039,
+      "lng": 80.54071,
+      "name": "Chandia, undefined, India",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_18.8_73.3",
+      "lat": 18.7856,
+      "lng": 73.3459,
+      "name": "Khopoli, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_23.7_86.2",
+      "lat": 23.6693,
+      "lng": 86.1516,
+      "name": "Bok\u0101ro, Jharkhand, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_20.8_78.9",
+      "lat": 20.8051,
+      "lng": 78.8875,
+      "name": "Sindi, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_22.9_79.2",
+      "lat": 22.9494,
+      "lng": 79.1836,
+      "name": "Narsimhapur, Madhya Pradesh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_21.2_81.3",
+      "lat": 21.1915,
+      "lng": 81.2762,
+      "name": "Durg, Chhattisgarh, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_30.4_76.8",
+      "lat": 30.361,
+      "lng": 76.7978,
+      "name": "Amb\u0101la, Haryana, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_25.8_73.3",
+      "lat": 25.7728,
+      "lng": 73.3234,
+      "name": "P\u0101li, Rajasthan, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_15.6_73.8",
+      "lat": 15.5915,
+      "lng": 73.809,
+      "name": "Mapusa, Goa, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_26.2_81.2",
+      "lat": 26.2309,
+      "lng": 81.2331,
+      "name": "Raebareli, Uttar Pradesh, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_26.3_73",
+      "lat": 26.2684,
+      "lng": 73.0059,
+      "name": "Jodhpur, Rajasthan, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_22.5_70.1",
+      "lat": 22.4729,
+      "lng": 70.0667,
+      "name": "Jamnagar, Gujarat, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_18.5_73.5",
+      "lat": 18.5009,
+      "lng": 73.514,
+      "name": "Mulshi, Maharashtra, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_18.8_78.7",
+      "lat": 18.8215,
+      "lng": 78.7119,
+      "name": "Koratla, Telangana, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_27.5_75.6",
+      "lat": 27.466,
+      "lng": 75.5974,
+      "name": "Sri M\u0101dhopur, Rajasthan, IN",
+      "total": 1,
+      "active": 0,
+      "inactive": 1
+    },
+    {
+      "id": "cluster_11.2_75.8",
+      "lat": 11.248,
+      "lng": 75.7804,
+      "name": "Kozhikode, Kerala, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    },
+    {
+      "id": "cluster_8.9_76.6",
+      "lat": 8.8811,
+      "lng": 76.5847,
+      "name": "Kollam, Kerala, IN",
+      "total": 1,
+      "active": 1,
+      "inactive": 0
+    }
+  ]
+}
