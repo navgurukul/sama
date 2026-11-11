@@ -251,7 +251,7 @@ const TableView = ({
         try {
           let allData = [];
           let currentPage = 1;
-          const limit = 10000;
+          const limit = 500;
           let hasMore = true;
 
           while (hasMore && !isCancelled) {
@@ -292,7 +292,14 @@ const TableView = ({
               setFullLearningData(allData);
             }
 
-            if (rawDataChunk.length < limit) {
+            const totalPages = fullJson?.pagination?.totalPages;
+            if (totalPages !== undefined) {
+              if (currentPage >= totalPages) {
+                hasMore = false;
+              } else {
+                currentPage++;
+              }
+            } else if (rawDataChunk.length < limit) {
               hasMore = false;
             } else {
               currentPage++;
@@ -673,7 +680,16 @@ const TableView = ({
       const matchNgo = !selectedNgoFilter || item.ngo_name === selectedNgoFilter;
       const matchState = !selectedStateFilter || item.state === selectedStateFilter;
       const matchPartner = !selectedPartnerFilter || item.partner_name === selectedPartnerFilter;
-      return matchNgo && matchState && matchPartner;
+
+      let matchDate = true;
+      if (learningStartDate || learningEndDate) {
+        const rawDate = item.session_date || item.submission_date || item.created_at || "";
+        const itemDateStr = String(rawDate).slice(0, 10);
+        if (learningStartDate && itemDateStr < learningStartDate) matchDate = false;
+        if (learningEndDate && itemDateStr > learningEndDate) matchDate = false;
+      }
+
+      return matchNgo && matchState && matchPartner && matchDate;
     });
   };
 
