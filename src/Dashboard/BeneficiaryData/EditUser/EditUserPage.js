@@ -4,6 +4,7 @@ import { Container, Typography, CircularProgress, Alert } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { isAdminViewOnly } from '../../../utils/authPermissions';
 
 const EditUserPage = () => {
   const navigate = useNavigate(); 
@@ -99,6 +100,11 @@ const EditUserPage = () => {
 
 
   useEffect(() => {
+    if (isAdminViewOnly()) {
+      alert('You have view-only admin access. Editing is restricted.');
+      navigate(`/userdetails/${id}`);
+      return;
+    }
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -118,6 +124,10 @@ const EditUserPage = () => {
   }, [id]);
 
   const handleSubmit = async (formData) => {
+    if (isAdminViewOnly()) {
+      alert('You do not have permission to edit user details.');
+      return;
+    }
     try {
       const response = await fetch(
         `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`, {

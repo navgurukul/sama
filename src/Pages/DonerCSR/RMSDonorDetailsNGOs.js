@@ -34,6 +34,7 @@ import {
   X,
   Search,
 } from "lucide-react";
+import { isAdminViewOnly } from "../../utils/authPermissions";
 
 // Base URL for NGOs API – using RMS API host, the curl examples are for paths and payload shape
 const API_BASE_URL = "https://rms-api.thesama.in/api";
@@ -107,6 +108,10 @@ const RMSDonorDetailsNGOs = () => {
 
   // Handle create/edit dialog
   const handleOpenDialog = (item = null) => {
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Editing is not permitted.");
+      return;
+    }
     if (item) {
       setEditingItem(item);
       setFormData({
@@ -213,6 +218,10 @@ const RMSDonorDetailsNGOs = () => {
 
   // Handle delete
   const handleDelete = async (item) => {
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Deleting is not permitted.");
+      return;
+    }
     if (!window.confirm("Are you sure you want to delete this NGO?")) return;
     
     setLoading(true);
@@ -249,6 +258,7 @@ const RMSDonorDetailsNGOs = () => {
         <Button
           variant="contained"
           color="success"
+          disabled={isAdminViewOnly()}
           startIcon={<Plus size={18} />}
           onClick={() => handleOpenDialog()}
           sx={{ fontWeight: 600 }}
@@ -390,26 +400,32 @@ const RMSDonorDetailsNGOs = () => {
                                 whiteSpace: "nowrap",
                               }}
                             >
-                              <Stack direction="row" spacing={1}>
-                                <Tooltip title="Edit">
-                                  <IconButton
-                                    size="small"
-                                    color="primary"
-                                    onClick={() => handleOpenDialog(row)}
-                                  >
-                                    <Edit size={16} />
-                                  </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Delete">
-                                  <IconButton
-                                    size="small"
-                                    color="error"
-                                    onClick={() => handleDelete(row)}
-                                  >
-                                    <Trash2 size={16} />
-                                  </IconButton>
-                                </Tooltip>
-                              </Stack>
+                              {!isAdminViewOnly() ? (
+                                <Stack direction="row" spacing={1}>
+                                  <Tooltip title="Edit">
+                                    <IconButton
+                                      size="small"
+                                      color="primary"
+                                      onClick={() => handleOpenDialog(row)}
+                                    >
+                                      <Edit size={16} />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip title="Delete">
+                                    <IconButton
+                                      size="small"
+                                      color="error"
+                                      onClick={() => handleDelete(row)}
+                                    >
+                                      <Trash2 size={16} />
+                                    </IconButton>
+                                  </Tooltip>
+                                </Stack>
+                              ) : (
+                                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                                  View Only
+                                </Typography>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}

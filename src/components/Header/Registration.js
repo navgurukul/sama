@@ -17,8 +17,10 @@ import {
     DialogTitle,
     Button,
     Box,
+    Chip,
 } from '@mui/material';
 import React, { useState, useEffect } from 'react';
+import { isAdminViewOnly } from '../../utils/authPermissions';
 
 const Registration = () => {
     const [data, setData] = useState([]);
@@ -62,6 +64,10 @@ const Registration = () => {
     };
 
     const handleStatusChange = (e, index, row) => {
+        if (isAdminViewOnly()) {
+            alert("You have view-only admin access. Approving or rejecting registrations is not permitted.");
+            return;
+        }
         const selectedStatus = e.target.value;
         setCurrentRow(row);
         setNewStatus(selectedStatus);
@@ -107,6 +113,7 @@ const Registration = () => {
 
 
     const updateStatusAndRole = async (statusParam = newStatus, roleParam = selectedRole) => {
+        if (isAdminViewOnly()) return;
         const email = currentRow.Email;
         const updatedData = [...data];
         const index = data.indexOf(currentRow);
@@ -159,6 +166,22 @@ const Registration = () => {
 
     return (
         <Container maxWidth="xl" sx={{ padding: '20px' }}>
+            {isAdminViewOnly() && (
+                <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
+                    <Chip
+                        label="View-Only Admin Mode"
+                        size="small"
+                        variant="outlined"
+                        sx={{
+                            color: "#6c757d",
+                            borderColor: "#ced4da",
+                            backgroundColor: "#f8f9fa",
+                            fontWeight: 500,
+                            fontSize: "12px",
+                        }}
+                    />
+                </Box>
+            )}
             <TableContainer component={Paper}>
                 <Table stickyHeader>
                     <TableHead>
@@ -177,10 +200,12 @@ const Registration = () => {
                                 <TableCell>{row.Password || 'N/A'}</TableCell>
                                 <TableCell>
                                     <Select
+                                        disabled={isAdminViewOnly()}
                                         value={row.Status || ''}
                                         onChange={(e) => handleStatusChange(e, index, row)}
                                         displayEmpty
                                         fullWidth
+                                        IconComponent={isAdminViewOnly() ? () => null : undefined}
                                     >
                                         <MenuItem value="Approved">Approved</MenuItem>
                                         <MenuItem value="Reject">Reject</MenuItem>

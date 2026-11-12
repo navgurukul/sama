@@ -24,6 +24,7 @@ import {
   DialogTitle,
   Box,
   CircularProgress,
+  Chip,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -37,6 +38,7 @@ import { classes } from "./style";
 import DeleteDialog from "./DeletDialog";
 import { set } from "date-fns";
 import patientImg from "./assets/Being Patient 1.png";
+import { isAdminViewOnly } from "../../utils/authPermissions";
 
 const AdminNgo = () => {
   const navigate = useNavigate();
@@ -129,6 +131,10 @@ const AdminNgo = () => {
   };
 
   const handleDelete = async () => {
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Deleting is not permitted.");
+      return;
+    }
     try {
       // Update local state by filtering out the deleted entry
       const updatedData = ngoData?.filter((ngo) => ngo.Id !== ngoDeleteID);
@@ -155,6 +161,10 @@ const AdminNgo = () => {
     }
   };
   const handleDeleteRecord = (id) => {
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Deleting is not permitted.");
+      return;
+    }
     setOpenDeleteDialog(true);
     setNgoDeleteID(id);
   };
@@ -163,6 +173,10 @@ const AdminNgo = () => {
   };
 
   const handleStatusChange = (id, newStatus) => {
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Editing status is not permitted.");
+      return;
+    }
     setSelectedStatus(newStatus);
     setNgoIdToChange(id);
     setOpenDialog(true);
@@ -170,6 +184,11 @@ const AdminNgo = () => {
 
   const handleConfirmStatusChange = async (e) => {
     e.stopPropagation();
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Editing status is not permitted.");
+      setOpenDialog(false);
+      return;
+    }
     const updatedData = ngoData?.map((ngo) =>
       ngo.Id === ngoIdToChange ? { ...ngo, Status: selectedStatus } : ngo
     );
@@ -239,12 +258,21 @@ const AdminNgo = () => {
   );
 
   const handleDonerChange = (id, newDonor) => {
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Assigning donors is not permitted.");
+      return;
+    }
     setDonor(newDonor);
     setNgoIdToChange(id);
     setOpen(true); // Open confirmation modal
   };
 
   const handleDonerConfirm = async () => {
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Assigning donors is not permitted.");
+      setOpen(false);
+      return;
+    }
     if (ngoIdToChange && donor) {
       await sendToBackend(ngoIdToChange, donor); // Send data to backend
       setNgoData((prev) =>
@@ -279,9 +307,25 @@ const AdminNgo = () => {
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
       {ngoData?.length > 0 ? (
         <>
-          <Typography variant="h6" gutterBottom>
-            All NGOs ({ngoData?.length})
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
+              All NGOs ({ngoData?.length})
+            </Typography>
+            {isAdminViewOnly() && (
+              <Chip
+                label="View-Only Admin Mode"
+                size="small"
+                variant="outlined"
+                sx={{
+                  color: "#6c757d",
+                  borderColor: "#ced4da",
+                  backgroundColor: "#f8f9fa",
+                  fontWeight: 500,
+                  fontSize: "12px",
+                }}
+              />
+            )}
+          </Box>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={3} sx={{ mt: 3 }}>
               <TextField
@@ -485,6 +529,7 @@ const AdminNgo = () => {
                             id="demo-simple-select"
                             value={ngo["Ngo Type"] || typeSelections[ngo.Id] || ""}
                             onChange={(e) => {
+                              if (isAdminViewOnly()) return;
                               e.stopPropagation();
                               e.preventDefault();
                               setTypeSelections(prev => ({
@@ -493,13 +538,13 @@ const AdminNgo = () => {
                               }));
                               setType(e.target.value);
                             }}
-                            disabled={ngo["Ngo Type"] ? true : false}
+                            disabled={isAdminViewOnly() || (ngo["Ngo Type"] ? true : false)}
                             IconComponent={
-                              ngo["Ngo Type"] ? () => null : undefined
+                              isAdminViewOnly() || ngo["Ngo Type"] ? () => null : undefined
                             }
                             sx={{
                               "& .MuiSelect-select": {
-                                paddingRight: ngo["Ngo Type"] ? "14px" : "32px",
+                                paddingRight: (isAdminViewOnly() || ngo["Ngo Type"]) ? "14px" : "32px",
                               },
                             }}
                             MenuProps={{
@@ -522,14 +567,17 @@ const AdminNgo = () => {
                       <TableCell sx={classes.tablecell}>
                         <FormControl fullWidth>
                           <Select
+                            disabled={isAdminViewOnly()}
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={ngo.Status}
                             onChange={(e) => {
+                              if (isAdminViewOnly()) return;
                               e.stopPropagation();
                               e.preventDefault();
                               handleStatusChange(ngo.Id, e.target.value);
                             }}
+                            IconComponent={isAdminViewOnly() ? () => null : undefined}
                             MenuProps={{
                               container: dialogRef.current,
                             }}
@@ -553,9 +601,11 @@ const AdminNgo = () => {
                         {["Approved", "Dispatched", "Delivered"].includes(ngo.Status) ? (
                           <input
                             type="date"
+                            disabled={isAdminViewOnly()}
                             value={ngo.tentative_refurb_completion || ""}
                             onClick={(e) => e.stopPropagation()}
                             onChange={async (e) => {
+                              if (isAdminViewOnly()) return;
                               e.stopPropagation();
                               const newDate = e.target.value;
                               setNgoData(prev => prev.map(n => n.Id === ngo.Id ? { ...n, tentative_refurb_completion: newDate } : n));
@@ -574,13 +624,14 @@ const AdminNgo = () => {
                               }
                             }}
                             style={{
-                              backgroundColor: "#f5f5f5",
+                              backgroundColor: isAdminViewOnly() ? "#fafafa" : "#f5f5f5",
                               border: "1px solid #ccc",
                               borderRadius: "4px",
                               padding: "4px 8px",
-                              color: "#333",
+                              color: isAdminViewOnly() ? "#666" : "#333",
                               fontSize: "14px",
-                              outline: "none"
+                              outline: "none",
+                              cursor: isAdminViewOnly() ? "not-allowed" : "pointer"
                             }}
                           />
                         ) : (
@@ -593,8 +644,11 @@ const AdminNgo = () => {
                         <TableCell sx={classes.tablecell}>
                           <FormControl fullWidth>
                             <Select
+                              disabled={isAdminViewOnly()}
                               value={ngo["Doner"] || donorSelections[ngo.Id] || ""}
+                              IconComponent={isAdminViewOnly() ? () => null : undefined}
                               onChange={(e) => {
+                                if (isAdminViewOnly()) return;
                                 e.stopPropagation();
                                 e.preventDefault();
                                 const val = e.target.value;
@@ -615,14 +669,16 @@ const AdminNgo = () => {
                         </TableCell>
                       </>
                       <TableCell sx={{ border: "none" }}>
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteRecord(ngo.Id);
-                          }}
-                        >
-                          <DeleteIcon sx={{ color: "#BDBDBD" }} />
-                        </IconButton>
+                        {!isAdminViewOnly() && (
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteRecord(ngo.Id);
+                            }}
+                          >
+                            <DeleteIcon sx={{ color: "#BDBDBD" }} />
+                          </IconButton>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))

@@ -14,6 +14,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Survey from "./assets/Survey 1.svg";
+import { isAdminViewOnly } from "../../utils/authPermissions";
 
 // Helper functions
 const parseDate = (dateString) => {
@@ -336,14 +337,19 @@ const YearlyReport = () => {
           )}
           <Button
             variant="contained"
+            disabled={isAdminViewOnly()}
             sx={!isFormCreated && { display: "block", margin: "0 auto" }}
-            onClick={() =>
+            onClick={() => {
+              if (isAdminViewOnly()) {
+                alert("You have view-only admin access. Editing forms is restricted.");
+                return;
+              }
               navigate(
                 isFormCreated
                   ? `/edit-yearly-form/${id}`
                   : `/yearly-reporting/${id}`
-              )
-            }
+              );
+            }}
           >
             {isFormCreated ? "Edit Form" : "Create Form"}
           </Button>

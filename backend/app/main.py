@@ -3536,25 +3536,8 @@ def send_afe_approval_email(ngo_name: str, ngo_email: str, qty_requested: Any):
 
 
 def send_afe_internal_approval_email(ngo_name: str, approver_name: str, qty_approved: Any):
-    ops_email = os.environ.get("SAMA_OPS_EMAIL", "operations@thesama.in")
-    afe_email = os.environ.get("AMAZON_AFE_EMAIL", "afe-team@amazon.com")
-    subject = f"[INTERNAL ONLY] AFE Request Approved for {ngo_name}"
-    html_part = f"""
-        <p>Dear Sama Team,</p>
-        <p>This is to confirm that the laptop request from <strong>{ngo_name}</strong> has been internally approved.</p>
-        <p><strong>Approved Quantity:</strong> {qty_approved} laptops</p>
-        <p><strong>Approver:</strong> {approver_name}</p>
-        <p>Sama Operations team will now take ownership, assign a refurbishment completion timeline, and begin the refurbishment process.</p>
-        <p>Best regards,<br/>Amazon AFE Team</p>
-    """
-    _send_email_common(
-        to_email=ops_email,
-        subject=subject,
-        html_part=html_part,
-        to_name="Sama Operations",
-        from_name="Amazon AFE Team",
-        from_email=afe_email
-    )
+    # Internal notification disabled so operations team inbox is not spammed; only NGOs receive the approval email
+    return True
 
 
 def send_afe_draft_submission_email(ngo_name: str, ngo_email: str, qty_requested: Any, contact_name: str, location: str, use_case: str):
@@ -4558,7 +4541,7 @@ async def ngo_exec_post(request: Request) -> Any:
                         if row and row.get("email"):
                             final_qty = row["approved_quantity"] or row["laptop_quantity"]
                             if status_val == "Approved":
-                                send_afe_internal_approval_email(row["ngo_name"], row["approver_name"] or "AFE Approver", final_qty)
+                                # send_afe_internal_approval_email disabled: only NGOs receive approval emails
                                 send_afe_approval_email(row["ngo_name"], row["email"], final_qty)
                             elif status_val in ["Dispatched", "Delivered"]:
                                 # Fetch any laptops allocated to this NGO name

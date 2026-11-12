@@ -17,6 +17,7 @@ import { useParams } from "react-router-dom";
 import AddStatusModal from "./AddStatusModal";
 import EditStatusModal from "./EditStatusModal";
 import DeleteStatusDialog from "./DeleteStatusDialog";
+import { isAdminViewOnly } from "../../utils/authPermissions";
 
 const ManageStatuses = () => {
   const { id } = useParams();
@@ -176,7 +177,14 @@ const ManageStatuses = () => {
       </Typography>
       <Button
         variant="contained"
-        onClick={() => setModals({ ...modals, add: true })}
+        disabled={isAdminViewOnly()}
+        onClick={() => {
+          if (isAdminViewOnly()) {
+            alert("You have view-only admin access. Adding custom statuses is restricted.");
+            return;
+          }
+          setModals({ ...modals, add: true });
+        }}
         sx={{ bgcolor: "#5C785A", mb: 3, borderRadius: "100px" }}
       >
         Add Status
@@ -243,38 +251,45 @@ const ManageStatuses = () => {
                     py: 2,
                   }}
                 >
-              
-                  <Button
-                    onClick={() => setModals({ ...modals, delete: status })}
-                    sx={{
-                      color: "#F44336",
-                      textTransform: "capitalize",
-                      fontWeight: "bold",
-                      marginLeft:"150px",
-                      // p: 0,
-                      "&:hover": {
-                        background: "none !important",
-                        color: "#F44336",
-                      },
-                    }}
-                  >
-                    Delete
-                  </Button>
-                  <Button
-                    onClick={() => setModals({ ...modals, edit: status })}
-                    sx={{
-                      color: "primary.main",
-                      textTransform: "capitalize",
-                      fontWeight: "bold",
-                      // p: 0,
-                      "&:hover": {
-                        background: "none",
-                        color: "primary.main",
-                      },
-                    }}
-                  >
-                    Edit
-                  </Button>
+                  {!isAdminViewOnly() ? (
+                    <>
+                      <Button
+                        onClick={() => setModals({ ...modals, delete: status })}
+                        sx={{
+                          color: "#F44336",
+                          textTransform: "capitalize",
+                          fontWeight: "bold",
+                          marginLeft:"150px",
+                          // p: 0,
+                          "&:hover": {
+                            background: "none !important",
+                            color: "#F44336",
+                          },
+                        }}
+                      >
+                        Delete
+                      </Button>
+                      <Button
+                        onClick={() => setModals({ ...modals, edit: status })}
+                        sx={{
+                          color: "primary.main",
+                          textTransform: "capitalize",
+                          fontWeight: "bold",
+                          // p: 0,
+                          "&:hover": {
+                            background: "none",
+                            color: "primary.main",
+                          },
+                        }}
+                      >
+                        Edit
+                      </Button>
+                    </>
+                  ) : (
+                    <Typography variant="body2" sx={{ color: "text.secondary", py: 1 }}>
+                      View Only
+                    </Typography>
+                  )}
                 </CardActions>
               </Card>
             </Grid>

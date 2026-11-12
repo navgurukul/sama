@@ -15,6 +15,7 @@ import axios from "axios";
 import PreDestibution from "../Preliminary/PreDestibution";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import WorkingProductively from "./assets/Working Productively 1 1.svg";
+import { isAdminViewOnly } from "../../utils/authPermissions";
 
 //  Generate 12 monthly dates starting from a given date
 
@@ -205,6 +206,10 @@ const MonthlyReport = () => {
   }, [id]);
 
   const handleButtonClick = () => {
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Editing forms is restricted.");
+      return;
+    }
     if (isFormCreated) {
       navigate(`/edit-form/${id}`);
     } else {
@@ -357,6 +362,7 @@ const MonthlyReport = () => {
 
           <Button
             variant="contained"
+            disabled={isAdminViewOnly()}
             sx={!isFormCreated && { display: "block", margin: "0 auto" }}
             onClick={handleButtonClick}
           >
