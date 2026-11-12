@@ -683,10 +683,23 @@ const TableView = ({
 
       let matchDate = true;
       if (learningStartDate || learningEndDate) {
+        let itemDateStr = "";
         const rawDate = item.session_date || item.submission_date || item.created_at || "";
-        const itemDateStr = String(rawDate).slice(0, 10);
-        if (learningStartDate && itemDateStr < learningStartDate) matchDate = false;
-        if (learningEndDate && itemDateStr > learningEndDate) matchDate = false;
+        if (typeof rawDate === "string") {
+          if (/^\d{4}-\d{2}-\d{2}/.test(rawDate)) {
+            itemDateStr = rawDate.slice(0, 10);
+          } else if (/^\d{2}\/\d{2}\/\d{4}/.test(rawDate)) {
+            const parts = rawDate.split("/");
+            itemDateStr = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+          } else if (/^\d{2}-\d{2}-\d{4}/.test(rawDate)) {
+            const parts = rawDate.split("-");
+            itemDateStr = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+          }
+        }
+        if (itemDateStr) {
+          if (learningStartDate && itemDateStr < learningStartDate) matchDate = false;
+          if (learningEndDate && itemDateStr > learningEndDate) matchDate = false;
+        }
       }
 
       return matchNgo && matchState && matchPartner && matchDate;
@@ -1314,7 +1327,10 @@ const TableView = ({
               label="Start Date"
               type="date"
               value={learningStartDate}
-              onChange={(e) => setLearningStartDate(e.target.value)}
+              onChange={(e) => {
+                setLearningStartDate(e.target.value);
+                setPage(0);
+              }}
               InputLabelProps={{ shrink: true }}
               size="small"
               sx={{ width: 140 }}
@@ -1323,7 +1339,10 @@ const TableView = ({
               label="End Date"
               type="date"
               value={learningEndDate}
-              onChange={(e) => setLearningEndDate(e.target.value)}
+              onChange={(e) => {
+                setLearningEndDate(e.target.value);
+                setPage(0);
+              }}
               InputLabelProps={{ shrink: true }}
               size="small"
               sx={{ width: 140 }}
@@ -1333,7 +1352,10 @@ const TableView = ({
               select
               label="Partner"
               value={selectedPartnerFilter}
-              onChange={(e) => setSelectedPartnerFilter(e.target.value)}
+              onChange={(e) => {
+                setSelectedPartnerFilter(e.target.value);
+                setPage(0);
+              }}
               size="small"
               sx={{ minWidth: 120 }}
               SelectProps={{ native: true }}
@@ -1349,7 +1371,10 @@ const TableView = ({
               select
               label="NGO"
               value={selectedNgoFilter}
-              onChange={(e) => setSelectedNgoFilter(e.target.value)}
+              onChange={(e) => {
+                setSelectedNgoFilter(e.target.value);
+                setPage(0);
+              }}
               size="small"
               sx={{ minWidth: 120 }}
               SelectProps={{ native: true }}
@@ -1365,7 +1390,10 @@ const TableView = ({
               select
               label="State"
               value={selectedStateFilter}
-              onChange={(e) => setSelectedStateFilter(e.target.value)}
+              onChange={(e) => {
+                setSelectedStateFilter(e.target.value);
+                setPage(0);
+              }}
               size="small"
               sx={{ minWidth: 120 }}
               SelectProps={{ native: true }}
@@ -1384,6 +1412,7 @@ const TableView = ({
                 const params = [];
                 if (learningStartDate) params.push(`startDate=${learningStartDate}`);
                 if (learningEndDate) params.push(`endDate=${learningEndDate}`);
+                if (selectedNgoFilter) params.push(`ngoId=${encodeURIComponent(selectedNgoFilter)}`);
                 if (params.length > 0) url += `?${params.join('&')}`;
                 window.open(url, '_blank');
               }}
