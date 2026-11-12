@@ -22,6 +22,7 @@ import {
   DialogTitle,
   Box,
   Checkbox,
+  Chip,
 } from "@mui/material";
 
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -33,6 +34,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DeleteDialog from "../AdminNgo/DeletDialog";
 import EmptyBeneficiary from "./EmptyBeneficiary";
+import { isAdminViewOnly } from "../../utils/authPermissions";
 
 const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
   const navigate = useNavigate();
@@ -136,6 +138,10 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
   }, [ngoData, setNgoData]);
 
   const handleBulkStatusChange = async () => {
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Bulk updating status is not permitted.");
+      return;
+    }
     try {
       const storedStatuses = JSON.parse(localStorage.getItem("userStatuses") || "{}");
       
@@ -189,6 +195,10 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
 
   const handleIndividualStatusChange = async (id, newStatus, event) => {
     event.stopPropagation();
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Updating status is not permitted.");
+      return;
+    }
     try {
       const storedStatuses = JSON.parse(localStorage.getItem("userStatuses") || "{}");
       
@@ -254,12 +264,17 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
     }
   };
 
-  const handleEditRowClick = (id)=>{
+  const handleEditRowClick = (id) => {
+    if (isAdminViewOnly()) {
+      alert("You have view-only admin access. Editing beneficiary is not permitted.");
+      return;
+    }
     navigate(`/edit-user/${id}`);
-  }
+  };
 
   const handleCheckboxChange = (id, event) => {
     event.stopPropagation();
+    if (isAdminViewOnly()) return;
     const newSelectedRows = new Set(selectedRows);
     if (newSelectedRows.has(id)) {
       newSelectedRows.delete(id);
@@ -270,6 +285,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
   };
 
   const handleSelectAllClick = (event) => {
+    if (isAdminViewOnly()) return;
     if (event.target.checked) {
       const newSelectedRows = new Set(filteredData.map((row) => row.ID));
       setSelectedRows(newSelectedRows);
@@ -365,11 +381,27 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
     <Container maxWidth="xl" sx={{ mt: 6, mb: 6 }}>
       {/* Header */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Typography variant="h6" gutterBottom>
-          {filteredData.length > 0
-            ? `All Beneficiaries (${filteredData.length})`
-            : `All Beneficiaries`}
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
+            {filteredData.length > 0
+              ? `All Beneficiaries (${filteredData.length})`
+              : `All Beneficiaries`}
+          </Typography>
+          {isAdminViewOnly() && (
+            <Chip
+              label="View-Only Admin Mode"
+              size="small"
+              variant="outlined"
+              sx={{
+                color: "#6c757d",
+                borderColor: "#ced4da",
+                backgroundColor: "#f8f9fa",
+                fontWeight: 500,
+                fontSize: "12px",
+              }}
+            />
+          )}
+        </Box>
       </Box>
           {/* Search */}
           <Grid
@@ -567,6 +599,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
+                        disabled={isAdminViewOnly()}
                         indeterminate={selectedRows.size > 0 && selectedRows.size < filteredData.length}
                         checked={filteredData.length > 0 && selectedRows.size === filteredData.length}
                         onChange={handleSelectAllClick}
@@ -597,6 +630,7 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
+                          disabled={isAdminViewOnly()}
                           checked={selectedRows.has(ngo.ID)}
                           onChange={(event) => handleCheckboxChange(ngo.ID, event)}
                           onClick={(event) => event.stopPropagation()}
@@ -612,10 +646,12 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                       <TableCell>
                         <FormControl fullWidth>
                           <Select
+                            disabled={isAdminViewOnly()}
                             value={getRowStatus(ngo)}
                             onChange={(e) => handleIndividualStatusChange(ngo.ID, e.target.value, e)}
                             onClick={(e) => e.stopPropagation()}
                             displayEmpty
+                            IconComponent={isAdminViewOnly() ? () => null : undefined}
                           >
                             {defaultStatus.map((option) => (
                               <MenuItem key={option} value={option}>
@@ -625,21 +661,29 @@ const AdminTable = ({ ngoData, setNgoData, setEditStatus, filterOptions }) => {
                           </Select>
                         </FormControl>
                       </TableCell>
-                      <TableCell style={{ cursor: "pointer", color: "#828282" }}>
-                        <EditIcon
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditRowClick(ngo.ID);
-                          }}
-                        />
+                      <TableCell style={{ cursor: isAdminViewOnly() ? "default" : "pointer", color: "#828282" }}>
+                        {!isAdminViewOnly() ? (
+                          <EditIcon
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditRowClick(ngo.ID);
+                            }}
+                          />
+                        ) : (
+                          <Typography variant="body2" sx={{ color: "text.secondary" }}>-</Typography>
+                        )}
                       </TableCell>
-                      <TableCell style={{ cursor: "pointer", color: "#828282" }}>
-                        <DeleteIcon
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteDialog(ngo.ID);
-                          }}
-                        />
+                      <TableCell style={{ cursor: isAdminViewOnly() ? "default" : "pointer", color: "#828282" }}>
+                        {!isAdminViewOnly() ? (
+                          <DeleteIcon
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteDialog(ngo.ID);
+                            }}
+                          />
+                        ) : (
+                          <Typography variant="body2" sx={{ color: "text.secondary" }}>-</Typography>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

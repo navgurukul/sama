@@ -16,6 +16,7 @@ import { classes } from "./style";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import UploadIcon from "@mui/icons-material/UploadFile";
 import HistoryStatusPopup from "./HistoryStatusPopup";
+import { canAdminEdit } from "../../utils/authPermissions";
 
 
 const BeneficiaryProfile = () => {
@@ -237,7 +238,7 @@ const BeneficiaryProfile = () => {
             <Typography variant="body1" marginBottom="16px">
               {data.Occupation}
             </Typography>
-            {NgoId[0].role.includes("admin") && (
+            {NgoId[0].role.includes("admin") && canAdminEdit() && (
               <Button
                 variant="outlined"
                 color="primary"
@@ -450,7 +451,7 @@ const BeneficiaryProfile = () => {
                     }}
                   >
                     {status.status_name === "No Change" ? (
-                      user && user.role && user.role.includes("admin") ? (
+                      user && user.role && user.role.includes("admin") && canAdminEdit() ? (
                         <>
                           <IconButton
                             onClick={() => handlePopupOpen(status.date)}
