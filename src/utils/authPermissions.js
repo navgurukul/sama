@@ -2,7 +2,7 @@
  * Role-Based Access Control (RBAC) & Permission Utilities for Sama Digital Foundation
  * 
  * Rules:
- * 1. Specific Admin Editors: Only 'shweta.admin@navgurukul.org' and 'ganesh@thesama.in'
+ * 1. Specific Admin Editors
  *    have EDIT / MUTATION permissions for Admin actions (status updates, allocations,
  *    deletions, editing beneficiary records, user registrations, etc.).
  * 2. Other Admin Users: Have full READ-ONLY / VIEW access across the entire platform.
@@ -13,8 +13,6 @@
 export const ADMIN_EDITORS = [
   'shweta.admin@navgurukul.org',
   'ganesh@thesama.in',
-  'ganeshppawar864@gmail.com',
-  'gp1237114@gmail.com',
 ];
 
 /**
