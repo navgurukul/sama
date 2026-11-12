@@ -13,6 +13,8 @@
 export const ADMIN_EDITORS = [
   'shweta.admin@navgurukul.org',
   'ganesh@thesama.in',
+  'ganeshppawar864@gmail.com',
+  'gp1237114@gmail.com',
 ];
 
 /**
@@ -23,7 +25,13 @@ export const getCurrentUser = () => {
     const raw = localStorage.getItem('_AuthSama_');
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed[0] : null;
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed[0];
+    }
+    if (parsed && typeof parsed === 'object') {
+      return parsed;
+    }
+    return null;
   } catch (e) {
     console.error('Error parsing _AuthSama_:', e);
     return null;
@@ -35,32 +43,50 @@ export const getCurrentUser = () => {
  */
 export const getCurrentUserEmail = () => {
   const user = getCurrentUser();
-  return (user?.email || user?.Email || '').trim().toLowerCase();
+  const email =
+    user?.email ||
+    user?.Email ||
+    localStorage.getItem('email') ||
+    localStorage.getItem('userEmail') ||
+    '';
+  return String(email).trim().toLowerCase();
 };
 
 /**
  * Returns current user's roles array normalized in lowercase.
  */
 export const getCurrentUserRoles = () => {
+  const roles = new Set();
   try {
     const rawRole = localStorage.getItem('role');
     if (rawRole) {
-      const parsed = JSON.parse(rawRole);
-      if (Array.isArray(parsed)) return parsed.map((r) => String(r).toLowerCase());
-      if (typeof parsed === 'string') return [parsed.toLowerCase()];
+      try {
+        const parsed = JSON.parse(rawRole);
+        if (Array.isArray(parsed)) {
+          parsed.forEach((r) => roles.add(String(r).trim().toLowerCase()));
+        } else if (typeof parsed === 'string') {
+          roles.add(parsed.trim().toLowerCase());
+        }
+      } catch {
+        roles.add(String(rawRole).trim().toLowerCase());
+      }
     }
   } catch (e) {
     // fallback to _AuthSama_
   }
 
   const user = getCurrentUser();
-  if (Array.isArray(user?.role)) {
-    return user.role.map((r) => String(r).toLowerCase());
+  const r = user?.role || user?.Role;
+  if (Array.isArray(r)) {
+    r.forEach((item) => roles.add(String(item).trim().toLowerCase()));
+  } else if (typeof r === 'string') {
+    r.split(',').forEach((item) => {
+      const clean = item.trim().toLowerCase();
+      if (clean) roles.add(clean);
+    });
   }
-  if (typeof user?.role === 'string') {
-    return [user.role.toLowerCase()];
-  }
-  return [];
+
+  return Array.from(roles);
 };
 
 /**
@@ -93,3 +119,4 @@ export const canAdminEdit = () => {
 export const isAdminViewOnly = () => {
   return isAdmin() && !canAdminEdit();
 };
+

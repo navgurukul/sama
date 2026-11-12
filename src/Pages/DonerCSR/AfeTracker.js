@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import { Edit2, Check, X, ShieldAlert } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
+import { isAdminViewOnly } from "../../utils/authPermissions";
 
 const AfeTracker = () => {
   const [requests, setRequests] = useState([]);
@@ -116,6 +117,10 @@ const AfeTracker = () => {
   }
 
   const handleStartEdit = (req) => {
+    if (isAdminViewOnly() && !isAfeApprover) {
+      alert("You have view-only admin access. Editing is not permitted.");
+      return;
+    }
     setEditingId(req.Id);
     const initialStatus = (req.Status === "Submitted Request" || !req.Status) ? "Pending Review" : req.Status;
     setEditFields({
@@ -393,10 +398,12 @@ const AfeTracker = () => {
                                   <X size={16} color="red" />
                                 </IconButton>
                               </Box>
-                            ) : (
+                            ) : (!isAdminViewOnly() || isAfeApprover) ? (
                               <IconButton size="small" onClick={() => handleStartEdit(req)}>
                                 <Edit2 size={16} />
                               </IconButton>
+                            ) : (
+                              <Typography variant="body2" sx={{ color: "text.secondary" }}>-</Typography>
                             )}
                           </TableCell>
                         </TableRow>
