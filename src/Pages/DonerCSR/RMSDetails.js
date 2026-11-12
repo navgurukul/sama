@@ -52,6 +52,8 @@ const RMSDetails = () => {
     overall_working_percentage: 38.0,
   });
   const [notWorkingDevices, setNotWorkingDevices] = useState([]);
+  const [ngoSpecificDevices, setNgoSpecificDevices] = useState([]);
+  const [isNgoDevicesLoading, setIsNgoDevicesLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState(0); // 0: NGO Summary, 1: Inactive Laptops, 2: All Telemetry
@@ -168,6 +170,49 @@ const RMSDetails = () => {
     };
   }, [apiBase]);
 
+  // Fetch all inactive devices specifically when an NGO is filtered
+  useEffect(() => {
+    let isMounted = true;
+    if (!selectedNgoFilter) {
+      setNgoSpecificDevices([]);
+      return;
+    }
+
+    const fetchNgoInactiveLaptops = async () => {
+      setIsNgoDevicesLoading(true);
+      try {
+        let res = await fetch(
+          `${apiBase}/api/rms/by-ngo?status_filter=not_working&ngo_name=${encodeURIComponent(
+            selectedNgoFilter
+          )}`
+        );
+        if (!res.ok && apiBase !== "https://sama-api.thesama.in") {
+          res = await fetch(
+            `https://sama-api.thesama.in/api/rms/by-ngo?status_filter=not_working&ngo_name=${encodeURIComponent(
+              selectedNgoFilter
+            )}`
+          );
+        }
+        if (res.ok) {
+          const json = await res.json();
+          if (isMounted && Array.isArray(json.devices)) {
+            setNgoSpecificDevices(json.devices);
+          }
+        }
+      } catch (err) {
+        console.warn("Error fetching NGO inactive devices:", err);
+      } finally {
+        if (isMounted) setIsNgoDevicesLoading(false);
+      }
+    };
+
+    fetchNgoInactiveLaptops();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedNgoFilter, apiBase]);
+
   // Tab 0: Filtered NGO Summary
   const filteredNgos = useMemo(() => {
     let result = ngoSummary;
@@ -215,14 +260,18 @@ const RMSDetails = () => {
 
   // Tab 1: Filtered Inactive Devices
   const filteredNotWorking = useMemo(() => {
-    let rows = notWorkingDevices;
-    if (selectedNgoFilter) {
-      rows = rows.filter(
+    let rows = selectedNgoFilter ? ngoSpecificDevices : notWorkingDevices;
+
+    // Fallback: If filtered by NGO but specific devices not yet fetched, try memory filter
+    if (selectedNgoFilter && (!ngoSpecificDevices || ngoSpecificDevices.length === 0)) {
+      const memMatches = notWorkingDevices.filter(
         (r) =>
-          r.ngo_name.toLowerCase().trim() ===
-          selectedNgoFilter.toLowerCase().trim()
+          r.ngo_name &&
+          r.ngo_name.toLowerCase().trim() === selectedNgoFilter.toLowerCase().trim()
       );
+      if (memMatches.length > 0) rows = memMatches;
     }
+
     if (!search.trim()) return rows;
     const term = search.trim().toLowerCase();
     return rows.filter((r) => {
@@ -234,7 +283,7 @@ const RMSDetails = () => {
         String(r.rms_status || "").toLowerCase().includes(term)
       );
     });
-  }, [notWorkingDevices, search, selectedNgoFilter]);
+  }, [notWorkingDevices, ngoSpecificDevices, search, selectedNgoFilter]);
 
   // Tab 2: Filtered All Devices
   const filteredAllDevices = useMemo(() => {
@@ -285,16 +334,22 @@ const RMSDetails = () => {
 
   // Download Handlers
   const handleDownloadNotWorkingCsv = () => {
-    window.open("/Laptops_RMS_Not_Working_Clean.csv", "_blank");
+    const url = selectedNgoFilter
+      ? `${apiBase}/api/rms/by-ngo?status_filter=not_working&ngo_name=${encodeURIComponent(
+          selectedNgoFilter
+        )}&format=csv`
+      : `${apiBase}/api/rms/by-ngo?status_filter=not_working&format=csv`;
+    window.open(url, "_blank");
   };
 
   const handleDownloadNgoSummaryCsv = () => {
-    window.open("/NGO_RMS_Status_Report.csv", "_blank");
+    window.open(`${apiBase}/api/rms/by-ngo?format=csv`, "_blank");
   };
 
   const handleViewNgoDevices = (ngoName) => {
     setSelectedNgoFilter(ngoName);
     setActiveTab(1);
+    setPage(0);
   };
 
   const handleRmsDetailsClick = (row) => {
@@ -925,12 +980,14 @@ const RMSDetails = () => {
               <Box sx={{ p: 2, bgcolor: "#F9FAFB", borderBottom: "1px solid #E5E7EB", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <Typography sx={{ fontSize: "13.5px", color: "#374151" }}>
                   Showing inactive laptops allocated to <b>{selectedNgoFilter}</b>
+                  {filteredNotWorking.length > 0 && ` (${filteredNotWorking.length} records)`}
                 </Typography>
                 <Button size="small" variant="outlined" onClick={() => setSelectedNgoFilter("")} sx={{ textTransform: "none", fontSize: "12px" }}>
                   Show All NGOs
                 </Button>
               </Box>
             )}
+            {isNgoDevicesLoading && <LinearProgress sx={{ height: 3 }} />}
             <Table size="small">
               <TableHead sx={{ bgcolor: "#F9FAFB", borderBottom: "1px solid #E5E7EB" }}>
                 <TableRow>
@@ -958,50 +1015,60 @@ const RMSDetails = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {pagedNotWorking.map((row, idx) => (
-                  <TableRow
-                    key={idx}
-                    hover
-                    sx={{
-                      "&:hover": { bgcolor: "#F9FAFB" },
-                      borderBottom: "1px solid #F3F4F6",
-                    }}
-                  >
-                    <TableCell sx={{ fontWeight: 700, fontFamily: "ui-monospace, monospace", fontSize: "13px", color: "#111827", py: 1.4 }}>
-                      {row.serial_number}
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 600, fontSize: "13px", color: "#374151" }}>
-                      {row.ngo_name}
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={row.rms_status === "INACTIVE" ? "Inactive Telemetry" : "Never Reported / Missing"}
-                        size="small"
-                        sx={{
-                          fontSize: "11px",
-                          fontWeight: 700,
-                          bgcolor: row.rms_status === "INACTIVE" ? "rgba(245, 158, 11, 0.1)" : "rgba(239, 68, 68, 0.1)",
-                          color: row.rms_status === "INACTIVE" ? "#B45309" : "#B91C1C",
-                          height: 22,
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell sx={{ fontSize: "12.5px", color: "#4B5563" }}>
-                      {row.manufacturer_model || "Standard Laptop"}
-                    </TableCell>
-                    <TableCell sx={{ fontSize: "12.5px", color: "#4B5563" }}>
-                      {row.donor_company || "Corporate Partner"}
-                    </TableCell>
-                    <TableCell sx={{ fontSize: "12px", color: "#6B7280" }}>
-                      {row.rms_status === "INACTIVE"
-                        ? "Check device power & WiFi connection"
-                        : "Verify deployment / install client"}
-                    </TableCell>
-                    <TableCell sx={{ color: "#6B7280", fontSize: "12px" }}>
-                      {row.last_rms_ping || "Never"}
+                {pagedNotWorking.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center" sx={{ py: 6, color: "#6B7280" }}>
+                      {isNgoDevicesLoading
+                        ? "Loading inactive laptops from database..."
+                        : "No inactive laptops found for this filter."}
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  pagedNotWorking.map((row, idx) => (
+                    <TableRow
+                      key={idx}
+                      hover
+                      sx={{
+                        "&:hover": { bgcolor: "#F9FAFB" },
+                        borderBottom: "1px solid #F3F4F6",
+                      }}
+                    >
+                      <TableCell sx={{ fontWeight: 700, fontFamily: "ui-monospace, monospace", fontSize: "13px", color: "#111827", py: 1.4 }}>
+                        {row.serial_number}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, fontSize: "13px", color: "#374151" }}>
+                        {row.ngo_name}
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={row.rms_status === "INACTIVE" ? "Inactive Telemetry" : "Never Reported / Missing"}
+                          size="small"
+                          sx={{
+                            fontSize: "11px",
+                            fontWeight: 700,
+                            bgcolor: row.rms_status === "INACTIVE" ? "rgba(245, 158, 11, 0.1)" : "rgba(239, 68, 68, 0.1)",
+                            color: row.rms_status === "INACTIVE" ? "#B45309" : "#B91C1C",
+                            height: 22,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ fontSize: "12.5px", color: "#4B5563" }}>
+                        {row.manufacturer_model || "Standard Laptop"}
+                      </TableCell>
+                      <TableCell sx={{ fontSize: "12.5px", color: "#4B5563" }}>
+                        {row.donor_company || "Corporate Partner"}
+                      </TableCell>
+                      <TableCell sx={{ fontSize: "12px", color: "#6B7280" }}>
+                        {row.rms_status === "INACTIVE"
+                          ? "Check device power & WiFi connection"
+                          : "Verify deployment / install client"}
+                      </TableCell>
+                      <TableCell sx={{ color: "#6B7280", fontSize: "12px" }}>
+                        {row.last_rms_ping || "Never"}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </TableContainer>
