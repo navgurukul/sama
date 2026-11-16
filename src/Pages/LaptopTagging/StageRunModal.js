@@ -92,7 +92,7 @@ const StageRunModal = ({
   }, [stageItems, stageSections]);
 
   const getSubChecklist = (item) => {
-    if (!Array.isArray(item?.subItems) || item.subItems.length === 0) return null;
+    if (!Array.isArray(item?.subItems)) return [];
     return item.subItems;
   };
 
@@ -623,7 +623,7 @@ const StageRunModal = ({
                                 control={
                                   <Checkbox
                                     size="small"
-                                    checked={subList.length > 0 && subList.every((_, idx) => Boolean(subChecks[item.itemId]?.[idx]))}
+                                    checked={subList.every((_, idx) => Boolean(subChecks[item.itemId]?.[idx]))}
                                     onChange={(e) => {
                                       const isChecked = e.target.checked;
                                       setSubChecks((prev) => ({
