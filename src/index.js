@@ -5,6 +5,9 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import store from './Dashboard/Redux/store';
 import { Provider } from 'react-redux';
+import { installApiAuth } from './api/auth';
+
+installApiAuth();
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

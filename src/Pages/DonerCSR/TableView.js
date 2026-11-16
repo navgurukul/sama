@@ -19,19 +19,16 @@ import {
   TextField,
   Grid,
 } from '@mui/material';
-import { ArrowLeft, BookOpen, Clock, Award, School } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import {
   ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   AreaChart,
   Area,
 } from 'recharts';
@@ -47,7 +44,7 @@ const TableView = ({
   const { donorName } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const [standaloneLaptopData, setStandaloneLaptopData] = useState([]);
+  const [standaloneLaptopData] = useState([]);
   const [standaloneData, setStandaloneData] = useState([]);
   const [standaloneMetricType, setStandaloneMetricType] = useState(null);
   const [page, setPage] = useState(0);
@@ -63,10 +60,10 @@ const TableView = ({
   const [selectedNgoFilter, setSelectedNgoFilter] = useState('');
   const [selectedStateFilter, setSelectedStateFilter] = useState('');
   const [selectedPartnerFilter, setSelectedPartnerFilter] = useState('');
-  const [totalLearningRecords, setTotalLearningRecords] = useState(0);
+  const [, setTotalLearningRecords] = useState(0);
   const [fullLearningData, setFullLearningData] = useState([]);
-  const [sortBy, setSortBy] = useState('');
-  const [sortOrder, setSortOrder] = useState('DESC');
+  const [sortBy] = useState('');
+  const [sortOrder] = useState('DESC');
   
   // Get user role and donor organization from localStorage
   const authData = JSON.parse(localStorage.getItem("_AuthSama_")) || [];
@@ -595,7 +592,6 @@ const TableView = ({
             const laptopRes = await fetch(`${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}?type=getLaptopData`);
             const laptopData = await laptopRes.json();
 
-            const beforeFilter = data.length;
             data = data.filter(ngo => {
               const hasLaptops = laptopData.some(laptop =>
                 String(laptop["Allocated To"] || "").trim().toLowerCase() ===
@@ -612,24 +608,20 @@ const TableView = ({
         data = filterFunction(data);
       }
       if (donorName && metric !== "ngoPartners" && metric !== "pickupRequests" && metric !== "ngosServed" && metric !== "learningAnalytics") {
-        const beforeFilter = data.length;
         data = data.filter(item =>
           String(item["Donor Company Name"] || "").trim().toLowerCase() === donorName.toLowerCase()
         );
       }
 
       if (donorName && metric === "pickupRequests") {
-        const beforeFilter = data.length;
         data = data.filter(item =>
           String(item["Donor Company"] || "").trim().toLowerCase() === donorName.toLowerCase()
         );
       }
       if (filterFunction && metric !== "pickupRequests") {
-        const beforeFilter = data.length;
         data = filterFunction(data);
       }
       if (donorName && (metric === "ngoPartners" || metric === "ngosServed")) {
-        const beforeFilter = data.length;
         data = data.filter(ngo =>
           String(ngo.Doner || ngo.Donor || "").trim().toLowerCase() === donorName.toLowerCase()
         );
@@ -933,39 +925,6 @@ const TableView = ({
             <TableCell sx={{ fontWeight: "bold" }}>Contact Person</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Phone</TableCell>
-          </>
-        );
-      case "pickupRequests":
-        return (
-          <>
-            <TableCell sx={{ fontWeight: "bold" }}>Pickup ID</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Number of Laptops</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Date & Time</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Contact Person</TableCell>
-          </>
-        );
-      case "distributed":
-        return (
-          <>
-            <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Allocated To</TableCell>
-          </>
-        );
-      case "activeUsage":
-        return (
-          <>
-            <TableCell sx={{ fontWeight: "bold" }}>Laptop ID</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Manufacturer Model</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Working</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Donor Company</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Allocated To</TableCell>
           </>
         );
       case "ngosServed":

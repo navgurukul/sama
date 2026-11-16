@@ -8,7 +8,6 @@ import { isAdminViewOnly } from '../../../utils/authPermissions';
 
 const EditUserPage = () => {
   const navigate = useNavigate(); 
-  const user = JSON.parse(localStorage.getItem('_AuthSama_'));
   const { id } = useParams();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -129,7 +128,7 @@ const EditUserPage = () => {
       return;
     }
     try {
-      const response = await fetch(
+      await fetch(
         `${process.env.REACT_APP_LaptopAndBeneficiaryDetailsApi}`, {
         // 'https://script.google.com/macros/s/AKfycbxDcI2092h6NLFcV2yvJN-2NaHVp1jc9_T5qs0ntLDcltIdRRZw5nfHiZTT9prPLQsf2g/exec', {
         method: 'POST',

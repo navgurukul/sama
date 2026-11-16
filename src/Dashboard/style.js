@@ -177,7 +177,6 @@ export const clases = {
         borderRadius: '8px',
         background: '#FFF',
         boxShadow: '0px 2px 10px 0px rgba(0, 0, 0, 0.10)',
-        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',

@@ -8,7 +8,6 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -36,7 +35,6 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import { classes } from "./style";
 import DeleteDialog from "./DeletDialog";
-import { set } from "date-fns";
 import patientImg from "./assets/Being Patient 1.png";
 import { isAdminViewOnly } from "../../utils/authPermissions";
 
@@ -143,7 +141,7 @@ const AdminNgo = () => {
       setEditStatus(true);
 
       // Await axios delete request
-      const response = await fetch(
+      await fetch(
         `${process.env.REACT_APP_NgoInformationApi}?type=deleteNgo`,
         {
           method: "POST",

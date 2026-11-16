@@ -80,7 +80,6 @@ const ourteam = {
         width: "100%",
         maxWidth: "360px",
         height :"55px",
-        borderRadius: "8px",
         textAlign :"left",
         backgroundColor: "white",
         borderRadius: "8px",
@@ -160,23 +159,6 @@ const ourteam = {
         marginLeft: { xs: "0px", md:  "200px" },
         marginTop: "80px",
         marginBottom: "40px",
-    },
-    TextField:{
-        backgroundColor: "white",
-        borderRadius: "8px",
-        "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-                borderColor: "#E0E0E0",
-                borderRadius: "8px",
-            },
-            "&:hover fieldset": {
-                borderColor: "#BDBDBD", 
-            },
-            "&.Mui-focused fieldset": {
-                borderColor: "primary", 
-            },
-        },
-            
     },
     TextField:{
         backgroundColor: "white",

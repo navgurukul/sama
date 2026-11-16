@@ -123,7 +123,7 @@ const Registration = () => {
         setData(updatedData);
 
         try {
-            const response = await fetch(process.env.REACT_APP_UserDetailsApis, {
+            await fetch(process.env.REACT_APP_UserDetailsApis, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -140,8 +140,6 @@ const Registration = () => {
                     doner: donor,
                 }),
             });
-            const text = await response.text();
-            // console.log('Response from server:', text);
         } catch (error) {
             console.error('Error updating:', error);
         }
@@ -197,7 +195,7 @@ const Registration = () => {
                             <TableRow key={index}>
                                 <TableCell>{row.Name || 'N/A'}</TableCell>
                                 <TableCell>{row.Email || 'N/A'}</TableCell>
-                                <TableCell>{row.Password || 'N/A'}</TableCell>
+                                <TableCell>{'••••••••'}</TableCell>
                                 <TableCell>
                                     <Select
                                         disabled={isAdminViewOnly()}

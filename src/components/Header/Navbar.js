@@ -12,7 +12,6 @@ import {
   Tabs,
   Tab,
   Link as MuiLink,
-  Container,
   Drawer,
   List,
   ListItem,
@@ -30,6 +29,7 @@ import { breakpoints } from "../../theme/constant";
 import BackButton from "./BackButton";
 import { matchPath } from "react-router-dom";
 import DropdownMenu from "./DropdownMenu";
+import { clearAuthToken } from "../../api/auth";
 
 const isRouteMatch = (pathname, patterns) => {
   return patterns.some((pattern) =>
@@ -133,6 +133,7 @@ const Navbar = () => {
     localStorage.removeItem("_AuthSama_");
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("role");
+    clearAuthToken();
     setIsLoggedIn(false);
     navigate("/");
     handleMenuClose();

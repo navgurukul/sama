@@ -5,7 +5,7 @@ import os
 # Add the backend dir to sys.path
 sys.path.append("/Users/sama/Desktop/Sama Digital Foundation/sama/backend")
 
-from app.main import get_conn, DB_SCHEMA
+from app.core.db import get_conn, DB_SCHEMA
 
 csv_file = "/Users/sama/Desktop/Sama Digital Foundation/school_upload_template (1) - Sheet2 (1).csv"
 

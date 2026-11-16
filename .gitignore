@@ -33,6 +33,8 @@ __pycache__/
 # scratch files
 backend/scratch/
 scratch/
+.claude/
+
 
 # private documents and operational data
 docs/

@@ -21,7 +21,6 @@ import {
   Button,
   InputAdornment,
   IconButton,
-  Tooltip,
 } from "@mui/material";
 import {
   Building,
@@ -31,10 +30,7 @@ import {
   Download,
   Search,
   ArrowRight,
-  Filter,
   X,
-  ExternalLink,
-  ShieldCheck,
   Activity,
   Layers,
 } from "lucide-react";
@@ -54,7 +50,7 @@ const RMSDetails = () => {
   const [notWorkingDevices, setNotWorkingDevices] = useState([]);
   const [ngoSpecificDevices, setNgoSpecificDevices] = useState([]);
   const [isNgoDevicesLoading, setIsNgoDevicesLoading] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState(0); // 0: NGO Summary, 1: Inactive Laptops, 2: All Telemetry
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("ALL"); // ALL | HIGH | MODERATE | ZERO

@@ -1,0 +1,19 @@
+# Dedicated background-job process for the Sama backend.
+# Install: copy to /etc/systemd/system/, set User to the account that runs the API (deploy.sh uses ${USER}), then
+#   sudo systemctl daemon-reload && sudo systemctl enable --now sama-worker
+# Set ENABLE_BACKGROUND_JOBS=false in the web server's environment so jobs run only here.
+[Unit]
+Description=Sama background jobs
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/var/www/sama/backend
+EnvironmentFile=/var/www/sama/backend/.env
+Environment="ENABLE_BACKGROUND_JOBS=true"
+ExecStart=/var/www/sama/backend/venv/bin/python -m app.workers
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

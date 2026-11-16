@@ -70,7 +70,6 @@ const DetailView = () => {
                         >
                             <Typography
                                 sx={{
-                                    bgcolor: "#fff",
                                     px: 3,
                                     py: 0.5,
                                     bgcolor: "primary.light",
@@ -79,7 +78,6 @@ const DetailView = () => {
                                     alignItems: "center",
                                     justifyContent: "left",
                                     height: "63px",
-                                    color: "#4A4A4A",
                                     color: "#4A4A4A",
                                     cursor: "pointer",
                                     boxShadow: "0.2px 0.2px 4px rgba(0,0,0,0.1)",

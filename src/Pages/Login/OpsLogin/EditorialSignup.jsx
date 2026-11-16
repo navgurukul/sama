@@ -3,26 +3,7 @@ import { Link } from 'react-router-dom';
 import SamaAuthArt from '../../../components/Editorial/SamaAuthArt';
 import useReveal from '../../../components/Editorial/useReveal';
 import '../../../styles/editorial.css';
-
-const resolveApiUrl = (envUrl, endpoint) => {
-  if (envUrl && typeof envUrl === 'string' && !envUrl.includes('undefined')) {
-    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && envUrl.includes('localhost:8000')) {
-      return `${window.location.protocol}//${window.location.hostname}:8000/${endpoint.replace(/^\/+/, '')}`;
-    }
-    return envUrl;
-  }
-  if (typeof window !== 'undefined') {
-    const { hostname } = window.location;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return `http://localhost:8000/${endpoint.replace(/^\/+/, '')}`;
-    }
-    if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
-      return `${window.location.protocol}//${hostname}:8000/${endpoint.replace(/^\/+/, '')}`;
-    }
-    return `https://backend.thesama.in/${endpoint.replace(/^\/+/, '')}`;
-  }
-  return `http://localhost:8000/${endpoint.replace(/^\/+/, '')}`;
-};
+import { resolveApiUrl } from '../../../api/config';
 
 export default function EditorialSignup() {
   useReveal();
@@ -39,25 +20,11 @@ export default function EditorialSignup() {
   const [shake, setShake] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const [existingEmails, setExistingEmails] = useState([]);
   const userApiUrl = resolveApiUrl(process.env.REACT_APP_UserDetailsApis, 'user-exec');
 
   useEffect(() => {
     document.title = "Sign up | Sama";
     window.scrollTo(0, 0);
-
-    // Pre-fetch registered emails on mount just like original SignupForm
-    fetch(`${userApiUrl}?type=getRegistration`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          const emails = data.map((u) => (u.Email || u.email || '').toLowerCase()).filter(Boolean);
-          setExistingEmails(emails);
-        }
-      })
-      .catch((err) => {
-        console.warn('Could not pre-fetch registered emails:', err);
-      });
   }, []);
 
   // Password strength meter calculation matching sama-website.html
@@ -112,13 +79,6 @@ export default function EditorialSignup() {
     }
 
     if (hasError) {
-      triggerShake();
-      return;
-    }
-
-    // Check if account already exists
-    if (existingEmails.includes(cleanEmail)) {
-      setError('Your account already exists. Please login instead.');
       triggerShake();
       return;
     }

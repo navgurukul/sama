@@ -12,7 +12,6 @@ import {
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import PreDestibution from "../Preliminary/PreDestibution";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import WorkingProductively from "./assets/Working Productively 1 1.svg";
 import { isAdminViewOnly } from "../../utils/authPermissions";
@@ -55,32 +54,8 @@ const generateMonthlyDates = (startDate) => {
   return dates;
 };
 
-const generateYearlyDates = (startDate) => {
-  if (!startDate) return [];
-
-  const parsedStartDate = parseDate(startDate);
-  if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
-    console.error("Invalid start date:", startDate);
-    return [];
-  }
-
-  const yearlyDate = new Date(parsedStartDate);
-  yearlyDate.setFullYear(yearlyDate.getFullYear() + 1);
-  return [yearlyDate];
-};
-
-const formatDate = (date) => {
-  if (!date || isNaN(date.getTime())) return "";
-
-  const day = date.getDate();
-  const month = date.toLocaleString("default", { month: "long" });
-  const year = date.getFullYear();
-  return `${day} ${month} ${year}`;
-};
-
 const MonthlyReport = () => {
   const NgoId = JSON.parse(localStorage.getItem("_AuthSama_"));
-  const gettingStoredData = NgoId[0].NgoId;
   const { id } = useParams();
   const user = id ? id : NgoId[0].NgoId;
   const navigate = useNavigate();
@@ -90,7 +65,7 @@ const MonthlyReport = () => {
   const [isDataAvailabel, setIsDataAvailabel] = useState(false);
   const [monthlyMetrixGet, setMonthlyMetrixGet] = useState([]);
   const [monthlyReportingDate, setMonthlyReportingDate] = useState(""); // Set your start date here
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [, setCurrentDate] = useState(new Date());
   const monthlyDates = generateMonthlyDates(monthlyReportingDate);
   const [extraLoader, setExtraLoader] = useState(true);
 
@@ -116,7 +91,6 @@ const MonthlyReport = () => {
   const NgoData = metrics.filter((data) => data.NgoId === user);
 
   // Determine if the user is found
-  const isUserFound = NgoData.length > 0;
   const preliminaryId = NgoData && NgoData[0] && NgoData[0].Id;
 
   //   this is to get the data for the spacific preliminary
@@ -253,7 +227,6 @@ const MonthlyReport = () => {
           )}
           <Grid container spacing={3} mb={8}>
             {monthlyDates.map((report, index) => {
-              const isEnabled = currentDate >= report; // Check if current date has passed the card's date
               const monthName = report.toLocaleString("default", {
                 month: "long",
               }); // Get full month name
@@ -353,7 +326,7 @@ const MonthlyReport = () => {
                 pb: 2,
               }}
             >
-              <img src={WorkingProductively} height="160" width="160" />
+              <img src={WorkingProductively} alt="" height="160" width="160" />
               <Typography variant="body1">
                 Please create a monthly form specific to this NGO.
               </Typography>
