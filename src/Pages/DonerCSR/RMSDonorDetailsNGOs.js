@@ -365,7 +365,6 @@ const RMSDonorDetailsNGOs = () => {
                               bgcolor: "rgba(46,125,50,0.08)",
                               position: "sticky",
                               right: 0,
-                              bgcolor: "rgba(46,125,50,0.08)",
                             }}
                           >
                             Actions

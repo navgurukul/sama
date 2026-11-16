@@ -8,8 +8,8 @@ import psycopg
 from psycopg.rows import dict_row
 import csv
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
-from db import DB_SCHEMA
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from app.core.db import DB_SCHEMA
 
 load_dotenv()
 

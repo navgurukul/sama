@@ -21,13 +21,13 @@ import {
   IconButton,
   Collapse
 } from "@mui/material";
-import { Edit2, Check, X, ShieldAlert } from "lucide-react";
+import { Edit2, Check, X } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 import { isAdminViewOnly } from "../../utils/authPermissions";
 
 const AfeTracker = () => {
   const [requests, setRequests] = useState([]);
-  const [inventorySummary, setInventorySummary] = useState(null);
+  const [, setInventorySummary] = useState(null);
   const [rmsStats, setRmsStats] = useState({ active: 0, inactive: 0 });
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);

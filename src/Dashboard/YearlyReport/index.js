@@ -34,25 +34,6 @@ const parseDate = (dateString) => {
   return new Date(year, parseInt(month) - 1, day);
 };
 
-const generateMonthlyDates = (startDate) => {
-  if (!startDate) return [];
-
-  const parsedStartDate = parseDate(startDate);
-  if (!parsedStartDate || isNaN(parsedStartDate.getTime())) {
-    console.error("Invalid start date:", startDate);
-    return [];
-  }
-
-  const dates = [];
-  for (let i = 0; i < 12; i++) {
-    const newDate = new Date(parsedStartDate);
-    newDate.setMonth(parsedStartDate.getMonth() + i + 1); // Start from next month
-    dates.push(newDate);
-  }
-
-  return dates;
-};
-
 const generateYearlyDates = (startDate) => {
   if (!startDate) return [];
 
@@ -65,15 +46,6 @@ const generateYearlyDates = (startDate) => {
   const yearlyDate = new Date(parsedStartDate);
   yearlyDate.setFullYear(yearlyDate.getFullYear() + 1);
   return [yearlyDate];
-};
-
-const formatDate = (date) => {
-  if (!date || isNaN(date.getTime())) return "";
-
-  const day = date.getDate();
-  const month = date.toLocaleString("default", { month: "long" });
-  const year = date.getFullYear();
-  return `${day} ${month} ${year}`;
 };
 
 const formatDateCurrent = (input) => {
@@ -329,7 +301,7 @@ const YearlyReport = () => {
                 pb: 2,
               }}
             >
-              <img src={Survey} height="160" width="160" />
+              <img src={Survey} alt="" height="160" width="160" />
               <Typography variant="body1">
                 Please create a yearly form specific to this NGO.
               </Typography>

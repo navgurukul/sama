@@ -227,7 +227,6 @@ const LocationWiseImpact = ({ dateRange, apiData }) => {
 
     layer.setStyle({
       fillColor: hasData ? "#CED7CE" : "#E0E0E0",
-      color: hasData ? "#5C785A" : "#E0E0E0",
       weight: 2,
       opacity: 1,
       color: "#FFF",

@@ -3,27 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import SamaAuthArt from '../../../components/Editorial/SamaAuthArt';
 import useReveal from '../../../components/Editorial/useReveal';
 import '../../../styles/editorial.css';
-
-// Helper to resolve backend API URLs safely across localhost, LAN IPs, and production
-const resolveApiUrl = (envUrl, endpoint) => {
-  if (envUrl && typeof envUrl === 'string' && !envUrl.includes('undefined')) {
-    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && envUrl.includes('localhost:8000')) {
-      return `${window.location.protocol}//${window.location.hostname}:8000/${endpoint.replace(/^\/+/, '')}`;
-    }
-    return envUrl;
-  }
-  if (typeof window !== 'undefined') {
-    const { hostname } = window.location;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return `http://localhost:8000/${endpoint.replace(/^\/+/, '')}`;
-    }
-    if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
-      return `${window.location.protocol}//${hostname}:8000/${endpoint.replace(/^\/+/, '')}`;
-    }
-    return `https://backend.thesama.in/${endpoint.replace(/^\/+/, '')}`;
-  }
-  return `http://localhost:8000/${endpoint.replace(/^\/+/, '')}`;
-};
+import { resolveApiUrl } from '../../../api/config';
+import { setAuthToken } from '../../../api/auth';
 
 export default function EditorialLogin() {
   useReveal();
@@ -125,6 +106,7 @@ export default function EditorialLogin() {
 
       if ((data.status === 'success' || response.ok) && data.user) {
         const user = data.user;
+        setAuthToken(data.token);
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('role', JSON.stringify(user.Role));
         localStorage.setItem(

@@ -6,7 +6,6 @@ import {
   Button,
   Paper,
   CircularProgress,
-  Divider,
   IconButton,
 } from "@mui/material";
 import axios from "axios";
