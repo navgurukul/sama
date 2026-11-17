@@ -104,7 +104,7 @@ function App() {
               <Route path="/" element={<EditorialHome />} />
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/sama-saathi" element={<SamaSaathi />} />
-              <Route path="/our-approach" element={<SamaSaathi />} />
+              <Route path="/our-approach" element={<Navigate to="/sama-saathi" replace />} />
               <Route path="/labs" element={<AiLabs />} />
               <Route path="/giving" element={<GivingBack />} />
               <Route path="/first-laptop" element={<FirstLaptop />} />

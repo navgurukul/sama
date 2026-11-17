@@ -14,7 +14,6 @@ import { seoRoutes } from "./seoConfig";
 const routeMap = {
   "/": seoRoutes.home,
   "/about": seoRoutes.about,
-  "/our-approach": seoRoutes.ourApproach,
   "/donate": seoRoutes.donate,
   "/ngoregistration": seoRoutes.ngoRegistration,
   "/privacy-policy": seoRoutes.privacyPolicy,

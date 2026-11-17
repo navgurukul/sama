@@ -53,14 +53,6 @@ export const seoRoutes = {
     }
   },
 
-  ourApproach: {
-    title: "Device Lifecycle & Refurbishment | Sama",
-    description:
-      "Explore Sama's laptop refurbishment process: collecting retired devices, data erasure, hardware testing, and empowering grassroots learners in India.",
-    canonical: `${BASE_URL}/our-approach`,
-    ogType: "website"
-  },
-
   donate: {
     title: "Donate Used Laptops & E-Waste | Sama",
     description:

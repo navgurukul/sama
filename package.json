@@ -44,6 +44,7 @@
     "dev": "react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build && node scripts/generate-seo-pages.js",
+    "amplify-rules": "node scripts/amplify-rules.js",
     "generate-icons": "python3 scripts/generate-brand-icons.py",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

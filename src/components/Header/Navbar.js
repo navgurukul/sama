@@ -46,7 +46,7 @@ const isRouteMatch = (pathname, patterns) => {
 
 const discoverUsItems = [
   { text: "About Us", href: "/about" },
-  { text: "Our Approach", href: "/our-approach" },
+  { text: "Our Approach", href: "/sama-saathi" },
   { text: "Our Team", href: "/ourteam" },
 ];
 

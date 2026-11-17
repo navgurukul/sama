@@ -95,7 +95,7 @@ Set the date range to last month and compare it with the previous period.
 |---|---|---|
 | 1 | Visits by source | Reports > Acquisition > Traffic acquisition. Sessions by *Session default channel group* (or "Sama channels"). Switch to *Session source / medium* to see LinkedIn, Instagram and partners. |
 | 2 | Engagement rate by source and entry page | The same report gives Engagement rate by channel. Reports > Engagement > Landing page gives Engagement rate by entry page. |
-| 3 | Average engagement time on key pages | Reports > Engagement > Pages and screens. Search by page path, metric *Average engagement time per active user*. Key pages: `/`, `/initiatives`, `/our-approach`, `/sama-saathi`, `/giving`, `/first-laptop`, `/labs`, `/communications`, `/donate`, `/contact`, `/ngo-information`. Read it next to metric 4: more time alone is not better. |
+| 3 | Average engagement time on key pages | Reports > Engagement > Pages and screens. Search by page path, metric *Average engagement time per active user*. Key pages: `/`, `/initiatives`, `/sama-saathi`, `/giving`, `/first-laptop`, `/labs`, `/communications`, `/donate`, `/contact`, `/ngo-information`. Read it next to metric 4: more time alone is not better. |
 | 4 | Completed inquiries and contributions | Reports > Engagement > Key events (or Events). Report one count per submit event above. Report button clicks separately from `cta_click`, broken down by `cta_type`. |
 | 5 | Form completion rate (later) | Explore > Funnel exploration. Step 1 is `lead_form_start` with `form_name` set to the form. Step 2 is that form's submit event. Leave "Make open funnel" off, and break down by *Device category* to see mobile friction. Add `lead_form_error` counts to spot technical failures. |
 

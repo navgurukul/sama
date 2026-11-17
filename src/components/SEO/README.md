@@ -65,7 +65,6 @@ All page titles follow Google's strict display limits (≤ 60 characters) and hi
 | `/corporatepartner` | `https://thesama.in/corporatepartner` | `Corporate ESG & CSR Partnerships \| Sama` (41 chars) | Corporate ESG, IT Asset Disposal CSR |
 | `/ngoregistration` | `https://thesama.in/ngoregistration` | `Request Refurbished Laptops for NGOs \| Sama` (45 chars) | Refurbished Laptops for NGOs / Schools |
 | `/about` | `https://thesama.in/about` | `About Sama \| Tech & Digital Empowerment` (41 chars) | Digital Divide, Women Empowerment |
-| `/our-approach` | `https://thesama.in/our-approach` | `Device Lifecycle & Refurbishment \| Sama` (41 chars) | Hardware Refurbishment, Data Sanitization |
 | `/ourteam` | `https://thesama.in/ourteam` | `Our Team & Leadership \| Sama Digital Foundation` (49 chars) | Leadership, Circular Economy Team |
 | `/about-initiative` | `https://thesama.in/about-initiative` | `About Our Initiative \| Sama Digital Foundation` (47 chars) | Digital Empowerment Initiative |
 | `/privacy-policy` | `https://thesama.in/privacy-policy` | `Privacy Policy \| Sama Digital Foundation` (41 chars) | Transparency, Cookie & LinkedIn Pixel Policy |
@@ -116,7 +115,6 @@ Every public page enforces **exactly one primary `<h1>`** tag, preserving the or
 * **Donate (`/donate`)**: `<Typography variant="h6" component="h1">` $\rightarrow$ *"Support Sama's Mission"*
 * **NGO Registration (`/ngoregistration`)**: `<Typography variant="h5" component="h1">` $\rightarrow$ *"NGO Information Form"*
 * **About (`/about`)**: `<Typography variant="h5" component="h1">` $\rightarrow$ *"What We Do"*
-* **Our Approach (`/our-approach`)**: `<Typography sx={styleh5} variant="h5" component="h1">` $\rightarrow$ *"Our Rationale"*
 * **Privacy Policy (`/privacy-policy`)**: `<Typography variant="h5" component="h1">` $\rightarrow$ *"Privacy Policy"*
 
 ---
@@ -171,3 +169,24 @@ curl -s https://thesama.in/google9ab51571448867b4.html
 1. **Baseline Snapshot (Before Deployment):** Record current Google Search Console total clicks, impressions, and PageSpeed Insights mobile/desktop scores before deploying new marketing initiatives.
 2. **GA4 Tracking:** Add Google Analytics 4 tag (`G-XXXXXXXXXX`) to `public/index.html` to measure key events (`donate_form_submit`, `ngo_form_submit`).
 3. **Monthly Review:** Review keyword queries monthly in Search Console, targeting higher click-through on high-intent terms (*"corporate laptop donation india"*, *"e-waste CSR"*).
+
+---
+
+## Hosting rules (AWS Amplify)
+
+The build writes a pre-rendered page for every public route (`build/<route>/index.html`)
+and a fallback redirect page for every retired URL. Amplify only serves them if its
+**Rewrites and redirects** rules say so; otherwise every path gets the home page's
+`index.html`, with the home title and canonical.
+
+Generate the rules from the same route list the build uses:
+
+```bash
+npm run --silent amplify-rules > amplify-rules.json
+```
+
+Then in the Amplify console go to Hosting > Rewrites and redirects > Manage redirects,
+open the JSON editor and replace the rules with the file's contents. Order matters:
+301 redirects for retired URLs first, then each route's own page (200), then the
+single-page-app fallback. Re-run it after adding or retiring a page in
+`scripts/generate-seo-pages.js`.

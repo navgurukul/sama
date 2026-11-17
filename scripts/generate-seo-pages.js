@@ -199,16 +199,6 @@ const routes = [
       "Sama Digital Foundation bridges the digital divide in India by collecting retired enterprise laptops, refurbishing them to high performance, and deploying them to schools and grassroots NGOs."
   },
   {
-    path: "/our-approach",
-    title: "Device Lifecycle & Refurbishment | Sama",
-    description:
-      "Explore Sama's laptop refurbishment process: collecting retired devices, data erasure, hardware testing, and empowering grassroots learners in India.",
-    canonical: `${BASE_URL}/our-approach`,
-    heading: "Our Approach: Device Lifecycle & Circular Impact",
-    subtext:
-      "Recovering corporate IT hardware, ensuring complete data erasure, and deploying refurbished devices to empower digital literacy."
-  },
-  {
     path: "/ourteam",
     title: "Our Team & Leadership | Sama Digital Foundation",
     description:
@@ -346,6 +336,20 @@ const routes = [
   }
 ];
 
+// Retired or merged URLs. scripts/amplify-rules.js turns these into permanent
+// (301) redirects at the hosting layer; the pages written below are a fallback.
+const redirects = [
+  { from: "/corporatepartner", to: `${BASE_URL}/donate`, label: "Donate Laptops & Corporate Asset Disposal" },
+  { from: "/corporate-partners", to: `${BASE_URL}/donate`, label: "Donate Laptops & Corporate Asset Disposal" },
+  { from: "/about", to: `${BASE_URL}/`, label: "Who We Are | Sama Digital Foundation" },
+  { from: "/about-initiative", to: `${BASE_URL}/initiatives`, label: "Our Initiatives" },
+  { from: "/our-approach", to: `${BASE_URL}/sama-saathi`, label: "Sama Saathi" },
+  { from: "/comms", to: `${BASE_URL}/communications`, label: "Communications & Reports" },
+  { from: "/our-government", to: `${BASE_URL}/contact`, label: "Contact Sama" },
+  { from: "/ourgoverment", to: `${BASE_URL}/contact`, label: "Contact Sama" },
+  { from: "/communitypartners", to: `${BASE_URL}/contact`, label: "Contact Sama" },
+];
+
 function generateSeoPages() {
   if (!fs.existsSync(TEMPLATE_PATH)) {
     console.warn("[generate-seo] build/index.html not found. Run 'npm run build' first.");
@@ -467,17 +471,7 @@ function generateSeoPages() {
     count++;
   }
 
-  // 8. Generate clean 301/meta-refresh redirects for consolidated & removed URLs
-  const redirects = [
-    { from: "/corporatepartner", to: `${BASE_URL}/donate`, label: "Donate Laptops & Corporate Asset Disposal" },
-    { from: "/corporate-partners", to: `${BASE_URL}/donate`, label: "Donate Laptops & Corporate Asset Disposal" },
-    { from: "/about", to: `${BASE_URL}/`, label: "Who We Are | Sama Digital Foundation" },
-    { from: "/about-initiative", to: `${BASE_URL}/initiatives`, label: "Our Initiatives" },
-    { from: "/our-government", to: `${BASE_URL}/contact`, label: "Contact Sama" },
-    { from: "/ourgoverment", to: `${BASE_URL}/contact`, label: "Contact Sama" },
-    { from: "/communitypartners", to: `${BASE_URL}/contact`, label: "Contact Sama" },
-  ];
-
+  // 8. Fallback redirect pages for retired URLs (hosting answers them with a 301 first; see scripts/amplify-rules.js)
   for (const red of redirects) {
     const redFolder = path.join(BUILD_DIR, red.from.replace(/^\//, ""));
     if (!fs.existsSync(redFolder)) {
@@ -502,4 +496,8 @@ function generateSeoPages() {
   console.log(`[generate-seo] Successfully generated ${count} static route pages and ${redirects.length} SEO redirects for S3/CloudFront.`);
 }
 
-generateSeoPages();
+if (require.main === module) {
+  generateSeoPages();
+}
+
+module.exports = { routes, redirects, BASE_URL };

@@ -60,7 +60,7 @@ const Footer = () => {
                       </Link>
                     </Typography>
                     <Typography variant="body2" >
-                      <Link href="/our-approach" underline="none" color="#4A4A4A">
+                      <Link href="/sama-saathi" underline="none" color="#4A4A4A">
                         Our Approach
                       </Link>
                     </Typography>
