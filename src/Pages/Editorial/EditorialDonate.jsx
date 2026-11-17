@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
 import '../../styles/editorial.css';
+import { DONATE_FORM_NAMES, trackFormSubmit, trackFormError } from '../../analytics';
 
 export default function EditorialDonate() {
   useReveal();
@@ -202,6 +203,7 @@ export default function EditorialDonate() {
         throw new Error(data.detail || data.message || 'Submission failed');
       }
 
+      trackFormSubmit(DONATE_FORM_NAMES[formType]);
       setSubmittedRefId(data.reference_id || `SAMA-REF-${Date.now().toString().slice(-4)}`);
       setIsSubmitted(true);
 
@@ -210,6 +212,7 @@ export default function EditorialDonate() {
       }
     } catch (err) {
       console.error('Error submitting form:', err);
+      trackFormError(DONATE_FORM_NAMES[formType]);
       setServerError(err.message || 'Could not submit your details. Please verify your connection.');
     } finally {
       setSubmitting(false);
@@ -387,7 +390,7 @@ export default function EditorialDonate() {
             <div className="donate-card-inner">
 
               {!isSubmitted ? (
-                <form onSubmit={handleSubmit} noValidate>
+                <form data-analytics-form={DONATE_FORM_NAMES[formType]} onSubmit={handleSubmit} noValidate>
                   <div className="donate-header">
                     <span className="eyebrow-pill">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -464,6 +467,7 @@ export default function EditorialDonate() {
                           role="tab"
                           aria-selected={isActive}
                           className={`donate-tab-btn ${isActive ? 'is-active' : ''}`}
+                          data-analytics-cta={`donate_option_${tab.id}`}
                           onClick={() => handleSelectTab(tab.id)}
                         >
                           <span className="donate-tab-badge" />

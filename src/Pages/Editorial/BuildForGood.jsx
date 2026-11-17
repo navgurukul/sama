@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
 import BfgSlider from '../../components/Editorial/BfgSlider';
 import '../../styles/editorial.css';
+import { trackFormSubmit, trackFormError } from '../../analytics';
 
 export default function BuildForGood() {
   useReveal();
@@ -31,9 +32,11 @@ export default function BuildForGood() {
       if (!res.ok || data.status === 'error') {
         throw new Error(data.detail || 'Subscription failed');
       }
+      trackFormSubmit('newsletter');
       setSubscribeStatus('success');
     } catch (err) {
       console.error('Subscription error:', err);
+      trackFormError('newsletter');
       setSubscribeStatus('error');
     }
   };
@@ -175,7 +178,7 @@ export default function BuildForGood() {
           ✓ You’re on the list! We will notify you at <b>{email}</b> when 2027 registration opens.
         </div>
       ) : (
-        <form className="signup" onSubmit={handleSubscribe}>
+        <form className="signup" data-analytics-form="newsletter" onSubmit={handleSubscribe}>
           <label className="sr" htmlFor="em" style={{ position: 'absolute', left: '-9999px' }}>Email address</label>
           <input
             id="em"

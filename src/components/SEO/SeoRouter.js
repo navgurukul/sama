@@ -21,8 +21,6 @@ const routeMap = {
   "/about-initiative": seoRoutes.aboutInitiative,
   "/ngo-information": seoRoutes.ngoInformation,
   "/statutory-disclosures": seoRoutes.ngoInformation,
-  "/communitypartners": seoRoutes.communityPartners,
-  "/our-government": seoRoutes.ourGoverment,
   "/ourteam": seoRoutes.ourTeam,
   "/team": seoRoutes.ourTeam,
   "/sama-saathi": seoRoutes.samaSaathi,

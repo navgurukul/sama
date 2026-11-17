@@ -77,7 +77,7 @@ export default function GivingBack() {
 
     <div className="rd-cta reveal">
       <div><h3>Let’s set one up.</h3><p>Give us 30 minutes to walk through dates, and we will bring a Renew Desk to your office.</p></div>
-      <button type="button" className="bracket bracket--paper" onClick={() => setShowBookCallModal(true)}>Book 30 minutes with us <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button type="button" className="bracket bracket--paper" data-analytics-cta="book_call" onClick={() => setShowBookCallModal(true)}>Book 30 minutes with us <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </div>
     <p className="rd-foot reveal">There’s more life in your old laptop than you think.</p>
 

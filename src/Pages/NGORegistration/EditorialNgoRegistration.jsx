@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
 import '../../styles/editorial.css';
+import { trackFormSubmit, trackFormError } from '../../analytics';
 
 const INDIAN_STATES = [
   'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
@@ -663,6 +664,9 @@ export default function EditorialNgoRegistration() {
       });
 
       const data = await res.json();
+      // The page shows its confirmation either way; only a server-accepted request counts.
+      if (res.ok && data.status !== 'error') trackFormSubmit('ngo_registration');
+      else trackFormError('ngo_registration');
       const generatedDraftId = data.id || `DRAFT-${Date.now().toString().slice(-4)}`;
       setSubmittedDraftId(generatedDraftId);
 
@@ -674,6 +678,7 @@ export default function EditorialNgoRegistration() {
       }
     } catch (err) {
       console.error('Error submitting form:', err);
+      trackFormError('ngo_registration');
       setIsSubmitted(true);
     } finally {
       setSubmitting(false);
@@ -1232,7 +1237,7 @@ export default function EditorialNgoRegistration() {
               )}
 
               {!isSubmitted ? (
-                <form className="ngo-form" id="ngo-form" onSubmit={handleSubmit} noValidate>
+                <form className="ngo-form" id="ngo-form" data-analytics-form="ngo_registration" onSubmit={handleSubmit} noValidate>
                   {/* ========================================================
                       MODE: ADDITIONAL REQUEST (SUBSEQUENT PARTNERS)
                       ======================================================== */}

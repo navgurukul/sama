@@ -82,16 +82,6 @@ const Footer = () => {
                         Corporate Partners
                       </Link>
                     </Typography>
-                    <Typography variant="body2" >
-                      <Link href="/our-government" underline="none" color="#4A4A4A">
-                        Government Partners
-                      </Link>
-                    </Typography>
-                    <Typography variant="body2" >
-                      <Link href="/communitypartners" underline="none" color="#4A4A4A">
-                        Community Partners
-                      </Link>
-                    </Typography>
                   </Box>
                 </Grid>
 

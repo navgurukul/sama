@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { trackFormSubmit, trackFormError } from '../../analytics';
 
 export default function BookCallModal({ isOpen, onClose, initialTopic = 'Renew Desk at our office' }) {
   const [formData, setFormData] = useState({
@@ -79,9 +80,11 @@ export default function BookCallModal({ isOpen, onClose, initialTopic = 'Renew D
         throw new Error(data.detail || data.message || 'Submission failed');
       }
 
+      trackFormSubmit('book_call');
       setSubmitted(true);
     } catch (err) {
       console.error('Error submitting call booking request:', err);
+      trackFormError('book_call');
       setError('Could not submit your request. Please try again or write directly to operations@thesama.in');
     } finally {
       setSubmitting(false);
@@ -169,7 +172,7 @@ export default function BookCallModal({ isOpen, onClose, initialTopic = 'Renew D
               </div>
             )}
 
-            <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '14px' }}>
+            <form data-analytics-form="book_call" onSubmit={handleSubmit} style={{ display: 'grid', gap: '14px' }}>
               <div className="two-col">
                 <div className="fld">
                   <label htmlFor="bkm-name" style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '4px' }}>
