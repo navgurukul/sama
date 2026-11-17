@@ -25,8 +25,6 @@ import EditorialLogin from './Pages/Login/OpsLogin/EditorialLogin';
 import EditorialSignup from './Pages/Login/OpsLogin/EditorialSignup';
 import EditorialNgoRegistration from './Pages/NGORegistration/EditorialNgoRegistration';
 import PrivacyPolicy from './Pages/PrivacyPolicy';
-import OurGoverment from './Pages/About/OurGoverment/OurGoverment';
-import CommunityPartners from './Pages/About/CommunityPartners/CommunityPartners';
 import PrivateRoute from './Privaterouts';
 import DonorCSRRoute from './Pages/DonerCSR/DonorCSRRoute';
 import SeoRouter from './components/SEO/SeoRouter';
@@ -263,9 +261,10 @@ function App() {
               {/* <Route path="/admin-dashboard/:id" element={<TabNavigation />} /> */}
               {/* <Route path="/fileuploadform" element={<Ngodashboard />} /> */}
               <Route path="/ngoprofile" element={<NgoProfile />} />
-              <Route path="/our-government" element={<OurGoverment />} />
-              <Route path="/ourgoverment" element={<Navigate to="/our-government" replace />} />
-              <Route path="/communitypartners" element={<CommunityPartners />} />
+              {/* Retired partner pages: old links go to the contact form. */}
+              <Route path="/our-government" element={<Navigate to="/contact" replace />} />
+              <Route path="/ourgoverment" element={<Navigate to="/contact" replace />} />
+              <Route path="/communitypartners" element={<Navigate to="/contact" replace />} />
               <Route path="/documentreupload" element={<DocumentReupload />} />
               <Route path="/attentionneeded" element={<AttentionNeeded />} />
               <Route path='/userdetails/:id' element={<BeneficiaryProfileSub />} />

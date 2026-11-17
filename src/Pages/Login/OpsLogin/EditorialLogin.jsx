@@ -5,6 +5,7 @@ import useReveal from '../../../components/Editorial/useReveal';
 import '../../../styles/editorial.css';
 import { resolveApiUrl } from '../../../api/config';
 import { setAuthToken } from '../../../api/auth';
+import { syncVisitorContext } from '../../../analytics';
 
 export default function EditorialLogin() {
   useReveal();
@@ -123,6 +124,8 @@ export default function EditorialLogin() {
             },
           ])
         );
+
+        syncVisitorContext();
 
         const role = (user.Role || '').toLowerCase();
 

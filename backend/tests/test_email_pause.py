@@ -7,6 +7,15 @@ from app.api.routes.public import public_contribute
 
 
 class FormEmailPauseTests(unittest.TestCase):
+    def test_retired_partner_forms_are_rejected(self):
+        # The government and community partner pages are no longer on the site.
+        from fastapi import HTTPException
+
+        for form_type in ("government", "community"):
+            with self.assertRaises(HTTPException) as ctx:
+                _save_public_inquiry({"formType": form_type, "email": "x@example.org"})
+            self.assertEqual(ctx.exception.status_code, 400)
+
     def test_inquiry_email_pause_topics(self):
         # 1. Sama Saathi -> Paused
         self.assertTrue(_is_inquiry_email_paused("contact", "I want to become a Sama Saathi"))
@@ -14,7 +23,6 @@ class FormEmailPauseTests(unittest.TestCase):
 
         # 2. Bringing the Saathi model to my community -> Paused
         self.assertTrue(_is_inquiry_email_paused("contact", "Bringing the Saathi model to my community"))
-        self.assertTrue(_is_inquiry_email_paused("community", "General Community"))
 
         # 3. Something else -> Paused
         self.assertTrue(_is_inquiry_email_paused("contact", "Something else"))

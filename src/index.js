@@ -6,8 +6,10 @@ import reportWebVitals from './reportWebVitals';
 import store from './Dashboard/Redux/store';
 import { Provider } from 'react-redux';
 import { installApiAuth } from './api/auth';
+import { installAnalytics } from './analytics';
 
 installApiAuth();
+installAnalytics();
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

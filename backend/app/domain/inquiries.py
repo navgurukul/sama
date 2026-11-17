@@ -17,14 +17,10 @@ def _is_inquiry_email_paused(form_type: str, topic: str) -> bool:
     
     Operations requested pausing auto-emails for:
     - Sama Saathi inquiries ("I want to become a Sama Saathi")
-    - Community model inquiries ("Bringing the Saathi model to my community" / community forms)
+    - Community model inquiries ("Bringing the Saathi model to my community")
     - "Something else" inquiries
     """
     normalized_topic = (topic or "").strip().lower()
-    normalized_form = (form_type or "").strip().lower()
-
-    if normalized_form == "community":
-        return True
 
     if "saathi" in normalized_topic:
         return True
@@ -40,7 +36,8 @@ def _is_inquiry_email_paused(form_type: str, topic: str) -> bool:
 
 def _save_public_inquiry(payload: Dict[str, Any]) -> Dict[str, Any]:
     form_type = str(payload.get("formType") or "").strip().lower()
-    if form_type not in {"email", "community", "corporate", "government", "contact", "callback", "book_call", "newsletter"}:
+    # "government" and "community" belonged to partner pages that are no longer on the site.
+    if form_type not in {"email", "corporate", "contact", "callback", "book_call", "newsletter"}:
         raise HTTPException(status_code=400, detail="Unsupported public form type")
 
     with get_conn() as conn:

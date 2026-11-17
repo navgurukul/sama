@@ -135,20 +135,6 @@ export const seoRoutes = {
     canonical: `${BASE_URL}/ngo-information`,
     ogType: "website"
   },
-  communityPartners: {
-    title: "Community Partners & Grassroots Impact | Sama",
-    description:
-      "See how Sama collaborates with community organizations, learning centres, and grassroots NGOs to empower youth and women across India.",
-    canonical: `${BASE_URL}/communitypartners`,
-    ogType: "website"
-  },
-  ourGoverment: {
-    title: "Government & Public Sector Partnerships | Sama",
-    description:
-      "Partnering with state and education initiatives to advance digital literacy, e-waste circularity, and smart education in public institutions.",
-    canonical: `${BASE_URL}/our-government`,
-    ogType: "website"
-  },
   ourTeam: {
     title: "Our Team & Leadership | Sama Digital Foundation",
     description:

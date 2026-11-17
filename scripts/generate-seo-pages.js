@@ -3,7 +3,7 @@
  * Inspired by InternHack's lightweight build generator:
  * - Reads compiled `build/index.html` as a template
  * - Generates dedicated static `index.html` files for every public route:
- *   /donate/index.html, /corporatepartner/index.html, /our-government/index.html, etc.
+ *   /donate/index.html, /contact/index.html, /ngoregistration/index.html, etc.
  * - Injects exact <title>, <meta name="description">, canonical tag, OG tags, and Schema.org JSON-LD
  * - Provides non-JS crawlers (WhatsApp, LinkedIn, ChatGPT, Perplexity) with complete metadata
  * - When loaded in a browser, React cleanly hydrates without affecting application flow or user data.
@@ -177,26 +177,6 @@ const routes = [
         }
       ]
     }
-  },
-  {
-    path: "/our-government",
-    title: "Government & Public Sector Partnerships | Sama",
-    description:
-      "Partnering with state and education initiatives to advance digital literacy, e-waste circularity, and smart education in public institutions.",
-    canonical: `${BASE_URL}/our-government`,
-    heading: "Our Government Partners",
-    subtext:
-      "Through government collaborations, we scale our efforts to reach rural and underserved areas, ensuring equitable access to technology and opportunity."
-  },
-  {
-    path: "/communitypartners",
-    title: "Community Partners & Grassroots Impact | Sama",
-    description:
-      "See how Sama collaborates with community organizations, learning centres, and grassroots NGOs to empower youth and women across India.",
-    canonical: `${BASE_URL}/communitypartners`,
-    heading: "Our Community Partners",
-    subtext:
-      "Our community partners bring local insights and on-the-ground support, helping us connect with and empower the individuals who need it most."
   },
   {
     path: "/ngoregistration",
@@ -493,6 +473,9 @@ function generateSeoPages() {
     { from: "/corporate-partners", to: `${BASE_URL}/donate`, label: "Donate Laptops & Corporate Asset Disposal" },
     { from: "/about", to: `${BASE_URL}/`, label: "Who We Are | Sama Digital Foundation" },
     { from: "/about-initiative", to: `${BASE_URL}/initiatives`, label: "Our Initiatives" },
+    { from: "/our-government", to: `${BASE_URL}/contact`, label: "Contact Sama" },
+    { from: "/ourgoverment", to: `${BASE_URL}/contact`, label: "Contact Sama" },
+    { from: "/communitypartners", to: `${BASE_URL}/contact`, label: "Contact Sama" },
   ];
 
   for (const red of redirects) {

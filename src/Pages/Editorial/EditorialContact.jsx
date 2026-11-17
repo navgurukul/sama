@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useReveal from '../../components/Editorial/useReveal';
 import '../../styles/editorial.css';
+import { trackFormSubmit, trackFormError } from '../../analytics';
 
 export default function EditorialContact() {
   useReveal();
@@ -122,9 +123,11 @@ export default function EditorialContact() {
         throw new Error(data.detail || data.message || 'Submission failed');
       }
 
+      trackFormSubmit('contact', formData.topic);
       setIsSubmitted(true);
     } catch (err) {
       console.error('Error submitting contact form:', err);
+      trackFormError('contact');
       setServerError(err.message || 'Could not send your message. Please try again or email operations@thesama.in directly.');
     } finally {
       setSubmitting(false);
@@ -161,7 +164,7 @@ export default function EditorialContact() {
       <section className="sec" id="connect">
         <div className="wrap contact-grid">
           {!isSubmitted ? (
-            <form className="contact-form reveal" id="contact-form" onSubmit={handleSubmit} noValidate>
+            <form className="contact-form reveal" id="contact-form" data-analytics-form="contact" onSubmit={handleSubmit} noValidate>
               <label>
                 <span>I am reaching out about</span>
                 <select name="topic" id="cf-topic" value={formData.topic} onChange={handleChange}>
