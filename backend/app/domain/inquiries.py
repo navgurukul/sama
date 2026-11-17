@@ -16,19 +16,25 @@ def _is_inquiry_email_paused(form_type: str, topic: str) -> bool:
     """Return True if email notification is paused for this inquiry.
     
     Operations requested pausing auto-emails for:
+    - Renew Desk form responses (formType == "book_call" / "callback", or topic containing "renew" / "desk")
+    - General contact form responses (formType == "contact")
     - Sama Saathi inquiries ("I want to become a Sama Saathi")
     - Community model inquiries ("Bringing the Saathi model to my community")
     - "Something else" inquiries
     """
+    normalized_form = (form_type or "").strip().lower()
     normalized_topic = (topic or "").strip().lower()
 
-    if "saathi" in normalized_topic:
+    # Paused form types: all contact forms, book_call (Renew Desk modal), and callback
+    if normalized_form in {"contact", "book_call", "callback", "community"}:
         return True
 
-    if "community" in normalized_topic or "model" in normalized_topic:
+    # Renew Desk topic or keywords
+    if "renew" in normalized_topic or "desk" in normalized_topic:
         return True
 
-    if "something else" in normalized_topic or normalized_topic == "other":
+    # Sama Saathi, Community model, Something else
+    if any(k in normalized_topic for k in ("saathi", "community", "model", "something else", "other")):
         return True
 
     return False
