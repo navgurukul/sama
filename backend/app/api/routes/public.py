@@ -240,112 +240,117 @@ def public_contribute(payload: dict):
                 conn.commit()
 
         # Send email notification to operations@thesama.in
-        try:
-            full_name = f"{first_name} {last_name}".strip() or "Anonymous User"
-            category_titles = {
-                "give_individual": "Individual Laptop Donation",
-                "give_corporate": "Corporate Fleet Donation",
-                "need_individual": "Learner Laptop Request",
-                "financial_volunteer": "Financial / Volunteer Inquiry"
-            }
-            category_label = category_titles.get(form_type, form_type.replace("_", " ").title())
-            
-            rows_html = [
-                f'<tr><td style="padding: 6px 0; font-weight: bold; width: 160px; color: #555;">Reference ID:</td><td style="font-weight: 700; color: #174B32;">{reference_id}</td></tr>',
-                f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Category:</td><td><b>{category_label}</b></td></tr>',
-                f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Name:</td><td>{full_name}</td></tr>',
-                f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Email:</td><td><a href="mailto:{email}">{email or "Not provided"}</a></td></tr>',
-                f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Phone:</td><td>{phone or "Not provided"}</td></tr>',
-                f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Location:</td><td>{city or ""}{", " if city and state else ""}{state or "Not specified"}</td></tr>',
-            ]
+        # Email notifications are paused for individual donations and individual learner requests per operations.
+        PAUSED_CONTRIBUTION_EMAIL_TYPES = {"give_individual", "need_individual"}
+        if form_type in PAUSED_CONTRIBUTION_EMAIL_TYPES:
+            print(f"Info: email notification paused for public contribution form '{form_type}' (ref: {reference_id})")
+        else:
+            try:
+                full_name = f"{first_name} {last_name}".strip() or "Anonymous User"
+                category_titles = {
+                    "give_individual": "Individual Laptop Donation",
+                    "give_corporate": "Corporate Fleet Donation",
+                    "need_individual": "Learner Laptop Request",
+                    "financial_volunteer": "Financial / Volunteer Inquiry"
+                }
+                category_label = category_titles.get(form_type, form_type.replace("_", " ").title())
+                
+                rows_html = [
+                    f'<tr><td style="padding: 6px 0; font-weight: bold; width: 160px; color: #555;">Reference ID:</td><td style="font-weight: 700; color: #174B32;">{reference_id}</td></tr>',
+                    f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Category:</td><td><b>{category_label}</b></td></tr>',
+                    f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Name:</td><td>{full_name}</td></tr>',
+                    f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Email:</td><td><a href="mailto:{email}">{email or "Not provided"}</a></td></tr>',
+                    f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Phone:</td><td>{phone or "Not provided"}</td></tr>',
+                    f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Location:</td><td>{city or ""}{", " if city and state else ""}{state or "Not specified"}</td></tr>',
+                ]
 
-            if is_give_corporate:
-                if company_name:
-                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Company Name:</td><td>{company_name} ({designation or "Not provided"})</td></tr>')
-                fleet_qty = payload.get("numberOfLaptops") or "10–50 laptops"
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Fleet Size:</td><td><b>{fleet_qty}</b></td></tr>')
-                if decommission_timeline:
-                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Timeline:</td><td>{decommission_timeline} (Data wiping: {"Yes" if data_wiping_needed else "No"})</td></tr>')
-                if device_age:
-                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Fleet Age:</td><td>{device_age}</td></tr>')
-                if pickup_address:
-                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Office / Pickup:</td><td>{pickup_address}</td></tr>')
+                if is_give_corporate:
+                    if company_name:
+                        rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Company Name:</td><td>{company_name} ({designation or "Not provided"})</td></tr>')
+                    fleet_qty = payload.get("numberOfLaptops") or "10–50 laptops"
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Fleet Size:</td><td><b>{fleet_qty}</b></td></tr>')
+                    if decommission_timeline:
+                        rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Timeline:</td><td>{decommission_timeline} (Data wiping: {"Yes" if data_wiping_needed else "No"})</td></tr>')
+                    if device_age:
+                        rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Fleet Age:</td><td>{device_age}</td></tr>')
+                    if pickup_address:
+                        rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Office / Pickup:</td><td>{pickup_address}</td></tr>')
 
-            elif is_give_individual:
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Number of Laptops:</td><td><b>{num_laptops}</b></td></tr>')
-                device_info_parts = [f"Condition: {device_condition or 'Working'}"]
-                if device_brand:
-                    device_info_parts.append(f"Brand: {device_brand}")
-                if device_age:
-                    device_info_parts.append(f"Age: {device_age}")
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Device Details:</td><td>{" | ".join(device_info_parts)}</td></tr>')
-                if pickup_address:
-                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Pickup Address:</td><td>{pickup_address}</td></tr>')
+                elif is_give_individual:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Number of Laptops:</td><td><b>{num_laptops}</b></td></tr>')
+                    device_info_parts = [f"Condition: {device_condition or 'Working'}"]
+                    if device_brand:
+                        device_info_parts.append(f"Brand: {device_brand}")
+                    if device_age:
+                        device_info_parts.append(f"Age: {device_age}")
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Device Details:</td><td>{" | ".join(device_info_parts)}</td></tr>')
+                    if pickup_address:
+                        rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Pickup Address:</td><td>{pickup_address}</td></tr>')
 
-            elif is_need_individual:
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Applying As:</td><td><b>{applicant_category or "Student"}</b></td></tr>')
-                if education_course:
-                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Education / Course:</td><td>{education_course}</td></tr>')
-                if family_income:
-                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Annual Family Income:</td><td>{family_income}</td></tr>')
-                if purpose:
-                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Purpose / Need:</td><td><b>{purpose}</b></td></tr>')
+                elif is_need_individual:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Applying As:</td><td><b>{applicant_category or "Student"}</b></td></tr>')
+                    if education_course:
+                        rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Education / Course:</td><td>{education_course}</td></tr>')
+                    if family_income:
+                        rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Annual Family Income:</td><td>{family_income}</td></tr>')
+                    if purpose:
+                        rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Purpose / Need:</td><td><b>{purpose}</b></td></tr>')
 
-            elif is_financial:
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Contribution Type:</td><td><b>{donation_intent or "Financial / Volunteer Support"}</b></td></tr>')
+                elif is_financial:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Contribution Type:</td><td><b>{donation_intent or "Financial / Volunteer Support"}</b></td></tr>')
 
-            if hear_about:
-                rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Source:</td><td>{hear_about}</td></tr>')
+                if hear_about:
+                    rows_html.append(f'<tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Source:</td><td>{hear_about}</td></tr>')
 
-            email_html = f"""
-            <!DOCTYPE html>
-            <html>
-            <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 20px; background-color: #f7f6f2;">
-                <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #e0ded8;">
-                    <div style="border-bottom: 2px solid #174B32; padding-bottom: 12px; margin-bottom: 20px;">
-                        <h2 style="color: #174B32; margin: 0; font-size: 20px;">New Form Submission: {category_label}</h2>
-                        <p style="color: #666; margin: 4px 0 0 0; font-size: 13px;">Ref #{reference_id} · Received on {datetime.utcnow().strftime('%d %b %Y, %I:%M %p UTC')}</p>
-                    </div>
+                email_html = f"""
+                <!DOCTYPE html>
+                <html>
+                <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 20px; background-color: #f7f6f2;">
+                    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #e0ded8;">
+                        <div style="border-bottom: 2px solid #174B32; padding-bottom: 12px; margin-bottom: 20px;">
+                            <h2 style="color: #174B32; margin: 0; font-size: 20px;">New Form Submission: {category_label}</h2>
+                            <p style="color: #666; margin: 4px 0 0 0; font-size: 13px;">Ref #{reference_id} · Received on {datetime.utcnow().strftime('%d %b %Y, %I:%M %p UTC')}</p>
+                        </div>
 
-                    <p style="margin-top: 0; font-size: 14px; color: #444;">
-                        A new response has been submitted on the <b>Get Involved</b> form on the Sama website. Details are below:
-                    </p>
-
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px;">
-                        {''.join(rows_html)}
-                    </table>
-
-                    {f'''
-                    <div style="background-color: #fdfbf7; padding: 14px; border-radius: 6px; margin-top: 18px; border: 1px solid #e8e3d8; border-left: 4px solid #174B32;">
-                        <p style="margin: 0; font-weight: bold; color: #555;">Additional Note / Message:</p>
-                        <p style="margin-top: 6px; margin-bottom: 0; white-space: pre-wrap; color: #222;">{message}</p>
-                    </div>
-                    ''' if message else ''}
-
-                    <div style="margin-top: 24px; padding: 12px; background: #EAF3EB; border-radius: 6px; border: 1px solid #c2e0c9;">
-                        <p style="margin: 0; font-size: 13px; color: #174B32;">
-                            <b>Action required:</b> Please review these details and follow up with the respondent at <a href="mailto:{email}" style="color: #174B32; font-weight: 600;">{email}</a> or phone <b>{phone}</b>.
+                        <p style="margin-top: 0; font-size: 14px; color: #444;">
+                            A new response has been submitted on the <b>Get Involved</b> form on the Sama website. Details are below:
                         </p>
+
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px;">
+                            {''.join(rows_html)}
+                        </table>
+
+                        {f'''
+                        <div style="background-color: #fdfbf7; padding: 14px; border-radius: 6px; margin-top: 18px; border: 1px solid #e8e3d8; border-left: 4px solid #174B32;">
+                            <p style="margin: 0; font-weight: bold; color: #555;">Additional Note / Message:</p>
+                            <p style="margin-top: 6px; margin-bottom: 0; white-space: pre-wrap; color: #222;">{message}</p>
+                        </div>
+                        ''' if message else ''}
+
+                        <div style="margin-top: 24px; padding: 12px; background: #EAF3EB; border-radius: 6px; border: 1px solid #c2e0c9;">
+                            <p style="margin: 0; font-size: 13px; color: #174B32;">
+                                <b>Action required:</b> Please review these details and follow up with the respondent at <a href="mailto:{email}" style="color: #174B32; font-weight: 600;">{email}</a> or phone <b>{phone}</b>.
+                            </p>
+                        </div>
+
+                        <hr style="margin-top: 24px; border: none; border-top: 1px solid #e0ded8;">
+                        <p style="font-size: 12px; color: #888; margin: 0;">Sama Digital Foundation · Operations Portal</p>
                     </div>
+                </body>
+                </html>
+                """
 
-                    <hr style="margin-top: 24px; border: none; border-top: 1px solid #e0ded8;">
-                    <p style="font-size: 12px; color: #888; margin: 0;">Sama Digital Foundation · Operations Portal</p>
-                </div>
-            </body>
-            </html>
-            """
-
-            reply_to_addr = email if email and "@" in email else None
-            _send_email_common(
-                to_email=os.environ.get("SAMA_OPS_EMAIL", "operations@thesama.in"),
-                subject=f"[{reference_id}] New {category_label} from {full_name}",
-                html_part=email_html,
-                to_name="Sama Operations Team",
-                from_name="Sama Website Portal",
-                reply_to=reply_to_addr
-            )
-        except Exception as email_err:
-            print(f"Error sending contribute form email to operations: {email_err}")
+                reply_to_addr = email if email and "@" in email else None
+                _send_email_common(
+                    to_email=os.environ.get("SAMA_OPS_EMAIL", "operations@thesama.in"),
+                    subject=f"[{reference_id}] New {category_label} from {full_name}",
+                    html_part=email_html,
+                    to_name="Sama Operations Team",
+                    from_name="Sama Website Portal",
+                    reply_to=reply_to_addr
+                )
+            except Exception as email_err:
+                print(f"Error sending contribute form email to operations: {email_err}")
 
         return {
             "status": "success",

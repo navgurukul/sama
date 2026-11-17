@@ -12,6 +12,32 @@ from ..core.db import DB_SCHEMA, get_conn
 from ..integrations.email import _send_email_common
 
 
+def _is_inquiry_email_paused(form_type: str, topic: str) -> bool:
+    """Return True if email notification is paused for this inquiry.
+    
+    Operations requested pausing auto-emails for:
+    - Sama Saathi inquiries ("I want to become a Sama Saathi")
+    - Community model inquiries ("Bringing the Saathi model to my community" / community forms)
+    - "Something else" inquiries
+    """
+    normalized_topic = (topic or "").strip().lower()
+    normalized_form = (form_type or "").strip().lower()
+
+    if normalized_form == "community":
+        return True
+
+    if "saathi" in normalized_topic:
+        return True
+
+    if "community" in normalized_topic or "model" in normalized_topic:
+        return True
+
+    if "something else" in normalized_topic or normalized_topic == "other":
+        return True
+
+    return False
+
+
 def _save_public_inquiry(payload: Dict[str, Any]) -> Dict[str, Any]:
     form_type = str(payload.get("formType") or "").strip().lower()
     if form_type not in {"email", "community", "corporate", "government", "contact", "callback", "book_call", "newsletter"}:
@@ -62,9 +88,13 @@ def _save_public_inquiry(payload: Dict[str, Any]) -> Dict[str, Any]:
             inquiry_id = cur.fetchone()["id"]
             conn.commit()
 
+    topic = str(payload.get("topic") or "General Website Contact").strip()
+    if _is_inquiry_email_paused(form_type, topic):
+        print(f"Info: email notification paused for inquiry form_type='{form_type}', topic='{topic}' (inquiry_id={inquiry_id})")
+        return {"status": "success", "databaseId": inquiry_id}
+
     # Automatically dispatch direct notification email to operations@thesama.in with CC to brendon@thesama.in
     try:
-        topic = str(payload.get("topic") or "General Website Contact").strip()
         sender_name = str(payload.get("name") or f"{payload.get('firstName', '')} {payload.get('lastName', '')}".strip() or "Website Visitor").strip()
         sender_phone = str(payload.get("phone") or payload.get("contact") or "Not provided").strip()
         sender_email = str(payload.get("email") or "Not provided").strip()

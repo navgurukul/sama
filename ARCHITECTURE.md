@@ -121,6 +121,15 @@ as public, nor a legacy dispatcher, so new endpoints are classified on purpose.
 PostgreSQL schema `sama_ops`. Numbered migrations live in `sql_scripts/` and
 `scripts/db/migrate.py` records which ones a database has applied.
 
+**NGO request IDs.** Each request in `ngo_requests` keeps its public ID
+(`SAM-<n>`) in `display_id`, and `ngo_request_id_state` records the highest
+number ever issued, so IDs never shift or get reused when requests are deleted.
+The first backfill reproduces the IDs that used to be computed on every read
+(highest registered SAM number plus position), so existing references keep
+their meaning. `domain/ngos/request_ids.py` assigns IDs on first use
+(migration `phase1_023` does the same in SQL) and falls back to the old
+computation if the column cannot be created.
+
 **Schema drift.** Production has columns and tables that no migration creates,
 for example `laptop_labeling.is_deleted_from_sheet`, most
 `external_registered_ngo` columns, the `user_profile_*` tables and the
