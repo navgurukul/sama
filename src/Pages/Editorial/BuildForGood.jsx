@@ -160,7 +160,7 @@ export default function BuildForGood() {
       <span className="eyebrow">Prizes built with purpose</span>
       <h2 className="display h2 mt-s">Every prize has <em>a second life.</em></h2>
       <p className="lede mt-m">The refurbished MacBooks awarded to Build for Good finalists were restored through the same rigorous pipeline that powers digital inclusion across India, turning corporate hardware into tools for future builders.</p>
-      <Link className="text-link mt-l" style={{ marginTop: '30px' }} to="/our-approach">See how Sama restores devices <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link>
+      <Link className="text-link mt-l" style={{ marginTop: '30px' }} to="/sama-saathi">See how Sama restores devices <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></Link>
     </div>
     <div className="reveal"><img src="https://navgurukul.github.io/sama-website/assets/hero-laptop-v2-BFsezopc.webp" alt="A restored laptop, open and ready to be passed on" style={{ marginLeft: 'auto', maxHeight: '340px' }} /></div>
   </div>
