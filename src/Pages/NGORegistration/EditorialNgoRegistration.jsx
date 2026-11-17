@@ -111,7 +111,7 @@ export default function EditorialNgoRegistration() {
   ], []);
 
   useEffect(() => {
-    document.title = "NGO Information Form | Sama";
+    document.title = "Partner Information Form | Sama";
     window.scrollTo(0, 0);
 
     // Fetch existing NGOs from PostgreSQL database
@@ -753,19 +753,19 @@ export default function EditorialNgoRegistration() {
   }, [existingNgos, modalNgoSearch, modalSelectedNgo]);
 
   return (
-    <div className="editorial-page page" id="page-ngoregistration" data-title="NGO Information Form | Sama">
+    <div className="editorial-page page" id="page-ngoregistration" data-title="Partner Information Form | Sama">
       {/* Page Hero */}
       <section className="page-hero">
         <div className="wrap reveal">
           <div className="crumbs">
-            <Link to="/">Home</Link> / <b>NGO Information Form</b>
+            <Link to="/">Home</Link> / <b>Partner Information Form</b>
           </div>
-          <span className="eyebrow">NGO registration</span>
+          <span className="eyebrow">Partner registration</span>
           <h1 className="display h1 mt-s">
-            NGO Information <em>Form</em>
+            Partner Information <em>Form</em>
           </h1>
           <p className="lede mt-m">
-            Tell us about your organisation so we can register you as a Sama partner NGO and match you with laptops for the learners you support. It takes about three minutes.
+            Tell us about your organisation so we can register you as a Sama partner and match you with laptops for the learners you support. It takes about three minutes.
           </p>
         </div>
       </section>
