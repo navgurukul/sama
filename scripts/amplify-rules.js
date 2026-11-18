@@ -44,6 +44,18 @@ const rules = [
       }))
     ),
   {
+    source: "/sama-quarterly",
+    target: "/sama-quarterly/index.html",
+    status: "200",
+    condition: null,
+  },
+  {
+    source: "/sama-quarterly/",
+    target: "/sama-quarterly/index.html",
+    status: "200",
+    condition: null,
+  },
+  {
     source: `</^[^.]+$|\\.(?!(${FILE_EXTENSIONS})$)([^.]+$)/>`,
     target: "/index.html",
     status: "200",

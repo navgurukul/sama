@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { ThemeProvider } from "@mui/material/styles";
 import theme from './theme/theme';
@@ -91,6 +91,13 @@ const RouteLoadingFallback = () => (
   </div>
 );
 
+const SamaQuarterlyRedirect = () => {
+  useEffect(() => {
+    window.location.replace('/sama-quarterly/index.html');
+  }, []);
+  return null;
+};
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -125,6 +132,7 @@ function App() {
               <Route path="/ngo-information" element={<EditorialCorporate />} />
               <Route path="/statutory-disclosures" element={<EditorialCorporate />} />
               <Route path="/about" element={<Navigate to="/" replace />} />
+              <Route path="/sama-quarterly" element={<SamaQuarterlyRedirect />} />
               <Route path="/ngoregistration/:donorId" element={<EditorialNgoRegistration />} />
               <Route path='/ngoregistration' element={<EditorialNgoRegistration />} />
               <Route path="/login" element={<EditorialLogin />} />
