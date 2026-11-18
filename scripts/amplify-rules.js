@@ -44,6 +44,12 @@ const rules = [
       }))
     ),
   {
+    source: "/sama-quarterly/index.html",
+    target: "/sama-quarterly",
+    status: "301",
+    condition: null,
+  },
+  {
     source: "/sama-quarterly",
     target: "/sama-quarterly/index.html",
     status: "200",
