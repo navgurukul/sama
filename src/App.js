@@ -91,11 +91,27 @@ const RouteLoadingFallback = () => (
   </div>
 );
 
-const SamaQuarterlyRedirect = () => {
+const SamaQuarterly = () => {
   useEffect(() => {
-    window.location.replace('/sama-quarterly/index.html');
+    document.title = "Sama Quarterly · Q3 2026";
   }, []);
-  return null;
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, width: '100vw', height: '100vh', zIndex: 99999, background: '#FBFAF7' }}>
+      <iframe
+        src="/sama-quarterly/index.html"
+        title="Sama Quarterly · Q3 2026"
+        style={{
+          width: '100%',
+          height: '100%',
+          border: 'none',
+          margin: 0,
+          padding: 0,
+          display: 'block'
+        }}
+      />
+    </div>
+  );
 };
 
 function App() {
@@ -132,7 +148,7 @@ function App() {
               <Route path="/ngo-information" element={<EditorialCorporate />} />
               <Route path="/statutory-disclosures" element={<EditorialCorporate />} />
               <Route path="/about" element={<Navigate to="/" replace />} />
-              <Route path="/sama-quarterly" element={<SamaQuarterlyRedirect />} />
+              <Route path="/sama-quarterly" element={<SamaQuarterly />} />
               <Route path="/ngoregistration/:donorId" element={<EditorialNgoRegistration />} />
               <Route path='/ngoregistration' element={<EditorialNgoRegistration />} />
               <Route path="/login" element={<EditorialLogin />} />

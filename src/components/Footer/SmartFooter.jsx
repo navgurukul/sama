@@ -45,6 +45,12 @@ const DASHBOARD_PREFIXES = [
 export default function SmartFooter() {
   const location = useLocation();
   const path = (location.pathname || '').toLowerCase();
+
+  // Hide footer completely on direct partner pages like Sama Quarterly
+  if (path.startsWith('/sama-quarterly')) {
+    return null;
+  }
+
   const isLoggedIn = typeof window !== 'undefined' && !!localStorage.getItem('isLoggedIn');
   const isDashboard = DASHBOARD_PREFIXES.some((prefix) => path.startsWith(prefix));
 

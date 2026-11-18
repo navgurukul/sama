@@ -706,6 +706,13 @@ dialog::backdrop{background:rgba(14,10,4,.66);backdrop-filter:blur(3px)}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
+(function() {
+  if (window.location.pathname.endsWith('/index.html')) {
+    var cleanPath = window.location.pathname.replace(/\/index\.html$/, '') || '/sama-quarterly';
+    window.history.replaceState(null, document.title, cleanPath + window.location.search + window.location.hash);
+  }
+})();
+
 /* =====================================================================
    SAMA QUARTERLY · ISSUE CONTENT
    Edit only this object each quarter. Everything on the page is drawn from it.
