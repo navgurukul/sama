@@ -258,7 +258,8 @@ def _load_registration_list(org_filter: Optional[str]) -> Dict[str, Any]:
                     SELECT id, ngo_name, laptop_quantity, location, use_case, contact_name, email, status, tentative_refurb_completion, donor,
                            partner_type, date_received, attached_email_link, approver_name, approved_quantity,
                            dispatch_location, expected_delivery_days, dispatch_date, delivery_date, last_impact_report_date,
-                           operating_state, years_operating, focus_area, infrastructure, beneficiaries_count, age_group, expected_outcome, laptop_tracking
+                           operating_state, years_operating, focus_area, infrastructure, beneficiaries_count, age_group, expected_outcome, laptop_tracking,
+                           contact_number, registration_number
                     FROM {DB_SCHEMA}.ngo_requests
                     ORDER BY id ASC
                     """
