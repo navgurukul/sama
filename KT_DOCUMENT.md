@@ -40,6 +40,7 @@
 ```
 RECEIVED → REFURBISHMENT_TESTING → QC_CHECK → DISTRIBUTION → POST_DEPLOYMENT_15D → MONTHLY_MONITORING
 ```
+> 📖 **Deep Dive**: For a complete technical & operational breakdown of all stage state machines, checklists, gate rules, dual-actor enforcement, and database schemas, see [STAGES_KT_AND_WORKFLOW_GUIDE.md](STAGES_KT_AND_WORKFLOW_GUIDE.md).
 
 ---
 

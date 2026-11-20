@@ -13,7 +13,7 @@ const INDIAN_STATES = [
   'Uttarakhand', 'West Bengal'
 ];
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_FILE_SIZE = 8 * 1024 * 1024; // 8MB limit for fast and reliable cloud submission
 const ALLOWED_MIME_TYPES = [
   'application/pdf',
   'application/msword',
@@ -99,6 +99,7 @@ export default function EditorialNgoRegistration() {
   const [errors, setErrors] = useState({});
   const [shake, setShake] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedDraftId, setSubmittedDraftId] = useState('');
 
@@ -330,7 +331,7 @@ export default function EditorialNgoRegistration() {
     if (file.size > MAX_FILE_SIZE) {
       setErrors((prev) => ({
         ...prev,
-        impactReport: `File size exceeds 50MB (${formatFileSize(file.size)}). Please choose a smaller file.`
+        impactReport: `File size exceeds 8MB (${formatFileSize(file.size)}). Please choose a file under 8MB to ensure reliable submission.`
       }));
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
@@ -559,6 +560,7 @@ export default function EditorialNgoRegistration() {
     }
 
     setSubmitting(true);
+    setSubmitError('');
 
     try {
       let base64File = '';
@@ -663,13 +665,20 @@ export default function EditorialNgoRegistration() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
-      // The page shows its confirmation either way; only a server-accepted request counts.
-      if (res.ok && data.status !== 'error') trackFormSubmit('ngo_registration');
-      else trackFormError('ngo_registration');
-      const generatedDraftId = data.id || `DRAFT-${Date.now().toString().slice(-4)}`;
-      setSubmittedDraftId(generatedDraftId);
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        throw new Error('Server returned an unexpected response. Please ensure file attachments are under 8MB and try again.');
+      }
 
+      if (!res.ok || data.status === 'error' || !data.id) {
+        const errorMsg = data?.message || data?.detail || 'Could not submit your registration. Please try again or email operations@thesama.in.';
+        throw new Error(errorMsg);
+      }
+
+      trackFormSubmit('ngo_registration');
+      setSubmittedDraftId(data.id);
       setIsSubmitted(true);
       setDone([true, true, true, true]);
 
@@ -679,7 +688,8 @@ export default function EditorialNgoRegistration() {
     } catch (err) {
       console.error('Error submitting form:', err);
       trackFormError('ngo_registration');
-      setIsSubmitted(true);
+      setSubmitError(err.message || 'An error occurred during submission. Please try again or email operations@thesama.in.');
+      setIsSubmitted(false);
     } finally {
       setSubmitting(false);
     }
@@ -1309,6 +1319,24 @@ export default function EditorialNgoRegistration() {
                         />
                         {errors.orgLaptopRequire && <p className="err">{errors.orgLaptopRequire}</p>}
                       </div>
+
+                      {submitError && (
+                        <div style={{
+                          background: '#FFF1F0',
+                          border: '1px solid #FFCCC7',
+                          borderRadius: '12px',
+                          padding: '12px 16px',
+                          color: '#CF1322',
+                          fontSize: '14px',
+                          lineHeight: 1.5,
+                          margin: '16px 0',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}>
+                          <span>⚠️ {submitError}</span>
+                        </div>
+                      )}
 
                       <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
                         <button
@@ -2117,35 +2145,54 @@ export default function EditorialNgoRegistration() {
 
                   {/* Stepper Navigation Footer - Only for First Time Registration */}
                   {requestType === 'first-time' && (
-                    <div className="ngo-foot">
-                      {currentStep > 0 && (
-                        <button type="button" className="link-btn" onClick={goBack}>
-                          &larr; Back
-                        </button>
+                    <div className="ngo-foot-wrapper">
+                      {submitError && currentStep === steps.length - 1 && (
+                        <div style={{
+                          background: '#FFF1F0',
+                          border: '1px solid #FFCCC7',
+                          borderRadius: '12px',
+                          padding: '12px 16px',
+                          color: '#CF1322',
+                          fontSize: '14px',
+                          lineHeight: 1.5,
+                          marginBottom: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}>
+                          <span>⚠️ {submitError}</span>
+                        </div>
                       )}
-                      <span className="spacer"></span>
-                      {currentStep < steps.length - 1 ? (
-                        <button type="button" className="bracket bracket--solid" onClick={goNext}>
-                          Continue{' '}
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                            <path d="M5 12h14M13 6l6 6-6 6" />
-                          </svg>
-                        </button>
-                      ) : (
-                        <button
-                          type="submit"
-                          className={`bracket bracket--solid ${submitting ? 'is-loading' : ''}`}
-                          disabled={submitting}
-                        >
-                          <span className="lbl">
-                            {submitting ? 'Submitting...' : 'Submit registration'}
-                          </span>
-                          {submitting && <span className="spin" aria-hidden="true"></span>}
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                            <path d="M5 12h14M13 6l6 6-6 6" />
-                          </svg>
-                        </button>
-                      )}
+                      <div className="ngo-foot">
+                        {currentStep > 0 && (
+                          <button type="button" className="link-btn" onClick={goBack}>
+                            &larr; Back
+                          </button>
+                        )}
+                        <span className="spacer"></span>
+                        {currentStep < steps.length - 1 ? (
+                          <button type="button" className="bracket bracket--solid" onClick={goNext}>
+                            Continue{' '}
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                              <path d="M5 12h14M13 6l6 6-6 6" />
+                            </svg>
+                          </button>
+                        ) : (
+                          <button
+                            type="submit"
+                            className={`bracket bracket--solid ${submitting ? 'is-loading' : ''}`}
+                            disabled={submitting}
+                          >
+                            <span className="lbl">
+                              {submitting ? 'Submitting...' : 'Submit registration'}
+                            </span>
+                            {submitting && <span className="spin" aria-hidden="true"></span>}
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                              <path d="M5 12h14M13 6l6 6-6 6" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
                 </form>
