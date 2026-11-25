@@ -3,7 +3,7 @@ import Papa from 'papaparse';
 import { 
   Box, Typography, TextField, Button, Table, TableBody, TableCell, 
   TableContainer, TableHead, TableRow, Paper, IconButton, Chip, Modal, MenuItem, Select, FormControl, InputLabel, Autocomplete,
-  Dialog, DialogTitle, DialogContent, DialogActions, Grid, Alert, Link
+  Dialog, DialogTitle, DialogContent, DialogActions, Grid, Alert, Link, TablePagination
 } from '@mui/material';
 import { Edit2, Upload, Plus } from 'lucide-react';
 
@@ -33,6 +33,8 @@ export default function SchoolManagement() {
   const [analytics, setAnalytics] = useState({ total_schools: 0, ngos_with_schools: 0, laptops_verified: 0 });
   const [openModal, setOpenModal] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState("All");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     id: null,
@@ -54,6 +56,15 @@ export default function SchoolManagement() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadSelectedNgo, setUploadSelectedNgo] = useState(null);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const apiBase = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
 
@@ -277,12 +288,14 @@ export default function SchoolManagement() {
     document.body.removeChild(a);
   };
 
+  const paginatedSchools = schools.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
-    <Box p={4} sx={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+    <Box sx={{ backgroundColor: "#f8f9fa", minHeight: "100vh", p: { xs: 2, sm: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden" }}>
+      <Box display="flex" justifyContent="space-between" alignItems={{ xs: "flex-start", sm: "center" }} flexWrap="wrap" gap={2} mb={4}>
         <Box>
           <Box display="flex" alignItems="center" gap={1}>
-            <Box p={1} bgcolor="#4caf50" borderRadius={1}>
+            <Box p={1} bgcolor="#4caf50" borderRadius={1} display="flex" alignItems="center" justifyContent="center">
               <Typography color="white" fontWeight="bold">🏫</Typography>
             </Box>
             <Typography variant="h5" fontWeight={600}>School Registry</Typography>
@@ -291,12 +304,13 @@ export default function SchoolManagement() {
             Manage schools and accurately map them to NGOs for laptop verification
           </Typography>
         </Box>
-        <Box display="flex" gap={2}>
+        <Box display="flex" gap={1.5} flexWrap="wrap" alignItems="center">
           <Button 
             variant="contained" 
             color="success" 
             startIcon={<Upload size={18} />}
             onClick={() => setIsUploadModalOpen(true)}
+            sx={{ whiteSpace: "nowrap" }}
           >
             Upload School Details CSV
           </Button>
@@ -305,6 +319,7 @@ export default function SchoolManagement() {
             color="success" 
             startIcon={<Plus size={18} />}
             onClick={() => handleOpenModal()}
+            sx={{ whiteSpace: "nowrap" }}
           >
             Add School
           </Button>
@@ -312,71 +327,100 @@ export default function SchoolManagement() {
       </Box>
 
       {/* Analytics Cards */}
-      <Box display="flex" gap={3} mb={4}>
-        <Paper elevation={0} sx={{ flex: 1, p: 3, borderRadius: 2, border: "1px solid #e0e0e0" }}>
-          <Typography variant="body2" color="text.secondary" mb={1}>Total Schools Registered</Typography>
-          <Typography variant="h4" fontWeight={600}>{analytics.total_schools}</Typography>
-        </Paper>
-        <Paper elevation={0} sx={{ flex: 1, p: 3, borderRadius: 2, border: "1px solid #e0e0e0" }}>
-          <Typography variant="body2" color="text.secondary" mb={1}>NGOs with Assigned Schools</Typography>
-          <Typography variant="h4" fontWeight={600} color="primary">{analytics.ngos_with_schools}</Typography>
-        </Paper>
-        <Paper elevation={0} sx={{ flex: 1, p: 3, borderRadius: 2, border: "1px solid #e0e0e0" }}>
-          <Typography variant="body2" color="text.secondary" mb={1}>Laptops Verified (AFE/RMS)</Typography>
-          <Typography variant="h4" fontWeight={600} color="success.main">{analytics.laptops_verified}</Typography>
-        </Paper>
-      </Box>
+      <Grid container spacing={3} mb={4}>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 2, border: "1px solid #e0e0e0", height: "100%" }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>Total Schools Registered</Typography>
+            <Typography variant="h4" fontWeight={600}>{analytics.total_schools}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 2, border: "1px solid #e0e0e0", height: "100%" }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>NGOs with Assigned Schools</Typography>
+            <Typography variant="h4" fontWeight={600} color="primary">{analytics.ngos_with_schools}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 2, border: "1px solid #e0e0e0", height: "100%" }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>Laptops Verified (AFE/RMS)</Typography>
+            <Typography variant="h4" fontWeight={600} color="success.main">{analytics.laptops_verified}</Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
       {/* Filter and Table */}
-      <Paper elevation={0} sx={{ borderRadius: 2, border: "1px solid #e0e0e0", overflow: 'hidden' }}>
-        <Box p={2} borderBottom="1px solid #e0e0e0" display="flex" alignItems="center">
-          <FormControl size="small" sx={{ minWidth: 200 }}>
+      <Paper elevation={0} sx={{ borderRadius: 2, border: "1px solid #e0e0e0", width: "100%", maxWidth: "100%", overflow: 'hidden' }}>
+        <Box p={2} borderBottom="1px solid #e0e0e0" display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={2}>
+          <FormControl size="small" sx={{ minWidth: 220 }}>
             <InputLabel>Filter by Partner Name</InputLabel>
             <Select
               value={selectedPartner}
               label="Filter by Partner Name"
-              onChange={(e) => setSelectedPartner(e.target.value)}
+              onChange={(e) => {
+                setSelectedPartner(e.target.value);
+                setPage(0);
+              }}
             >
-              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="All">All Partners ({schools.length})</MenuItem>
               {filterNgos.map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
             </Select>
           </FormControl>
+          <Typography variant="body2" color="text.secondary">
+            Showing {schools.length > 0 ? `${page * rowsPerPage + 1}–${Math.min((page + 1) * rowsPerPage, schools.length)} of ${schools.length}` : '0'} schools
+          </Typography>
         </Box>
         
-        <TableContainer>
-          <Table>
+        <TableContainer sx={{ 
+          width: "100%", 
+          maxWidth: "100%", 
+          overflowX: "auto",
+          "&::-webkit-scrollbar": {
+            height: "8px",
+          },
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: "#f1f1f1",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#c1c1c1",
+            borderRadius: "4px",
+          },
+          "&::-webkit-scrollbar-thumb:hover": {
+            backgroundColor: "#a8a8a8",
+          }
+        }}>
+          <Table sx={{ minWidth: 1200 }}>
             <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
               <TableRow>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>School ID</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>School Name</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>School Type</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>School Type ID</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>Partner Name</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>UDISE Code</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>City</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>State</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>District</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>Dist. Code</Typography></TableCell>
-                <TableCell><Typography variant="subtitle2" fontWeight={600}>Zipcode</Typography></TableCell>
-                <TableCell align="center"><Typography variant="subtitle2" fontWeight={600}>Actions</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }}><Typography variant="subtitle2" fontWeight={600}>School ID</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }}><Typography variant="subtitle2" fontWeight={600}>School Name</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }}><Typography variant="subtitle2" fontWeight={600}>School Type</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }}><Typography variant="subtitle2" fontWeight={600}>School Type ID</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }}><Typography variant="subtitle2" fontWeight={600}>Partner Name</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }}><Typography variant="subtitle2" fontWeight={600}>UDISE Code</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }}><Typography variant="subtitle2" fontWeight={600}>City</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }}><Typography variant="subtitle2" fontWeight={600}>State</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }}><Typography variant="subtitle2" fontWeight={600}>District</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }}><Typography variant="subtitle2" fontWeight={600}>Dist. Code</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }}><Typography variant="subtitle2" fontWeight={600}>Zipcode</Typography></TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 600, py: 1.5 }} align="center"><Typography variant="subtitle2" fontWeight={600}>Actions</Typography></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {schools.length === 0 ? (
+              {paginatedSchools.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={13} align="center" sx={{ py: 3 }}>
+                  <TableCell colSpan={12} align="center" sx={{ py: 4 }}>
                     <Typography color="text.secondary">No schools found.</Typography>
                   </TableCell>
                 </TableRow>
               ) : (
-                schools.map((school) => {
+                paginatedSchools.map((school) => {
                   return (
                     <TableRow key={school.id} hover>
-                      <TableCell>
+                      <TableCell sx={{ whiteSpace: "nowrap" }}>
                         <Typography variant="body2" fontWeight={500}>{school.school_id}</Typography>
                       </TableCell>
-                      <TableCell color="text.secondary">{school.name}</TableCell>
-                      <TableCell>
+                      <TableCell color="text.secondary" sx={{ minWidth: 160 }}>{school.name}</TableCell>
+                      <TableCell sx={{ whiteSpace: "nowrap" }}>
                         <Chip 
                           label={school.school_type || 'Government School'} 
                           size="small" 
@@ -384,21 +428,21 @@ export default function SchoolManagement() {
                           variant="outlined"
                         />
                       </TableCell>
-                      <TableCell align="center">
+                      <TableCell align="center" sx={{ whiteSpace: "nowrap" }}>
                         <Typography variant="body2" fontWeight={600}>
                           {school.school_type_id || 1}
                         </Typography>
                       </TableCell>
-                      <TableCell>{school.partner_name}</TableCell>
-                      <TableCell>
+                      <TableCell sx={{ minWidth: 160 }}>{school.partner_name}</TableCell>
+                      <TableCell sx={{ whiteSpace: "nowrap" }}>
                         <Chip label={school.udise || '-'} size="small" variant="outlined" />
                       </TableCell>
-                      <TableCell color="text.secondary">{school.city}</TableCell>
-                      <TableCell color="text.secondary">{school.state}</TableCell>
-                      <TableCell color="text.secondary">{school.district}</TableCell>
-                      <TableCell color="text.secondary">{school.district_code}</TableCell>
-                      <TableCell color="text.secondary">{school.zipcode}</TableCell>
-                      <TableCell align="center">
+                      <TableCell color="text.secondary" sx={{ whiteSpace: "nowrap" }}>{school.city}</TableCell>
+                      <TableCell color="text.secondary" sx={{ whiteSpace: "nowrap" }}>{school.state}</TableCell>
+                      <TableCell color="text.secondary" sx={{ whiteSpace: "nowrap" }}>{school.district}</TableCell>
+                      <TableCell color="text.secondary" sx={{ whiteSpace: "nowrap" }}>{school.district_code}</TableCell>
+                      <TableCell color="text.secondary" sx={{ whiteSpace: "nowrap" }}>{school.zipcode}</TableCell>
+                      <TableCell align="center" sx={{ whiteSpace: "nowrap" }}>
                         <IconButton size="small" onClick={() => handleOpenModal(school)}>
                           <Edit2 size={16} color="#4caf50" />
                         </IconButton>
@@ -410,6 +454,22 @@ export default function SchoolManagement() {
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 50, 100]}
+          component="div"
+          count={schools.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            borderTop: "1px solid #e0e0e0",
+            ".MuiTablePagination-toolbar": {
+              flexWrap: "wrap",
+              minHeight: 52
+            }
+          }}
+        />
       </Paper>
 
       {/* Add/Edit Modal */}
