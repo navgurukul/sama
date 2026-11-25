@@ -159,7 +159,7 @@ const Sidebar = () => {
         {sidebarContent}
       </Box>
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, p: 3 }}>
+      <Box sx={{ flexGrow: 1, minWidth: 0, p: { xs: 2, sm: 3 }, overflowX: "hidden" }}>
         <Outlet />
       </Box>
     </Box>
