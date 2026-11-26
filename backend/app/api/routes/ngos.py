@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Optional
 from fastapi import APIRouter
 from psycopg.rows import dict_row
 
@@ -11,15 +12,31 @@ router = APIRouter()
 
 
 @router.get("/api/ngos")
-def get_approved_ngos(filter: str = None):
+def get_approved_ngos(filter: Optional[str] = None):
     try:
         with get_conn() as conn:
             with conn.cursor(row_factory=dict_row) as cur:
                 cur.execute(f"""
-                    SELECT id, organization_name 
-                    FROM {DB_SCHEMA}.external_registered_ngo 
-                    WHERE UPPER(status) IN ('APPROVED', 'DISPATCHED', 'DELIVERED')
-                    ORDER BY organization_name
+                    WITH combined_ngos AS (
+                        SELECT id, organization_name, 1 AS priority
+                        FROM {DB_SCHEMA}.external_registered_ngo 
+                        WHERE UPPER(status) IN ('APPROVED', 'DISPATCHED', 'DELIVERED')
+                        
+                        UNION ALL
+                        
+                        SELECT COALESCE(display_id, 'SAM-' || id::text) AS id, ngo_name AS organization_name, 2 AS priority
+                        FROM {DB_SCHEMA}.ngo_requests 
+                        WHERE UPPER(status) IN ('APPROVED', 'DISPATCHED', 'DELIVERED')
+                    ),
+                    deduped AS (
+                        SELECT DISTINCT ON (id) id, organization_name
+                        FROM combined_ngos
+                        WHERE id IS NOT NULL AND organization_name IS NOT NULL
+                        ORDER BY id, priority DESC
+                    )
+                    SELECT id, organization_name
+                    FROM deduped
+                    ORDER BY organization_name ASC
                 """)
                 ngos = cur.fetchall()
                 
